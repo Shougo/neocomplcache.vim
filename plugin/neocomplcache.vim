@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2009
+" Last Modified: 05 Feb 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.38, for Vim 7.0
+" Version: 1.39, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.39:
+"     - Fixed filename completion bug.
 "   1.38:
 "     - Fixed PHP completion bug.
 "     - Improved filetype detection.
@@ -227,7 +229,7 @@ function! s:NeoComplCache.Complete()"{{{
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
         " Filename pattern.
         "let l:pattern = printf('\f[%s]\f\{%d,}$', l:PATH_SEPARATOR, g:NeoComplCache_FilenameCompletionStartLength)
-        let l:pattern = printf('[/~]\=\([.-]\|\f\)*%s\([.-]\|\f\)*', l:PATH_SEPARATOR)
+        let l:pattern = printf('[/~]\=\([.-]\|\f\)*[%s]\([.-]\|\f\)*', l:PATH_SEPARATOR)
         " Not Filename pattern.
         let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*\|//'
 
