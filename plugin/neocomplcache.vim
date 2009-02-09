@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2009
+" Last Modified: 07 Feb 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -229,9 +229,9 @@ function! s:NeoComplCache.Complete()"{{{
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
         " Filename pattern.
         "let l:pattern = printf('\f[%s]\f\{%d,}$', l:PATH_SEPARATOR, g:NeoComplCache_FilenameCompletionStartLength)
-        let l:pattern = printf('[/~]\=\([.-]\|\f\)*[%s]\([.-]\|\f\)*', l:PATH_SEPARATOR)
+        let l:pattern = printf('[/~]\=\([.-]\|\f\)\+[%s]\([.-]\|\f\)*$', l:PATH_SEPARATOR)
         " Not Filename pattern.
-        let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*\|//'
+        let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*$'
 
         " Check filename completion.
         if match(l:cur_text, l:pattern) >= 0 && match(l:cur_text, l:exclude_pattern) < 0
