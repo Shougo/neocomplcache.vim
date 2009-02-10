@@ -26,10 +26,12 @@
 " Version: 1.39, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.40:
+"     - Improved next keyword completion.
 "   1.39:
 "     - Fixed filename completion bug.
 "     - Fixed dup bug.
-"     - Implemented remove next keyword.
+"     - Implemented next keyword completion.
 "   1.38:
 "     - Fixed PHP completion bug.
 "     - Improved filetype detection.
@@ -590,7 +592,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
 
     " Remove next keyword.
-    let l:next_keyword_str = matchstr(strpart(getline('.'), col('.')-1), s:GetKeywordPattern(bufnr('%')) . '$') . '$'
+    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1), s:GetKeywordPattern(bufnr('%')) . '$')[1:] . '$'
     if l:next_keyword_str != '$'
         let l:ret = deepcopy(l:ret[:g:NeoComplCache_MaxList-1])
         for r in l:ret
