@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Feb 2009
+" Last Modified: 09 Feb 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.39:
 "     - Fixed filename completion bug.
+"     - Fixed dup bug.
+"     - Implemented remove next keyword.
 "   1.38:
 "     - Fixed PHP completion bug.
 "     - Improved filetype detection.
@@ -411,7 +413,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         " Not calc rank.
         let l:order_func = 's:CompareWords'
     else
-        " Calc rank.
+        " Calc rank."{{{
         let l:menu_pattern = ' %.' . g:NeoComplCache_MaxFilenameWidth . 's %3d'
         let l:list_len = len(l:cache_keyword_buffer_filtered)
 
@@ -455,7 +457,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
             call filter(l:cache_keyword_buffer_filtered, 'v:val.rank > 0')
         endif
 
-        let l:order_func = 's:CompareRank'
+        let l:order_func = 's:CompareRank'"}}}
     endif
 
     if exists('l:start_time')
@@ -574,7 +576,8 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
             let l:num += 1
         endfor
         let l:abbr_pattern_n = '    %.' . g:NeoComplCache_MaxKeywordWidth . 's'
-        for keyword in l:ret[g:NeoComplCache_QuickMatchMaxLists :]
+        let l:ret = l:ret[g:NeoComplCache_QuickMatchMaxLists :]
+        for keyword in l:ret
             let keyword.abbr = printf(l:abbr_pattern_n, keyword.word)
         endfor
 
@@ -584,6 +587,18 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         " Save numbered lists.
         let s:prepre_numbered_list = s:prev_numbered_list[10:g:NeoComplCache_QuickMatchMaxLists-1]
         let s:prev_numbered_list = l:numbered_ret[:g:NeoComplCache_QuickMatchMaxLists-1]
+    endif
+
+    " Remove next keyword.
+    let l:next_keyword_str = matchstr(strpart(getline('.'), col('.')-1), s:GetKeywordPattern(bufnr('%')) . '$') . '$'
+    if l:next_keyword_str != '$'
+        let l:ret = deepcopy(l:ret[:g:NeoComplCache_MaxList-1])
+        for r in l:ret
+            if r.word =~ l:next_keyword_str
+                let r.word = strpart(r.word, 0, match(r.word, l:next_keyword_str))
+                let r.dup = 1
+            endif
+        endfor
     endif
 
     return l:ret
