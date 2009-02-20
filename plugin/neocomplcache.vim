@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2009
+" Last Modified: 19 Feb 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,22 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.40, for Vim 7.0
+" Version: 1.42, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.42:
+"     - Caching when InsertLeave event.
+"     - Changed g:NeoComplCache_CacheLineCount value.
+"     - Changed wildcard substitution '.*' into '.\+'.
+"     - Allow word's tail '*' if g:NeoComplCache_EnableAsterisk.
+"     - Allow word's head '*' on lisp.
+"     - Optimized global options definition.
+"   1.41:
+"     - Added g:NeoComplCache_SmartCase option.
+"     - Optimized on completion and caching.
+"     - Fixed g:NeoComplCache_ManualCompleteFunc bug.
 "   1.40:
+"     - Fixed freeze bug when many - inputed.
 "     - Improved next keyword completion.
 "     - Improved caching.
 "     - Fixed next keyword completion bug.
@@ -220,7 +232,11 @@ function! s:NeoComplCache.Complete()"{{{
         return
     endif
 
-    let l:pattern = s:GetKeywordPattern(bufnr('%')) . '$'
+    if g:NeoComplCache_EnableAsterisk
+        let l:pattern = s:GetKeywordPattern(bufnr('%')) . '\*\=$'
+    else
+        let l:pattern = s:GetKeywordPattern(bufnr('%')) . '$'
+    endif
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
@@ -235,7 +251,7 @@ function! s:NeoComplCache.Complete()"{{{
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
         " Filename pattern.
         "let l:pattern = printf('\f[%s]\f\{%d,}$', l:PATH_SEPARATOR, g:NeoComplCache_FilenameCompletionStartLength)
-        let l:pattern = printf('[/~]\=\([.-]\|\f\)\+[%s]\([.-]\|\f\)*$', l:PATH_SEPARATOR)
+        let l:pattern = printf('[/~]\=\f\+[%s]\f*$', l:PATH_SEPARATOR)
         " Not Filename pattern.
         let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*$'
 
@@ -255,7 +271,11 @@ function! s:NeoComplCache.Complete()"{{{
     let &l:completefunc = 'g:NeoComplCache_AutoCompleteFunc'
 
     " Extract complete words.
-    let &l:ignorecase = g:NeoComplCache_IgnoreCase
+    if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+        let &l:ignorecase = 0
+    else
+        let &l:ignorecase = g:NeoComplCache_IgnoreCase
+    endif
     let s:complete_words = []
     for complefunc in s:GetCompleFuncPattern()
         let Fn = function(complefunc)
@@ -339,7 +359,11 @@ function! g:NeoComplCache_ManualCompleteFunc(findstart, base)"{{{
     let l:ignorecase_save = &l:ignorecase
 
     " Complete.
-    let &l:ignorecase = g:NeoComplCache_IgnoreCase
+    if g:NeoComplCache_SmartCase && a:base =~ '\u'
+        let &l:ignorecase = 0
+    else
+        let &l:ignorecase = g:NeoComplCache_IgnoreCase
+    endif
     let l:complete_words = []
     for complefunc in s:GetCompleFuncPattern()
         let Fn = function(complefunc)
@@ -367,7 +391,8 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
 
     if g:NeoComplCache_EnableAsterisk
-        let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.*', 'g')
+        "let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.*', 'g')
+        let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.\\+', 'g')
     else
         let l:keyword_escape = escape(substitute(a:cur_keyword_str, '" \ . ^ $ *'), "'", "''", 'g')
     endif
@@ -431,16 +456,17 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
             let l:calc_cnt = 2
         endif
 
+        if g:NeoComplCache_CalcRankRandomize
+            let l:match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
+        endif
         for keyword in l:cache_keyword_buffer_filtered
             if !has_key(keyword, 'rank') || s:rank_cache_count <= 0
                 " Reset count.
                 if g:NeoComplCache_CalcRankRandomize
-                    let l:time = reltimestr(reltime())
-                    let s:rank_cache_count = l:time[matchend(l:time, '\d\+\.')] % l:calc_cnt
+                    let [s:rank_cache_count, keyword.rank] = [reltimestr(reltime())[l:match_end : ] % l:calc_cnt, 0]
                 else 
-                    let s:rank_cache_count = l:calc_cnt
+                    let [s:rank_cache_count,keyword.rank] = [l:calc_cnt, 0]
                 endif
-                let keyword.rank = 0
 
                 for keyword_lines in values(s:source[keyword.srcname].rank_cache_lines)
                     if has_key(keyword_lines, keyword.word)
@@ -594,7 +620,6 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
 
     " Remove next keyword.
-    echomsg 'a'.strpart(getline('.'), col('.')-1)
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1), '^'.s:GetKeywordPattern(bufnr('%')))[1:]
     if !empty(l:next_keyword_str)
         let l:ret = deepcopy(l:ret[:g:NeoComplCache_MaxList-1])
@@ -693,14 +718,14 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
 
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
-                " Check dup.
-                if !has_key(l:source.keyword_cache, l:match_str)
-                    " Append list.
-                    let l:source.keyword_cache[l:match_str] = { 'word' : l:match_str, 'abbr' : printf(l:abbr_pattern, l:match_str), 'menu' : l:menu,  'dup' : 0, 'filename' : l:filename, 'srcname' : a:srcname }
+                if !has_key(l:source.rank_cache_lines[l:cache_line], l:match_str) 
+                    let l:source.rank_cache_lines[l:cache_line][l:match_str] = 1
 
-                    let l:source.rank_cache_lines[l:cache_line][l:match_str] = 1
-                elseif !has_key(l:source.rank_cache_lines[l:cache_line], l:match_str) 
-                    let l:source.rank_cache_lines[l:cache_line][l:match_str] = 1
+                    " Check dup.
+                    if !has_key(l:source.keyword_cache, l:match_str)
+                        " Append list.
+                        let l:source.keyword_cache[l:match_str] = { 'word' : l:match_str, 'abbr' : printf(l:abbr_pattern, l:match_str), 'menu' : l:menu,  'dup' : 0, 'filename' : l:filename, 'srcname' : a:srcname }
+                    endif
                 else
                     let l:source.rank_cache_lines[l:cache_line][l:match_str] += 1
                 endif
@@ -947,10 +972,11 @@ function! s:NeoComplCache.Enable()"{{{
     augroup NeoCompleCache
         autocmd!
         " Caching events
-        autocmd BufEnter,BufWritePost,CursorHold,Filetype * call s:NeoComplCache.CachingAllBuffer(g:NeoComplCache_CacheLineCount*5, 
-                    \ g:NeoComplCache_CacheLineCount*15)
+        autocmd BufEnter,BufWritePost,CursorHold,Filetype * call s:NeoComplCache.CachingAllBuffer(g:NeoComplCache_CacheLineCount*10, 
+                    \ g:NeoComplCache_CacheLineCount*30)
         " Caching current buffer events
-        autocmd InsertEnter * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
+        autocmd InsertEnter * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount*2)
+        autocmd InsertLeave * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
         " Auto complete events
         autocmd CursorMovedI,InsertEnter * call s:NeoComplCache.Complete()
     augroup END
@@ -967,8 +993,8 @@ function! s:NeoComplCache.Enable()"{{{
         let g:NeoComplCache_KeywordPatterns = {}
     endif
     call s:SetKeywordPattern('default', '[[:alpha:]_.]\w*')
-    call s:SetKeywordPattern('lisp', '\h[[:alnum:]_-]*[*!?]\=')
-    call s:SetKeywordPattern('scheme', '\h[[:alnum:]_-]*[*!?]\=')
+    call s:SetKeywordPattern('lisp', '*\=\h[[:alnum:]_-]*[*!?]\=')
+    call s:SetKeywordPattern('scheme', '*\=\h[[:alnum:]_-]*[*!?]\=')
     call s:SetKeywordPattern('ruby', '\([[:alpha:]_$.]\|@@\=\)\(\w\|::\)*[!?]\=')
     call s:SetKeywordPattern('php', '$\w\+\|\(->\|[[:alpha:]_]\)\(\w\|::\)*')
     call s:SetKeywordPattern('perl', '\(->\|[[:alpha:]_$@%]\)\(\w\|::\)*')
@@ -1164,6 +1190,9 @@ endif
 if !exists('g:NeoComplCache_IgnoreCase')
     let g:NeoComplCache_IgnoreCase = 1
 endif
+if !exists('g:NeoComplCache_SmartCase')
+    let g:NeoComplCache_SmartCase = 0
+endif
 if !exists('g:NeoComplCache_DrawWordsRank')
     let g:NeoComplCache_DrawWordsRank = 1
 endif
@@ -1176,9 +1205,8 @@ endif
 if !exists('g:NeoComplCache_FirstHeadMatching')
     let g:NeoComplCache_FirstHeadMatching = 1
 endif
-
 if !exists('g:NeoComplCache_CacheLineCount')
-    let g:NeoComplCache_CacheLineCount = 30
+    let g:NeoComplCache_CacheLineCount = 10
 endif
 if !exists('g:NeoComplCache_DeleteRank0')
     let g:NeoComplCache_DeleteRank0 = 0
@@ -1193,11 +1221,7 @@ if !exists('g:NeoComplCache_QuickMatchEnable')
     let g:NeoComplCache_QuickMatchEnable = 1
 endif
 if !exists('g:NeoComplCache_CalcRankRandomize')
-    if has('reltime')
-        let g:NeoComplCache_CalcRankRandomize = 1
-    else
-        let g:NeoComplCache_CalcRankRandomize = 0
-    endif
+    let g:NeoComplCache_CalcRankRandomize = has('reltime')
 endif
 if !exists('g:NeoComplCache_CalcRankMaxLists')
     let g:NeoComplCache_CalcRankMaxLists = 40
@@ -1206,13 +1230,8 @@ if !exists('g:NeoComplCache_QuickMatchMaxLists')
     let g:NeoComplCache_QuickMatchMaxLists = 60
 endif
 if !exists('g:NeoComplCache_SlowCompleteSkip')
-    if has('reltime')
-        let g:NeoComplCache_SlowCompleteSkip = 1
-    else
-        let g:NeoComplCache_SlowCompleteSkip = 0
-    endif
+    let g:NeoComplCache_SlowCompleteSkip = has('reltime')
 endif
-
 if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
     " Enable startup.
     call s:NeoComplCache.Enable()
