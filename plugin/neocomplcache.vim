@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Feb 2009
+" Last Modified: 22 Feb 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,15 +23,25 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.42, for Vim 7.0
+" Version: 1.44, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.44:
+"     - Improved most frequently used dictionary.
+"     - Improved if bufname changed.
+"     - Restore wildcard substitution '.\+' into '.*'.
+"     - Fixed next keyword completion bug.
+"   1.43:
+"     - Refactoring when caching source.
+"     - Initialize source if bufname changed.
+"     - Implemented most frequently used dictionary.
 "   1.42:
 "     - Caching when InsertLeave event.
 "     - Changed g:NeoComplCache_CacheLineCount value.
 "     - Changed wildcard substitution '.*' into '.\+'.
 "     - Allow word's tail '*' if g:NeoComplCache_EnableAsterisk.
 "     - Allow word's head '*' on lisp.
+"     - Allow word's head '&' on perl.
 "     - Optimized global options definition.
 "   1.41:
 "     - Added g:NeoComplCache_SmartCase option.
@@ -391,8 +401,8 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
 
     if g:NeoComplCache_EnableAsterisk
-        "let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.*', 'g')
-        let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.\\+', 'g')
+        let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.*', 'g')
+        "let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.\\+', 'g')
     else
         let l:keyword_escape = escape(substitute(a:cur_keyword_str, '" \ . ^ $ *'), "'", "''", 'g')
     endif
@@ -418,22 +428,28 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         let l:ft_dict = '^$'
     endif
     if has_key(g:NeoComplCache_TagsLists, tabpagenr())
-        let l:tags = '^tags' . tabpagenr()
+        let l:tags = '^tags:' . tabpagenr()
     elseif !empty(g:NeoComplCache_TagsLists['default'])
-        let l:tags = '^tagsdefault'
+        let l:tags = '^tags:default'
     else
         " Dummy pattern.
         let l:tags = '^$'
     endif
     if has_key(g:NeoComplCache_DictionaryBufferLists, bufnr('%'))
-        let l:buf_dict = '^dict' . bufnr('%')
+        let l:buf_dict = '^dict:' . bufnr('%')
     else
         " Dummy pattern.
         let l:buf_dict = '^$'
     endif
+    if g:NeoComplCache_EnableMFU
+        let l:mfu_dict = '^mfu:' . &filetype
+    else
+        " Dummy pattern.
+        let l:mfu_dict = '^$'
+    endif
     let l:cache_keyword_buffer_filtered = []
     for key in keys(s:source)
-        if key =~ '^\d' || key =~ l:ft_dict || key =~ l:tags || key =~ l:buf_dict
+        if key =~ '^\d' || key =~ l:ft_dict || key =~ l:tags || key =~ l:buf_dict || key =~ l:mfu_dict
             call extend(l:cache_keyword_buffer_filtered, filter(values(s:source[key].keyword_cache), l:pattern))
         endif
     endfor
@@ -465,7 +481,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
                 if g:NeoComplCache_CalcRankRandomize
                     let [s:rank_cache_count, keyword.rank] = [reltimestr(reltime())[l:match_end : ] % l:calc_cnt, 0]
                 else 
-                    let [s:rank_cache_count,keyword.rank] = [l:calc_cnt, 0]
+                    let [s:rank_cache_count, keyword.rank] = [l:calc_cnt, 0]
                 endif
 
                 for keyword_lines in values(s:source[keyword.srcname].rank_cache_lines)
@@ -492,7 +508,6 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
 
     if exists('l:start_time')
         "let l:end_time = split(reltimestr(reltime(l:start_time)))[0]
-        "if l:end_time > '0.2'
         if split(reltimestr(reltime(l:start_time)))[0] > '0.2'
             " Skip completion if takes too much time.
             echo 'Too many items'
@@ -622,6 +637,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     " Remove next keyword.
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1), '^'.s:GetKeywordPattern(bufnr('%')))[1:]
     if !empty(l:next_keyword_str)
+        let l:next_keyword_str .= '$'
         let l:ret = deepcopy(l:ret[:g:NeoComplCache_MaxList-1])
         for r in l:ret
             if r.word =~ l:next_keyword_str
@@ -644,11 +660,22 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
     if !has_key(s:source, a:srcname)
         " Initialize source.
         call s:InitializeSource(a:srcname)
+    elseif a:srcname =~ '^\d' && s:source[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
+        " Initialize source if bufname changed.
+        call s:InitializeSource(a:srcname)
+        let l:start_line = 1
+        if a:end_line < 0
+            " Whole buffer.
+            let s:source[a:srcname].cached_last_line = s:source[a:srcname].end_line + 1
+        else
+            let s:source[a:srcname].cached_last_line = a:end_line
+        endif
     endif
 
     let l:source = s:source[a:srcname]
     if a:srcname =~ '^\d'
         " Buffer.
+        
         if empty(l:source.name)
             let l:filename = '[NoName]'
         else
@@ -656,10 +683,12 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
         endif
     else
         " Dictionary or tags.
-        if a:srcname =~ '^tags'
+        if a:srcname =~ '^tags:'
             let l:prefix = '[T] '
-        elseif a:srcname =~ '^dict'
+        elseif a:srcname =~ '^dict:'
             let l:prefix = '[B] '
+        elseif a:srcname =~ '^mfu:'
+            let l:prefix = '[M] '
         else
             let l:prefix = '[F] '
         endif
@@ -668,11 +697,11 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
     let l:cache_line = (l:start_line-1) / g:NeoComplCache_CacheLineCount
     let l:line_cnt = 0
 
-    " For Debugging.
+    " For debugging.
     "if l:end_line == '$'
-        "echo printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
+        "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
     "else
-        "echo printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
+        "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
     "endif
 
     if a:start_line == 1 && a:end_line < 0
@@ -760,7 +789,7 @@ function! s:InitializeSource(srcname)"{{{
         let l:end_line = len(readfile(l:filename))
     endif
 
-    let s:source[a:srcname] = { 'keyword_cache' : {}, 'rank_cache_lines' : {}, 'name' : l:filename, 'end_line' : l:end_line , 'cached_last_line' : 1, }
+    let s:source[a:srcname] = { 'keyword_cache' : {}, 'rank_cache_lines' : {}, 'name' : l:filename, 'end_line' : l:end_line , 'cached_last_line' : 1 }
 endfunction"}}}
 
 function! s:NeoComplCache.CachingSource(srcname, start_line, end_line)"{{{
@@ -772,20 +801,10 @@ function! s:NeoComplCache.CachingSource(srcname, start_line, end_line)"{{{
     if a:start_line == '^'
         let l:source = s:source[a:srcname]
 
-        if a:srcname =~ '^\d'
-            " Buffer.
-            let l:filename = fnamemodify(bufname(a:srcname), ':t')
-
-            " Cache clear when Buffer Renamed.
-            if l:filename != l:source.name
-                " Buffer name caching.
-                call s:InitializeSource(a:srcname)
-            endif
-        endif
-        
         let l:start_line = l:source.cached_last_line
         " Check overflow.
-        if l:start_line > l:source.end_line
+        if l:start_line > l:source.end_line && a:srcname =~ '^\d'
+                    \&& fnamemodify(bufname(a:srcname), ':t') == l:source.name
             " Caching end.
             return -1
         endif
@@ -800,7 +819,7 @@ function! s:NeoComplCache.CachingSource(srcname, start_line, end_line)"{{{
     return 0
 endfunction"}}}
 
-function! s:NeoComplCache.CachingAllBuffer(caching_num, caching_max)"{{{
+function! s:NeoComplCache.CheckSource(caching_num)"{{{
     let l:bufnumber = 1
     let l:max_buf = bufnr('$')
     let l:caching_num = 0
@@ -811,6 +830,12 @@ function! s:NeoComplCache.CachingAllBuffer(caching_num, caching_max)"{{{
     " Check deleted buffer.
     for key in keys(s:source)
         if key =~ '^\d' && !buflisted(str2nr(key))
+            if g:NeoComplCache_EnableMFU
+                " Save MFU.
+                call s:NeoComplCache.SaveMFU(key)
+                return
+            endif
+            
             " Remove item.
             call remove(s:source, key)
         endif
@@ -819,58 +844,55 @@ function! s:NeoComplCache.CachingAllBuffer(caching_num, caching_max)"{{{
     " Check new buffer.
     while l:bufnumber <= l:max_buf
         if buflisted(l:bufnumber)
-            " Lazy caching.
-            if s:NeoComplCache.CachingSource(l:bufnumber, '^', a:caching_num) == 0
-                let l:caching_num += a:caching_num
-                if l:caching_num > a:caching_num
-                    return
+            if !has_key(s:source, l:bufnumber) 
+                " Caching.
+                call s:NeoComplCache.CachingSource(l:bufnumber, '^', a:caching_num)
+
+                " Check buffer dictionary.
+                if has_key(g:NeoComplCache_DictionaryBufferLists, l:bufnumber)
+                    let l:dict_lists = split(g:NeoComplCache_DictionaryBufferLists[l:bufnumber], ',')
+                    for dict in l:dict_lists
+                        let l:dict_name = printf('dict:%s,%s', l:bufnumber, dict)
+                        if !has_key(s:source, l:dict_name) && filereadable(dict)
+                            " Caching.
+                            call s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num)
+                        endif
+                    endfor
                 endif
             endif
 
             if has_key(g:NeoComplCache_DictionaryFileTypeLists, getbufvar(l:bufnumber, '&filetype'))
                 call add(l:ft_dicts, getbufvar(l:bufnumber, '&filetype'))
             endif
-       endif
+
+            " Check MFU.
+            let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, &filetype)
+            if g:NeoComplCache_EnableMFU && filereadable(l:mfu_path)
+                " Load MFU
+                let l:dict_name = printf('mfu:%s,%s', &filetype, l:mfu_path)
+                if !has_key(s:source, l:dict_name)
+                    " Caching.
+                    call s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num)
+                endif
+            endif
+        endif
 
         let l:bufnumber += 1
     endwhile
 
+    " Check dictionary.
     for l:ft_dict in l:ft_dicts
         " Ignore if empty.
         if !empty(l:ft_dict)
             for dict in split(g:NeoComplCache_DictionaryFileTypeLists[l:ft_dict], ',')
                 let l:dict_name = printf('%s,%s', l:ft_dict, dict)
-                if has_key(s:source, l:dict_name) || filereadable(dict)
-                    " Lazy caching.
-                    if s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num) == 0
-                        let l:caching_num += a:caching_num
-
-                        if l:caching_num < a:caching_max
-                            return
-                        endif
-                    endif
+                if !has_key(s:source, l:dict_name) && filereadable(dict)
+                    " Caching.
+                    call s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num)
                 endif
             endfor
         endif
     endfor
-
-    " Check buffer dictionary.
-    if has_key(g:NeoComplCache_DictionaryBufferLists, bufnr('%'))
-        let l:dict_lists = split(g:NeoComplCache_DictionaryBufferLists[bufnr('%')], ',')
-        for dict in l:dict_lists
-            let l:dict_name = printf('dict%s,%s', bufnr('%'), dict)
-            if has_key(s:source, l:dict_name) || filereadable(dict)
-                " Lazy caching.
-                if s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num) == 0
-                    let l:caching_num += a:caching_num
-
-                    if l:caching_num < a:caching_max
-                        return
-                    endif
-                endif
-            endif
-        endfor
-    endif
 
     " Check tags.
     let l:current_tags = (has_key(g:NeoComplCache_TagsLists, tabpagenr()))? tabpagenr() : 'default'
@@ -878,27 +900,87 @@ function! s:NeoComplCache.CachingAllBuffer(caching_num, caching_max)"{{{
     if !empty(l:current_tags)
         let l:tags_lists = split(g:NeoComplCache_TagsLists[l:current_tags], ',')
         for tags in l:tags_lists
-            let l:tags_name = printf('tags%d,%s', l:current_tags, tags)
-            if has_key(s:source, l:tags_name) || filereadable(tags)
-                " Lazy caching.
-                if s:NeoComplCache.CachingSource(l:tags_name, '^', a:caching_num) == 0
-                    let l:caching_num += a:caching_num
-
-                    if l:caching_num < a:caching_max
-                        return
-                    endif
-                endif
-
-                " Check tags update.
-                let l:len = len(readfile(tags))
-                if l:len != s:source[l:tags_name].end_line
-                    let s:source[l:tags_name].end_line = l:len
-                    let s:source[l:tags_name].cached_last_line = 1
-                endif
+            let l:tags_name = printf('tags:%d,%s', l:current_tags, tags)
+            if !has_key(s:source, l:tags_name) && filereadable(tags)
+                " Caching.
+                call s:NeoComplCache.CachingSource(l:tags_name, '^', a:caching_num)
             endif
         endfor
     endif
 endfunction"}}}
+function! s:NeoComplCache.UpdateSource(caching_num, caching_max)"{{{
+    let l:caching_num = 0
+    for source_name in keys(s:source)
+        " Lazy caching.
+        let name = (source_name =~ '^\d')? str2nr(source_name) : source_name
+
+        if s:NeoComplCache.CachingSource(name, '^', a:caching_num) == 0
+            let l:caching_num += a:caching_num
+
+            if l:caching_num > a:caching_max
+                return
+            endif
+        endif
+    endfor
+endfunction"}}}
+
+function! s:NeoComplCache.SaveAllMFU()"{{{
+    if !g:NeoComplCache_EnableMFU
+        return
+    endif
+
+    for key in keys(s:source)
+        if key =~ '^\d'
+            call s:NeoComplCache.SaveMFU(key)
+        endif
+    endfor
+endfunction "}}}
+function! s:NeoComplCache.SaveMFU(key)"{{{
+    let l:ft = getbufvar(str2nr(a:key), '&filetype')
+    if !empty(l:ft)
+        let l:mfu_dict = {}
+        let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, l:ft)
+        if filereadable(l:mfu_path)
+            for line in readfile(l:mfu_path)
+                let l = split(line)
+                if len(line) >= 2
+                    let l:mfu_dict[l[0]] = { 'word' : l[0], 'rank' : l[1], 'found' : 0 }
+                endif
+            endfor
+        endif
+        for keyword in values(s:source[a:key].keyword_cache)
+            if has_key(keyword, 'rank') && keyword.rank*2 >= g:NeoComplCache_MFUThreshold
+                if !has_key(l:mfu_dict, keyword.word) || keyword.rank > l:mfu_dict[keyword.word].rank
+                    let l:mfu_dict[keyword.word] = { 'word' : keyword.word, 'rank' : keyword.rank*2, 'found' : 1 }
+                endif
+            elseif has_key(l:mfu_dict, keyword.word)
+                " Found.
+                let l:mfu_dict[keyword.word].found = 1
+            endif
+        endfor
+
+        if s:source[a:key].end_line > 100
+            " Reduce rank if word is not found.
+            for key in keys(l:mfu_dict)
+                if !l:mfu_dict[key].found
+                    " rank *= 0.9
+                    let l:mfu_dict[key].rank -= l:mfu_dict[key].rank / 10
+                    if l:mfu_dict[key].rank < g:NeoComplCache_MFUThreshold
+                        " Delete word.
+                        call remove(l:mfu_dict, key)
+                    endif
+                endif
+            endfor
+        endif
+
+        " Save MFU.
+        let l:mfu_word = []
+        for dict in sort(values(l:mfu_dict), 's:CompareRank')
+            call add(l:mfu_word, dict.word . ' ' . dict.rank)
+        endfor
+        call writefile(l:mfu_word[: g:NeoComplCache_MFUMax-1], l:mfu_path)
+    endif
+endfunction "}}}
 
 " Assume filetype pattern.
 function! s:AssumePattern(bufname)"{{{
@@ -940,9 +1022,12 @@ function! s:GetKeywordPattern(srcname)"{{{
             let l:pattern = s:AssumePattern(split(a:srcname, ',')[1])
             if empty(l:pattern)
                 " Assuming failed.
-                if a:srcname =~ '^tags' || a:srcname =~ '^dict'
+                if a:srcname =~ '^tags:' || a:srcname =~ '^dict:'
                     " Current buffer filetype.
                     let l:ft = &filetype
+                elseif a:srcname =~ '^mfu:'
+                    " Embeded filetype.
+                    let l:ft = substitute(split(a:srcname, ',')[0], '^mfu:', '', '')
                 else
                     " Embeded filetype.
                     let l:ft = split(a:srcname, ',')[0]
@@ -969,26 +1054,29 @@ function! s:GetCompleFuncPattern()"{{{
 endfunction"}}}
 
 function! s:NeoComplCache.Enable()"{{{
-    augroup NeoCompleCache
+    augroup NeoCompleCache"{{{
         autocmd!
         " Caching events
-        autocmd BufEnter,BufWritePost,CursorHold,Filetype * call s:NeoComplCache.CachingAllBuffer(g:NeoComplCache_CacheLineCount*10, 
+        autocmd BufEnter,BufWritePost,CursorHold * call s:NeoComplCache.UpdateSource(g:NeoComplCache_CacheLineCount*10, 
                     \ g:NeoComplCache_CacheLineCount*30)
+        autocmd Filetype * call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
         " Caching current buffer events
         autocmd InsertEnter * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount*2)
         autocmd InsertLeave * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
         " Auto complete events
         autocmd CursorMovedI,InsertEnter * call s:NeoComplCache.Complete()
-    augroup END
+        " MFU events.
+        autocmd VimLeavePre * call s:NeoComplCache.SaveAllMFU()
+    augroup END"}}}
 
-    " Initialize
+    " Initialize"{{{
     let s:complete_lock = 0
     let s:old_text = ''
     let s:source = {}
     let s:prev_numbered_list = []
-    let s:rank_cache_count = 1
+    let s:rank_cache_count = 1"}}}
 
-    " Initialize keyword pattern match like intellisense.
+    " Initialize keyword pattern match like intellisense."{{{
     if !exists('g:NeoComplCache_KeywordPatterns')
         let g:NeoComplCache_KeywordPatterns = {}
     endif
@@ -997,7 +1085,7 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('scheme', '*\=\h[[:alnum:]_-]*[*!?]\=')
     call s:SetKeywordPattern('ruby', '\([[:alpha:]_$.]\|@@\=\)\(\w\|::\)*[!?]\=')
     call s:SetKeywordPattern('php', '$\w\+\|\(->\|[[:alpha:]_]\)\(\w\|::\)*')
-    call s:SetKeywordPattern('perl', '\(->\|[[:alpha:]_$@%]\)\(\w\|::\)*')
+    call s:SetKeywordPattern('perl', '\(->\|[[:alpha:]_$@%&]\)\(\w\|::\)*')
     call s:SetKeywordPattern('vim', '$\w\+\|&\=[[:alpha:]_.][[:alnum:]#_:]*')
     call s:SetKeywordPattern('tex', '\\\=[[:alpha:]_]\w*[*]\=')
     call s:SetKeywordPattern('sh', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
@@ -1006,16 +1094,16 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('ps1', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
     call s:SetKeywordPattern('c', '[[:alpha:]_#.]\w*')
     call s:SetKeywordPattern('cpp', '\(::\|->\|[[:alpha:]_#.]\)\(\w\|::\)*')
-    call s:SetKeywordPattern('d', '[[:alpha:]_#.]\(\w\|::\)*!\=')
+    call s:SetKeywordPattern('d', '[[:alpha:]_#.]\(\w\|::\)*!\=')"}}}
 
     " Initialize assume file type lists.
     if !exists('g:NeoComplCache_NonBufferFileTypeDetect')
         let g:NeoComplCache_NonBufferFileTypeDetect = {}
     endif
     " For test.
-    let g:NeoComplCache_NonBufferFileTypeDetect['rb'] = 'ruby'
+    "let g:NeoComplCache_NonBufferFileTypeDetect['rb'] = 'ruby'
 
-    " Initialize dictionary and tags.
+    " Initialize dictionary and tags."{{{
     if !exists('g:NeoComplCache_DictionaryFileTypeLists')
         let g:NeoComplCache_DictionaryFileTypeLists = {}
     endif
@@ -1034,7 +1122,7 @@ function! s:NeoComplCache.Enable()"{{{
     " For test.
     "let g:NeoComplCache_DictionaryFileTypeLists['vim'] = 'CSApprox.vim,LargeFile.vim'
     "let g:NeoComplCache_TagsLists[1] = 'tags,'.$DOTVIM.'\doc\tags'
-    "let g:NeoComplCache_DictionaryBufferLists[1] = '256colors2.pl'
+    "let g:NeoComplCache_DictionaryBufferLists[1] = '256colors2.pl'"}}}
     
     " Customizable complete function.
     if !exists('g:NeoComplCache_CompleteFuncLists')
@@ -1044,13 +1132,15 @@ function! s:NeoComplCache.Enable()"{{{
         let g:NeoComplCache_CompleteFuncLists['default'] = ['g:NeoComplCache_NormalComplete']
     endif
 
-    " Add command.
+    " Add commands."{{{
     command! -nargs=0 NeoCompleCacheCachingBuffer call s:NeoComplCache.CachingCurrentBuffer()
     command! -nargs=0 NeoCompleCacheCachingTags call s:NeoComplCache.CachingTags()
     command! -nargs=0 NeoCompleCacheCachingDictionary call s:NeoComplCache.CachingDictionary()
     command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
     command! -nargs=0 NeoCompleCacheLock call s:NeoComplCache.Lock()
     command! -nargs=0 NeoCompleCacheUnlock call s:NeoComplCache.Unlock()
+    command! -nargs=0 NeoCompleCacheSaveMFU call s:NeoComplCache.SaveAllMFU()
+    "}}}
 
     " Must g:NeoComplCache_StartCharLength > 1.
     if g:NeoComplCache_KeywordCompletionStartLength < 1
@@ -1068,7 +1158,7 @@ function! s:NeoComplCache.Enable()"{{{
     let &completefunc = 'g:NeoComplCache_ManualCompleteFunc'
 
     " Initialize cache.
-    call s:NeoComplCache.CachingAllBuffer(g:NeoComplCache_CacheLineCount*5, g:NeoComplCache_CacheLineCount*15)
+    call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
 endfunction"}}}
 
 function! s:NeoComplCache.Disable()"{{{
@@ -1105,13 +1195,13 @@ endfunction"}}}
 
 function! s:NeoComplCache.CachingTags()"{{{
     " Create source.
-    call s:NeoComplCache.CachingAllBuffer(g:NeoComplCache_CacheLineCount*5, g:NeoComplCache_CacheLineCount*15)
+    call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
     
     " Check tags are exists.
     if has_key(g:NeoComplCache_TagsLists, tabpagenr())
-        let l:tags = '^tags' . tabpagenr()
+        let l:tags = '^tags:' . tabpagenr()
     elseif !empty(g:NeoComplCache_TagsLists['default'])
-        let l:tags = '^tagsdefault'
+        let l:tags = '^tags:default'
     else
         " Dummy pattern.
         let l:tags = '^$'
@@ -1129,7 +1219,7 @@ endfunction"}}}
 
 function! s:NeoComplCache.CachingDictionary()"{{{
     " Create source.
-    call s:NeoComplCache.CachingAllBuffer(g:NeoComplCache_CacheLineCount*5, g:NeoComplCache_CacheLineCount*15)
+    call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
 
     " Check dictionaries are exists.
     if !empty(&filetype) && has_key(g:NeoComplCache_DictionaryFileTypeLists, &filetype)
@@ -1141,14 +1231,20 @@ function! s:NeoComplCache.CachingDictionary()"{{{
         let l:ft_dict = '^$'
     endif
     if has_key(g:NeoComplCache_DictionaryBufferLists, bufnr('%'))
-        let l:buf_dict = '^dict' . bufnr('%')
+        let l:buf_dict = '^dict:' . bufnr('%')
     else
         " Dummy pattern.
         let l:buf_dict = '^$'
     endif
+    if g:NeoComplCache_EnableMFU
+        let l:mfu_dict = '^mfu:' . &filetype
+    else
+        " Dummy pattern.
+        let l:mfu_dict = '^$'
+    endif
     let l:cache_keyword_buffer_filtered = []
     for key in keys(s:source)
-        if key =~ l:ft_dict || key =~ l:buf_dict
+        if key =~ l:ft_dict || key =~ l:buf_dict || key =~ l:mfu_dict
             call s:NeoComplCache.CachingSource(key, '^', -1)
 
             " Disable auto caching.
@@ -1231,6 +1327,25 @@ if !exists('g:NeoComplCache_QuickMatchMaxLists')
 endif
 if !exists('g:NeoComplCache_SlowCompleteSkip')
     let g:NeoComplCache_SlowCompleteSkip = has('reltime')
+endif
+if !exists('g:NeoComplCache_EnableMFU')
+    let g:NeoComplCache_EnableMFU = 0
+elseif g:NeoComplCache_EnableMFU
+    " Most frequently used settings.
+    
+    if !exists('g:NeoComplCache_MFUDirectory')
+        let g:NeoComplCache_MFUDirectory = $HOME . '/.vim_mfu'
+    endif
+    if !isdirectory(g:NeoComplCache_MFUDirectory)
+        call mkdir(g:NeoComplCache_MFUDirectory)
+    endif
+
+    if !exists('g:NeoComplCache_MFUThreshold')
+        let g:NeoComplCache_MFUThreshold = 30
+    endif
+    if !exists('g:NeoComplCache_MFUMax')
+        let g:NeoComplCache_MFUMax = 200
+    endif
 endif
 if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
     " Enable startup.
