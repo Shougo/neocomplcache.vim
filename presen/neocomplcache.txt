@@ -108,6 +108,7 @@ neocomplcacheの代表的機能
 ・カーソル後方のキーワードに応じた補完
 ・SmartCase
 ・豊富なカスタマイズ項目
+・文脈依存補完（New!!）
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -211,6 +212,18 @@ let g:NeoComplCache_SmartCase = 1
 ただしその場合、neocomplcacheを使う意味は薄れますが……。
 
 --------------------------------
+文脈依存補完（New!!）
+
+文脈を解析し、補完する機能が実験的に実装されました。
+例えば、バッファ内に
+hoge piyo
+と入力しているとすると、hogeの後にはpiyoが来やすいと認識、
+補完時にpiyoが上の方に来ます。
+この機能を使用するには、
+let g:NeoComplCache_PreviousKeywordCompletion = 1
+とする必要があります。
+
+--------------------------------
 私の設定
 
 " Don't use autocomplpop.
@@ -221,6 +234,9 @@ let g:NeoComplCache_EnableAtStartup = 1
 let g:NeoComplCache_SmartCase = 1
 " Use mfu.
 let g:NeoComplCache_EnableMFU = 1
+" Use previous keyword completion.
+let g:NeoComplCache_PreviousKeywordCompletion = 1
+
 " Toggle when press <C-e>.
 nnoremap <silent> <C-e> :<C-u>NeoComplCacheToggle<CR>
 
