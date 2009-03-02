@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Feb 2009
+" Last Modified: 01 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.45, for Vim 7.0
+" Version: 1.47, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.47:
+"     - Implemented 2-gram completion.
+"     - Improved ruby keyword.
+"   1.46:
+"     - Complete from same filetype buffer.
 "   1.45:
+"     - Fixed g:NeoComplCache_MFUDirectory bug.
 "     - Improved syntax keyword.
 "     - Deleted g:NeoComplCache_FirstCurrentBufferWords option.
 "     - Implemented previous keyword completion.
@@ -398,6 +404,15 @@ endfunction
 function! s:CompareWords(i1, i2)
     return a:i1.word > a:i2.word ? 1 : a:i1.word == a:i2.word ? 0 : -1
 endfunction
+" PrevWordRankOrder.
+function! s:ComparePrevWordRank(i1, i2)
+    if has_key(a:i1.prev_rank, s:prev_word) && has_key(a:i2.prev_rank, s:prev_word)
+        return a:i1.prev_rank[s:prev_word] < a:i2.prev_rank[s:prev_word] ? 1 
+                    \: a:i1.prev_rank[s:prev_word] == a:i2.prev_rank[s:prev_word] ? 0 : -1
+    else
+        return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
+    endif
+endfunction
 
 function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     if g:NeoComplCache_SlowCompleteSkip && &l:completefunc == 'g:NeoComplCache_AutoCompleteFunc'
@@ -453,7 +468,8 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
     let l:cache_keyword_buffer_list = []
     for key in keys(s:source)
-        if key =~ '^\d' || key =~ l:ft_dict || key =~ l:tags || key =~ l:buf_dict || key =~ l:mfu_dict
+        if (key =~ '^\d' && &filetype == s:source[key].filetype) 
+                    \|| key =~ l:ft_dict || key =~ l:tags || key =~ l:buf_dict || key =~ l:mfu_dict
             call extend(l:cache_keyword_buffer_list, filter(values(s:source[key].keyword_cache), l:pattern))
         endif
     endfor
@@ -488,10 +504,21 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
                     let [s:rank_cache_count, keyword.rank] = [l:calc_cnt, 0]
                 endif
 
+                " Set rank.
                 for keyword_lines in values(s:source[keyword.srcname].rank_cache_lines)
                     if has_key(keyword_lines, keyword.word)
                         let keyword.rank += keyword_lines[keyword.word]
                     endif
+                endfor
+                let l:keyword_match = s:source[keyword.srcname].keyword_cache[keyword.word]
+                let keyword.prev_rank = {}
+                for prev_word in values(l:keyword.prev_word)
+                    let keyword.prev_rank[prev_word] = 0
+                    for prev_rank_lines in values(l:keyword_match.prev_rank_lines)
+                        if has_key(prev_rank_lines, prev_word)
+                            let keyword.prev_rank[prev_word] += prev_rank_lines[prev_word]
+                        endif
+                    endfor
                 endfor
 
                 if g:NeoComplCache_DrawWordsRank
@@ -547,7 +574,12 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
             call extend(l:cache_keyword_buffer_filtered, sort(l:partial, l:order_func))
             call filter(l:prev, "v:val.word !~ '^".l:keyword_escape."'")
         endif
-        call extend(l:cache_keyword_buffer_filtered, sort(l:prev, l:order_func))
+        if !g:NeoComplCache_AlphabeticalOrder
+            let s:prev_word = l:prev_word
+            call extend(l:cache_keyword_buffer_filtered, sort(l:prev, 's:ComparePrevWordRank'))
+        else
+            call extend(l:cache_keyword_buffer_filtered, sort(l:prev, l:order_func))
+        endif
         call filter(l:cache_keyword_buffer_list, "!has_key(v:val.prev_word, '" . l:prev_word . "')")
     endif
 
@@ -718,7 +750,7 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
         let l:menu = ''
     endif
     let l:abbr_pattern = '%.' . g:NeoComplCache_MaxKeywordWidth . 's'
-    let l:keyword_pattern = s:GetKeywordPattern(a:srcname)
+    let l:keyword_pattern = l:source.keyword_pattern
 
     let [l:max_line, l:line_num] = [len(l:buflines), 0]
     while l:line_num < l:max_line
@@ -742,17 +774,28 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
                     " Check dup.
                     if !has_key(l:source.keyword_cache, l:match_str)
                         " Append list.
-                        let l:source.keyword_cache[l:match_str] = { 'word' : l:match_str, 'abbr' : printf(l:abbr_pattern, l:match_str), 'menu' : l:menu,  'dup' : 0, 'filename' : l:filename, 'srcname' : a:srcname, 'prev_word' : {} }
+                        let l:source.keyword_cache[l:match_str] = { 'word' : l:match_str, 'abbr' : printf(l:abbr_pattern, l:match_str), 'menu' : l:menu,  'dup' : 0, 'filename' : l:filename, 'srcname' : a:srcname, 'prev_word' : {}, 'prev_rank' : {}, 'prev_rank_lines' : {} }
                     endif
                 else
                     let l:source.rank_cache_lines[l:cache_line][l:match_str] += 1
                 endif
 
+                let l:keyword_match = l:source.keyword_cache[l:match_str]
+
                 " Save previous keyword.
                 if empty(l:prev_word)
-                    let l:source.keyword_cache[l:match_str].prev_word['^'] = 1
+                    let l:prev_word = '^'
+                endif
+                let l:keyword_match.prev_word[l:prev_word] = 1
+
+                " Calc previous keyword.
+                if !has_key(l:keyword_match.prev_rank_lines, l:cache_line)
+                    let l:keyword_match.prev_rank_lines[l:cache_line] = {}
+                endif
+                if !has_key(l:keyword_match.prev_rank_lines[l:cache_line], l:prev_word)
+                    let l:keyword_match.prev_rank_lines[l:cache_line][l:prev_word] = 1
                 else
-                    let l:source.keyword_cache[l:match_str].prev_word[l:prev_word] = 1
+                    let l:keyword_match.prev_rank_lines[l:cache_line][l:prev_word] += 1
                 endif
             endif
 
@@ -769,23 +812,53 @@ function! s:InitializeSource(srcname)"{{{
     if a:srcname =~ '^\d'
         " Buffer.
         let l:filename = fnamemodify(bufname(a:srcname), ':t')
+
+        if a:srcname == bufnr('%')
+            " Current buffer.
+            let l:end_line = line('$')
+        else
+            let l:end_line = len(getbufline(a:srcname, 1, '$'))
+        endif
+
+        let l:ft = getbufvar(a:srcname, '&filetype')
+
+        if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
+            let l:keyword_pattern = s:AssumePattern(bufname(a:srcname))
+            if empty(l:keyword_pattern)
+                " Assuming failed.
+                let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
+            endif
+        else
+            let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
+        endif
     else
         " Dictionary or tags.
         let l:filename = split(a:srcname, ',')[1]
-    endif
-
-    if a:srcname == bufnr('%')
-        " Current buffer.
-        let l:end_line = line('$')
-    elseif a:srcname =~ '^\d'
-        " Other buffer.
-        let l:end_line = len(getbufline(a:srcname, 1, '$'))
-    else
-        " Dictionary or tags.
         let l:end_line = len(readfile(l:filename))
+
+        " Assuming filetype.
+        if a:srcname =~ '^tags:' || a:srcname =~ '^dict:'
+            " Current buffer filetype.
+            let l:ft = &filetype
+        elseif a:srcname =~ '^mfu:'
+            " Embeded filetype.
+            let l:ft = substitute(split(a:srcname, ',')[0], '^mfu:', '', '')
+        else
+            " Embeded filetype.
+            let l:ft = split(a:srcname, ',')[0]
+        endif
+
+        let l:keyword_pattern = s:AssumePattern(split(a:srcname, ',')[1])
+        if empty(l:keyword_pattern)
+            " Assuming failed.
+            let l:keyword_pattern = has_key(g:NeoComplCache_KeywordPatterns, l:ft)? 
+                        \g:NeoComplCache_KeywordPatterns[l:ft] : g:NeoComplCache_KeywordPatterns['default']
+        endif
     endif
 
-    let s:source[a:srcname] = { 'keyword_cache' : {}, 'rank_cache_lines' : {}, 'name' : l:filename, 'end_line' : l:end_line , 'cached_last_line' : 1 }
+    let s:source[a:srcname] = { 'keyword_cache' : {}, 'rank_cache_lines' : {},
+                \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
+                \'end_line' : l:end_line , 'cached_last_line' : 1 }
 endfunction"}}}
 
 function! s:NeoComplCache.CachingSource(srcname, start_line, end_line)"{{{
@@ -862,13 +935,15 @@ function! s:NeoComplCache.CheckSource(caching_num)"{{{
             endif
 
             " Check MFU.
-            let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, &filetype)
-            if g:NeoComplCache_EnableMFU && filereadable(l:mfu_path)
-                " Load MFU
-                let l:dict_name = printf('mfu:%s,%s', &filetype, l:mfu_path)
-                if !has_key(s:source, l:dict_name)
-                    " Caching.
-                    call s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num)
+            if g:NeoComplCache_EnableMFU
+                let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, &filetype)
+                if g:NeoComplCache_EnableMFU && filereadable(l:mfu_path)
+                    " Load MFU
+                    let l:dict_name = printf('mfu:%s,%s', &filetype, l:mfu_path)
+                    if !has_key(s:source, l:dict_name)
+                        " Caching.
+                        call s:NeoComplCache.CachingSource(l:dict_name, '^', a:caching_num)
+                    endif
                 endif
             endif
         endif
@@ -996,47 +1071,7 @@ function! s:AssumePattern(bufname)"{{{
     endif
 endfunction "}}}
 function! s:GetKeywordPattern(srcname)"{{{
-    let l:source = s:source[a:srcname]
-    if !has_key(l:source, 'keyword_pattern')
-        if a:srcname =~ '^\d'
-            " Buffer.
-            let l:ft = getbufvar(a:srcname, '&filetype')
-
-            if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-                let l:pattern = s:AssumePattern(bufname(a:srcname))
-                if empty(l:pattern)
-                    " Assuming failed.
-                    let l:source.keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
-                else
-                    let l:source.keyword_pattern = l:pattern
-                endif
-            else
-                let l:source.keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
-            endif
-        else
-            " Dictionary or tags.
-            let l:pattern = s:AssumePattern(split(a:srcname, ',')[1])
-            if empty(l:pattern)
-                " Assuming failed.
-                if a:srcname =~ '^tags:' || a:srcname =~ '^dict:'
-                    " Current buffer filetype.
-                    let l:ft = &filetype
-                elseif a:srcname =~ '^mfu:'
-                    " Embeded filetype.
-                    let l:ft = substitute(split(a:srcname, ',')[0], '^mfu:', '', '')
-                else
-                    " Embeded filetype.
-                    let l:ft = split(a:srcname, ',')[0]
-                endif
-                let l:source.keyword_pattern = has_key(g:NeoComplCache_KeywordPatterns, l:ft)? 
-                            \g:NeoComplCache_KeywordPatterns[l:ft] : g:NeoComplCache_KeywordPatterns['default']
-            else
-                let l:source.keyword_pattern = l:pattern
-            endif
-        endif
-    endif
-
-    return l:source.keyword_pattern
+    return s:source[a:srcname].keyword_pattern
 endfunction"}}}
 function! s:SetKeywordPattern(filetype, pattern)"{{{
     if !has_key(g:NeoComplCache_KeywordPatterns, a:filetype) 
@@ -1077,9 +1112,9 @@ function! s:NeoComplCache.Enable()"{{{
         let g:NeoComplCache_KeywordPatterns = {}
     endif
     call s:SetKeywordPattern('default', '[[:alpha:]_.]\w*')
-    call s:SetKeywordPattern('lisp', '*\=\h[[:alnum:]_-]*[*!?]\=')
-    call s:SetKeywordPattern('scheme', '*\=\h[[:alnum:]_-]*[*!?]\=')
-    call s:SetKeywordPattern('ruby', '\(::\|@@\=\|[[:alpha:]_$.]\)\w*[!?]\=')
+    call s:SetKeywordPattern('lisp', '*\=\h[[:alnum:]_/-]*[*!?]\=')
+    call s:SetKeywordPattern('scheme', '*\=\h[[:alnum:]_/-]*[*!?]\=')
+    call s:SetKeywordPattern('ruby', '\([:@]\{1,2}\|[[:alpha:]_$.]\)\w*[!?]\=')
     call s:SetKeywordPattern('php', '$\w\+\|\(->\|::\|[[:alpha:]_]\)\w*')
     call s:SetKeywordPattern('perl', '\(->\|::\|[[:alpha:]_$@%&]\)\w*')
     call s:SetKeywordPattern('vim', '$\w\+\|&\=[[:alpha:]_.][[:alnum:]#_:]*')
