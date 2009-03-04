@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Mar 2009
+" Last Modified: 03 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.47, for Vim 7.0
+" Version: 1.48, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.48:
+"     - Implemented NeoCompleCacheSetBufferDictionary command.
+"     - Implemented 2-gram MFU.
+"     - Improved syntax completion.
 "   1.47:
 "     - Implemented 2-gram completion.
 "     - Improved ruby keyword.
@@ -512,7 +516,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
                 endfor
                 let l:keyword_match = s:source[keyword.srcname].keyword_cache[keyword.word]
                 let keyword.prev_rank = {}
-                for prev_word in values(l:keyword.prev_word)
+                for prev_word in keys(l:keyword.prev_word)
                     let keyword.prev_rank[prev_word] = 0
                     for prev_rank_lines in values(l:keyword_match.prev_rank_lines)
                         if has_key(prev_rank_lines, prev_word)
@@ -783,19 +787,21 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
                 let l:keyword_match = l:source.keyword_cache[l:match_str]
 
                 " Save previous keyword.
-                if empty(l:prev_word)
-                    let l:prev_word = '^'
-                endif
-                let l:keyword_match.prev_word[l:prev_word] = 1
+                if !empty(l:prev_word) || l:line !~ '^\$\s'
+                    if empty(l:prev_word)
+                        let l:prev_word = '^'
+                    endif
+                    let l:keyword_match.prev_word[l:prev_word] = 1
 
-                " Calc previous keyword.
-                if !has_key(l:keyword_match.prev_rank_lines, l:cache_line)
-                    let l:keyword_match.prev_rank_lines[l:cache_line] = {}
-                endif
-                if !has_key(l:keyword_match.prev_rank_lines[l:cache_line], l:prev_word)
-                    let l:keyword_match.prev_rank_lines[l:cache_line][l:prev_word] = 1
-                else
-                    let l:keyword_match.prev_rank_lines[l:cache_line][l:prev_word] += 1
+                    " Calc previous keyword.
+                    if !has_key(l:keyword_match.prev_rank_lines, l:cache_line)
+                        let l:keyword_match.prev_rank_lines[l:cache_line] = {}
+                    endif
+                    if !has_key(l:keyword_match.prev_rank_lines[l:cache_line], l:prev_word)
+                        let l:keyword_match.prev_rank_lines[l:cache_line][l:prev_word] = 1
+                    else
+                        let l:keyword_match.prev_rank_lines[l:cache_line][l:prev_word] += 1
+                    endif
                 endif
             endif
 
@@ -1010,12 +1016,25 @@ function! s:NeoComplCache.SaveMFU(key)"{{{
     let l:ft = getbufvar(str2nr(a:key), '&filetype')
     if !empty(l:ft)
         let l:mfu_dict = {}
+        let l:prev_word = {}
         let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, l:ft)
         if filereadable(l:mfu_path)
             for line in readfile(l:mfu_path)
                 let l = split(line)
-                if len(line) >= 2
-                    let l:mfu_dict[l[0]] = { 'word' : l[0], 'rank' : l[1], 'found' : 0 }
+                if len(line) == 3 
+                    if line =~ '^$ '
+                        let l:mfu_dict[l[1]] = { 'word' : l[1], 'rank' : l[2], 'found' : 0 }
+                    else
+                        if !has_key(l:prev_word, l[1])
+                            let l:prev_word[l[1]] = {}
+                        endif
+                        let l:prev_word[l[1]][l[0]] = l[2]
+                    endif
+                elseif len(line) == 2
+                    if !has_key(l:prev_word, l[0])
+                        let l:prev_word[l[0]] = {}
+                    endif
+                    let l:prev_word[l[0]]['^'] = l[1]
                 endif
             endfor
         endif
@@ -1024,9 +1043,17 @@ function! s:NeoComplCache.SaveMFU(key)"{{{
                 if !has_key(l:mfu_dict, keyword.word) || keyword.rank > l:mfu_dict[keyword.word].rank
                     let l:mfu_dict[keyword.word] = { 'word' : keyword.word, 'rank' : keyword.rank*2, 'found' : 1 }
                 endif
+
+                if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
+                    let l:prev_word[keyword.word] = keyword.prev_rank
+                endif
             elseif has_key(l:mfu_dict, keyword.word)
                 " Found.
                 let l:mfu_dict[keyword.word].found = 1
+
+                if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
+                    let l:prev_word[keyword.word] = keyword.prev_rank
+                endif
             endif
         endfor
 
@@ -1039,6 +1066,7 @@ function! s:NeoComplCache.SaveMFU(key)"{{{
                     if l:mfu_dict[key].rank < g:NeoComplCache_MFUThreshold
                         " Delete word.
                         call remove(l:mfu_dict, key)
+                        call remove(l:prev_word, key)
                     endif
                 endif
             endfor
@@ -1047,10 +1075,23 @@ function! s:NeoComplCache.SaveMFU(key)"{{{
         " Save MFU.
         let l:mfu_word = []
         for dict in sort(values(l:mfu_dict), 's:CompareRank')
-            call add(l:mfu_word, dict.word . ' ' . dict.rank)
+            call add(l:mfu_word, printf('$ %s %s' , dict.word, dict.rank))
+        endfor
+        for prevs_key in keys(l:prev_word)
+            for prev in keys(l:prev_word[prevs_key])
+                if prev == '^' 
+                    call add(l:mfu_word, printf('%s %s', prevs_key, l:prev_word[prevs_key]['^']))
+                else
+                    call add(l:mfu_word, printf('%s %s %s', prev, prevs_key,  l:prev_word[prevs_key][prev]))
+                endif
+            endfor
         endfor
         call writefile(l:mfu_word[: g:NeoComplCache_MFUMax-1], l:mfu_path)
     endif
+endfunction "}}}
+
+function! s:NeoComplCache.SetBufferDictionary(files)"{{{
+    silent execute printf("let g:NeoComplCache_DictionaryBufferLists[%d] = '%s'", bufnr('%') , a:files)
 endfunction "}}}
 
 " Assume filetype pattern.
@@ -1074,9 +1115,11 @@ function! s:GetKeywordPattern(srcname)"{{{
     return s:source[a:srcname].keyword_pattern
 endfunction"}}}
 function! s:SetKeywordPattern(filetype, pattern)"{{{
-    if !has_key(g:NeoComplCache_KeywordPatterns, a:filetype) 
-        let g:NeoComplCache_KeywordPatterns[a:filetype] = a:pattern
-    endif
+    for ft in split(a:filetype, ',')
+        if !has_key(g:NeoComplCache_KeywordPatterns, a:filetype) 
+            let g:NeoComplCache_KeywordPatterns[ft] = a:pattern
+        endif
+    endfor
 endfunction"}}}
 
 function! s:GetCompleFuncPattern()"{{{
@@ -1111,21 +1154,19 @@ function! s:NeoComplCache.Enable()"{{{
     if !exists('g:NeoComplCache_KeywordPatterns')
         let g:NeoComplCache_KeywordPatterns = {}
     endif
-    call s:SetKeywordPattern('default', '[[:alpha:]_.]\w*')
-    call s:SetKeywordPattern('lisp', '*\=\h[[:alnum:]_/-]*[*!?]\=')
-    call s:SetKeywordPattern('scheme', '*\=\h[[:alnum:]_/-]*[*!?]\=')
-    call s:SetKeywordPattern('ruby', '\([:@]\{1,2}\|[[:alpha:]_$.]\)\w*[!?]\=')
-    call s:SetKeywordPattern('php', '$\w\+\|\(->\|::\|[[:alpha:]_]\)\w*')
+    call s:SetKeywordPattern('default', '\.\=\h\w*')
+    call s:SetKeywordPattern('lisp,scheme', 
+                \'\d\+[[:alpha:]+*/@$%^&_=<>~.-]\+[!?]\=\|[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]\=')
+    call s:SetKeywordPattern('ruby', '[:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?]\=')
+    call s:SetKeywordPattern('php', '$\w\+\|\(->\|::\|\h\)\w*')
     call s:SetKeywordPattern('perl', '\(->\|::\|[[:alpha:]_$@%&]\)\w*')
-    call s:SetKeywordPattern('vim', '$\w\+\|&\=[[:alpha:]_.][[:alnum:]#_:]*')
-    call s:SetKeywordPattern('tex', '\\\=[[:alpha:]_]\w*[*]\=')
-    call s:SetKeywordPattern('sh', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
-    call s:SetKeywordPattern('zsh', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
-    call s:SetKeywordPattern('vimshell', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
+    call s:SetKeywordPattern('vim', '[.$]\h\w*\|&\=\h[[:alnum:]#_:]*')
+    call s:SetKeywordPattern('tex', '\\\=\h\w*[*]\=')
+    call s:SetKeywordPattern('sh,zsh,vimshell', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
     call s:SetKeywordPattern('ps1', '$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
-    call s:SetKeywordPattern('c', '[[:alpha:]_#.]\w*')
-    call s:SetKeywordPattern('cpp', '\(->\|::\|[[:alpha:]_#.]\)\w*')
-    call s:SetKeywordPattern('d', '[[:alpha:]_#.]\w*!\=')"}}}
+    call s:SetKeywordPattern('c', '[[:alpha:]_#]\w*\|\.\h\w*')
+    call s:SetKeywordPattern('cpp', '\(->\|::\|[[:alpha:]_#]\)\w*\|\.\h\w*')
+    call s:SetKeywordPattern('d', '[[:alpha:]_#]\w*!\=\|\.\h\w*')"}}}
 
     " Initialize assume file type lists.
     if !exists('g:NeoComplCache_NonBufferFileTypeDetect')
@@ -1171,6 +1212,7 @@ function! s:NeoComplCache.Enable()"{{{
     command! -nargs=0 NeoCompleCacheLock call s:NeoComplCache.Lock()
     command! -nargs=0 NeoCompleCacheUnlock call s:NeoComplCache.Unlock()
     command! -nargs=0 NeoCompleCacheSaveMFU call s:NeoComplCache.SaveAllMFU()
+    command! -nargs=* NeoCompleCacheSetBufferDictionary call s:NeoComplCache.SetBufferDictionary(<q-args>)
     "}}}
 
     " Must g:NeoComplCache_StartCharLength > 1.
@@ -1206,6 +1248,8 @@ function! s:NeoComplCache.Disable()"{{{
     delcommand Neco
     delcommand NeoCompleCacheLock
     delcommand NeoCompleCacheUnlock
+    delcommand NeoCompleCacheSaveMFU
+    delcommand NeoCompleCacheSetBufferDictionary
 endfunction"}}}
 
 function! s:NeoComplCache.Toggle()"{{{
@@ -1372,7 +1416,7 @@ elseif g:NeoComplCache_EnableMFU
     endif
 
     if !exists('g:NeoComplCache_MFUThreshold')
-        let g:NeoComplCache_MFUThreshold = 30
+        let g:NeoComplCache_MFUThreshold = 20
     endif
     if !exists('g:NeoComplCache_MFUMax')
         let g:NeoComplCache_MFUMax = 200
