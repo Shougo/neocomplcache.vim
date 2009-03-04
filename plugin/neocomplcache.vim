@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2009
+" Last Modified: 04 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -30,6 +30,7 @@
 "     - Implemented NeoCompleCacheSetBufferDictionary command.
 "     - Implemented 2-gram MFU.
 "     - Improved syntax completion.
+"     - Fixed "complete from same filetype buffer" bug.
 "   1.47:
 "     - Implemented 2-gram completion.
 "     - Improved ruby keyword.
@@ -472,7 +473,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
     let l:cache_keyword_buffer_list = []
     for key in keys(s:source)
-        if (key =~ '^\d' && &filetype == s:source[key].filetype) 
+        if (key =~ '^\d' && (empty(s:source[key].filetype) || &filetype == s:source[key].filetype))
                     \|| key =~ l:ft_dict || key =~ l:tags || key =~ l:buf_dict || key =~ l:mfu_dict
             call extend(l:cache_keyword_buffer_list, filter(values(s:source[key].keyword_cache), l:pattern))
         endif
@@ -1158,7 +1159,7 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('lisp,scheme', 
                 \'\d\+[[:alpha:]+*/@$%^&_=<>~.-]\+[!?]\=\|[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]\=')
     call s:SetKeywordPattern('ruby', '[:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?]\=')
-    call s:SetKeywordPattern('php', '$\w\+\|\(->\|::\|\h\)\w*')
+    call s:SetKeywordPattern('php', '\(\$\|->\|::\)\=\h\w*')
     call s:SetKeywordPattern('perl', '\(->\|::\|[[:alpha:]_$@%&]\)\w*')
     call s:SetKeywordPattern('vim', '[.$]\h\w*\|&\=\h[[:alnum:]#_:]*')
     call s:SetKeywordPattern('tex', '\\\=\h\w*[*]\=')
