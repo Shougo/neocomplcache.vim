@@ -7,14 +7,18 @@ neocomplcache
 まずは自己紹介
 
 Shougo
-Vim歴４年。だが、本格的にVimに目覚めたのはごく最近のこと。
+Vim歴４年目。だが、本格的にVimに目覚めたのはごく最近のこと。
 Vimを使い始めたのは、Vimは多数の言語に対してsyntaxハイライトができたから。
+最近Vim病に悩まされている。
 
 --------------------------------
 代表作
 ・bufstatus
+http://github.com/Shougo/shougo-s-github/blob/a1a9d5d0a9a4a53fedec52f7d1be0c9c9341f787/vim/plugin/bufstatus.vim
 ・vimshell
+https://github.com/Shougo/vimshell/tree
 ・neocomplcache
+https://github.com/Shougo/neocomplcache/tree
 
 今回はneocomplcacheについて話をします。
 
@@ -50,6 +54,7 @@ auto-complete.elの良いところ
 ・キーバインドのカスタマイズが容易
 ・情報が多い
 ・プラグインも豊富
+・比較的開発も盛ん
 
 auto-complete.elの悪いところ
 ・Emacsen専用なので、Vimmerには使えない
@@ -258,8 +263,32 @@ neocomplcache自体が標準で自分好みの設定になっているので、�
 使用頻度を計算しないようにすれば、かなり高速化します。
 VimShellの履歴ファイルを辞書として登録するのは便利なのでオススメ。
 
+neocomplcacheを使用するに当たっては、Vimの補完関係の設定も重要なので、
+参考までに私の設定を載せておきます。
+" <TAB> completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" C-jでオムニ補完
+inoremap <expr><C-j>  pumvisible() ? "\<Down>" : "\<C-x>\<C-o>\<C-p>"
+" C-kを押すと行末まで削除
+inoremap <expr><C-k>  pumvisible() ? "\<Up>" : "\<C-o>D"
+" C-hで補完を続行しない
+inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+" C-nでneocomplcache補完
+inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : "\<C-x>\<C-u>\<C-p>"
+" C-pでkeyword補完
+inoremap <expr><C-p>  pumvisible() ? "\<C-p>" : "\<C-p>\<C-n>"
+" 途中でEnterしたとき、ポップアップを消して改行し、
+" 改行を連続して入力してもインデント部を保持する
+inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>X\<BS>" : "\<CR>X\<BS>"
+
+C-nでneocomplcacheの手動補完を呼び出します。
+デバッグや、重すぎて候補が表示されなかったときなどに使います。
+C-pはVim標準のキーワード補完。比較のため残してあります。
+C-j/C-kでは候補を移動します。ただし、C-p/C-nとは違って、候補を挿入しません。
+C-hは一度ポップアップを消去し、ちらつかないようにしてます。
+
 --------------------------------
-しかし、低い知名度
+低い知名度
 
 autocomplpop: 14,600件
 auto-complete.el: 24,900件
@@ -292,6 +321,7 @@ let g:NeoComplCache_EnableAtStartup = 1
 すると、Vimの起動時に自動的に有効になります。
 手動で有効にしたいときには、
 :NeoCompleCacheEnableを実行してください。
+:NeoCompleCacheDisableで無効になります。
 
 --------------------------------
 サポート
