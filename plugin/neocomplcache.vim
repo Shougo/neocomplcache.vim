@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Mar 2009
+" Last Modified: 05 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.48, for Vim 7.0
+" Version: 1.49, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.49:
+"     - Fixed g:NeoComplCache_MFUDirectory error.
+"     - Changed g:NeoComplCache_KeywordPatterns['default'] value.
 "   1.48:
 "     - Implemented NeoCompleCacheSetBufferDictionary command.
 "     - Implemented 2-gram MFU.
@@ -219,7 +222,7 @@
 " }}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
-"     - Completion optimize.
+"     - Omni completion.
 ""}}}
 " Bugs"{{{
 "     - Nothing.
@@ -1155,7 +1158,7 @@ function! s:NeoComplCache.Enable()"{{{
     if !exists('g:NeoComplCache_KeywordPatterns')
         let g:NeoComplCache_KeywordPatterns = {}
     endif
-    call s:SetKeywordPattern('default', '\.\=\h\w*')
+    call s:SetKeywordPattern('default', '\k\+')
     call s:SetKeywordPattern('lisp,scheme', 
                 \'\d\+[[:alpha:]+*/@$%^&_=<>~.-]\+[!?]\=\|[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]\=')
     call s:SetKeywordPattern('ruby', '[:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?]\=')
@@ -1413,7 +1416,7 @@ elseif g:NeoComplCache_EnableMFU
         let g:NeoComplCache_MFUDirectory = $HOME . '/.vim_mfu'
     endif
     if !isdirectory(g:NeoComplCache_MFUDirectory)
-        call mkdir(g:NeoComplCache_MFUDirectory)
+        call mkdir(g:NeoComplCache_MFUDirectory, 'p')
     endif
 
     if !exists('g:NeoComplCache_MFUThreshold')
