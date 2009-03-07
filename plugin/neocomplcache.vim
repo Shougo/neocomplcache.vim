@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2009
+" Last Modified: 07 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.51, for Vim 7.0
+" Version: 1.52, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.52:
+"     - Fixed syntax keyword bug.
+"     - Improved syntax keyword.
+"     - Implemented similar completion.
 "   1.51:
 "     - Added g:NeoComplCache_PartialCompletionStartLength option.
 "     - Fixed syntax keyword bug.
@@ -231,7 +235,7 @@
 " }}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
-"     - Similar completion.
+"     - Load plugin.
 ""}}}
 " Bugs"{{{
 "     - Nothing.
@@ -281,7 +285,7 @@ function! s:NeoComplCache.Complete()"{{{
     let l:pattern = s:source[bufnr('%')].keyword_pattern . '$'
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
-    echo l:cur_keyword_str
+    "echo l:cur_keyword_str
 
     if g:NeoComplCache_EnableAsterisk
         " Check *.
@@ -431,6 +435,28 @@ function! s:ComparePrevWordRank(i1, i2)
     endif
 endfunction
 
+function! s:CalcLeven(str1, str2)"{{{
+    let [l:p1, l:p2, l:l1, l:l2] = [[], [], len(a:str1), len(a:str2)]
+
+    for l:i in range(l:l2+1) 
+        call add(l:p1, l:i)
+    endfor 
+    for l:i in range(l:l2+1) 
+        call add(l:p2, 0)
+    endfor 
+
+    for l:i in range(l:l1)
+        let l:p2[0] = l:p1[0] + 1
+        for l:j in range(l:l2)
+            let l:p2[l:j+1] = min([l:p1[l:j] + ((a:str1[l:i] == a:str2[l:j]) ? 0 : 1), 
+                        \l:p1[l:j+1] + 1, l:p2[l:j]+1])
+        endfor
+        let [l:p1, l:p2] = [l:p2, l:p1]
+    endfor
+
+    return l:p1[l:l2]
+endfunction"}}}
+
 function! s:NormalComplete_GetKeywordList()"{{{
     " Check dictionaries and tags are exists.
     if !empty(&filetype) && has_key(g:NeoComplCache_DictionaryFileTypeLists, &filetype)
@@ -496,16 +522,31 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     if g:NeoComplCache_PartialMatch && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > len(a:cur_keyword_str) && v:val.word =~ '%s'", l:keyword_escape)
+        let l:pattern = printf("len(v:val.word) > %d && v:val.word =~ '%s'", len(a:cur_keyword_str), l:keyword_escape)
         let l:is_partial = 1
     else
         " Normal match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > len(a:cur_keyword_str) && v:val.word =~ '^%s'", l:keyword_escape)
+        let l:pattern = printf("len(v:val.word) > %d && v:val.word =~ '^%s'", len(a:cur_keyword_str), l:keyword_escape)
         let l:is_partial = 0
     endif
 
-    let l:cache_keyword_buffer_list = filter(s:NormalComplete_GetKeywordList(), l:pattern)
+    let l:all_keyword_list = s:NormalComplete_GetKeywordList()
+    let l:cache_keyword_buffer_list = filter(copy(l:all_keyword_list), l:pattern)
+    
+    " Similar filter.
+    if g:NeoComplCache_SimilarMatch && len(a:cur_keyword_str) >= g:NeoComplCache_SimilarCompletionStartLength
+        let l:threthold = len(a:cur_keyword_str) / 3
+        if l:is_partial
+            let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '%s' && s:CalcLeven(v:val.word, a:cur_keyword_str) <= %d",
+                        \len(a:cur_keyword_str)-l:threthold, len(a:cur_keyword_str)+l:threthold, l:keyword_escape, l:threthold)
+        else
+            let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '^%s' && s:CalcLeven(v:val.word, a:cur_keyword_str) <= %d",
+                        \len(a:cur_keyword_str)-l:threthold, len(a:cur_keyword_str)+l:threthold, l:keyword_escape, l:threthold)
+            let l:is_partial = 1
+        endif
+        call extend(l:cache_keyword_buffer_list, filter(l:all_keyword_list, l:pattern))
+    endif
 
     if g:NeoComplCache_AlphabeticalOrder 
         " Not calc rank.
@@ -1183,7 +1224,8 @@ function! s:NeoComplCache.Enable()"{{{
     let s:old_text = ''
     let s:source = {}
     let s:prev_numbered_list = []
-    let s:rank_cache_count = 1"}}}
+    let s:rank_cache_count = 1
+    "}}}
 
     " Initialize keyword pattern match like intellisense."{{{
     if !exists('g:NeoComplCache_KeywordPatterns')
@@ -1194,15 +1236,22 @@ function! s:NeoComplCache.Enable()"{{{
                 \'(\=[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]\=')
     call s:SetKeywordPattern('ruby', '\([:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?(]\=\)')
     call s:SetKeywordPattern('php', '\(\$\|->\|::\)\=\h\w*(\=')
-    call s:SetKeywordPattern('perl', '\(->\|::\|[$@%&]\)\=\h\w*(\=')
+    call s:SetKeywordPattern('perl',
+                \'\(<\h\w*>\=\|->\h\w*(\=\|::\h\w*\|[$@%&*]\h\w*\|\h\w*(\=\)')
     call s:SetKeywordPattern('vim', '\([.$]\h\w*(\=\|&\=\h[[:alnum:]#_:]*(\=\)')
     call s:SetKeywordPattern('tex', '\(\\[[:alpha:]_@][[:alnum:]_@]*\*\=[[{]\=\|\h\w*\)')
     call s:SetKeywordPattern('sh,zsh,vimshell', '\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*(\=\)')
     call s:SetKeywordPattern('ps1', '\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*(\=\)')
     call s:SetKeywordPattern('c', '\([[:alpha:]_#]\w*\|\.\h\w*(\=\)')
-    call s:SetKeywordPattern('cpp', '\(->\|::\|[.#]\)\=\h\w*(\=')
+    call s:SetKeywordPattern('cpp', '\(->\|::\|[.#]\)\=\h\w*[(<]\=')
     call s:SetKeywordPattern('d', '\.\=\h\w*!\=(\=')
-    call s:SetKeywordPattern('python', '\.=\h\w*(\=')
+    call s:SetKeywordPattern('python', '\.\=\h\w*(\=')
+    call s:SetKeywordPattern('cs,java,javascript', '\.\=\h\w*(\=')
+    call s:SetKeywordPattern('awk', '\h\w*(\=')
+    call s:SetKeywordPattern('haskell', '\.\=\h\w*')
+    call s:SetKeywordPattern('ocaml', "[.#]\\=[[:alpha:]_'][[:alnum:]_']*")
+    call s:SetKeywordPattern('html,xhtml,xml',
+                \'\(<\/[^>]\+>\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|&\h\w*;\|\h[[:alnum:]_-]*\(="\)\=\)')
     "}}}
 
     " Initialize assume file type lists.
@@ -1243,7 +1292,7 @@ function! s:NeoComplCache.Enable()"{{{
     if has('python')
         call s:SetOmniPattern('python', '[^. \t]\.')
     endif
-    call s:SetOmniPattern('html,xhtml,xml', '\(<\|<\/\|<[^>]\+\|<[^>]\+=\"\\)')
+    call s:SetOmniPattern('html,xhtml,xml', '\(<\|<\/\|<[^>]\+\|<[^>]\+="\)')
     call s:SetOmniPattern('css', '\(\(^\s\|[;{]\)\s*\|[:@!]\s*\)')
     call s:SetOmniPattern('javascript', '[^. \t]\.')
     call s:SetOmniPattern('c', '[^. \t]\(\.\|->\)')
@@ -1413,11 +1462,17 @@ endif
 if !exists('g:NeoComplCache_PartialMatch')
     let g:NeoComplCache_PartialMatch = 1
 endif
+if !exists('g:NeoComplCache_SimilarMatch')
+    let g:NeoComplCache_SimilarMatch = 0
+endif
 if !exists('g:NeoComplCache_KeywordCompletionStartLength')
     let g:NeoComplCache_KeywordCompletionStartLength = 2
 endif
 if !exists('g:NeoComplCache_PartialCompletionStartLength')
     let g:NeoComplCache_PartialCompletionStartLength = 3
+endif
+if !exists('g:NeoComplCache_SimilarCompletionStartLength')
+    let g:NeoComplCache_SimilarCompletionStartLength = 4
 endif
 if !exists('g:NeoComplCache_MinKeywordLength')
     let g:NeoComplCache_MinKeywordLength = 4
@@ -1462,7 +1517,7 @@ if !exists('g:NeoComplCache_CalcRankMaxLists')
     let g:NeoComplCache_CalcRankMaxLists = 40
 endif
 if !exists('g:NeoComplCache_QuickMatchMaxLists')
-    let g:NeoComplCache_QuickMatchMaxLists = 60
+    let g:NeoComplCache_QuickMatchMaxLists = 100
 endif
 if !exists('g:NeoComplCache_SlowCompleteSkip')
     let g:NeoComplCache_SlowCompleteSkip = has('reltime')

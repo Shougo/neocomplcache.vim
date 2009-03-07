@@ -67,6 +67,7 @@ auto-complete.elの悪いところ
 neocomplcacheの良いところ
 ・候補の絞り込みができる
 ・部分マッチもできる
+・スペルチェックもできる
 ・単語の出現頻度によってソートができる
 ・補完機能のカスタマイズがしやすい
 ・補完機能はほとんど自前実装
@@ -118,6 +119,7 @@ neocomplcacheの代表的機能
 ・豊富なカスタマイズ項目
 ・文脈依存補完（2-gram completion）
 ・Omni補完（New!）
+・スペルチェック（New!）
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -144,8 +146,8 @@ Vim標準のキーワード補完では先頭マッチのみですが、neocompl
 数字キーによるクイックマッチ
 
 fuzzyfinderにインスパイア。
-<TAB>や<C-p>, <C-n>を連打しなくても、補完候補横に表示されている
-数値を入力するだけで、補完ができます。
+<TAB>や<C-p>, <C-n>を連打しなくても、
+補完候補横に表示されている数値を入力するだけで、補完ができます。
 ルーチンの改良により、二桁まで対応。
 よくよく調べてみると、ATOKにも同様の機能がありますね。
 
@@ -179,6 +181,7 @@ MFU Dictionaryによる自動辞書登録
 キーワードの使用頻度を解析し、よく使われているものを辞書ファイルに登録して、
 次回読み込みます。辞書をいちいち用意する必要がないので便利です。
 g:NeoComplCache_AlphabeticalOrder = 0でないと意味がありません（デフォルト）。
+
 この機能を使用するには、
 let g:NeoComplCache_EnableMFU = 1
 とする必要があります。
@@ -200,8 +203,8 @@ autocomplpopで便利だったので、移植しました。
 
 |にカーソルがあるとします。
 |e
-ここでhogeを補完すると、hogのみが補完され、結果はhog|eとなる。
-語の末尾が分かっているときに便利。
+ここでhogeを補完すると、hogのみが補完され、結果はhog|eとなります。
+ソースの修正時に便利。
 この機能はViViにインスパイアされました。
 
 --------------------------------
@@ -212,7 +215,8 @@ hoge -> hoge,Hogeにマッチ。
 Hoge -> Hogeにマッチ。
 となる。
 つまり、大文字が含まれるときは大文字小文字を区別するようになります。
-大文字小文字で意味が変わるRubyやCのマクロを使うときには便利です。
+大文字小文字で意味が変わる、RubyやCのマクロを使うときには便利です。
+
 この機能を使用するには、
 let g:NeoComplCache_SmartCase = 1
 とする必要があります。
@@ -232,6 +236,7 @@ let g:NeoComplCache_SmartCase = 1
 hoge piyo
 と入力しているとすると、hogeの後にはpiyoが来やすいと認識、
 補完時にpiyoが上の方に来ます。
+
 この機能を使用するには、
 let g:NeoComplCache_PreviousKeywordCompletion = 1
 とする必要があります。
@@ -240,10 +245,26 @@ let g:NeoComplCache_PreviousKeywordCompletion = 1
 Omni補完（New!）
 
 thincaさんに要望されたので追加しました。
-autocomplpopのコードを移植し、新たな言語にも対応。
+基本的にはautocomplpopのコードを移植し、C, C++, JavaScript, PHPといった新たな言語にも対応。
 Rubyで,や.を入力したり、HTMLでタグが補完できます。
 ただしあまりテストしていないので、きちんと動かないかもしれません。
 あと候補が多いためか、動作が若干重いです。
+
+let g:NeoComplCache_OmniPatterns = {}
+let g:NeoComplCache_OmniPatterns['無効にしたいファイルタイプ'] = ''
+とすると、無効にできます。
+
+--------------------------------
+スペルチェック（New!）
+
+Google検索でのスペルチェックと似た機能です。
+ある程度の長さがある文字を入力すると、キャッシュ中にあるよく似た候補が表示されます。
+例えばhogeと入力していると、hegeが候補に出てきたりします。
+ソースのコピペ修正に便利でしょう。
+
+この機能を使用するには、
+let g:NeoComplCache_SimilarMatch = 1
+とする必要があります。
 
 --------------------------------
 私の設定
@@ -258,6 +279,8 @@ let g:NeoComplCache_SmartCase = 1
 let g:NeoComplCache_EnableMFU = 1
 " Use previous keyword completion.
 let g:NeoComplCache_PreviousKeywordCompletion = 1
+" Use similar match.
+let g:NeoComplCache_SimilarMatch = 1
 
 " Toggle when press <C-e>.
 nnoremap <silent> <C-e> :<C-u>NeoComplCacheToggle<CR>
@@ -268,19 +291,25 @@ let g:NeoComplCache_DictionaryFileTypeLists = {
             \ 'vimshell' : $HOME.'/.vimshell_hist',
             \ 'scheme' : $HOME.'/.gosh_completions'
             \ }
+
+" Define keyword.
+let g:NeoComplCache_KeywordPatterns = {}
+let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
 むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
 使用頻度を計算しないようにすれば、かなり高速化します。
 VimShellの履歴ファイルを辞書として登録するのは便利なのでオススメ。
+日本語が候補に出てくると煩わしいため、デフォルトで日本語を除外しています。
 
 neocomplcacheを使用するに当たっては、Vimの補完関係の設定も重要なので、
 参考までに私の設定を載せておきます。
 " <TAB> completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " C-jでオムニ補完
-inoremap <expr><C-j>  pumvisible() ? "\<Down>" : "\<C-x>\<C-o>\<C-p>"
+inoremap <C-j>  <C-x><C-o><C-p>
 " C-kを押すと行末まで削除
-inoremap <expr><C-k>  pumvisible() ? "\<Up>" : "\<C-o>D"
+inoremap <C-k>  <C-o>D
 " C-hで補完を続行しない
 inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 " C-nでneocomplcache補完
@@ -294,7 +323,7 @@ inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>X\<BS>" : "\<CR>X\<BS>"
 C-nでneocomplcacheの手動補完を呼び出します。
 デバッグや、重すぎて候補が表示されなかったときなどに使います。
 C-pはVim標準のキーワード補完。比較のため残してあります。
-C-j/C-kでは候補を移動します。ただし、C-p/C-nとは違って、候補を挿入しません。
+C-jでオムニ補完を起動します。
 C-hは一度ポップアップを消去し、ちらつかないようにしてます。
 
 --------------------------------
@@ -354,4 +383,5 @@ let g:NeoComplCache_EnableAtStartup = 1
 
 2009/03/5      neocomplcache Ver.1.49に対応。
 2009/03/6      neocomplcache Ver.1.50に対応。
+2009/03/7      neocomplcache Ver.1.52に対応。
 --------------------------------
