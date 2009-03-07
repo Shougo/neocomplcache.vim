@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.52, for Vim 7.0
+" Version: 1.53, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.53:
+"     - Disable similar completion when auto complete.
 "   1.52:
 "     - Fixed syntax keyword bug.
 "     - Improved syntax keyword.
@@ -440,8 +442,6 @@ function! s:CalcLeven(str1, str2)"{{{
 
     for l:i in range(l:l2+1) 
         call add(l:p1, l:i)
-    endfor 
-    for l:i in range(l:l2+1) 
         call add(l:p2, 0)
     endfor 
 
@@ -519,15 +519,16 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
 
     " Keyword filter.
+    let l:cur_len = len(a:cur_keyword_str)
     if g:NeoComplCache_PartialMatch && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > %d && v:val.word =~ '%s'", len(a:cur_keyword_str), l:keyword_escape)
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ '%s'", l:keyword_escape)
         let l:is_partial = 1
     else
         " Normal match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > %d && v:val.word =~ '^%s'", len(a:cur_keyword_str), l:keyword_escape)
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ '^%s'", l:keyword_escape)
         let l:is_partial = 0
     endif
 
@@ -535,14 +536,26 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     let l:cache_keyword_buffer_list = filter(copy(l:all_keyword_list), l:pattern)
     
     " Similar filter.
-    if g:NeoComplCache_SimilarMatch && len(a:cur_keyword_str) >= g:NeoComplCache_SimilarCompletionStartLength
-        let l:threthold = len(a:cur_keyword_str) / 3
+    if &l:completefunc != 'g:NeoComplCache_AutoCompleteFunc' && g:NeoComplCache_SimilarMatch 
+                \&& len(a:cur_keyword_str) >= g:NeoComplCache_SimilarCompletionStartLength
+        if l:cur_len < 9
+            let l:threshold = l:cur_len / 3
+        elseif l:cur_len < 13
+            let l:threshold = l:cur_len / 4
+        elseif l:cur_len < 20
+            let l:threshold = l:cur_len / 5
+        elseif l:cur_len < 30
+            let l:threshold = l:cur_len / 6
+        else
+            let l:threshold = 4
+        endif
+
         if l:is_partial
             let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '%s' && s:CalcLeven(v:val.word, a:cur_keyword_str) <= %d",
-                        \len(a:cur_keyword_str)-l:threthold, len(a:cur_keyword_str)+l:threthold, l:keyword_escape, l:threthold)
+                        \l:cur_len-l:threshold, l:cur_len+l:threshold, l:keyword_escape, l:threshold)
         else
             let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '^%s' && s:CalcLeven(v:val.word, a:cur_keyword_str) <= %d",
-                        \len(a:cur_keyword_str)-l:threthold, len(a:cur_keyword_str)+l:threthold, l:keyword_escape, l:threthold)
+                        \l:cur_len-l:threshold, l:cur_len+l:threshold, l:keyword_escape, l:threshold)
             let l:is_partial = 1
         endif
         call extend(l:cache_keyword_buffer_list, filter(l:all_keyword_list, l:pattern))
