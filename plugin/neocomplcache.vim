@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2009
+" Last Modified: 08 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.53, for Vim 7.0
+" Version: 1.54, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.54:
+"     - Added tags syntax keyword.
+"     - Implemented local tags.
+"     - Implemented local tags auto update.
+"     - Fixed s:prepre_numbered_list bug.
 "   1.53:
 "     - Disable similar completion when auto complete.
+"     - Calc rank when NeoComplCacheCachingBuffer command.
+"     - Added NeoCompleCacheOutputKeyword command.
 "   1.52:
 "     - Fixed syntax keyword bug.
 "     - Improved syntax keyword.
@@ -467,20 +474,29 @@ function! s:NormalComplete_GetKeywordList()"{{{
         " Dummy pattern.
         let l:ft_dict = '^$'
     endif
+
     if has_key(g:NeoComplCache_TagsLists, tabpagenr())
-        let l:tags = '^tags:' . tabpagenr()
+        let l:gtags = '^tags:' . tabpagenr()
     elseif !empty(g:NeoComplCache_TagsLists['default'])
-        let l:tags = '^tags:default'
+        let l:gtags = '^tags:default'
     else
         " Dummy pattern.
-        let l:tags = '^$'
+        let l:gtags = '^$'
     endif
+    if &buftype !~ 'nofile'
+        let l:ltags = printf('ltags:,%s', expand('%:p:h') . '/tags')
+    else
+        " Dummy pattern.
+        let l:ltags = '^$'
+    endif
+
     if has_key(g:NeoComplCache_DictionaryBufferLists, bufnr('%'))
         let l:buf_dict = '^dict:' . bufnr('%')
     else
         " Dummy pattern.
         let l:buf_dict = '^$'
     endif
+
     if g:NeoComplCache_EnableMFU
         let l:mfu_dict = '^mfu:' . &filetype
     else
@@ -498,7 +514,7 @@ function! s:NormalComplete_GetKeywordList()"{{{
     let l:keyword_list = []
     for key in keys(s:source)
         if (key =~ '^\d' && l:ft == s:source[key].filetype)
-                    \|| key =~ l:ft_dict || key =~ l:tags || key =~ l:buf_dict || key =~ l:mfu_dict
+                    \|| key =~ l:ft_dict || key == l:ltags || key =~ l:mfu_dict || key =~ l:gtags || key =~ l:buf_dict 
             call extend(l:keyword_list, values(s:source[key].keyword_cache))
         endif
     endfor
@@ -793,7 +809,7 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
         endif
     else
         " Dictionary or tags.
-        if a:srcname =~ '^tags:'
+        if a:srcname =~ '^tags:' || a:srcname =~ '^ltags:' 
             let l:prefix = '[T] '
         elseif a:srcname =~ '^dict:'
             let l:prefix = '[B] '
@@ -931,7 +947,7 @@ function! s:InitializeSource(srcname)"{{{
         let l:end_line = len(readfile(l:filename))
 
         " Assuming filetype.
-        if a:srcname =~ '^tags:' || a:srcname =~ '^dict:'
+        if a:srcname =~ '^tags:' || a:srcname =~ '^ltags:' || a:srcname =~ '^dict:'
             " Current buffer filetype.
             let l:ft = &filetype
         elseif a:srcname =~ '^mfu:'
@@ -1023,6 +1039,16 @@ function! s:NeoComplCache.CheckSource(caching_num)"{{{
                         endif
                     endfor
                 endif
+
+                " Check local tags.
+                if &buftype !~ 'nofile'
+                    let l:ltags = expand('#'.l:bufnumber.':p:h') . '/tags'
+                    let l:ltags_dict = printf('ltags:,%s', l:ltags)
+                    if filereadable(l:ltags) && !has_key(s:source, l:ltags_dict)
+                        " Caching.
+                        call s:NeoComplCache.CachingSource(l:ltags_dict, '^', a:caching_num)
+                    endif
+                endif
             endif
 
             if has_key(g:NeoComplCache_DictionaryFileTypeLists, getbufvar(l:bufnumber, '&filetype'))
@@ -1060,14 +1086,14 @@ function! s:NeoComplCache.CheckSource(caching_num)"{{{
         endif
     endfor
 
-    " Check tags.
+    " Check global tags.
     let l:current_tags = (has_key(g:NeoComplCache_TagsLists, tabpagenr()))? tabpagenr() : 'default'
     " Ignore if empty.
     if !empty(l:current_tags)
         let l:tags_lists = split(g:NeoComplCache_TagsLists[l:current_tags], ',')
-        for tags in l:tags_lists
-            let l:tags_name = printf('tags:%d,%s', l:current_tags, tags)
-            if !has_key(s:source, l:tags_name) && filereadable(tags)
+        for gtags in l:tags_lists
+            let l:tags_name = printf('tags:%d,%s', l:current_tags, gtags)
+            if !has_key(s:source, l:tags_name) && filereadable(gtags)
                 " Caching.
                 call s:NeoComplCache.CachingSource(l:tags_name, '^', a:caching_num)
             endif
@@ -1103,80 +1129,122 @@ function! s:NeoComplCache.SaveAllMFU()"{{{
 endfunction "}}}
 function! s:NeoComplCache.SaveMFU(key)"{{{
     let l:ft = getbufvar(str2nr(a:key), '&filetype')
-    if !empty(l:ft)
-        let l:mfu_dict = {}
-        let l:prev_word = {}
-        let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, l:ft)
-        if filereadable(l:mfu_path)
-            for line in readfile(l:mfu_path)
-                let l = split(line)
-                if len(line) == 3 
-                    if line =~ '^$ '
-                        let l:mfu_dict[l[1]] = { 'word' : l[1], 'rank' : l[2], 'found' : 0 }
-                    else
-                        if !has_key(l:prev_word, l[1])
-                            let l:prev_word[l[1]] = {}
-                        endif
-                        let l:prev_word[l[1]][l[0]] = l[2]
+    if empty(l:ft)
+        return
+    endif
+
+    let l:mfu_dict = {}
+    let l:prev_word = {}
+    let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, l:ft)
+    if filereadable(l:mfu_path)
+        for line in readfile(l:mfu_path)
+            let l = split(line)
+            if len(line) == 3 
+                if line =~ '^$ '
+                    let l:mfu_dict[l[1]] = { 'word' : l[1], 'rank' : l[2], 'found' : 0 }
+                else
+                    if !has_key(l:prev_word, l[1])
+                        let l:prev_word[l[1]] = {}
                     endif
-                elseif len(line) == 2
-                    if !has_key(l:prev_word, l[0])
-                        let l:prev_word[l[0]] = {}
-                    endif
-                    let l:prev_word[l[0]]['^'] = l[1]
+                    let l:prev_word[l[1]][l[0]] = l[2]
                 endif
-            endfor
+            elseif len(line) == 2
+                if !has_key(l:prev_word, l[0])
+                    let l:prev_word[l[0]] = {}
+                endif
+                let l:prev_word[l[0]]['^'] = l[1]
+            endif
+        endfor
+    endif
+    for keyword in values(s:source[a:key].keyword_cache)
+        if has_key(keyword, 'rank') && keyword.rank*2 >= g:NeoComplCache_MFUThreshold
+            if !has_key(l:mfu_dict, keyword.word) || keyword.rank > l:mfu_dict[keyword.word].rank
+                let l:mfu_dict[keyword.word] = { 'word' : keyword.word, 'rank' : keyword.rank*2, 'found' : 1 }
+            endif
+
+            if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
+                let l:prev_word[keyword.word] = keyword.prev_rank
+            endif
+        elseif has_key(l:mfu_dict, keyword.word)
+            " Found.
+            let l:mfu_dict[keyword.word].found = 1
+
+            if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
+                let l:prev_word[keyword.word] = keyword.prev_rank
+            endif
         endif
-        for keyword in values(s:source[a:key].keyword_cache)
-            if has_key(keyword, 'rank') && keyword.rank*2 >= g:NeoComplCache_MFUThreshold
-                if !has_key(l:mfu_dict, keyword.word) || keyword.rank > l:mfu_dict[keyword.word].rank
-                    let l:mfu_dict[keyword.word] = { 'word' : keyword.word, 'rank' : keyword.rank*2, 'found' : 1 }
-                endif
+    endfor
 
-                if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
-                    let l:prev_word[keyword.word] = keyword.prev_rank
-                endif
-            elseif has_key(l:mfu_dict, keyword.word)
-                " Found.
-                let l:mfu_dict[keyword.word].found = 1
-
-                if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
-                    let l:prev_word[keyword.word] = keyword.prev_rank
+    if s:source[a:key].end_line > 100
+        " Reduce rank if word is not found.
+        for key in keys(l:mfu_dict)
+            if !l:mfu_dict[key].found
+                " rank *= 0.9
+                let l:mfu_dict[key].rank -= l:mfu_dict[key].rank / 10
+                if l:mfu_dict[key].rank < g:NeoComplCache_MFUThreshold
+                    " Delete word.
+                    call remove(l:mfu_dict, key)
+                    call remove(l:prev_word, key)
                 endif
             endif
         endfor
-
-        if s:source[a:key].end_line > 100
-            " Reduce rank if word is not found.
-            for key in keys(l:mfu_dict)
-                if !l:mfu_dict[key].found
-                    " rank *= 0.9
-                    let l:mfu_dict[key].rank -= l:mfu_dict[key].rank / 10
-                    if l:mfu_dict[key].rank < g:NeoComplCache_MFUThreshold
-                        " Delete word.
-                        call remove(l:mfu_dict, key)
-                        call remove(l:prev_word, key)
-                    endif
-                endif
-            endfor
-        endif
-
-        " Save MFU.
-        let l:mfu_word = []
-        for dict in sort(values(l:mfu_dict), 's:CompareRank')
-            call add(l:mfu_word, printf('$ %s %s' , dict.word, dict.rank))
-        endfor
-        for prevs_key in keys(l:prev_word)
-            for prev in keys(l:prev_word[prevs_key])
-                if prev == '^' 
-                    call add(l:mfu_word, printf('%s %s', prevs_key, l:prev_word[prevs_key]['^']))
-                else
-                    call add(l:mfu_word, printf('%s %s %s', prev, prevs_key,  l:prev_word[prevs_key][prev]))
-                endif
-            endfor
-        endfor
-        call writefile(l:mfu_word[: g:NeoComplCache_MFUMax-1], l:mfu_path)
     endif
+
+    " Save MFU.
+    let l:mfu_word = []
+    for dict in sort(values(l:mfu_dict), 's:CompareRank')
+        call add(l:mfu_word, printf('$ %s %s' , dict.word, dict.rank))
+    endfor
+    for prevs_key in keys(l:prev_word)
+        for prev in keys(l:prev_word[prevs_key])
+            if prev == '^' 
+                call add(l:mfu_word, printf('%s %s', prevs_key, l:prev_word[prevs_key]['^']))
+            else
+                call add(l:mfu_word, printf('%s %s %s', prev, prevs_key,  l:prev_word[prevs_key][prev]))
+            endif
+        endfor
+    endfor
+    call writefile(l:mfu_word[: g:NeoComplCache_MFUMax-1], l:mfu_path)
+endfunction "}}}
+
+function! s:NeoComplCache.OutputKeyword(number)"{{{
+    if empty(a:number)
+        let l:number = bufnr('%')
+    else
+        let l:number = a:number
+    endif
+
+    let l:keyword_dict = {}
+    let l:prev_word = {}
+    for keyword in values(s:source[l:number].keyword_cache)
+        if has_key(keyword, 'rank')
+            let l:keyword_dict[keyword.word] = { 'word' : keyword.word, 'rank' : keyword.rank, }
+        else
+            let l:keyword_dict[keyword.word] = { 'word' : keyword.word, 'rank' : 0, }
+        endif
+        if has_key(keyword, 'prev_rank') && !has_key(l:prev_word, keyword.word) 
+            let l:prev_word[keyword.word] = keyword.prev_rank
+        endif
+    endfor
+
+    " Output buffer.
+    let l:keywords = []
+    for dict in sort(values(l:keyword_dict), 's:CompareRank')
+        call add(l:keywords, printf('$ %s %s' , dict.word, dict.rank))
+    endfor
+    for prevs_key in keys(l:prev_word)
+        for prev in keys(l:prev_word[prevs_key])
+            if prev == '^' 
+                call add(l:keywords, printf('%s %s', prevs_key, l:prev_word[prevs_key]['^']))
+            else
+                call add(l:keywords, printf('%s %s %s', prev, prevs_key,  l:prev_word[prevs_key][prev]))
+            endif
+        endfor
+    endfor
+
+    for l:word in l:keywords
+        silent put=l:word
+    endfor
 endfunction "}}}
 
 function! s:NeoComplCache.SetBufferDictionary(files)"{{{
@@ -1232,11 +1300,18 @@ function! s:NeoComplCache.Enable()"{{{
         autocmd VimLeavePre * call s:NeoComplCache.SaveAllMFU()
     augroup END"}}}
 
+    if g:NeoComplCache_TagsAutoUpdate
+        augroup NeoCompleCache
+            autocmd BufWritePost * call s:NeoComplCache.UpdateTags()
+        augroup END
+    endif
+
     " Initialize"{{{
     let s:complete_lock = 0
     let s:old_text = ''
     let s:source = {}
     let s:prev_numbered_list = []
+    let s:prepre_numbered_list = []
     let s:rank_cache_count = 1
     "}}}
 
@@ -1265,6 +1340,7 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('ocaml', "[.#]\\=[[:alpha:]_'][[:alnum:]_']*")
     call s:SetKeywordPattern('html,xhtml,xml',
                 \'\(<\/[^>]\+>\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|&\h\w*;\|\h[[:alnum:]_-]*\(="\)\=\)')
+    call s:SetKeywordPattern('tags', '^[^!\t][^\t]*')
     "}}}
 
     " Initialize assume file type lists.
@@ -1324,6 +1400,7 @@ function! s:NeoComplCache.Enable()"{{{
     command! -nargs=0 NeoCompleCacheSaveMFU call s:NeoComplCache.SaveAllMFU()
     command! -nargs=* NeoCompleCacheSetBufferDictionary call s:NeoComplCache.SetBufferDictionary(<q-args>)
     command! -nargs=* NeoCompleCachePrintSource call s:NeoComplCache.PrintSource(<q-args>)
+    command! -nargs=* NeoCompleCacheOutputKeyword call s:NeoComplCache.OutputKeyword(<q-args>)
     "}}}
 
     " Must g:NeoComplCache_StartCharLength > 1.
@@ -1378,6 +1455,9 @@ function! s:NeoComplCache.CachingCurrentBuffer()"{{{
 
     " Disable auto caching.
     let s:source[l:current_buf].cached_last_line = s:source[l:current_buf].end_line+1
+
+    " Calc rank.
+    call g:NeoComplCache_NormalComplete('')
 endfunction"}}}
 
 function! s:NeoComplCache.CachingTags()"{{{
@@ -1386,16 +1466,18 @@ function! s:NeoComplCache.CachingTags()"{{{
     
     " Check tags are exists.
     if has_key(g:NeoComplCache_TagsLists, tabpagenr())
-        let l:tags = '^tags:' . tabpagenr()
+        let l:gtags = '^tags:' . tabpagenr()
     elseif !empty(g:NeoComplCache_TagsLists['default'])
-        let l:tags = '^tags:default'
+        let l:gtags = '^tags:default'
     else
         " Dummy pattern.
-        let l:tags = '^$'
+        let l:gtags = '^$'
     endif
+    let l:ltags = printf('ltags:,%s', expand('%:p:h') . '/tags')
+
     let l:cache_keyword_buffer_filtered = []
     for key in keys(s:source)
-        if key =~ l:tags
+        if key =~ l:gtags || key == l:ltags
             call s:NeoComplCache.CachingSource(key, '^', -1)
 
             " Disable auto caching.
@@ -1439,6 +1521,16 @@ function! s:NeoComplCache.CachingDictionary()"{{{
         endif
     endfor
 endfunction"}}}
+
+function! s:NeoComplCache.UpdateTags()"{{{
+    " Check tags are exists.
+    let l:ltags = printf('ltags:,%s', expand('%:p:h') . '/tags')
+    if has_key(s:source, l:ltags) && (!has_key(s:source[l:ltags], 'ctagsed_lines') 
+                \|| abs(line('$') - s:source[l:ltags].ctagsed_lines) > line('$') / 20) 
+        call system('ctags -a ' . expand('%:p'))
+        let s:source[l:ltags].ctagsed_lines = line('$')
+    endif
+endfunction
 
 function! s:NeoComplCache.Lock()"{{{
     let s:complete_lock = 1
@@ -1537,6 +1629,9 @@ if !exists('g:NeoComplCache_SlowCompleteSkip')
 endif
 if !exists('g:NeoComplCache_PreviousKeywordCompletion')
     let g:NeoComplCache_PreviousKeywordCompletion = 0
+endif
+if !exists('g:NeoComplCache_TagsAutoUpdate')
+    let g:NeoComplCache_TagsAutoUpdate = 0
 endif
 if !exists('g:NeoComplCache_EnableMFU')
     let g:NeoComplCache_EnableMFU = 0
