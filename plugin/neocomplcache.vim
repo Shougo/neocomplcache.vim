@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Mar 2009
+" Last Modified: 10 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.54, for Vim 7.0
+" Version: 1.55, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.55:
+"     - Implemented NeoCompleCacheCreateTags command.
+"     - Fixed tags auto update bug.
+"     - Added g:NeoComplCache_TryKeywordCompletion option.
 "   1.54:
 "     - Added tags syntax keyword.
 "     - Implemented local tags.
@@ -337,10 +341,13 @@ function! s:NeoComplCache.Complete()"{{{
 
     " Prevent filcker.
     if empty(s:complete_words)
+        if g:NeoComplCache_TryKeywordCompletion
+            call feedkeys("\<C-n>\<C-p>", 'n')
+        endif
+
         " Restore options
         let &l:completefunc = 'g:NeoComplCache_ManualCompleteFunc'
         let &l:ignorecase = s:ignorecase_save
-
         return
     endif
 
@@ -1047,6 +1054,8 @@ function! s:NeoComplCache.CheckSource(caching_num)"{{{
                     if filereadable(l:ltags) && !has_key(s:source, l:ltags_dict)
                         " Caching.
                         call s:NeoComplCache.CachingSource(l:ltags_dict, '^', a:caching_num)
+
+                        let s:source[l:bufnumber].ctagsed_lines = s:source[l:bufnumber].end_line
                     endif
                 endif
             endif
@@ -1401,7 +1410,14 @@ function! s:NeoComplCache.Enable()"{{{
     command! -nargs=* NeoCompleCacheSetBufferDictionary call s:NeoComplCache.SetBufferDictionary(<q-args>)
     command! -nargs=* NeoCompleCachePrintSource call s:NeoComplCache.PrintSource(<q-args>)
     command! -nargs=* NeoCompleCacheOutputKeyword call s:NeoComplCache.OutputKeyword(<q-args>)
+    command! -nargs=* NeoCompleCacheCreateTags call s:NeoComplCache.CreateTags()
     "}}}
+    
+    " Initialize ctags arguments.
+    if !exists('g:NeoComplCache_CtagsArgumentsList')
+        let g:NeoComplCache_CtagsArgumentsList = {}
+    endif
+    let g:NeoComplCache_CtagsArgumentsList['default'] = ''
 
     " Must g:NeoComplCache_StartCharLength > 1.
     if g:NeoComplCache_KeywordCompletionStartLength < 1
@@ -1439,6 +1455,7 @@ function! s:NeoComplCache.Disable()"{{{
     delcommand NeoCompleCacheSaveMFU
     delcommand NeoCompleCacheSetBufferDictionary
     delcommand NeoCompleCachePrintSource
+    delcommand NeoCompleCacheCreateTags
 endfunction"}}}
 
 function! s:NeoComplCache.Toggle()"{{{
@@ -1524,13 +1541,41 @@ endfunction"}}}
 
 function! s:NeoComplCache.UpdateTags()"{{{
     " Check tags are exists.
-    let l:ltags = printf('ltags:,%s', expand('%:p:h') . '/tags')
-    if has_key(s:source, l:ltags) && (!has_key(s:source[l:ltags], 'ctagsed_lines') 
-                \|| abs(line('$') - s:source[l:ltags].ctagsed_lines) > line('$') / 20) 
-        call system('ctags -a ' . expand('%:p'))
-        let s:source[l:ltags].ctagsed_lines = line('$')
+    if has_key(s:source[bufnr('%')], 'ctagsed_lines') && abs(line('$') - s:source[bufnr('%')].ctagsed_lines) > line('$') / 20
+        if has_key(g:NeoComplCache_CtagsArgumentsList, &filetype)
+            let l:args = g:NeoComplCache_CtagsArgumentsList[&filetype]
+        else
+            let l:args = g:NeoComplCache_CtagsArgumentsList['default']
+        endif
+        call system(printf('ctags -f %s %s -a %s', expand('%:p:h') . '/tags', l:args, expand('%')))
+        let s:source[bufnr('%')].ctagsed_lines = line('$')
     endif
-endfunction
+endfunction"}}}
+
+function! s:NeoComplCache.CreateTags()"{{{
+    if &buftype =~ 'nofile'
+        return
+    endif
+
+    " Create tags.
+    if has_key(g:NeoComplCache_CtagsArgumentsList, &filetype)
+        let l:args = g:NeoComplCache_CtagsArgumentsList[&filetype]
+    else
+        let l:args = g:NeoComplCache_CtagsArgumentsList['default']
+    endif
+
+    let l:ltags = expand('%:p:h') . '/tags'
+    call system(printf('ctags -f %s %s -a %s', expand('%:h') . '/tags', l:args, expand('%')))
+    let s:source[bufnr('%')].ctagsed_lines = line('$')
+
+    " Check local tags.
+    let l:ltags_dict = printf('ltags:,%s', l:ltags)
+    if !has_key(s:source, l:ltags_dict)
+        " Caching.
+        call s:NeoComplCache.CachingSource(l:ltags_dict, '^', g:NeoComplCache_CacheLineCount*10)
+    endif
+endfunction"}}}
+
 
 function! s:NeoComplCache.Lock()"{{{
     let s:complete_lock = 1
@@ -1632,6 +1677,9 @@ if !exists('g:NeoComplCache_PreviousKeywordCompletion')
 endif
 if !exists('g:NeoComplCache_TagsAutoUpdate')
     let g:NeoComplCache_TagsAutoUpdate = 0
+endif
+if !exists('g:NeoComplCache_TryKeywordCompletion')
+    let g:NeoComplCache_TryKeywordCompletion = 0
 endif
 if !exists('g:NeoComplCache_EnableMFU')
     let g:NeoComplCache_EnableMFU = 0

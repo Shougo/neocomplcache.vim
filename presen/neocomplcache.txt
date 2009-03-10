@@ -119,10 +119,11 @@ neocomplcacheの代表的機能
 ・SmartCase
 ・豊富なカスタマイズ項目
 ・文脈依存補完（2-gram completion）
-・Omni補完（New!）
+・Omni補完
 ・スペルチェック（New!）
 ・ローカルタグ補完（New!）
 ・自動タグファイルアップデート（New!）
+・キーワード補完を試す（New!）
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -245,7 +246,7 @@ let g:NeoComplCache_PreviousKeywordCompletion = 1
 とする必要があります。
 
 --------------------------------
-Omni補完（New!）
+Omni補完
 
 thincaさんに要望されたので追加しました。
 基本的にはautocomplpopのコードを移植し、C, C++, JavaScript, PHPといった新たな言語にも対応。
@@ -291,6 +292,16 @@ let g:NeoComplCache_TagsAutoUpdate = 1
 とする必要があります。
 
 --------------------------------
+キーワード補完を試す（New!）
+
+thincaさんの要望により、試験的に実装。
+補完候補がない場合、キーワード補完を行います。
+
+この機能を使用するには、
+let g:NeoComplCache_TryKeywordCompletion = 1
+とする必要があります。
+
+--------------------------------
 私の設定
 
 " Don't use autocomplpop.
@@ -305,6 +316,8 @@ let g:NeoComplCache_EnableMFU = 1
 let g:NeoComplCache_PreviousKeywordCompletion = 1
 " Use similar match.
 let g:NeoComplCache_SimilarMatch = 1
+" Try keyword completion.
+let g:NeoComplCache_TryKeywordCompletion = 1
 
 " Toggle when press <C-e>.
 nnoremap <silent> <C-e> :<C-u>NeoComplCacheToggle<CR>
