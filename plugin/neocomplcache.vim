@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.55, for Vim 7.0
+" Version: 1.56, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.56:
+"     - Use vim commands completion in vim filetype.
 "   1.55:
 "     - Implemented NeoCompleCacheCreateTags command.
 "     - Fixed tags auto update bug.
@@ -290,7 +292,12 @@ function! s:NeoComplCache.Complete()"{{{
                 \&& has_key(g:NeoComplCache_OmniPatterns, &filetype)
                 \&& !empty(g:NeoComplCache_OmniPatterns[&filetype])
         if l:cur_text =~ g:NeoComplCache_OmniPatterns[&filetype] . '$'
-            call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
+            if &filetype == 'vim'
+                call feedkeys("\<C-x>\<C-v>\<C-p>", 'n')
+            else
+                call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
+            endif
+
             return
         endif
     endif
@@ -342,7 +349,12 @@ function! s:NeoComplCache.Complete()"{{{
     " Prevent filcker.
     if empty(s:complete_words)
         if g:NeoComplCache_TryKeywordCompletion
-            call feedkeys("\<C-n>\<C-p>", 'n')
+            if &filetype == 'perl'
+                " Perl has a lot of included files.
+                call feedkeys("\<C-n>\<C-p>", 'n')
+            else
+                call feedkeys("\<C-x>\<C-i>\<C-p>", 'n')
+            endif
         endif
 
         " Restore options
@@ -1397,6 +1409,7 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetOmniPattern('cpp', '[^. \t]\(\.\|->\|::\)')
     call s:SetOmniPattern('php', '[^. \t]\(->\|::\)')
     call s:SetOmniPattern('java', '[^. \t]\.')
+    call s:SetOmniPattern('vim', '\(^\s*:\).*')
     "}}}
     
     " Add commands."{{{

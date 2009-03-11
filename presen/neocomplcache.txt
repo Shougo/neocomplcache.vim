@@ -254,6 +254,10 @@ Rubyで,や.を入力したり、HTMLでタグが補完できます。
 ただしあまりテストしていないので、きちんと動かないかもしれません。
 あと候補が多いためか、動作が若干重いです。
 
+追記：
+VimScriptでは、Vim commands completionを呼び出した方が都合が良いため、
+そのようにしました。コマンドの先頭に:があると、補完が有効になります。
+
 let g:NeoComplCache_OmniPatterns = {}
 let g:NeoComplCache_OmniPatterns['無効にしたいファイルタイプ'] = ''
 とすると、無効にできます。
@@ -296,6 +300,11 @@ let g:NeoComplCache_TagsAutoUpdate = 1
 
 thincaさんの要望により、試験的に実装。
 補完候補がない場合、キーワード補完を行います。
+これを有効にすると、コマンドライン部が少しちらつくので注意してください。
+
+追記：
+januswelさんのエントリを参考に、
+Perl以外ではインクルード補完を試してみることにしました。
 
 この機能を使用するには、
 let g:NeoComplCache_TryKeywordCompletion = 1
@@ -344,7 +353,7 @@ neocomplcacheを使用するに当たっては、Vimの補完関係の設定も�
 " <TAB> completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " C-jでオムニ補完
-inoremap <C-j>  <C-x><C-o><C-p>
+inoremap <expr> <C-j>  &filetype == 'vim' ? "\<C-x>\<C-v>\<C-p>" : "\<C-x>\<C-o>\<C-p>"
 " C-kを押すと行末まで削除
 inoremap <C-k>  <C-o>D
 " C-hで補完を続行しない
@@ -360,7 +369,7 @@ inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>X\<BS>" : "\<CR>X\<BS>"
 C-nでneocomplcacheの手動補完を呼び出します。
 デバッグや、重すぎて候補が表示されなかったときなどに使います。
 C-pはVim標準のキーワード補完。比較のため残してあります。
-C-jでオムニ補完を起動します。
+C-jでオムニ補完を起動します。filetypeがVimの時には、Vim commands completionを起動します。
 C-hは一度ポップアップを消去し、ちらつかないようにしてます。
 
 --------------------------------
@@ -380,6 +389,11 @@ http://d.hatena.ne.jp/thinca/20090305/1236191531
 
 メインで使っていただけているようで光栄です。
 このエントリに刺激され、Omni補完を実装しました。
+
+追記２：
+secondlifeさんが試用しているようです。
+http://subtech.g.hatena.ne.jp/secondlife/20090310/1236668086
+気に入ってもらえるとうれしいですね。
 
 --------------------------------
 入手方法
