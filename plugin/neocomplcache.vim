@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.58, for Vim 7.0
+" Version: 1.59, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.59:
+"     - Improved NeoCompleCacheSetBufferDictionary.
+"     - Fixed MFU bug.
 "   1.58:
 "     - Fixed s:SetOmniPattern() and s:SetKeywordPattern() bugs.
 "     - Changed g:NeoComplCache_MinKeywordLength default value.
@@ -950,7 +953,7 @@ function! s:InitializeSource(srcname)"{{{
         endif
 
         if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-            let l:keyword_pattern = s:AssumePattern(bufname(a:srcname))
+            let l:keyword_pattern = s:AssumePattern(l:filename)
             if empty(l:keyword_pattern)
                 " Assuming failed.
                 let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
@@ -975,7 +978,7 @@ function! s:InitializeSource(srcname)"{{{
             let l:ft = split(a:srcname, ',')[0]
         endif
 
-        let l:keyword_pattern = s:AssumePattern(split(a:srcname, ',')[1])
+        let l:keyword_pattern = s:AssumePattern(l:filename)
         if empty(l:keyword_pattern)
             " Assuming failed.
             let l:keyword_pattern = has_key(g:NeoComplCache_KeywordPatterns, l:ft)? 
@@ -1215,8 +1218,12 @@ function! s:NeoComplCache.SaveMFU(key)"{{{
                 if l:mfu_dict[key].rank < g:NeoComplCache_MFUThreshold
                     " Delete word.
                     call remove(l:mfu_dict, key)
-                    call remove(l:prev_word, key)
-                    call remove(l:prepre_word, key)
+                    if has_key(l:prev_word, key)
+                        call remove(l:prev_word, key)
+                    endif
+                    if has_key(l:prepre_word, key)
+                        call remove(l:prepre_word, key)
+                    endif
                 endif
             endif
         endfor
@@ -1306,7 +1313,11 @@ function! s:NeoComplCache.OutputKeyword(number)"{{{
 endfunction "}}}
 
 function! s:NeoComplCache.SetBufferDictionary(files)"{{{
-    silent execute printf("let g:NeoComplCache_DictionaryBufferLists[%d] = '%s'", bufnr('%') , a:files)
+    let l:files = substitute(substitute(a:files, '\\\s', ';', 'g'), '\s\+', ',', 'g')
+    silent execute printf("let g:NeoComplCache_DictionaryBufferLists[%d] = '%s'", 
+                \bufnr('%') , substitute(l:files, ';', ' ', 'g'))
+    " Caching.
+    call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
 endfunction "}}}
 
 " Assume filetype pattern.
@@ -1471,7 +1482,7 @@ function! s:NeoComplCache.Enable()"{{{
     command! -nargs=0 NeoCompleCacheLock call s:NeoComplCache.Lock()
     command! -nargs=0 NeoCompleCacheUnlock call s:NeoComplCache.Unlock()
     command! -nargs=0 NeoCompleCacheSaveMFU call s:NeoComplCache.SaveAllMFU()
-    command! -nargs=* NeoCompleCacheSetBufferDictionary call s:NeoComplCache.SetBufferDictionary(<q-args>)
+    command! -nargs=* -complete=file NeoCompleCacheSetBufferDictionary call s:NeoComplCache.SetBufferDictionary(<q-args>)
     command! -nargs=* NeoCompleCachePrintSource call s:NeoComplCache.PrintSource(<q-args>)
     command! -nargs=* NeoCompleCacheOutputKeyword call s:NeoComplCache.OutputKeyword(<q-args>)
     command! -nargs=* NeoCompleCacheCreateTags call s:NeoComplCache.CreateTags()
