@@ -120,10 +120,11 @@ neocomplcacheの代表的機能
 ・豊富なカスタマイズ項目
 ・文脈依存補完（2-gram completion）
 ・Omni補完
-・スペルチェック（New!）
-・ローカルタグ補完（New!）
+・スペルチェック
+・ローカルタグ補完
 ・自動タグファイルアップデート（New!）
 ・キーワード補完を試す（New!）
+・Same filetype completion（New!）
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -193,6 +194,7 @@ let g:NeoComplCache_EnableMFU = 1
 追記：
 最近のバージョンアップにより、文脈依存補完にも対応しました。
 語のつながりを自動的に保存します。
+3-gram completionにも対応。
 
 --------------------------------
 ディレクトリ補完
@@ -241,6 +243,10 @@ hoge piyo
 と入力しているとすると、hogeの後にはpiyoが来やすいと認識、
 補完時にpiyoが上の方に来ます。
 
+追記：
+3-gram completionも実装しました！
+これで、より精度の高い補完が可能になります。
+
 この機能を使用するには、
 let g:NeoComplCache_PreviousKeywordCompletion = 1
 とする必要があります。
@@ -263,7 +269,7 @@ let g:NeoComplCache_OmniPatterns['無効にしたいファイルタイプ'] = ''
 とすると、無効にできます。
 
 --------------------------------
-スペルチェック（New!）
+スペルチェック
 
 Google検索でのスペルチェックと似た機能です。
 ある程度の長さがある文字を入力すると、キャッシュ中にあるよく似た候補が表示されます。
@@ -276,7 +282,7 @@ let g:NeoComplCache_SimilarMatch = 1
 とする必要があります。
 
 --------------------------------
-ローカルタグ補完（New!）
+ローカルタグ補完
 
 タグファイルの設定をしなくても、バッファと同じディレクトリにある
 tagsファイルを自動的に読み込むようになりました。
@@ -309,6 +315,18 @@ Perl以外ではインクルード補完を試してみることにしました�
 この機能を使用するには、
 let g:NeoComplCache_TryKeywordCompletion = 1
 とする必要があります。
+
+--------------------------------
+Same filetype completion（New!）
+
+昔のneocomplcacheでは、すべてのバッファから補完できたのですが、
+最新版では同じfiletypeのバッファからしか補完できないようになりました。
+しかしこれでは困る場合もあったので（例：C/C++でやりとりするとき）、
+Same filetypeという概念を作り、
+let g:NeoComplCache_SameFileTypeLists['c'] = 'cpp'
+let g:NeoComplCache_SameFileTypeLists['cpp'] = 'c'
+というように設定すれば、C/C++間のバッファで補完できるようになります。
+一方だけ設定すれば、相互でない補完も可能です。
 
 --------------------------------
 私の設定
@@ -447,4 +465,5 @@ auto-complete.elやanything.elみたいに、
 2009/03/6      neocomplcache Ver.1.50に対応。
 2009/03/7      neocomplcache Ver.1.52に対応。
 2009/03/8      neocomplcache Ver.1.54に対応。
+2009/03/12     neocomplcache Ver.1.58に対応。
 --------------------------------
