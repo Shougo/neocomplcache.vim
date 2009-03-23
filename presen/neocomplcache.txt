@@ -118,13 +118,14 @@ neocomplcacheの代表的機能
 ・カーソル後方のキーワードに応じた補完
 ・SmartCase
 ・豊富なカスタマイズ項目
-・文脈依存補完（2-gram completion）
+・文脈依存補完（3-gram completion）
 ・Omni補完
 ・スペルチェック
 ・ローカルタグ補完
-・自動タグファイルアップデート（New!）
+・自動タグファイルアップデート
 ・キーワード補完を試す（New!）
 ・Same filetype completion（New!）
+・preview windowに対応（New!）
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -235,7 +236,7 @@ let g:NeoComplCache_SmartCase = 1
 ただしその場合、neocomplcacheを使う意味は薄れますが……。
 
 --------------------------------
-文脈依存補完（2-gram completion）
+文脈依存補完（3-gram completion）
 
 文脈を解析し、補完する機能が実験的に実装されました。
 例えば、バッファ内に
@@ -289,7 +290,7 @@ tagsファイルを自動的に読み込むようになりました。
 しかもtagsのキーワードを認識し、ちゃんと補完します。
 
 --------------------------------
-自動タグファイルアップデート（New!）
+自動タグファイルアップデート
 
 Omni補完を使用するにあたって、こまめなタグファイルのアップデートは
 必要不可欠です。そこでファイル保存時にtagsが存在したら、
@@ -327,6 +328,15 @@ let g:NeoComplCache_SameFileTypeLists['c'] = 'cpp'
 let g:NeoComplCache_SameFileTypeLists['cpp'] = 'c'
 というように設定すれば、C/C++間のバッファで補完できるようになります。
 一方だけ設定すれば、相互でない補完も可能です。
+
+--------------------------------
+preview windowに対応（New!）
+
+preview windowが存在するとき、キャッシュしたときの行を表示するようになりました。
+普通宣言がソースの上方に来ると考えられるので、
+Intellisenseのように使い方を参照することができます。
+デフォルトでは３つまでですが、g:NeoComplCache_MaxInfoListを設定することで、
+より多くの情報を表示させることが可能です。
 
 --------------------------------
 私の設定
@@ -466,4 +476,5 @@ auto-complete.elやanything.elみたいに、
 2009/03/7      neocomplcache Ver.1.52に対応。
 2009/03/8      neocomplcache Ver.1.54に対応。
 2009/03/12     neocomplcache Ver.1.58に対応。
+2009/03/20     neocomplcache Ver.2.00に対応。
 --------------------------------

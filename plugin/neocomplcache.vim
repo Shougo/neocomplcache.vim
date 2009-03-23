@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Mar 2009
+" Last Modified: 20 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,12 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.59, for Vim 7.0
+" Version: 2.00, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   2.00:
+"     - Save keyword found line.
+"     - Changed g:Neocomplcache_CacheLineCount default value.
+"     - Fixed skipped bug.
+"     - Improved commands.
+"     - Deleted g:NeoComplCache_DrawWordsRank option.
+"   1.60:
+"     - Improved calc similar algorithm.
 "   1.59:
 "     - Improved NeoCompleCacheSetBufferDictionary.
 "     - Fixed MFU bug.
+"     - Don't try keyword completion when input non word character.
 "   1.58:
 "     - Fixed s:SetOmniPattern() and s:SetKeywordPattern() bugs.
 "     - Changed g:NeoComplCache_MinKeywordLength default value.
@@ -329,7 +338,6 @@ function! s:NeoComplCache.Complete()"{{{
         "
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
         " Filename pattern.
-        "let l:pattern = printf('\f[%s]\f\{%d,}$', l:PATH_SEPARATOR, g:NeoComplCache_FilenameCompletionStartLength)
         let l:pattern = printf('[/~]\=\f\+[%s]\f*$', l:PATH_SEPARATOR)
         " Not Filename pattern.
         let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*$'
@@ -360,7 +368,7 @@ function! s:NeoComplCache.Complete()"{{{
 
     " Prevent filcker.
     if empty(s:complete_words)
-        if g:NeoComplCache_TryKeywordCompletion
+        if g:NeoComplCache_TryKeywordCompletion && l:cur_keyword_str =~ '\w$' && !s:skipped
             if &filetype == 'perl'
                 " Perl has a lot of included files.
                 call feedkeys("\<C-n>\<C-p>", 'n')
@@ -466,7 +474,7 @@ function! s:CompareWords(i1, i2)
     return a:i1.word > a:i2.word ? 1 : a:i1.word == a:i2.word ? 0 : -1
 endfunction
 
-function! s:CalcLeven(str1, str2)"{{{
+function! s:CheckLeven(str1, str2, limit)"{{{
     let [l:p1, l:p2, l:l1, l:l2] = [[], [], len(a:str1), len(a:str2)]
 
     for l:i in range(l:l2+1) 
@@ -483,7 +491,11 @@ function! s:CalcLeven(str1, str2)"{{{
         let [l:p1, l:p2] = [l:p2, l:p1]
     endfor
 
-    return l:p1[l:l2]
+    if l:p1[l:l2] > a:limit
+        return 0
+    else
+        return 1
+    endif
 endfunction"}}}
 
 function! s:NormalComplete_GetKeywordList()"{{{
@@ -596,10 +608,10 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         endif
 
         if l:is_partial
-            let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '%s' && s:CalcLeven(v:val.word, a:cur_keyword_str) <= %d",
+            let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '%s' && s:CheckLeven(v:val.word, a:cur_keyword_str, %d)",
                         \l:cur_len-l:threshold, l:cur_len+l:threshold, l:keyword_escape, l:threshold)
         else
-            let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '^%s' && s:CalcLeven(v:val.word, a:cur_keyword_str) <= %d",
+            let l:pattern = printf("%d <= len(v:val.word) && len(v:val.word) <= %d && v:val.word !~ '^%s' && s:CheckLeven(v:val.word, a:cur_keyword_str, %d)",
                         \l:cur_len-l:threshold, l:cur_len+l:threshold, l:keyword_escape, l:threshold)
             let l:is_partial = 1
         endif
@@ -611,7 +623,6 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         let l:order_func = 's:CompareWords'
     else
         " Calc rank."{{{
-        let l:menu_pattern = ' %.' . g:NeoComplCache_MaxFilenameWidth . 's %3d'
         let l:list_len = len(l:cache_keyword_buffer_list)
 
         if l:list_len > g:NeoComplCache_CalcRankMaxLists
@@ -642,9 +653,6 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
                         let keyword.rank += keyword_lines[keyword.word]
                     endif
                 endfor
-                if g:NeoComplCache_DrawWordsRank
-                    let keyword.menu = printf(l:menu_pattern, keyword.filename, keyword.rank)
-                endif
             else
                 let s:rank_cache_count -= 1
             endif
@@ -663,11 +671,13 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         if split(reltimestr(reltime(l:start_time)))[0] > '0.2'
             " Skip completion if takes too much time.
             echo 'Too many items'
+            let s:skipped = 1
             return []
         endif
 
         "echo l:end_time
     endif
+    let s:skipped = 0
 
     let l:cache_keyword_buffer_filtered = []
 
@@ -781,6 +791,22 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         let s:prev_numbered_list = l:numbered_ret[:g:NeoComplCache_QuickMatchMaxLists-1]
     endif
 
+    silent! wincmd P
+    if &previewwindow
+        wincmd p
+        " Create info.
+        for keyword in l:cache_keyword_buffer_filtered
+            let keyword.info = join(keyword.info_list, "\n")
+        endfor
+    else
+        " Delete info.
+        for keyword in l:cache_keyword_buffer_filtered
+            if has_key(keyword, 'info')
+                call remove(keyword, 'info')
+            endif
+        endfor
+    endif
+
     " Remove next keyword.
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1), '^'.s:source[bufnr('%')].keyword_pattern)[1:]
     if !empty(l:next_keyword_str)
@@ -872,11 +898,7 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
         " Dictionary or tags.
         let l:buflines = readfile(l:source.name)[l:start_line : l:end_line]
     endif
-    if !g:NeoComplCache_DrawWordsRank
-        let l:menu = printf(' %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
-    else
-        let l:menu = ''
-    endif
+    let l:menu = printf(' %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = '%.' . g:NeoComplCache_MaxKeywordWidth . 's'
     let l:keyword_pattern = l:source.keyword_pattern
 
@@ -890,8 +912,9 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
         endif
 
         let l:line = buflines[l:line_num]
-        let [l:match_num, l:match_end, l:prev_word, l:prepre_word] =
-                    \[match(l:line, l:keyword_pattern), matchend(l:line, l:keyword_pattern), '', '']
+        let [l:match_num, l:match_end, l:prev_word, l:prepre_word, l:info_line] =
+                    \[match(l:line, l:keyword_pattern), matchend(l:line, l:keyword_pattern), '', '', 
+                    \substitute(l:line, '^\s\+', '', '')[:100]]
         while l:match_num >= 0
             let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
 
@@ -903,10 +926,17 @@ function! s:NeoComplCache.Caching(srcname, start_line, end_line)"{{{
                     " Check dup.
                     if !has_key(l:source.keyword_cache, l:match_str)
                         " Append list.
-                        let l:source.keyword_cache[l:match_str] = { 'word' : l:match_str, 'abbr' : printf(l:abbr_pattern, l:match_str), 'menu' : l:menu,  'dup' : 0, 'filename' : l:filename, 'srcname' : a:srcname, 'prev_word' : {}, 'prepre_word' : {} }
+                        let l:source.keyword_cache[l:match_str] = {
+                                    \'word' : l:match_str, 'abbr' : printf(l:abbr_pattern, l:match_str), 'menu' : l:menu,  'dup' : 0,
+                                    \'filename' : l:filename, 'srcname' : a:srcname, 'prev_word' : {}, 'prepre_word' : {},
+                                    \'info_list' : [l:info_line] }
                     endif
                 else
                     let l:source.rank_cache_lines[l:cache_line][l:match_str] += 1
+
+                    if len(l:source.keyword_cache[l:match_str].info_list) < g:NeoComplCache_MaxInfoList
+                        cal add(l:source.keyword_cache[l:match_str].info_list, l:info_line)
+                    endif
                 endif
 
                 let l:keyword_match = l:source.keyword_cache[l:match_str]
@@ -1367,8 +1397,7 @@ function! s:NeoComplCache.Enable()"{{{
                     \ g:NeoComplCache_CacheLineCount*30)
         autocmd Filetype * call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
         " Caching current buffer events
-        autocmd InsertEnter * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount*2)
-        autocmd InsertLeave * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
+        autocmd InsertEnter * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
         " Auto complete events
         autocmd CursorMovedI,InsertEnter * call s:NeoComplCache.Complete()
         " MFU events.
@@ -1394,28 +1423,46 @@ function! s:NeoComplCache.Enable()"{{{
     if !exists('g:NeoComplCache_KeywordPatterns')
         let g:NeoComplCache_KeywordPatterns = {}
     endif
-    call s:SetKeywordPattern('default', '\k\+')
+    call s:SetKeywordPattern('default',
+                \'\k\+')
     call s:SetKeywordPattern('lisp,scheme', 
                 \'(\=[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]\=')
-    call s:SetKeywordPattern('ruby', '\([:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?(]\=\)')
-    call s:SetKeywordPattern('php', '\(\$\|->\|::\)\=\h\w*(\=')
+    call s:SetKeywordPattern('ruby',
+                \'\([:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?]\=\(\s*(\)\=\)')
+    call s:SetKeywordPattern('php',
+                \'\(<\/[^>]\+>\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|\(\$\|->\|::\)\=\h\w*\(\s*(\)\=\)')
     call s:SetKeywordPattern('perl',
-                \'\(<\h\w*>\=\|->\h\w*(\=\|::\h\w*\|[$@%&*]\h\w*\|\h\w*(\=\)')
-    call s:SetKeywordPattern('vim', '\([.$]\h\w*(\=\|&\=\h[[:alnum:]#_:]*(\=\)')
-    call s:SetKeywordPattern('tex', '\(\\[[:alpha:]_@][[:alnum:]_@]*\*\=[[{]\=\|\h\w*\)')
-    call s:SetKeywordPattern('sh,zsh,vimshell', '\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*(\=\)')
-    call s:SetKeywordPattern('ps1', '\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*(\=\)')
-    call s:SetKeywordPattern('c', '\([[:alpha:]_#]\w*\|\.\h\w*(\=\)')
-    call s:SetKeywordPattern('cpp', '\(->\|::\|[.#]\)\=\h\w*[(<]\=')
-    call s:SetKeywordPattern('d', '\.\=\h\w*!\=(\=')
-    call s:SetKeywordPattern('python', '\.\=\h\w*(\=')
-    call s:SetKeywordPattern('cs,java,javascript', '\.\=\h\w*(\=')
-    call s:SetKeywordPattern('awk', '\h\w*(\=')
-    call s:SetKeywordPattern('haskell', '\.\=\h\w*')
-    call s:SetKeywordPattern('ocaml', "[.#]\\=[[:alpha:]_'][[:alnum:]_']*")
+                \'\(<\h\w*>\=\|->\h\w*(\=\|::\h\w*\|[$@%&*]\h\w*\|\h\w*\(\s*(\)\=\)')
+    call s:SetKeywordPattern('vim',
+                \'\(<\h[[:alnum:]_-]*>\=\|[.$]\h\w*(\=\|&\=\h[[:alnum:]#_:]*[(!]\=\)')
+    call s:SetKeywordPattern('tex',
+                \'\(\\[[:alpha:]_@][[:alnum:]_@]*\*\=[[{]\=\|\h\w*\)')
+    call s:SetKeywordPattern('sh,zsh,vimshell',
+                \'\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*\(\s*[[(]\)\=\)')
+    call s:SetKeywordPattern('ps1',
+                \'\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*\(\s*(\)\=\)')
+    call s:SetKeywordPattern('c',
+                \'\(->\|[.#]\)\=\h\w*\(\s*(\)\=')
+    call s:SetKeywordPattern('cpp',
+                \'\(->\|::\|[.#]\)\=\h\w*\(\s*(\|<\)\=')
+    call s:SetKeywordPattern('d',
+                \'\.\=\h\w*\(!\=\s*(\)\=')
+    call s:SetKeywordPattern('python',
+                \'\.\=\h\w*\(\s*(\)\=')
+    call s:SetKeywordPattern('cs,java',
+                \'\.\=\h\w*\(\s*(\|<\)\=')
+    call s:SetKeywordPattern('javascript',
+                \'\.\=\h\w*\(\s*(\)\=')
+    call s:SetKeywordPattern('awk',
+                \'\h\w*\(\s*(\)\=')
+    call s:SetKeywordPattern('haskell',
+                \'\.\=\h\w*')
+    call s:SetKeywordPattern('ocaml',
+                \"[.#]\\=[[:alpha:]_'][[:alnum:]_']*")
     call s:SetKeywordPattern('html,xhtml,xml',
                 \'\(<\/[^>]\+>\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|&\h\w*;\|\h[[:alnum:]_-]*\(="\)\=\)')
-    call s:SetKeywordPattern('tags', '^[^!\t][^\t]*')
+    call s:SetKeywordPattern('tags',
+                \'^[^!\t][^\t]*')
     "}}}
 
     " Initialize assume file type lists."{{{
@@ -1475,7 +1522,7 @@ function! s:NeoComplCache.Enable()"{{{
     "}}}
     
     " Add commands."{{{
-    command! -nargs=0 NeoCompleCacheCachingBuffer call s:NeoComplCache.CachingCurrentBuffer()
+    command! -nargs=? NeoCompleCacheCachingBuffer call s:NeoComplCache.CachingBuffer(<q-args>)
     command! -nargs=0 NeoCompleCacheCachingTags call s:NeoComplCache.CachingTags()
     command! -nargs=0 NeoCompleCacheCachingDictionary call s:NeoComplCache.CachingDictionary()
     command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
@@ -1483,9 +1530,9 @@ function! s:NeoComplCache.Enable()"{{{
     command! -nargs=0 NeoCompleCacheUnlock call s:NeoComplCache.Unlock()
     command! -nargs=0 NeoCompleCacheSaveMFU call s:NeoComplCache.SaveAllMFU()
     command! -nargs=* -complete=file NeoCompleCacheSetBufferDictionary call s:NeoComplCache.SetBufferDictionary(<q-args>)
-    command! -nargs=* NeoCompleCachePrintSource call s:NeoComplCache.PrintSource(<q-args>)
-    command! -nargs=* NeoCompleCacheOutputKeyword call s:NeoComplCache.OutputKeyword(<q-args>)
-    command! -nargs=* NeoCompleCacheCreateTags call s:NeoComplCache.CreateTags()
+    command! -nargs=? NeoCompleCachePrintSource call s:NeoComplCache.PrintSource(<q-args>)
+    command! -nargs=? NeoCompleCacheOutputKeyword call s:NeoComplCache.OutputKeyword(<q-args>)
+    command! -nargs=? NeoCompleCacheCreateTags call s:NeoComplCache.CreateTags()
     "}}}
     
     " Initialize ctags arguments.
@@ -1541,12 +1588,16 @@ function! s:NeoComplCache.Toggle()"{{{
     endif
 endfunction"}}}
 
-function! s:NeoComplCache.CachingCurrentBuffer()"{{{
-    let l:current_buf = bufnr('%')
-    call s:NeoComplCache.CachingSource(l:current_buf, 1, -1)
+function! s:NeoComplCache.CachingBuffer(number)"{{{
+    if empty(a:number)
+        let l:number = bufnr('%')
+    else
+        let l:number = a:number
+    endif
+    call s:NeoComplCache.CachingSource(l:number, 1, -1)
 
     " Disable auto caching.
-    let s:source[l:current_buf].cached_last_line = s:source[l:current_buf].end_line+1
+    let s:source[l:number].cached_last_line = s:source[l:number].end_line+1
 
     " Calc rank.
     call g:NeoComplCache_NormalComplete('')
@@ -1711,14 +1762,11 @@ endif
 if !exists('g:NeoComplCache_SmartCase')
     let g:NeoComplCache_SmartCase = 0
 endif
-if !exists('g:NeoComplCache_DrawWordsRank')
-    let g:NeoComplCache_DrawWordsRank = 1
-endif
 if !exists('g:NeoComplCache_AlphabeticalOrder')
     let g:NeoComplCache_AlphabeticalOrder = 0
 endif
 if !exists('g:NeoComplCache_CacheLineCount')
-    let g:NeoComplCache_CacheLineCount = 10
+    let g:NeoComplCache_CacheLineCount = 30
 endif
 if !exists('g:NeoComplCache_DeleteRank0')
     let g:NeoComplCache_DeleteRank0 = 0
@@ -1752,6 +1800,9 @@ if !exists('g:NeoComplCache_TagsAutoUpdate')
 endif
 if !exists('g:NeoComplCache_TryKeywordCompletion')
     let g:NeoComplCache_TryKeywordCompletion = 0
+endif
+if !exists('g:NeoComplCache_MaxInfoList')
+    let g:NeoComplCache_MaxInfoList = 3
 endif
 if !exists('g:NeoComplCache_EnableMFU')
     let g:NeoComplCache_EnableMFU = 0
