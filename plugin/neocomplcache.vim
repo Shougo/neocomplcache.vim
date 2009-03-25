@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Mar 2009
+" Last Modified: 25 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.00, for Vim 7.0
+" Version: 2.01, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   2.01:
+"     - Caching on InsertLeave.
+"     - Changed g:Neocomplcache_CacheLineCount default value.
+"     - Fixed update tags bug.
+"     - Enable asterisk when cursor_word is (, $, #, @, ...
+"     - Improved wildcard.
 "   2.00:
 "     - Save keyword found line.
 "     - Changed g:Neocomplcache_CacheLineCount default value.
@@ -393,6 +399,12 @@ function! s:NeoComplCache.Complete()"{{{
 endfunction"}}}
 
 function! s:CheckAsterisk(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"{{{
+    if empty(a:cur_keyword_str)
+        " Get cursor word.
+        let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
+        return [match(l:cur_text, '[^\t ]\*$'), matchstr(l:cur_text, '[^\t ]\*$')]
+    endif
+
     let l:cur_keyword_pos = a:cur_keyword_pos
     let l:cur_keyword_str = a:cur_keyword_str
 
@@ -568,11 +580,10 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         let l:start_time = reltime()
     endif
 
-    if g:NeoComplCache_EnableAsterisk
-        let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.*', 'g')
-        "let l:keyword_escape = substitute(substitute(escape(a:cur_keyword_str, '" \ . ^ $'), "'", "''", 'g'), '\*', '.\\+', 'g')
-    else
-        let l:keyword_escape = escape(substitute(a:cur_keyword_str, '" \ . ^ $ *'), "'", "''", 'g')
+    let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$*'), "'", "''", 'g')
+    if g:NeoComplCache_EnableAsterisk && !empty(l:keyword_escape)
+        let l:keyword_escape = l:keyword_escape[:1] . substitute(l:keyword_escape[2:], '\*', '.*', 'g')
+        "echo l:keyword_escape
     endif
 
     " Keyword filter.
@@ -670,7 +681,7 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         "let l:end_time = split(reltimestr(reltime(l:start_time)))[0]
         if split(reltimestr(reltime(l:start_time)))[0] > '0.2'
             " Skip completion if takes too much time.
-            echo 'Too many items'
+            echo 'Skipped completion'
             let s:skipped = 1
             return []
         endif
@@ -1397,7 +1408,7 @@ function! s:NeoComplCache.Enable()"{{{
                     \ g:NeoComplCache_CacheLineCount*30)
         autocmd Filetype * call s:NeoComplCache.CheckSource(g:NeoComplCache_CacheLineCount*10)
         " Caching current buffer events
-        autocmd InsertEnter * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
+        autocmd InsertEnter,InsertLeave * call s:NeoComplCache.Caching(bufnr('%'), '%', g:NeoComplCache_CacheLineCount)
         " Auto complete events
         autocmd CursorMovedI,InsertEnter * call s:NeoComplCache.Complete()
         " MFU events.
@@ -1428,9 +1439,9 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('lisp,scheme', 
                 \'(\=[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]\=')
     call s:SetKeywordPattern('ruby',
-                \'\([:@]\{1,2}\h\w*\|[.$]\=\h\w*[!?]\=\(\s*(\)\=\)')
+                \'\([:@]\{1,2}\(\h\w*\)\=\|[.$]\=\h\w*[!?]\=\(\s*(\)\=\)')
     call s:SetKeywordPattern('php',
-                \'\(<\/[^>]\+>\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|\(\$\|->\|::\)\=\h\w*\(\s*(\)\=\)')
+                \'\(<\/[^>]*>\=\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|\(\$\|->\|::\)\=\h\w*\(\s*(\)\=\)')
     call s:SetKeywordPattern('perl',
                 \'\(<\h\w*>\=\|->\h\w*(\=\|::\h\w*\|[$@%&*]\h\w*\|\h\w*\(\s*(\)\=\)')
     call s:SetKeywordPattern('vim',
@@ -1442,9 +1453,9 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('ps1',
                 \'\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*\(\s*(\)\=\)')
     call s:SetKeywordPattern('c',
-                \'\(->\|[.#]\)\=\h\w*\(\s*(\)\=')
+                \'\(->\(\h\w*\(\s*(\)\=\)\=\|[.#]\=\h\w*\(\s*(\)\=\)')
     call s:SetKeywordPattern('cpp',
-                \'\(->\|::\|[.#]\)\=\h\w*\(\s*(\|<\)\=')
+                \'\(->\(\h\w*\(\s*(\|<\)\=\)\=\|::\(\h\w*\)\=\|[.#]\=\h\w*\(\s*(\|<\)\=\)')
     call s:SetKeywordPattern('d',
                 \'\.\=\h\w*\(!\=\s*(\)\=')
     call s:SetKeywordPattern('python',
@@ -1460,7 +1471,7 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('ocaml',
                 \"[.#]\\=[[:alpha:]_'][[:alnum:]_']*")
     call s:SetKeywordPattern('html,xhtml,xml',
-                \'\(<\/[^>]\+>\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|&\h\w*;\|\h[[:alnum:]_-]*\(="\)\=\)')
+                \'\(<\/[^>]*>\=\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|&\h\w*;\|\h[[:alnum:]_-]*\(="\)\=\)')
     call s:SetKeywordPattern('tags',
                 \'^[^!\t][^\t]*')
     "}}}
@@ -1667,14 +1678,19 @@ endfunction"}}}
 
 function! s:NeoComplCache.UpdateTags()"{{{
     " Check tags are exists.
-    if has_key(s:source[bufnr('%')], 'ctagsed_lines') && abs(line('$') - s:source[bufnr('%')].ctagsed_lines) > line('$') / 20
+    if !has_key(s:source, bufnr('%')) || !has_key(s:source[bufnr('%')], 'ctagsed_lines')
+        return
+    endif
+
+    let l:max_line = line('$')
+    if abs(l:max_line - s:source[bufnr('%')].ctagsed_lines) > l:max_line / 20
         if has_key(g:NeoComplCache_CtagsArgumentsList, &filetype)
             let l:args = g:NeoComplCache_CtagsArgumentsList[&filetype]
         else
             let l:args = g:NeoComplCache_CtagsArgumentsList['default']
         endif
         call system(printf('ctags -f %s %s -a %s', expand('%:p:h') . '/tags', l:args, expand('%')))
-        let s:source[bufnr('%')].ctagsed_lines = line('$')
+        let s:source[bufnr('%')].ctagsed_lines = l:max_line
     endif
 endfunction"}}}
 
@@ -1766,7 +1782,7 @@ if !exists('g:NeoComplCache_AlphabeticalOrder')
     let g:NeoComplCache_AlphabeticalOrder = 0
 endif
 if !exists('g:NeoComplCache_CacheLineCount')
-    let g:NeoComplCache_CacheLineCount = 30
+    let g:NeoComplCache_CacheLineCount = 20
 endif
 if !exists('g:NeoComplCache_DeleteRank0')
     let g:NeoComplCache_DeleteRank0 = 0
