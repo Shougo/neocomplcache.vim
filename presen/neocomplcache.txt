@@ -173,6 +173,10 @@ fuzzyfinderにインスパイア。
 hoge*piyoと入力すると、hogeがつき、その後にpiyoとなるものにマッチします。
 正規表現的にはhoge.*piyoと同じ意味です。
 
+追記：
+Ver.2.01より、$*や@*, .*など、あらゆるところでワイルドカードが使えるようになりました。
+スペルが分からないときに便利です。
+
 --------------------------------
 結果のキャッシュによる高速化
 
@@ -335,8 +339,14 @@ preview windowに対応（New!）
 preview windowが存在するとき、キャッシュしたときの行を表示するようになりました。
 普通宣言がソースの上方に来ると考えられるので、
 Intellisenseのように使い方を参照することができます。
+ただし、表示に時間がかかったりちらつくので注意してください。
 デフォルトでは３つまでですが、g:NeoComplCache_MaxInfoListを設定することで、
 より多くの情報を表示させることが可能です。
+
+追記：
+Ver.2.02より、この機能を使用するには、
+let g:NeoComplCache_EnableInfo = 1
+とする必要があります。
 
 --------------------------------
 私の設定
@@ -355,9 +365,8 @@ let g:NeoComplCache_PreviousKeywordCompletion = 1
 let g:NeoComplCache_SimilarMatch = 1
 " Try keyword completion.
 let g:NeoComplCache_TryKeywordCompletion = 1
-
-" Toggle when press <C-e>.
-nnoremap <silent> <C-e> :<C-u>NeoComplCacheToggle<CR>
+" Use preview window.
+let g:NeoComplCache_EnableInfo = 1
 
 " Define dictionary.
 let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -403,13 +412,13 @@ C-hは一度ポップアップを消去し、ちらつかないようにして�
 --------------------------------
 低い知名度
 
-autocomplpop: 14,600件
-auto-complete.el: 24,900件
-neocomplcache: 13件
+autocomplpop: 12,400件
+auto-complete.el: 15,300件
+neocomplcache: 260件
 
                   Google調べ
 
-現在の主なユーザーは自分だけ？
+徐々に増えてはいますが、まだまだ少ない……。
 
 追記：
 thincaさんに紹介されました！！
@@ -447,10 +456,11 @@ let g:NeoComplCache_EnableAtStartup = 1
 考え得る限りほとんどの機能を実装しました。
 もはや補完の域を抜け出してしまったような気がしますが……。
 今後は機能追加は行わず、補完機能と補完用ソースの分離を進め、
-auto-complete.elやanything.elみたいに、
-誰でも補完用ソースが記述できるようにしたいです。
-その時にVer.2.0となります。
-ただし気が向けば、また機能を追加するかも？
+auto-complete.elやanything.elみたいに、誰でも補完用ソースが記述できるようにしたいです。
+
+追記：
+prev_rank, prepre_rankの実装や、c.doxygenといった複合ファイルタイプへの対応、
+syntaxcompleteの実装など、まだまだやることがありそうです。
 
 --------------------------------
 サポート
@@ -477,4 +487,6 @@ auto-complete.elやanything.elみたいに、
 2009/03/8      neocomplcache Ver.1.54に対応。
 2009/03/12     neocomplcache Ver.1.58に対応。
 2009/03/20     neocomplcache Ver.2.00に対応。
+2009/03/25     neocomplcache Ver.2.01に対応。
+2009/03/26     neocomplcache Ver.2.02に対応。
 --------------------------------

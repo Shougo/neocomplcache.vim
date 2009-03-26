@@ -23,9 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.01, for Vim 7.0
+" Version: 2.02, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   2.02:
+"     - Supported compound filetype.
+"     - Disable partial match when skipped.
+"     - Fixed wildcard bug.
+"     - Optimized info.
+"     - Added g:NeoComplCache_EnableInfo option.
+"     - Disable try keyword completion when wildcard.
 "   2.01:
 "     - Caching on InsertLeave.
 "     - Changed g:Neocomplcache_CacheLineCount default value.
@@ -305,7 +312,7 @@ function! s:NeoComplCache.Complete()"{{{
     " Get cursor word.
     let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
     " Prevent infinity loop.
-    if l:cur_text == s:old_text
+    if l:cur_text == s:old_text || empty(l:cur_text)
         return
     endif
     let s:old_text = l:cur_text
@@ -374,7 +381,7 @@ function! s:NeoComplCache.Complete()"{{{
 
     " Prevent filcker.
     if empty(s:complete_words)
-        if g:NeoComplCache_TryKeywordCompletion && l:cur_keyword_str =~ '\w$' && !s:skipped
+        if g:NeoComplCache_TryKeywordCompletion && l:cur_keyword_str =~ '\h\w*$' && l:cur_keyword_str !~ '\h\w*\*\w*$' && !s:skipped
             if &filetype == 'perl'
                 " Perl has a lot of included files.
                 call feedkeys("\<C-n>\<C-p>", 'n')
@@ -399,12 +406,6 @@ function! s:NeoComplCache.Complete()"{{{
 endfunction"}}}
 
 function! s:CheckAsterisk(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"{{{
-    if empty(a:cur_keyword_str)
-        " Get cursor word.
-        let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
-        return [match(l:cur_text, '[^\t ]\*$'), matchstr(l:cur_text, '[^\t ]\*$')]
-    endif
-
     let l:cur_keyword_pos = a:cur_keyword_pos
     let l:cur_keyword_str = a:cur_keyword_str
 
@@ -415,6 +416,12 @@ function! s:CheckAsterisk(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"{
         let l:cur_keyword_pos = match(l:left_text, a:pattern)
         let l:cur_keyword_str = l:left_keyword_str . '*' . l:cur_keyword_str
     endwhile
+
+    if empty(l:cur_keyword_str)
+        " Get cursor word.
+        let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
+        let [l:cur_keyword_pos, l:cur_keyword_str] = [match(l:cur_text, '[^\t ]\*$'), matchstr(l:cur_text, '[^\t ]\*$')]
+    endif
 
     return [l:cur_keyword_pos, l:cur_keyword_str]
 endfunction"}}}
@@ -557,19 +564,45 @@ function! s:NormalComplete_GetKeywordList()"{{{
         let l:ft = &filetype
     endif
 
-    " Set same filetype.
-    if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-        let l:ft_list = extend([l:ft], split(g:NeoComplCache_SameFileTypeLists[&filetype], ','))
-    else
-        let l:ft_list = [l:ft]
-    endif
-
     let l:keyword_list = []
     for key in keys(s:source)
-        if (key =~ '^\d' && index(l:ft_list, s:source[key].filetype) >= 0)
+        if (key =~ '^\d' && l:ft == s:source[key].filetype)
                     \|| key =~ l:ft_dict || key == l:ltags || key =~ l:mfu_dict || key =~ l:gtags || key =~ l:buf_dict 
             call extend(l:keyword_list, values(s:source[key].keyword_cache))
         endif
+    endfor
+
+    let l:ft_list = []
+    " Set same filetype.
+    if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
+        call extend(l:ft_list, split(g:NeoComplCache_SameFileTypeLists[&filetype], ','))
+    endif
+
+    " Set compound filetype.
+    if l:ft =~ '\.'
+        call extend(l:ft_list, split(l:ft, '\.'))
+    endif
+
+    for l:t in l:ft_list
+        if g:NeoComplCache_EnableMFU
+            let l:mfu_dict = '^mfu:' . l:t
+        else
+            " Dummy pattern.
+            let l:mfu_dict = '^$'
+        endif
+        if !empty(l:t) && has_key(g:NeoComplCache_DictionaryFileTypeLists, l:t)
+            let l:ft_dict = '^' . l:t
+        else
+            " Dummy pattern.
+            let l:ft_dict = '^$'
+        endif
+
+        for key in keys(s:source)
+            if key =~ '^\d' && l:t == s:source[key].filetype
+                        \|| key =~ l:ft_dict || key =~ l:mfu_dict 
+                call extend(l:keyword_list, values(s:source[key].keyword_cache))
+            endif
+        endfor
     endfor
 
     return l:keyword_list
@@ -581,14 +614,17 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     endif
 
     let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$*'), "'", "''", 'g')
-    if g:NeoComplCache_EnableAsterisk && !empty(l:keyword_escape)
-        let l:keyword_escape = l:keyword_escape[:1] . substitute(l:keyword_escape[2:], '\*', '.*', 'g')
-        "echo l:keyword_escape
+    if g:NeoComplCache_EnableAsterisk
+        if l:keyword_escape =~ '^\\\*'
+            let l:keyword_escape = l:keyword_escape[:1] . substitute(l:keyword_escape[2:], '\\\*', '.*', 'g')
+        else
+            let l:keyword_escape = substitute(l:keyword_escape, '\\\*', '.*', 'g')
+        endif
     endif
 
     " Keyword filter.
     let l:cur_len = len(a:cur_keyword_str)
-    if g:NeoComplCache_PartialMatch && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
+    if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
         let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ '%s'", l:keyword_escape)
@@ -632,6 +668,13 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
     if g:NeoComplCache_AlphabeticalOrder 
         " Not calc rank.
         let l:order_func = 's:CompareWords'
+
+        if g:NeoComplCache_EnableInfo
+            " Create info.
+            for keyword in l:cache_keyword_buffer_list
+                let keyword.info = join(keyword.info_list, "\n")
+            endfor
+        endif
     else
         " Calc rank."{{{
         let l:list_len = len(l:cache_keyword_buffer_list)
@@ -664,6 +707,11 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
                         let keyword.rank += keyword_lines[keyword.word]
                     endif
                 endfor
+
+                if g:NeoComplCache_EnableInfo
+                    " Create info.
+                    let keyword.info = join(keyword.info_list, "\n")
+                endif
             else
                 let s:rank_cache_count -= 1
             endif
@@ -802,20 +850,15 @@ function! g:NeoComplCache_NormalComplete(cur_keyword_str)"{{{
         let s:prev_numbered_list = l:numbered_ret[:g:NeoComplCache_QuickMatchMaxLists-1]
     endif
 
-    silent! wincmd P
-    if &previewwindow
-        wincmd p
-        " Create info.
-        for keyword in l:cache_keyword_buffer_filtered
-            let keyword.info = join(keyword.info_list, "\n")
-        endfor
-    else
-        " Delete info.
-        for keyword in l:cache_keyword_buffer_filtered
-            if has_key(keyword, 'info')
-                call remove(keyword, 'info')
-            endif
-        endfor
+    if g:NeoComplCache_EnableInfo
+        " Check preview window.
+        silent! wincmd P
+        if &previewwindow
+            wincmd p
+            setlocal completeopt+=preview
+        else
+            setlocal completeopt-=preview
+        endif
     endif
 
     " Remove next keyword.
@@ -993,14 +1036,33 @@ function! s:InitializeSource(srcname)"{{{
             let l:ft = 'nothing'
         endif
 
-        if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-            let l:keyword_pattern = s:AssumePattern(l:filename)
-            if empty(l:keyword_pattern)
-                " Assuming failed.
-                let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
-            endif
+        if l:ft =~ '\.'
+            " Composite filetypes.
+            let l:keyword_array = []
+            let l:keyword_default = 0
+            for l:f in split(l:ft, '\.')
+                if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
+                    if !l:keyword_default
+                        " Assuming failed.
+                        call add(l:keyword_array, g:NeoComplCache_KeywordPatterns['default'])
+                        let l:keyword_default = 1
+                    endif
+                else
+                    call add(l:keyword_array, g:NeoComplCache_KeywordPatterns[l:f])
+                endif
+            endfor
+            let l:keyword_pattern = '\(' . join(l:keyword_array, '\|') . '\)'
         else
-            let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
+            " Normal filetypes.
+            if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
+                let l:keyword_pattern = s:AssumePattern(l:filename)
+                if empty(l:keyword_pattern)
+                    " Assuming failed.
+                    let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
+                endif
+            else
+                let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
+            endif
         endif
     else
         " Dictionary or tags.
@@ -1428,6 +1490,7 @@ function! s:NeoComplCache.Enable()"{{{
     let s:prev_numbered_list = []
     let s:prepre_numbered_list = []
     let s:rank_cache_count = 1
+    let s:skipped = 0
     "}}}
 
     " Initialize keyword pattern match like intellisense."{{{
@@ -1445,7 +1508,7 @@ function! s:NeoComplCache.Enable()"{{{
     call s:SetKeywordPattern('perl',
                 \'\(<\h\w*>\=\|->\h\w*(\=\|::\h\w*\|[$@%&*]\h\w*\|\h\w*\(\s*(\)\=\)')
     call s:SetKeywordPattern('vim',
-                \'\(<\h[[:alnum:]_-]*>\=\|[.$]\h\w*(\=\|&\=\h[[:alnum:]#_:]*[(!]\=\)')
+                \'\(<\h[[:alnum:]_-]*>\=\|[.$]\h\w*(\=\|[&#]\=\h[[:alnum:]_:]*[(!]\=\)')
     call s:SetKeywordPattern('tex',
                 \'\(\\[[:alpha:]_@][[:alnum:]_@]*\*\=[[{]\=\|\h\w*\)')
     call s:SetKeywordPattern('sh,zsh,vimshell',
@@ -1816,6 +1879,9 @@ if !exists('g:NeoComplCache_TagsAutoUpdate')
 endif
 if !exists('g:NeoComplCache_TryKeywordCompletion')
     let g:NeoComplCache_TryKeywordCompletion = 0
+endif
+if !exists('g:NeoComplCache_EnableInfo')
+    let g:NeoComplCache_EnableInfo = 0
 endif
 if !exists('g:NeoComplCache_MaxInfoList')
     let g:NeoComplCache_MaxInfoList = 3
