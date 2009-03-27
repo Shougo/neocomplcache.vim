@@ -73,6 +73,7 @@ neocomplcacheの良いところ
 ・補完機能のカスタマイズがしやすい
 ・補完機能はほとんど自前実装
 ・毎週更新？
+・プラグインで拡張できる（予定）
 
 neocomplcacheの悪いところ
 ・情報はほとんど無い
@@ -123,9 +124,10 @@ neocomplcacheの代表的機能
 ・スペルチェック
 ・ローカルタグ補完
 ・自動タグファイルアップデート
-・キーワード補完を試す（New!）
-・Same filetype completion（New!）
+・キーワード補完を試す
+・Same filetype completion
 ・preview windowに対応（New!）
+・プラグインで拡張可能（New!）
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -339,7 +341,7 @@ preview windowに対応（New!）
 preview windowが存在するとき、キャッシュしたときの行を表示するようになりました。
 普通宣言がソースの上方に来ると考えられるので、
 Intellisenseのように使い方を参照することができます。
-ただし、表示に時間がかかったりちらつくので注意してください。
+ただし表示に時間がかかったり、ちらつきが激しいので注意してください。
 デフォルトでは３つまでですが、g:NeoComplCache_MaxInfoListを設定することで、
 より多くの情報を表示させることが可能です。
 
@@ -347,6 +349,14 @@ Intellisenseのように使い方を参照することができます。
 Ver.2.02より、この機能を使用するには、
 let g:NeoComplCache_EnableInfo = 1
 とする必要があります。
+
+--------------------------------
+プラグインで拡張可能（New!）
+
+Ver.2.10にて、複雑だったソースコードを分割し、ついに補完をプラグインで拡張できるようになりました。
+まだ他のプラグインを読み込む部分はできていませんが、夢は広がります。
+予定としては、シンタックス補完をプラグインとして実装、
+ファイルタイプごとにプラグインを読み込めるようにしたいです。
 
 --------------------------------
 私の設定
@@ -367,6 +377,8 @@ let g:NeoComplCache_SimilarMatch = 1
 let g:NeoComplCache_TryKeywordCompletion = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
+" Delete keyword when rank is 0.
+let g:NeoComplCache_DeleteRank0 = 0
 
 " Define dictionary.
 let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -489,4 +501,5 @@ syntaxcompleteの実装など、まだまだやることがありそうです。
 2009/03/20     neocomplcache Ver.2.00に対応。
 2009/03/25     neocomplcache Ver.2.01に対応。
 2009/03/26     neocomplcache Ver.2.02に対応。
+2009/03/27     neocomplcache Ver.2.10に対応。
 --------------------------------
