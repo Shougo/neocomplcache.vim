@@ -207,8 +207,9 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
     if !has_key(s:source, a:srcname)
         " Initialize source.
         call s:initialize_source(a:srcname)
-    elseif a:srcname =~ '^\d' && 
-                \s:source[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
+    elseif a:srcname =~ '^\d' &&
+                \ (s:source[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
+                \ || s:source[a:srcname].filetype != getbufvar(a:srcname, '&filetype'))
         " Initialize source if bufname changed.
         call s:initialize_source(a:srcname)
         let l:start_line = 1
@@ -243,11 +244,11 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
     let l:line_cnt = 0
 
     " For debugging.
-    if l:end_line == '$'
-        echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
-    else
-        echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
-    endif
+    "if l:end_line == '$'
+        "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
+    "else
+        "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
+    "endif
 
     if a:start_line == 1 && a:end_line < 0
         " Cache clear if whole buffer.
