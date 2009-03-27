@@ -23,12 +23,19 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.10, for Vim 7.0
+" Version: 2.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   2.11:
+"     - Implemented prev_rank.
+"     - Fixed disable auto complete bug.
+"     - Changed g:NeoComplCache_MinKeywordLength default value.
+"     - Changed g:NeoComplCache_CacheLineCount default value.
+"     - Fixed MFU.
+"     - Optimized calc rank.
+"     - Fixed freeze bug when InsertEnter and InsertLeave.
 "   2.10:
 "     - Divided as plugin.
-"     - Fixed disable auto complete bug.
 "     - NeoCompleCacheToggle uses lock() and unlock()
 "     - Abbreviation indication of the end.
 "     - Don't load MFU when MFU is empty.
@@ -334,7 +341,7 @@ if !exists('g:NeoComplCache_SimilarCompletionStartLength')
     let g:NeoComplCache_SimilarCompletionStartLength = 4
 endif
 if !exists('g:NeoComplCache_MinKeywordLength')
-    let g:NeoComplCache_MinKeywordLength = 3
+    let g:NeoComplCache_MinKeywordLength = 4
 endif
 if !exists('g:NeoComplCache_FilenameCompletionStartLength')
     let g:NeoComplCache_FilenameCompletionStartLength = 0
@@ -349,7 +356,7 @@ if !exists('g:NeoComplCache_AlphabeticalOrder')
     let g:NeoComplCache_AlphabeticalOrder = 0
 endif
 if !exists('g:NeoComplCache_CacheLineCount')
-    let g:NeoComplCache_CacheLineCount = 20
+    let g:NeoComplCache_CacheLineCount = 40
 endif
 if !exists('g:NeoComplCache_DeleteRank0')
     let g:NeoComplCache_DeleteRank0 = 0

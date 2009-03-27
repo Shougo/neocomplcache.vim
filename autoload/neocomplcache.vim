@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.10, for Vim 7.0
+" Version: 2.11, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -123,9 +123,6 @@ function! neocomplcache#complete()"{{{
         return
     endif
 
-    " Lock auto complete.
-    let s:complete_lock = 1
-
     " Start original complete.
     let s:cur_keyword_pos = l:cur_keyword_pos
     let s:cur_keyword_str = l:cur_keyword_str
@@ -169,11 +166,6 @@ endfunction"}}}
 function! neocomplcache#auto_complete(findstart, base)"{{{
     if a:findstart
         return s:cur_keyword_pos
-    endif
-
-    " Prevent multiplex call.
-    if !s:complete_lock
-        return []
     endif
 
     " Restore options.
@@ -231,6 +223,11 @@ endfunction"}}}
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
     return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
+endfunction"}}}
+" PreviousRankOrder."{{{
+function! neocomplcache#compare_prev_rank(i1, i2)
+    return a:i1.rank+a:i1.prev_rank < a:i2.rank+a:i2.prev_rank ? 1 :
+                \a:i1.rank+a:i1.prev_rank == a:i2.rank+a:i2.prev_rank ? 0 : -1
 endfunction"}}}
 " AlphabeticalOrder."{{{
 function! neocomplcache#compare_words(i1, i2)
@@ -387,27 +384,36 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
             let l:prev_word = '^'
         endif
         "echo printf('prepre = %s, pre = %s', l:prepre_word, l:prev_word)
+        
+        " Filtering for optimize."{{{
+        if !g:NeoComplCache_AlphabeticalOrder
+            if len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList * 10
+                call filter(l:cache_keyword_buffer_list, 'v:val.rank > 3')
+            elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList * 5
+                call filter(l:cache_keyword_buffer_list, 'v:val.rank > 2')
+            elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList
+                call filter(l:cache_keyword_buffer_list, 'v:val.rank > 1')
+            endif
+        endif"}}}
+
+        call neocomplcache#keyword_complete#calc_prev_rank(l:cache_keyword_buffer_list, l:prev_word, l:prepre_word)
 
         " Sort.
-        if !empty(l:prepre_word) 
-            let l:prev = filter(copy(l:cache_keyword_buffer_list), 
-                        \printf("has_key(v:val.prev_word, '%s') && has_key(v:val.prepre_word, '%s')", l:prev_word, l:prepre_word))
-            call extend(l:cache_keyword_buffer_filtered, sort(l:prev, l:order_func))
-            call filter(l:cache_keyword_buffer_list, 
-                        \printf("!has_key(v:val.prev_word, '%s') || !has_key(v:val.prepre_word, '%s')", l:prev_word, l:prepre_word))
-        endif
-
-        let l:prev = filter(copy(l:cache_keyword_buffer_list), "has_key(v:val.prev_word, '" . l:prev_word . "')")
-        call extend(l:cache_keyword_buffer_filtered, sort(l:prev, l:order_func))
-        call filter(l:cache_keyword_buffer_list, "!has_key(v:val.prev_word, '" . l:prev_word . "')")
-
-        if !empty(l:prepre_word)
-            let l:prev = filter(copy(l:cache_keyword_buffer_list), "has_key(v:val.prepre_word, '" . l:prepre_word . "')")
-            call extend(l:cache_keyword_buffer_filtered, sort(l:prev, l:order_func))
-            call filter(l:cache_keyword_buffer_list, "!has_key(v:val.prepre_word, '" . l:prepre_word . "')")
-        endif
+        let l:prev = filter(copy(l:cache_keyword_buffer_list), 'v:val.prev_rank > 0')
+        call extend(l:cache_keyword_buffer_filtered, sort(l:prev, 'neocomplcache#compare_prev_rank'))
+        call filter(l:cache_keyword_buffer_list, 'v:val.prev_rank == 0')
     endif"}}}
 
+    " Filtering for optimize."{{{
+    if !g:NeoComplCache_AlphabeticalOrder
+        if len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList * 3
+            call filter(l:cache_keyword_buffer_list, 'v:val.rank > 8')
+        elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList
+            call filter(l:cache_keyword_buffer_list, 'v:val.rank > 5')
+        elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList / 2
+            call filter(l:cache_keyword_buffer_list, 'v:val.rank > 3')
+        endif
+    endif"}}}
     " Sort.
     call extend(l:cache_keyword_buffer_filtered, sort(l:cache_keyword_buffer_list, l:order_func))
 

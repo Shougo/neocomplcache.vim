@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.10, for Vim 7.0
+" Version: 2.11, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list()"{{{
@@ -120,7 +120,15 @@ endfunction"}}}
 function! neocomplcache#keyword_complete#calc_rank(cache_keyword_buffer_list)"{{{
     let l:list_len = len(a:cache_keyword_buffer_list)
 
-    if l:list_len > g:NeoComplCache_CalcRankMaxLists
+    if l:list_len > g:NeoComplCache_CalcRankMaxLists * 10
+        let l:calc_cnt = 20
+    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists * 7
+        let l:calc_cnt = 15
+    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists * 5
+        let l:calc_cnt = 10
+    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists * 3
+        let l:calc_cnt = 8
+    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists
         let l:calc_cnt = 5
     elseif l:list_len > g:NeoComplCache_CalcRankMaxLists / 2
         let l:calc_cnt = 4
@@ -146,7 +154,7 @@ function! neocomplcache#keyword_complete#calc_rank(cache_keyword_buffer_list)"{{
             " Set rank.
             for keyword_lines in values(s:source[keyword.srcname].rank_cache_lines)
                 if has_key(keyword_lines, keyword.word)
-                    let keyword.rank += keyword_lines[keyword.word]
+                    let keyword.rank += keyword_lines[keyword.word].rank
                 endif
             endfor
 
@@ -157,6 +165,26 @@ function! neocomplcache#keyword_complete#calc_rank(cache_keyword_buffer_list)"{{
         else
             let s:rank_cache_count -= 1
         endif
+    endfor
+
+endfunction"}}}
+
+function! neocomplcache#keyword_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
+    " Calc previous rank.
+    for keyword in a:cache_keyword_buffer_list
+        let [keyword.prev_rank, keyword.prepre_rank] = [0, 0]
+        " Set rank.
+        for keyword_lines in values(s:source[keyword.srcname].rank_cache_lines)
+            if has_key(keyword_lines, keyword.word)
+                if has_key(keyword_lines[keyword.word].prev_rank, a:prev_word)
+                    let keyword.prev_rank += keyword_lines[keyword.word].prev_rank[a:prev_word]
+                endif
+                if has_key(keyword_lines[keyword.word].prepre_rank, a:prepre_word) && a:prev_word != '^'
+                    let keyword.prev_rank += keyword_lines[keyword.word].prepre_rank[a:prepre_word]
+                endif
+            endif
+        endfor
+        let [keyword.prev_rank, keyword.prepre_rank] = [keyword.prev_rank*5, keyword.prev_rank*3]
     endfor
 endfunction"}}}
 
@@ -172,24 +200,21 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
     let l:start_line = (a:start_line == '%')? line('.') : a:start_line
     let l:start_line = (l:start_line-1)/g:NeoComplCache_CacheLineCount*g:NeoComplCache_CacheLineCount+1
     let l:end_line = (a:end_line < 0)? '$' : 
-                \ (l:start_line + a:end_line + g:NeoComplCache_CacheLineCount-2)/g:NeoComplCache_CacheLineCount*g:NeoComplCache_CacheLineCount
+                \ (l:start_line + a:end_line + g:NeoComplCache_CacheLineCount-2)
+                \ / g:NeoComplCache_CacheLineCount*g:NeoComplCache_CacheLineCount
 
     " Check exists s:source.
     if !has_key(s:source, a:srcname)
         " Initialize source.
         call s:initialize_source(a:srcname)
     elseif a:srcname =~ '^\d' && 
-                \(s:source[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
-                \||s:source[a:srcname].filetype != getbufvar(a:srcname, '&filetype'))
+                \s:source[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
         " Initialize source if bufname changed.
         call s:initialize_source(a:srcname)
         let l:start_line = 1
-        if a:end_line < 0
-            " Whole buffer.
-            let s:source[a:srcname].cached_last_line = s:source[a:srcname].end_line + 1
-        else
-            let s:source[a:srcname].cached_last_line = a:end_line
-        endif
+        let l:end_line = (l:start_line + a:end_line + g:NeoComplCache_CacheLineCount-2)
+                    \ /g:NeoComplCache_CacheLineCount*g:NeoComplCache_CacheLineCount
+        let s:source[a:srcname].cached_last_line = l:end_line
     endif
 
     let l:source = s:source[a:srcname]
@@ -218,11 +243,11 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
     let l:line_cnt = 0
 
     " For debugging.
-    "if l:end_line == '$'
-        "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
-    "else
-        "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
-    "endif
+    if l:end_line == '$'
+        echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
+    else
+        echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
+    endif
 
     if a:start_line == 1 && a:end_line < 0
         " Cache clear if whole buffer.
@@ -252,47 +277,45 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
         if l:line_cnt >= g:NeoComplCache_CacheLineCount
             " Next cache line.
             let l:cache_line += 1
-            let l:source.rank_cache_lines[l:cache_line] = {}
-            let l:line_cnt = 0
+            let [l:source.rank_cache_lines[l:cache_line], l:line_cnt] = [{}, 0]
         endif
 
-        let l:line = buflines[l:line_num]
+        let [l:line, l:rank_cache_line] = [buflines[l:line_num], l:source.rank_cache_lines[l:cache_line]]
         let [l:match_num, l:match_end, l:prev_word, l:prepre_word, l:info_line] =
-                    \[match(l:line, l:keyword_pattern), matchend(l:line, l:keyword_pattern), '', '', 
+                    \[0, matchend(l:line, l:keyword_pattern), '', '', 
                     \substitute(l:line, '^\s\+', '', '')[:100]]
-        while l:match_num >= 0
+        while 1
             let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
+            if empty(l:match_str)
+                break
+            endif
 
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
-                if !has_key(l:source.rank_cache_lines[l:cache_line], l:match_str) 
-                    let l:source.rank_cache_lines[l:cache_line][l:match_str] = 1
+                if !has_key(l:rank_cache_line, l:match_str) 
+                    let l:rank_cache_line[l:match_str] = { 'rank' : 1, 'prev_rank' : {}, 'prepre_rank' : {} }
 
                     " Check dup.
                     if !has_key(l:source.keyword_cache, l:match_str)
                         " Append list.
                         let l:source.keyword_cache[l:match_str] = {
                                     \'word' : l:match_str, 'menu' : l:menu,  'dup' : 0,
-                                    \'filename' : l:filename, 'srcname' : a:srcname, 'prev_word' : {}, 'prepre_word' : {},
-                                    \'info_list' : [l:info_line] }
+                                    \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : [l:info_line]
+                                    \}
 
-                        if len(l:match_str) > g:NeoComplCache_MaxKeywordWidth
-                            let l:source.keyword_cache[l:match_str].abbr = printf(l:abbr_pattern, l:match_str, l:match_str[-8:])
-                        else
-                            let l:source.keyword_cache[l:match_str].abbr = l:match_str
-                        endif
+                        let l:source.keyword_cache[l:match_str].abbr = 
+                                    \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
+                                    \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
                     endif
                 else
-                    let l:source.rank_cache_lines[l:cache_line][l:match_str] += 1
+                    let l:rank_cache_line[l:match_str].rank += 1
 
                     if len(l:source.keyword_cache[l:match_str].info_list) < g:NeoComplCache_MaxInfoList
                         cal add(l:source.keyword_cache[l:match_str].info_list, l:info_line)
                     endif
                 endif
 
-                let l:keyword_match = l:source.keyword_cache[l:match_str]
-
-                " Save previous keyword.
+                " Calc previous keyword rank.
                 if !empty(l:prev_word) || l:line !~ '^\$\s'
                     if empty(l:prev_word)
                         let l:prev_word = '^'
@@ -300,15 +323,24 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                         if empty(l:prepre_word)
                             let l:prepre_word = '^'
                         endif
-                        let l:keyword_match.prepre_word[l:prepre_word] = 1
+                        if has_key(l:rank_cache_line[l:match_str].prepre_rank, l:prev_word)
+                            let l:rank_cache_line[l:match_str].prepre_rank[l:prev_word] += 1
+                        else
+                            let l:rank_cache_line[l:match_str].prepre_rank[l:prev_word] = 1
+                        endif
                     endif
-                    let l:keyword_match.prev_word[l:prev_word] = 1
+
+                    if has_key(l:rank_cache_line[l:match_str].prev_rank, l:prev_word)
+                        let l:rank_cache_line[l:match_str].prev_rank[l:prev_word] += 1
+                    else
+                        let l:rank_cache_line[l:match_str].prev_rank[l:prev_word] = 1
+                    endif
                 endif
             endif
 
             " Next match.
             let [l:match_num, l:match_end, l:prev_word, l:prepre_word] =
-                        \[l:match_end, matchend(l:line, l:keyword_pattern, l:match_end), l:match_str, l:prev_word]
+                        \[l:match_end, len(l:match_str) + l:match_num, l:match_str, l:prev_word]
         endwhile
 
         let l:line_num += 1
@@ -556,31 +588,12 @@ function! s:save_MFU(key)"{{{
     endif
 
     let l:mfu_dict = {}
-    let l:prev_word = {}
-    let l:prepre_word = {}
     let l:mfu_path = printf('%s/%s.mfu', g:NeoComplCache_MFUDirectory, l:ft)
     if filereadable(l:mfu_path)
         for line in readfile(l:mfu_path)
             let l = split(line)
-            if len(l) == 3 
-                if line =~ '^$ '
-                    let l:mfu_dict[l[1]] = { 'word' : l[1], 'rank' : l[2], 'found' : 0 }
-                else
-                    if !has_key(l:prepre_word, l[2])
-                        let l:prepre_word[l[2]] = {}
-                    endif
-                    let l:prepre_word[l[2]][l[0]] = 1
-                endif
-            elseif len(l) == 2
-                if !has_key(l:prev_word, l[0])
-                    let l:prev_word[l[0]] = {}
-                endif
-                let l:prev_word[l[0]][l[1]] = l[1]
-            elseif len(l) == 1
-                if !has_key(l:prev_word, l[0])
-                    let l:prev_word[l[0]] = {}
-                endif
-                let l:prev_word[l[0]]['^'] = 1
+            if len(l) == 3 && line =~ '^$ '
+                let l:mfu_dict[l[1]] = { 'word' : l[1], 'rank' : l[2], 'found' : 0 }
             endif
         endfor
     endif
@@ -589,23 +602,9 @@ function! s:save_MFU(key)"{{{
             if !has_key(l:mfu_dict, keyword.word) || keyword.rank > l:mfu_dict[keyword.word].rank
                 let l:mfu_dict[keyword.word] = { 'word' : keyword.word, 'rank' : keyword.rank*2, 'found' : 1 }
             endif
-
-            if has_key(keyword, 'prev_word')
-                let l:prev_word[keyword.word] = keyword.prev_word
-            endif
-            if has_key(keyword, 'prepre_word')
-                let l:prepre_word[keyword.word] = keyword.prepre_word
-            endif
         elseif has_key(l:mfu_dict, keyword.word)
             " Found.
             let l:mfu_dict[keyword.word].found = 1
-
-            if has_key(keyword, 'prev_word')
-                let l:prev_word[keyword.word] = keyword.prev_word
-            endif
-            if has_key(keyword, 'prepre_word')
-                let l:prepre_word[keyword.word] = keyword.prepre_word
-            endif
         endif
     endfor
 
@@ -618,12 +617,6 @@ function! s:save_MFU(key)"{{{
                 if l:mfu_dict[key].rank < g:NeoComplCache_MFUThreshold
                     " Delete word.
                     call remove(l:mfu_dict, key)
-                    if has_key(l:prev_word, key)
-                        call remove(l:prev_word, key)
-                    endif
-                    if has_key(l:prepre_word, key)
-                        call remove(l:prepre_word, key)
-                    endif
                 endif
             endif
         endfor
@@ -633,24 +626,6 @@ function! s:save_MFU(key)"{{{
     let l:mfu_word = []
     for dict in sort(values(l:mfu_dict), 'neocomplcache#compare_rank')
         call add(l:mfu_word, printf('$ %s %s' , dict.word, dict.rank))
-    endfor
-    for prevs_key in keys(l:prev_word)
-        for prev in keys(l:prev_word[prevs_key])
-            if prev == '^' 
-                call add(l:mfu_word, printf('%s', prevs_key))
-            else
-                call add(l:mfu_word, printf('%s %s', prev, prevs_key))
-            endif
-        endfor
-    endfor
-    for prevs_key in keys(l:prepre_word)
-        for prev in keys(l:prepre_word[prevs_key])
-            if prev == '^' 
-                call add(l:mfu_word, printf('x %s', prevs_key))
-            else
-                call add(l:mfu_word, printf('%s x %s', prev, prevs_key))
-            endif
-        endfor
     endfor
     call writefile(l:mfu_word[: g:NeoComplCache_MFUMax-1], l:mfu_path)
 endfunction "}}}
@@ -927,11 +902,11 @@ function! neocomplcache#keyword_complete#garbage_collect()"{{{
         return
     endif
     
-    let l:source = s:source[bufnr('%')].keyword_cache
-    for l:key in keys(l:source)
-        if has_key(l:source[l:key], 'rank') && l:source[l:key].rank == 0
+    let l:keywords = s:source[bufnr('%')].keyword_cache
+    for l:key in keys(l:keywords)
+        if has_key(l:keywords[l:key], 'rank') && l:keywords[l:key].rank == 0
             " Delete keyword.
-            call remove(l:source, l:key)
+            call remove(l:keywords, l:key)
         endif
     endfor
 endfunction"}}}
