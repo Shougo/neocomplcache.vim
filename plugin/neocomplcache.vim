@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Mar 2009
+" Last Modified: 28 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,25 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.11, for Vim 7.0
+" Version: 2.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+" ChangeLog NeoCompleCache2: "{{{
+"   2.14:
+"     - Optimized calc rank.
+"   2.13:
+"     - Optimized caching.
+"     - Optimized calc rank.
+"     - Fixed calc rank bugs.
+"     - Optimized similar match.
+"     - Fixed dictionary bug.
+"   2.12:
+"     - Added g:NeoComplCache_CachingRandomize option.
+"     - Changed g:NeoComplCache_CacheLineCount default value.
+"     - Optimized caching.
+"     - Caching current cache line on idle.
+"     - Fixed key not present error.
+"     - Fixed caching bug.
 "   2.11:
 "     - Implemented prev_rank.
 "     - Fixed disable auto complete bug.
@@ -61,6 +77,8 @@
 "     - Fixed skipped bug.
 "     - Improved commands.
 "     - Deleted g:NeoComplCache_DrawWordsRank option.
+"     "}}}
+" ChangeLog NeoCompleCache: "{{{
 "   1.60:
 "     - Improved calc similar algorithm.
 "   1.59:
@@ -227,6 +245,7 @@
 "   1.00:
 "     - Renamed.
 "     - Initial version.
+"     "}}}
 " ChangeLog AltAutoComplPop: "{{{
 "   2.62:
 "     - Set lazyredraw at auto complete.
@@ -296,11 +315,10 @@
 "   1.0:
 "     - Initial version.
 ""}}}
-"
 " }}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
-"     - Load plugin.
+"     - Syntax complete.
 ""}}}
 " Bugs"{{{
 "     - Nothing.
@@ -356,7 +374,7 @@ if !exists('g:NeoComplCache_AlphabeticalOrder')
     let g:NeoComplCache_AlphabeticalOrder = 0
 endif
 if !exists('g:NeoComplCache_CacheLineCount')
-    let g:NeoComplCache_CacheLineCount = 40
+    let g:NeoComplCache_CacheLineCount = 70
 endif
 if !exists('g:NeoComplCache_DeleteRank0')
     let g:NeoComplCache_DeleteRank0 = 0
@@ -396,6 +414,9 @@ if !exists('g:NeoComplCache_EnableInfo')
 endif
 if !exists('g:NeoComplCache_MaxInfoList')
     let g:NeoComplCache_MaxInfoList = 3
+endif
+if !exists('g:NeoComplCache_CachingRandomize')
+    let g:NeoComplCache_CachingRandomize = has('reltime')
 endif
 if !exists('g:NeoComplCache_EnableMFU')
     let g:NeoComplCache_EnableMFU = 0
