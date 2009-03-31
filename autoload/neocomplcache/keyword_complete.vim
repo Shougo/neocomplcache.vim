@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2009
+" Last Modified: 30 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.14, for Vim 7.0
+" Version: 2.15, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list()"{{{
@@ -201,7 +201,7 @@ function! neocomplcache#keyword_complete#calc_prev_rank(cache_keyword_buffer_lis
                     let keyword.prev_rank += keyword_lines[keyword.word].prev_rank[a:prev_word]
                 endif
             endfor
-            let keyword.prev_rank = keyword.prev_rank * 4
+            let keyword.prev_rank = keyword.prev_rank * 12
         endif
         if has_key(l:source_next_next, keyword.srcname)
                     \&& has_key(l:source_next_next[keyword.srcname], keyword.word)
@@ -212,7 +212,9 @@ function! neocomplcache#keyword_complete#calc_prev_rank(cache_keyword_buffer_lis
                     let keyword.prepre_rank += keyword_lines[keyword.word].prepre_rank[a:prepre_word]
                 endif
             endfor
-            let keyword.prepre_rank = keyword.prepre_rank
+            if a:prepre_word != '^'
+                let keyword.prepre_rank = keyword.prepre_rank * 3
+            endif
         endif
     endfor
 endfunction"}}}

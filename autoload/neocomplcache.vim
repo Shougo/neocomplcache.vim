@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2009
+" Last Modified: 30 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.14, for Vim 7.0
+" Version: 2.15, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -76,7 +76,7 @@ function! neocomplcache#complete()"{{{
         let [l:cur_keyword_pos, l:cur_keyword_str] = s:check_wildcard(l:cur_text, l:pattern, l:cur_keyword_pos, l:cur_keyword_str)
     endif
 
-    if l:cur_keyword_pos < 0 || len(cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
+    if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
         " Try filename completion.
         "
         if s:check_filename_completion(l:cur_text)
@@ -108,6 +108,7 @@ function! neocomplcache#complete()"{{{
     " Prevent filcker.
     if empty(s:complete_words) && !s:skipped
         if g:NeoComplCache_TryKeywordCompletion
+                    \&& len(l:cur_keyword_str) <= g:NeoComplCache_MaxTryKeywordLength
                     \&& l:cur_keyword_str =~ '\h\w*$' && l:cur_keyword_str !~ '\h\w*[*-]\w*$'
             if &filetype == 'perl'
                 " Perl has a lot of included files.
@@ -294,7 +295,10 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
     endif"}}}
 
     " Get keyword list.
-    let l:cache_keyword_buffer_list = filter(neocomplcache#keyword_complete#get_keyword_list(), l:pattern)
+    let l:cache_keyword_buffer_list = neocomplcache#keyword_complete#get_keyword_list()
+    if !empty(a:cur_keyword_str)
+        call filter(l:cache_keyword_buffer_list, l:pattern)
+    endif
     
     " Similar filter."{{{
     if &l:completefunc != 'neocomplcache#auto_complete' && g:NeoComplCache_SimilarMatch 
@@ -602,7 +606,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('ps1',
                 \'\($\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*\(\s*(\)\=\)')
     call s:set_keyword_pattern('c',
-                \'\(->\(\h\w*\(\s*(\)\=\)\=\|[.#]\=\h\w*\(\s*(\)\=\)')
+                \'\(->\(\h\w*\(\s*(\)\=\)\=\|^\s*#\s*\h\w*\|.\=\h\w*\(\s*(\)\=\)')
     call s:set_keyword_pattern('cpp',
                 \'\(->\(\h\w*\(\s*(\|<\)\=\)\=\|::\(\h\w*\)\=\|[.#]\=\h\w*\(\s*(\|<\)\=\)')
     call s:set_keyword_pattern('d',

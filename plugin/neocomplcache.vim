@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2009
+" Last Modified: 30 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.14, for Vim 7.0
+" Version: 2.15, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.15:
+"     - Improved C syntax.
+"     - Added g:NeoComplCache_MaxTryKeywordLength option.
+"     - Improved prev rank.
+"     - Optimized if keyword is empty.
 "   2.14:
 "     - Optimized calc rank.
 "   2.13:
@@ -408,6 +413,9 @@ if !exists('g:NeoComplCache_TagsAutoUpdate')
 endif
 if !exists('g:NeoComplCache_TryKeywordCompletion')
     let g:NeoComplCache_TryKeywordCompletion = 0
+endif
+if !exists('g:NeoComplCache_MaxTryKeywordLength')
+    let g:NeoComplCache_MaxTryKeywordLength = 5
 endif
 if !exists('g:NeoComplCache_EnableInfo')
     let g:NeoComplCache_EnableInfo = 0
