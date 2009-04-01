@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Mar 2009
+" Last Modified: 01 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.15, for Vim 7.0
+" Version: 2.16, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.16:
+"     - Fixed caching initialize bug.
+"     - Supported vim help file.
+"     - Created manual.
+"     - Fixed variables name.
+"     - Deleted g:NeoComplCache_CalcRankMaxLists option.
 "   2.15:
 "     - Improved C syntax.
 "     - Added g:NeoComplCache_MaxTryKeywordLength option.
@@ -366,9 +372,6 @@ endif
 if !exists('g:NeoComplCache_MinKeywordLength')
     let g:NeoComplCache_MinKeywordLength = 4
 endif
-if !exists('g:NeoComplCache_FilenameCompletionStartLength')
-    let g:NeoComplCache_FilenameCompletionStartLength = 0
-endif
 if !exists('g:NeoComplCache_IgnoreCase')
     let g:NeoComplCache_IgnoreCase = 1
 endif
@@ -390,14 +393,11 @@ endif
 if !exists('g:NeoComplCache_EnableWildCard')
     let g:NeoComplCache_EnableWildCard = 1
 endif
-if !exists('g:NeoComplCache_QuickMatchEnable')
-    let g:NeoComplCache_QuickMatchEnable = 1
+if !exists('g:NeoComplCache_EnableQuickMatch')
+    let g:NeoComplCache_EnableQuickMatch = 1
 endif
 if !exists('g:NeoComplCache_CalcRankRandomize')
     let g:NeoComplCache_CalcRankRandomize = has('reltime')
-endif
-if !exists('g:NeoComplCache_CalcRankMaxLists')
-    let g:NeoComplCache_CalcRankMaxLists = 40
 endif
 if !exists('g:NeoComplCache_QuickMatchMaxLists')
     let g:NeoComplCache_QuickMatchMaxLists = 100

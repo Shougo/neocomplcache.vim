@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Mar 2009
+" Last Modified: 01 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.15, for Vim 7.0
+" Version: 2.16, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -391,18 +391,18 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
     " Filtering for optimize."{{{
     if !g:NeoComplCache_AlphabeticalOrder
         if len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList * 3
-            call filter(l:cache_keyword_buffer_list, 'v:val.rank > 5')
-        elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList
             call filter(l:cache_keyword_buffer_list, 'v:val.rank > 3')
-        elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList / 2
+        elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList
             call filter(l:cache_keyword_buffer_list, 'v:val.rank > 2')
+        elseif len(l:cache_keyword_buffer_list) > g:NeoComplCache_MaxList / 2
+            call filter(l:cache_keyword_buffer_list, 'v:val.rank > 1')
         endif
     endif"}}}
     " Sort.
     call extend(l:cache_keyword_buffer_filtered, sort(l:cache_keyword_buffer_list, l:order_func))
 
     " Quick match.
-    if g:NeoComplCache_QuickMatchEnable"{{{
+    if g:NeoComplCache_EnableQuickMatch"{{{
         " Append numbered list.
         if match(l:keyword_escape, '\d$') >= 0
             " Get numbered list.
@@ -428,7 +428,7 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
     " Trunk too many item.
     let l:cache_keyword_buffer_filtered = l:cache_keyword_buffer_filtered[:g:NeoComplCache_MaxList-1]
 
-    if g:NeoComplCache_QuickMatchEnable"{{{
+    if g:NeoComplCache_EnableQuickMatch"{{{
         " Check dup.
         let l:dup_check = {}
         let l:num = 0
@@ -529,6 +529,42 @@ function! s:get_prev_word(cur_keyword_str)"{{{
 endfunction"}}}
 
 " Assume filetype pattern.
+function! neocomplcache#assume_buffer_pattern(bufname)"{{{
+    let l:ft = getbufvar(a:bufname, '&filetype')
+    if empty(l:ft)
+        let l:ft = 'nothing'
+    endif
+
+    if l:ft =~ '\.'
+        " Composite filetypes.
+        let l:keyword_array = []
+        let l:keyword_default = 0
+        for l:f in split(l:ft, '\.')
+            if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
+                if !l:keyword_default
+                    " Assuming failed.
+                    call add(l:keyword_array, g:NeoComplCache_KeywordPatterns['default'])
+                    let l:keyword_default = 1
+                endif
+            else
+                call add(l:keyword_array, g:NeoComplCache_KeywordPatterns[l:ft])
+            endif
+        endfor
+        let l:keyword_pattern = '\(' . join(l:keyword_array, '\|') . '\)'
+    else
+        " Normal filetypes.
+        if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
+            let l:keyword_pattern = neocomplcache#assume_pattern(fnamemodify(bufname(a:bufname), ':t'))
+            if empty(l:keyword_pattern)
+                " Assuming failed.
+                let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
+            endif
+        else
+            let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
+        endif
+    endif
+    return l:keyword_pattern
+endfunction"}}}
 function! neocomplcache#assume_pattern(bufname)"{{{
     " Extract extention.
     let l:ext = fnamemodify(a:bufname, ':e')
@@ -597,7 +633,7 @@ function! neocomplcache#enable() "{{{
                 \'\(<\/[^>]*>\=\|<\h[[:alnum:]_-]*\(\s*/\=>\)\=\|\(\$\|->\|::\)\=\h\w*\(\s*(\)\=\)')
     call s:set_keyword_pattern('perl',
                 \'\(<\h\w*>\=\|->\h\w*(\=\|::\h\w*\|[$@%&*]\h\w*\|\h\w*\(\s*(\)\=\)')
-    call s:set_keyword_pattern('vim',
+    call s:set_keyword_pattern('vim,help',
                 \'\(<\h[[:alnum:]_-]*>\=\|[.$]\h\w*(\=\|[&#]\=\h[[:alnum:]_:]*[(!]\=\)')
     call s:set_keyword_pattern('tex',
                 \'\(\\[[:alpha:]_@][[:alnum:]_@]*\*\=[[{]\=\|\h\w*\)')

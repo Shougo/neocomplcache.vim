@@ -1,0 +1,359 @@
+*neocomplcache.txt*	究極の自動補完環境
+
+Version: 2.16
+Author : Shougo <Shougo.Matsu@gmail.com>
+License: MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+CONTENTS					*neocomplcache-contents*
+
+Introduction		|neocomplcache-introduction|
+Interface		|neocomplcache-interface|
+  Commands		  |neocomplcache-commands|
+  Variables		  |neocomplcache-variables|
+Examples		|neocomplcache-examples|
+Bugs			|neocomplcache-bugs|
+Changelog		|neocomplcache-changelog|
+
+==============================================================================
+INTRODUCTION					*neocomplcache-introduction*
+
+*neocomplcache* はバッファ中のキーワードをキャッシュすることで、キーワード補完を行う。
+Vim組み込みのキーワード補完とは違い、自前で実装しているため、柔軟なカスタマイズが可能である。
+
+==============================================================================
+INTERFACE					*neocomplcache-interface*
+
+------------------------------------------------------------------------------
+COMMANDS 					*neocomplcache-commands*
+
+:NeoCompleCacheEnable					*:NeoComplCacheEnable*
+		neocomplcacheを有効にし、初期化を行う。
+		これを実行すると、今までのキャッシュが消えてしまうので注意。
+
+:NeoCompleCacheDisable					*:NeoComplCacheDisable*
+		neocomplcacheを無効にし、後始末を行う。
+
+:NeoCompleCacheToggle					*:NeoComplCacheToggle*
+		neocomplcacheのロック状態を切り替える。
+
+:Neco 							*:Neco*
+		？？？
+
+:NeoCompleCacheLock					*:NeoComplCacheLock*
+		自動補完にロックをかけ、自動補完しないようにする。
+		自動補完をロックしていたとしても、手動補完は使用できる。
+
+:NeoCompleCacheUnLock					*:NeoComplCacheUnLock*
+		自動補完にかけたロックを解除する。
+
+:NeoCompleCacheCachingBuffer [bufnr]			*:NeoComplCacheCachingBuffer*
+		[bufnr]で示されるバッファを完全にキャッシュする。
+		大きなバッファに対しては、かなり時間がかかるので注意。
+		[bufnr]を省略すると、カレントバッファを指定したことになる。
+
+:NeoCompleCacheCachingDictionary			*:NeoComplCacheCachingDictionary*
+		カレントバッファに関連づけられた辞書ファイルを完全にキャッシュする。
+		大きな辞書ファイルに対しては、かなり時間がかかるので注意。
+
+:NeoCompleCacheCachingTags				*:NeoComplCacheCachingTags*
+		カレントバッファに関連づけられたタグファイルを完全にキャッシュする。
+		大きなタグファイルに対しては、かなり時間がかかるので注意。
+
+:NeoCompleCacheSaveMFU					*:NeoComplCacheCachingMFU*
+		MFU(Most Frequently Used)ファイルを書き出する。
+		デバッグ用なので、ユーザーが使うことはないだろう。
+
+:NeoCompleCacheSetBufferDictionary [filename],...	*:NeoComplCacheSetBufferDictionary*
+		バッファに関連づけられる辞書ファイルを設定する。
+		インクルードファイルの補完に便利かもしれない。
+
+:NeoCompleCachePrintSource [bufnr]			*:NeoComplCachePrintSource*
+		[bufnr]で示されるバッファのキャッシュ情報をカレントバッファに書き出す。
+		[bufnr]を省略すると、カレントバッファを指定したことになる。
+		デバッグ用なので、ユーザーが使うことはないだろう。
+
+:NeoCompleCacheOutputKeyword [bufnr]			*:NeoComplCacheOutputKeyword*
+		[bufnr]で示されるバッファのキャッシュしたキーワードをカレントバッファに書き出す。
+		[bufnr]を省略すると、カレントバッファを指定したことになる。
+		辞書ファイルを自分で作成するときに便利かもしれない。
+
+:NeoCompleCacheCreateTags [bufnr]			*:NeoComplCacheCreateTags*
+		[bufnr]で示されるバッファから、タグ情報を生成する。
+		[bufnr]を省略すると、カレントバッファを指定したことになる。
+		これにより生成されたタグファイルは、neocomplcacheにより、自動的にキャッシュされる。
+
+------------------------------------------------------------------------------
+VARIABLES 					*neocomplcache-variables*
+
+g:NeoComplCache_EnableAtStartup				*g:NeoComplCache_EnableAtStartup*
+		Vim起動時にneocomplcacheを有効にするかどうか制御する。
+		1ならば自動で有効化する。このオプションは.vimrcで設定するべきである。
+		
+		初期値は0なので、手動で有効にしない限りneocomplcacheは使用できない。
+
+
+g:NeoComplCache_MaxList					*g:NeoComplCache_MaxList*
+		ポップアップメニューで表示される候補の数を制御する。
+		これを超えた場合は切り詰められる。
+		
+		初期値は100である。
+
+g:NeoComplCache_MaxKeywordWidth				*g:NeoComplCache_MaxKeywordWidth*
+		ポップアップメニューで表示される候補の表示幅を制御する。
+		これを超えた場合は適当に切り詰められる。
+		
+		初期値は50である。
+
+g:NeoComplCache_MaxFilenameWidth			*g:NeoComplCache_MaxFilenameWidth*
+		ポップアップメニューで表示されるファイル名の表示幅を制御する。
+		これを超えた場合は切り詰められる。
+		
+		初期値は15である。
+
+g:NeoComplCache_PartialMatch				*g:NeoComplCache_PartialMatch*
+		補完時に部分マッチを使用するかを制御する。
+		1なら部分マッチを使用する。
+		
+		初期値は1である。
+
+g:NeoComplCache_SimilarMatch				*g:NeoComplCache_SimilarMatch*
+		手動補完時にスペルチェックを行うかを制御する。
+		1ならスペルチェックを行う。
+		
+		初期値は0である。
+
+g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletionStartLength*
+		キー入力時に自動補完を行う入力数を制御する。
+		
+		初期値は2である。
+
+g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletion*
+		補完時に部分マッチを行う入力数を制御する。
+		
+		初期値は3である。
+
+g:NeoComplCache_SimilarCompletionStartLength		*g:NeoComplCache_SimilarCompletionStartLength*
+		スペルチェックを行う入力数を制御する。
+		
+		初期値は4である。
+
+g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
+		キャッシュし、補完の対象となるキーワードの最小長さを制御する。
+		
+		初期値は4である。
+
+g:NeoComplCache_IgnoreCase				*g:NeoComplCache_IgnoreCase*
+		補完候補を探すときに、大文字・小文字を無視するかを制御する。
+		1ならば無視する。
+		
+		初期値は1である。
+
+g:NeoComplCache_SmartCase				*g:NeoComplCache_SmartCase*
+		入力に大文字が含まれている場合は、大文字・小文字を無視しないようにする。
+		1ならば有効。
+		
+		初期値は0である。
+
+g:NeoComplCache_AlphabeticalOrder			*g:NeoComplCache_AlphabeticalOrder*
+		候補をアルファベット順で並び替えるかを制御する。
+		このオプションを設定すると、neocomplcacheの機能がかなり無効になってしまうが、
+		補完は高速化する。1ならば有効。
+		
+		初期値は0なので、頻度順に並び替える。
+
+g:NeoComplCache_CacheLineCount				*g:NeoComplCache_CacheLineCount*
+		バッファの何行ごとにキャッシュするかを制御する。
+		これが大きいほど候補の探索は早くなるが、キャッシュするのに時間がかかる。
+		
+		初期値は70である。
+
+g:NeoComplCache_DeleteRank0				*g:NeoComplCache_DeleteRank0*
+		一度キャッシュされたが、その後削除された候補を除外するかどうか制御する。
+		1ならば有効。
+		
+		初期値は0である。
+
+g:NeoComplCache_DisableAutoComplete			*g:NeoComplCache_DisableAutoComplete*
+		自動補完を無効にするかどうかを制御する。
+		1ならば自動補完が無効になる。手動補完は使用できる。
+		
+		初期値は0なので、自動補完が有効になっている。
+
+g:NeoComplCache_EnableWildCard				*g:NeoComplCache_EnableWildCard*
+		省入力のための'*'や'-'といったワイルドカード入力を容認するかどうかを制御する。
+		1ならばワイルドカードが使用できる。
+		
+		初期値は1なので、ワイルドカードが有効になっている。
+
+g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
+		省入力のために、候補の横に表示されている数字で候補を選択できるようにするか制御する。
+		1ならば有効になる。
+		
+		初期値は1なので、有効になっている。
+
+g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
+		頻度を再計算するときに、乱数を使用するかを制御する。
+		1ならば有効になる。
+		
+		初期値は+reltimeの時に1となる。
+
+g:NeoComplCache_QuickMatchMaxLists			*g:NeoComplCache_QuickMatchMaxLists*
+		|g:NeoComplCache_EnableQuickMatch|の時に、候補の横に表示する数字の数を制御する。
+		最高が100で、それを超えると無視される。
+		
+		初期値は100である。
+
+g:NeoComplCache_SlowCompleteSkip			*g:NeoComplCache_SlowCompletionSkip*
+		自動補完時、候補の計算に時間がかかりすぎると補完を中止するかどうか制御する。
+		1ならば有効になる。
+		
+		初期値は+reltimeの時に1となる。
+
+g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
+		単語の出現頻度だけではなく、単語のつながりも考慮して候補の並び替えを行うかどうかを制御する。
+		1ならば有効になる。
+		
+		初期値は0である。
+
+g:NeoComplCache_TagsAutoUpdate				*g:NeoComplCache_TagsAutoUpdate*
+		バッファの保存時、タグファイルがあったら自動的にアップデートするかどうかを制御する。
+		
+		初期値は0である。
+
+g:NeoComplCache_TryKeywordCompletion			*g:NeoComplCache_TryKeywordCompletion*
+		補完候補が見つからなかったとき、通常のキーワード補完を行うかどうかを制御する。
+		1ならば有効になる。
+		
+		初期値は0である。
+
+g:NeoComplCache_MaxTryKeywordLength			*g:NeoComplCache_MaxTryKeywordLength*
+		キーワード補完を行う入力文字数を制御する。
+		これより入力文字が多い場合は、キーワード補完がなされない。
+		
+		初期値は5である。
+
+g:NeoComplCache_EnableInfo				*g:NeoComplCache_EnableInfo*
+		プレビューウインドウが開いているとき、プレビューウインドウにキャッシュ時の
+		行を表示するかどうか制御する。変数の型を調べるときに便利。 
+		1ならば有効になる。このオプションは&completeoptを変更するので注意。
+		
+		初期値は0である。
+
+g:NeoComplCache_MaxInfoList				*g:NeoComplCache_MaxInfoList*
+		プレビューウインドウに表示する、キャッシュ時の行の数。
+		
+		初期値は3である。
+
+g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
+		インサートモード時、現在のキャッシュラインをキャッシュするかどうか決定するのに、
+		乱数を用いるかどうか制御する。1ならば有効になる。
+		
+		初期値は+reltimeの時に1となる。
+
+g:NeoComplCache_EnableMFU				*g:NeoComplCache_EnableMFU*
+		MFU(Most Frequently Used)なキーワードをファイルタイプごとに自動保存し、
+		辞書ファイルとして使用するかどうか制御する。1ならば有効になる。
+		
+		初期値は0となっている。
+
+g:NeoComplCache_MFUDirectiory				*g:NeoComplCache_MFUDirectiory*
+		MFUを保存するディレクトリへのパスを設定する。
+		
+		初期値は'~/.vim_mfu'となっている。
+
+g:NeoComplCache_MFUThreshold				*g:NeoComplCache_MFUThreshold*
+		MFUとして認識する頻度の閾値を設定する。
+		頻度を計算するようになっていないと意味がない。
+		
+		初期値は20となっている。
+
+g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
+		補完するためのキーワードパターンを記録する。
+		これはファイルタイプ毎に正規表現で指定されている。
+		
+		初期値はautoload/neocomplcache.vimを参照せよ。
+
+g:NeoComplCache_OmniPatterns				*g:NeoComplCache_OmniPatterns*
+		オムニ補完するためのキーワードパターンを記録する。
+		これはファイルタイプ毎に正規表現で指定されている。
+		
+		初期値はautoload/neocomplcache.vimを参照せよ。
+
+g:NeoComplCache_SameFileTypeLists			*g:NeoComplCache_SameFileTypeLists*
+		ファイルタイプを相互に関連づけるためのディクショナリ。
+		cとcppを相互参照させるときなどに有効。
+		
+		初期値はautoload/neocomplcache.vimを参照せよ。
+
+g:NeoComplCache_NonBufferFileTypeDetect			*g:NeoComplCache_NonBufferFileTypeDetect*
+		拡張子とファイルタイプを関連づけるためのディクショナリ。
+		辞書ファイルなど、うまくファイルタイプが判定できないときに有効。
+		
+		初期値はautoload/neocomplcache.vimを参照せよ。
+
+==============================================================================
+EXAMPLES					*neocomplcache-examples*
+>
+	" Don't use autocomplpop.
+	let g:AutoComplPop_NotEnableAtStartup = 1
+	" Use neocomplcache.
+	let g:NeoComplCache_EnableAtStartup = 1
+	" Use smartcase.
+	let g:NeoComplCache_SmartCase = 1
+	" Use mfu.
+	let g:NeoComplCache_EnableMFU = 1
+	" Use previous keyword completion.
+	let g:NeoComplCache_PreviousKeywordCompletion = 1
+	" Use similar match.
+	let g:NeoComplCache_SimilarMatch = 1
+	" Use tags auto update.
+	let g:NeoComplCache_TagsAutoUpdate = 1
+	" Try keyword completion.
+	let g:NeoComplCache_TryKeywordCompletion = 1
+	" Use preview window.
+	let g:NeoComplCache_EnableInfo = 1
+	" Delete keyword when rank is 0.
+	let g:NeoComplCache_DeleteRank0 = 1
+	
+	" Define dictionary.
+	let g:NeoComplCache_DictionaryFileTypeLists = {
+	            \ 'default' : '',
+	            \ 'vimshell' : $HOME.'/.vimshell_hist',
+	            \ 'scheme' : $HOME.'/.gosh_completions'
+	            \ }
+	
+	" Define keyword.
+	if !exists('g:NeoComplCache_KeywordPatterns')
+	    let g:NeoComplCache_KeywordPatterns = {}
+	endif
+	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+<
+
+==============================================================================
+BUGS						*neocomplcache-bugs*
+
+==============================================================================
+CHANGELOG					*neocomplcache-changelog*
+
+plugin/neocomplcache.vimを参照せよ。
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:fen:fdl=0:fdm=marker:

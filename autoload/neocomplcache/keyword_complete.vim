@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Mar 2009
+" Last Modified: 01 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.15, for Vim 7.0
+" Version: 2.16, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list()"{{{
@@ -128,19 +128,17 @@ endfunction"}}}
 function! neocomplcache#keyword_complete#calc_rank(cache_keyword_buffer_list)"{{{
     let l:list_len = len(a:cache_keyword_buffer_list)
 
-    if l:list_len > g:NeoComplCache_CalcRankMaxLists * 10
-        let l:calc_cnt = 20
-    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists * 7
+    if l:list_len > g:NeoComplCache_MaxList * 5
         let l:calc_cnt = 15
-    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists * 5
+    elseif l:list_len > g:NeoComplCache_MaxList * 3
         let l:calc_cnt = 10
-    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists * 3
+    elseif l:list_len > g:NeoComplCache_MaxList
         let l:calc_cnt = 8
-    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists
+    elseif l:list_len > g:NeoComplCache_MaxList / 2
         let l:calc_cnt = 5
-    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists / 2
+    elseif l:list_len > g:NeoComplCache_MaxList / 3
         let l:calc_cnt = 4
-    elseif l:list_len > g:NeoComplCache_CalcRankMaxLists / 4
+    elseif l:list_len > g:NeoComplCache_MaxList / 4
         let l:calc_cnt = 3
     else
         let l:calc_cnt = 2
@@ -239,10 +237,8 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
         call s:initialize_source(a:srcname)
     elseif a:srcname =~ '^\d'
         if s:source[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
-                \ || (!empty(getbufvar(a:srcname, '&filetype')) &&
-                \ s:source[a:srcname].filetype != getbufvar(a:srcname, '&filetype'))
+                \ || s:source[a:srcname].keyword_pattern != neocomplcache#assume_buffer_pattern(a:srcname) 
             " Initialize source if bufname changed.
-            "echomsg 'init'
             call s:initialize_source(a:srcname)
             let l:start_line = 1
             let l:end_line = g:NeoComplCache_CacheLineCount
@@ -336,7 +332,7 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                                     \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : [l:info_line]
                                     \}
 
-                        if !g:NeoComplCache_QuickMatchEnable
+                        if !g:NeoComplCache_EnableQuickMatch
                             let l:source.keyword_cache[l:match_str].abbr = 
                                         \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
                                         \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
@@ -414,34 +410,7 @@ function! s:initialize_source(srcname)"{{{
             let l:ft = 'nothing'
         endif
 
-        if l:ft =~ '\.'
-            " Composite filetypes.
-            let l:keyword_array = []
-            let l:keyword_default = 0
-            for l:f in split(l:ft, '\.')
-                if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-                    if !l:keyword_default
-                        " Assuming failed.
-                        call add(l:keyword_array, g:NeoComplCache_KeywordPatterns['default'])
-                        let l:keyword_default = 1
-                    endif
-                else
-                    call add(l:keyword_array, g:NeoComplCache_KeywordPatterns[l:f])
-                endif
-            endfor
-            let l:keyword_pattern = '\(' . join(l:keyword_array, '\|') . '\)'
-        else
-            " Normal filetypes.
-            if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-                let l:keyword_pattern = neocomplcache#assume_pattern(l:filename)
-                if empty(l:keyword_pattern)
-                    " Assuming failed.
-                    let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
-                endif
-            else
-                let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
-            endif
-        endif
+        let l:keyword_pattern = neocomplcache#assume_buffer_pattern(a:srcname)
     else
         " Dictionary or tags.
         let l:filename = split(a:srcname, ',')[1]
@@ -525,8 +494,7 @@ function! neocomplcache#keyword_complete#check_source(caching_num)"{{{
     " Check new buffer.
     while l:bufnumber <= l:max_buf
         if buflisted(l:bufnumber)
-            if !has_key(s:source, l:bufnumber) ||
-                        \getbufvar(l:bufnumber, '&filetype') != s:source[l:bufnumber].filetype
+            if !has_key(s:source, l:bufnumber)
                 " Caching.
                 call s:caching_source(l:bufnumber, '^', a:caching_num)
 

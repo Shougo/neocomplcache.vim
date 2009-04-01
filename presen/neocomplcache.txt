@@ -380,6 +380,8 @@ let g:NeoComplCache_EnableMFU = 1
 let g:NeoComplCache_PreviousKeywordCompletion = 1
 " Use similar match.
 let g:NeoComplCache_SimilarMatch = 1
+" Use tags auto update.
+let g:NeoComplCache_TagsAutoUpdate = 1
 " Try keyword completion.
 let g:NeoComplCache_TryKeywordCompletion = 1
 " Use preview window.
@@ -395,7 +397,9 @@ let g:NeoComplCache_DictionaryFileTypeLists = {
             \ }
 
 " Define keyword.
-let g:NeoComplCache_KeywordPatterns = {}
+if !exists('g:NeoComplCache_KeywordPatterns')
+    let g:NeoComplCache_KeywordPatterns = {}
+endif
 let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
 
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
@@ -510,4 +514,5 @@ syntaxcompleteの実装など、まだまだやることがありそうです。
 2009/03/27     neocomplcache Ver.2.10に対応。
 2009/03/27     neocomplcache Ver.2.11に対応。
 2009/03/30     neocomplcache Ver.2.14に対応。
+2009/03/31     設定例がバグっていたので修正。
 --------------------------------
