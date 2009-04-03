@@ -23,10 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.16, for Vim 7.0
+" Version: 2.17, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.17:
+"     - Loadable autoload/neocomplcache/*.vim plugin.
+"     - Implemented syntax_complete plugin.
 "   2.16:
 "     - Fixed caching initialize bug.
 "     - Supported vim help file.
@@ -329,7 +332,7 @@
 " }}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
-"     - Syntax complete.
+"     - Nothing.
 ""}}}
 " Bugs"{{{
 "     - Nothing.
@@ -413,6 +416,9 @@ if !exists('g:NeoComplCache_TagsAutoUpdate')
 endif
 if !exists('g:NeoComplCache_TryKeywordCompletion')
     let g:NeoComplCache_TryKeywordCompletion = 0
+endif
+if !exists('g:NeoComplCache_TryDefaultCompletion')
+    let g:NeoComplCache_TryDefaultCompletion = 0
 endif
 if !exists('g:NeoComplCache_MaxTryKeywordLength')
     let g:NeoComplCache_MaxTryKeywordLength = 5

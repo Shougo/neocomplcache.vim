@@ -73,7 +73,7 @@ neocomplcacheの良いところ
 ・補完機能のカスタマイズがしやすい
 ・補完機能はほとんど自前実装
 ・毎週更新？
-・プラグインで拡張できる（予定）
+・プラグインで拡張できる
 
 neocomplcacheの悪いところ
 ・情報はほとんど無い
@@ -126,8 +126,9 @@ neocomplcacheの代表的機能
 ・自動タグファイルアップデート
 ・キーワード補完を試す
 ・Same filetype completion
-・preview windowに対応（New!）
-・プラグインで拡張可能（New!）
+・preview windowに対応
+・シンタックス補完
+・プラグインで拡張可能
 
 --------------------------------
 キーワードの使用頻度によるランク付け
@@ -312,7 +313,7 @@ let g:NeoComplCache_TagsAutoUpdate = 1
 とする必要があります。
 
 --------------------------------
-キーワード補完を試す（New!）
+キーワード補完を試す
 
 thincaさんの要望により、試験的に実装。
 補完候補がない場合、キーワード補完を行います。
@@ -325,13 +326,17 @@ Perl以外ではインクルード補完を試してみることにしました�
 Ver.2.15より、g:NeoComplCache_MaxTryKeywordLengthを導入し、
 入力されたキーワード文字がこれより多かったら、キーワード補完をしないようにしました。
 これで補完時のちらつきが軽減されます。
+追記３：
+Ver.2.17より、g:NeoComplCache_TryDefaultCompletionが導入されました。
+これが設定されている場合、まずキーワードを'default'にして補完を試します。
+それでもだめならば、通常のキーワード補完を呼び出します。
 
 この機能を使用するには、
 let g:NeoComplCache_TryKeywordCompletion = 1
 とする必要があります。
 
 --------------------------------
-Same filetype completion（New!）
+Same filetype completion
 
 昔のneocomplcacheでは、すべてのバッファから補完できたのですが、
 最新版では同じfiletypeのバッファからしか補完できないようになりました。
@@ -343,7 +348,7 @@ let g:NeoComplCache_SameFileTypeLists['cpp'] = 'c'
 一方だけ設定すれば、相互でない補完も可能です。
 
 --------------------------------
-preview windowに対応（New!）
+preview windowに対応
 
 preview windowが存在するとき、キャッシュしたときの行を表示するようになりました。
 普通宣言がソースの上方に来ると考えられるので、
@@ -358,12 +363,23 @@ let g:NeoComplCache_EnableInfo = 1
 とする必要があります。
 
 --------------------------------
-プラグインで拡張可能（New!）
+シンタックス補完
+
+Ver.2.17より、プラグインで実装しました。
+:syn listの結果を解析し、補完候補に加えます。
+１度目はキャッシュするので、若干時間がかかりますが、その後は高速に動作します。
+バッファになくても補完できるので便利です。
+ソースコードも短いので、プラグイン作りの勉強にも最適です。
+
+--------------------------------
+プラグインで拡張可能
 
 Ver.2.10にて、複雑だったソースコードを分割し、ついに補完をプラグインで拡張できるようになりました。
-まだ他のプラグインを読み込む部分はできていませんが、夢は広がります。
-予定としては、シンタックス補完をプラグインとして実装、
-ファイルタイプごとにプラグインを読み込めるようにしたいです。
+他のプラグインを読み込む部分も実装したので、夢が広がります。
+予定としては、ファイルタイプごとにプラグインを読み込めるようにしたいです。
+プラグインの作り方については、今後ドキュメントを用意する予定ですが、
+やる気があるならばautoload/neocomplcache/syntax_complete.vimを読んでみてください。
+autoload/neocomplcacheディレクトリにプラグインファイルをおいておけば、補完時に自動で読み込まれます。
 
 --------------------------------
 私の設定
@@ -384,6 +400,8 @@ let g:NeoComplCache_SimilarMatch = 1
 let g:NeoComplCache_TagsAutoUpdate = 1
 " Try keyword completion.
 let g:NeoComplCache_TryKeywordCompletion = 1
+" Try default completion.
+let g:NeoComplCache_TryDefaultCompletion = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
 " Delete keyword when rank is 0.
@@ -503,16 +521,18 @@ syntaxcompleteの実装など、まだまだやることがありそうです。
 --------------------------------
 更新履歴
 
-2009/03/5      neocomplcache Ver.1.49に対応。
-2009/03/6      neocomplcache Ver.1.50に対応。
-2009/03/7      neocomplcache Ver.1.52に対応。
-2009/03/8      neocomplcache Ver.1.54に対応。
-2009/03/12     neocomplcache Ver.1.58に対応。
-2009/03/20     neocomplcache Ver.2.00に対応。
-2009/03/25     neocomplcache Ver.2.01に対応。
-2009/03/26     neocomplcache Ver.2.02に対応。
-2009/03/27     neocomplcache Ver.2.10に対応。
-2009/03/27     neocomplcache Ver.2.11に対応。
-2009/03/30     neocomplcache Ver.2.14に対応。
+2009/04/03     neocomplcache Ver.2.17に対応。
+2009/04/01     neocomplcache Ver.2.16に対応。
 2009/03/31     設定例がバグっていたので修正。
+2009/03/30     neocomplcache Ver.2.14に対応。
+2009/03/27     neocomplcache Ver.2.11に対応。
+2009/03/27     neocomplcache Ver.2.10に対応。
+2009/03/26     neocomplcache Ver.2.02に対応。
+2009/03/25     neocomplcache Ver.2.01に対応。
+2009/03/20     neocomplcache Ver.2.00に対応。
+2009/03/12     neocomplcache Ver.1.58に対応。
+2009/03/8      neocomplcache Ver.1.54に対応。
+2009/03/7      neocomplcache Ver.1.52に対応。
+2009/03/6      neocomplcache Ver.1.50に対応。
+2009/03/5      neocomplcache Ver.1.49に対応。
 --------------------------------
