@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: neocomplcache.vim
+" FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Apr 2009
+" Last Modified: 06 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.00, for Vim 7.0
+" Version: 1.02, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.02:
+"    - Fixed get syntax list.
+"   1.01:
+"    - Caching when initialize.
 "   1.00:
 "    - Initial version.
 " }}}
@@ -38,7 +42,7 @@
 ""}}}
 "=============================================================================
 
-function! neocomplcache#syntax_complete#get_keyword_list()"{{{
+function! neocomplcache#syntax_complete#get_keyword_list(cur_keyword_str)"{{{
     if empty(&filetype)
         return []
     endif
@@ -52,12 +56,9 @@ endfunction"}}}
 
 function! s:initialize_syntax()
     " Get current syntax list.
-    let l:save_reg = @l
-    redir @l
-    silent! execute 'syntax list'
+    redir => l:syntax_list
+    silent! syntax list
     redir END
-    let l:syntax_list = @l
-    let @l = l:save_reg
 
     if l:syntax_list =~ '^E\d\+' || l:syntax_list =~ '^No Syntax items'
         return []
@@ -116,6 +117,11 @@ endfunction"}}}
 function! neocomplcache#syntax_complete#initialize()"{{{
     " Initialize
     let s:syntax_list = {}
+
+    " Caching.
+    if !empty(&filetype)
+        let s:syntax_list[&filetype] = s:initialize_syntax()
+    endif
 endfunction"}}}
 
 function! neocomplcache#syntax_complete#finalize()"{{{

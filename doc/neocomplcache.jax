@@ -134,12 +134,6 @@ g:NeoComplCache_PartialMatch				*g:NeoComplCache_PartialMatch*
 		
 		初期値は1である。
 
-g:NeoComplCache_SimilarMatch				*g:NeoComplCache_SimilarMatch*
-		手動補完時にスペルチェックを行うかを制御する。
-		1ならスペルチェックを行う。
-		
-		初期値は0である。
-
 g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletionStartLength*
 		キー入力時に自動補完を行う入力数を制御する。
 		
@@ -149,11 +143,6 @@ g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletion
 		補完時に部分マッチを行う入力数を制御する。
 		
 		初期値は3である。
-
-g:NeoComplCache_SimilarCompletionStartLength		*g:NeoComplCache_SimilarCompletionStartLength*
-		スペルチェックを行う入力数を制御する。
-		
-		初期値は4である。
 
 g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
 		キャッシュし、補完の対象となるキーワードの最小長さを制御する。
@@ -328,8 +317,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableMFU = 1
 	" Use previous keyword completion.
 	let g:NeoComplCache_PreviousKeywordCompletion = 1
-	" Use similar match.
-	let g:NeoComplCache_SimilarMatch = 1
 	" Use tags auto update.
 	let g:NeoComplCache_TagsAutoUpdate = 1
 	" Try keyword completion.

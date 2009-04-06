@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Apr 2009
+" Last Modified: 05 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,10 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.17, for Vim 7.0
+" Version: 2.19, for Vim 7.0
 "=============================================================================
 
-function! neocomplcache#keyword_complete#get_keyword_list()"{{{
+function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
     let l:keyword_list = []
     for src in s:get_sources_list()
         call extend(l:keyword_list, values(s:sources[src].keyword_cache))
@@ -42,7 +42,7 @@ function! s:get_sources_list()"{{{
         let l:ft = &filetype
     endif
 
-    " Check dictionaries and tags are exists.
+    " Check dictionaries are exists.
     if !empty(&filetype) && has_key(g:NeoComplCache_DictionaryFileTypeLists, &filetype)
         let l:ft_dict = '^' . l:ft
     elseif !empty(g:NeoComplCache_DictionaryFileTypeLists['default'])
@@ -50,21 +50,6 @@ function! s:get_sources_list()"{{{
     else
         " Dummy pattern.
         let l:ft_dict = '^$'
-    endif
-
-    if has_key(g:NeoComplCache_TagsLists, tabpagenr())
-        let l:gtags = '^tags:' . tabpagenr()
-    elseif !empty(g:NeoComplCache_TagsLists['default'])
-        let l:gtags = '^tags:default'
-    else
-        " Dummy pattern.
-        let l:gtags = '^$'
-    endif
-    if &buftype !~ 'nofile'
-        let l:ltags = printf('ltags:,%s', expand('%:p:h') . '/tags')
-    else
-        " Dummy pattern.
-        let l:ltags = '^$'
     endif
 
     if has_key(g:NeoComplCache_DictionaryBufferLists, bufnr('%'))
@@ -84,7 +69,7 @@ function! s:get_sources_list()"{{{
     let l:sources_list = []
     for key in keys(s:sources)
         if (key =~ '^\d' && l:ft == s:sources[key].filetype)
-                    \|| key =~ l:ft_dict || key == l:ltags || key =~ l:mfu_dict || key =~ l:gtags || key =~ l:buf_dict 
+                    \|| key =~ l:ft_dict || key =~ l:mfu_dict || key =~ l:buf_dict 
             call add(l:sources_list, key)
         endif
     endfor
@@ -256,10 +241,8 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
             let l:filename = l:source.name
         endif
     else
-        " Dictionary or tags.
-        if a:srcname =~ '^tags:' || a:srcname =~ '^ltags:' 
-            let l:prefix = '[T] '
-        elseif a:srcname =~ '^dict:'
+        " Dictionary.
+        if a:srcname =~ '^dict:'
             let l:prefix = '[B] '
         elseif a:srcname =~ '^mfu:'
             let l:prefix = '[M] '
@@ -293,7 +276,7 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
         if l:end_line == '$'
             let l:end_line = l:source.end_line
         endif
-        " Dictionary or tags.
+        " Dictionary.
         let l:buflines = readfile(l:source.name)[l:start_line : l:end_line]
     endif
     let l:menu = printf(' %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
@@ -412,12 +395,12 @@ function! s:initialize_source(srcname)"{{{
 
         let l:keyword_pattern = neocomplcache#assume_buffer_pattern(a:srcname)
     else
-        " Dictionary or tags.
+        " Dictionary.
         let l:filename = split(a:srcname, ',')[1]
         let l:end_line = len(readfile(l:filename))
 
         " Assuming filetype.
-        if a:srcname =~ '^tags:' || a:srcname =~ '^ltags:' || a:srcname =~ '^dict:'
+        if a:srcname =~ '^dict:'
             " Current buffer filetype.
             let l:ft = &filetype
         elseif a:srcname =~ '^mfu:'
@@ -509,18 +492,6 @@ function! neocomplcache#keyword_complete#check_source(caching_num)"{{{
                         endif
                     endfor
                 endif
-
-                " Check local tags.
-                if &buftype !~ 'nofile'
-                    let l:ltags = expand('#'.l:bufnumber.':p:h') . '/tags'
-                    let l:ltags_dict = printf('ltags:,%s', l:ltags)
-                    if filereadable(l:ltags) && !has_key(s:sources, l:ltags_dict)
-                        " Caching.
-                        call s:caching_source(l:ltags_dict, '^', a:caching_num)
-
-                        let s:sources[l:bufnumber].ctagsed_lines = s:sources[l:bufnumber].end_line
-                    endif
-                endif
             endif
 
             if has_key(g:NeoComplCache_DictionaryFileTypeLists, getbufvar(l:bufnumber, '&filetype'))
@@ -557,20 +528,6 @@ function! neocomplcache#keyword_complete#check_source(caching_num)"{{{
             endfor
         endif
     endfor
-
-    " Check global tags.
-    let l:current_tags = (has_key(g:NeoComplCache_TagsLists, tabpagenr()))? tabpagenr() : 'default'
-    " Ignore if empty.
-    if !empty(l:current_tags)
-        let l:tags_lists = split(g:NeoComplCache_TagsLists[l:current_tags], ',')
-        for gtags in l:tags_lists
-            let l:tags_name = printf('tags:%d,%s', l:current_tags, gtags)
-            if !has_key(s:sources, l:tags_name) && filereadable(gtags)
-                " Caching.
-                call s:caching_source(l:tags_name, '^', a:caching_num)
-            endif
-        endfor
-    endif
 endfunction"}}}
 function! neocomplcache#keyword_complete#update_source(caching_num, caching_max)"{{{
     let l:caching_num = 0
@@ -607,7 +564,7 @@ function! neocomplcache#keyword_complete#caching_cache_line()"{{{
         call neocomplcache#keyword_complete#caching(bufnr('%'), line('.'), g:NeoComplCache_CacheLineCount)
         if g:NeoComplCache_CachingRandomize
             let l:match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
-            let s:prev_cached_count = reltimestr(reltime())[l:match_end : ] % 6
+            let s:prev_cached_count = reltimestr(reltime())[l:match_end : ] % 4
         else
             let s:prev_cached_count = 1
         endif
@@ -778,20 +735,12 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     if !exists('g:NeoComplCache_DictionaryBufferLists')
         let g:NeoComplCache_DictionaryBufferLists = {}
     endif
-    if !exists('g:NeoComplCache_TagsLists')
-        let g:NeoComplCache_TagsLists = {}
-    endif
-    if !has_key(g:NeoComplCache_TagsLists, 'default')
-        let g:NeoComplCache_TagsLists['default'] = ''
-    endif
     " For test.
     "let g:NeoComplCache_DictionaryFileTypeLists['vim'] = 'CSApprox.vim,LargeFile.vim'
-    "let g:NeoComplCache_TagsLists[1] = 'tags,'.$DOTVIM.'\doc\tags'
     "let g:NeoComplCache_DictionaryBufferLists[1] = '256colors2.pl'"}}}
 
     " Add commands."{{{
     command! -nargs=? NeoCompleCacheCachingBuffer call neocomplcache#keyword_complete#caching_buffer(<q-args>)
-    command! -nargs=0 NeoCompleCacheCachingTags call neocomplcache#keyword_complete#caching_tags()
     command! -nargs=0 NeoCompleCacheCachingDictionary call neocomplcache#keyword_complete#caching_dictionary()
     command! -nargs=0 NeoCompleCacheSaveMFU call neocomplcache#keyword_complete#save_all_MFU()
     command! -nargs=* -complete=file NeoCompleCacheSetBufferDictionary call neocomplcache#keyword_complete#set_buffer_dictionary(<q-args>)
@@ -816,7 +765,6 @@ function! neocomplcache#keyword_complete#finalize()"{{{
     augroup END
 
     delcommand NeoCompleCacheCachingBuffer
-    delcommand NeoCompleCacheCachingTags
     delcommand NeoCompleCacheCachingDictionary
     delcommand NeoCompleCacheSaveMFU
     delcommand NeoCompleCacheSetBufferDictionary
@@ -838,32 +786,6 @@ function! neocomplcache#keyword_complete#caching_buffer(number)"{{{
 
     " Calc rank.
     call neocomplcache#get_complete_words('')
-endfunction"}}}
-
-function! neocomplcache#keyword_complete#caching_tags()"{{{
-    " Create source.
-    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*5)
-
-    " Check tags are exists.
-    if has_key(g:NeoComplCache_TagsLists, tabpagenr())
-        let l:gtags = '^tags:' . tabpagenr()
-    elseif !empty(g:NeoComplCache_TagsLists['default'])
-        let l:gtags = '^tags:default'
-    else
-        " Dummy pattern.
-        let l:gtags = '^$'
-    endif
-    let l:ltags = printf('ltags:,%s', expand('%:p:h') . '/tags')
-
-    let l:cache_keyword_buffer_filtered = []
-    for key in keys(s:sources)
-        if key =~ l:gtags || key == l:ltags
-            call s:caching_source(key, '^', -1)
-
-            " Disable auto caching.
-            let s:sources[key].cached_last_line = s:sources[key].end_line+1
-        endif
-    endfor
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#caching_dictionary()"{{{
@@ -935,13 +857,6 @@ function! neocomplcache#keyword_complete#create_tags()"{{{
     let l:ltags = expand('%:p:h') . '/tags'
     call system(printf('ctags -f %s %s -a %s', expand('%:h') . '/tags', l:args, expand('%')))
     let s:sources[bufnr('%')].ctagsed_lines = line('$')
-
-    " Check local tags.
-    let l:ltags_dict = printf('ltags:,%s', l:ltags)
-    if !has_key(s:sources, l:ltags_dict)
-        " Caching.
-        call s:caching_source(l:ltags_dict, '^', g:NeoComplCache_CacheLineCount*5)
-    endif
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#garbage_collect()"{{{
