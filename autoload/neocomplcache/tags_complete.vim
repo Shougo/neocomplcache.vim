@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Apr 2009
+" Last Modified: 07 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.01, for Vim 7.0
+" Version: 1.02, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.02:
+"    - Escape input keyword.
+"    - Supported camel case completion.
 "   1.01:
 "    - Not caching.
 "   1.00:
@@ -45,14 +48,34 @@ function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
                 \len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
         return []
     else
-        if g:NeoComplCache_PartialMatch && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
-            " Partial match.
-            let l:cur_keyword_str = a:cur_keyword_str
-        else
-            " Head match.
-            let l:cur_keyword_str = '^'.a:cur_keyword_str
+        " Escape."{{{
+        let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$*'), "'", "''", 'g')
+        if g:NeoComplCache_EnableWildCard
+            if l:keyword_escape =~ '^\\\*'
+                let l:head = l:keyword_escape[:1]
+                let l:keyword_escape = l:keyword_escape[2:]
+            elseif l:keyword_escape =~ '^-'
+                let l:head = l:keyword_escape[0]
+                let l:keyword_escape = l:keyword_escape[1:]
+            else
+                let l:head = ''
+            endif
+            let l:keyword_escape = l:head . substitute(substitute(l:keyword_escape, '\\\*', '.*', 'g'), '-', '.\\+', 'g')
+            unlet l:head
+        endif"}}}
+
+        " Camel case completion."{{{
+        if g:NeoComplCache_EnableCamelCaseCompletion
+            let l:keyword_escape = substitute(l:keyword_escape, '\v(\u\U*)', '\1.*', 'g')
         endif
-        let l:tags_list = s:initialize_tags(l:cur_keyword_str)
+        "}}}
+
+        if !g:NeoComplCache_PartialMatch || len(l:keyword_escape) < g:NeoComplCache_PartialCompletionStartLength
+            " Head match.
+            let l:keyword_escape = '^'.l:keyword_escape
+        endif
+        echo l:keyword_escape
+        let l:tags_list = s:initialize_tags(l:keyword_escape)
         let l:pattern = "v:val.static == 0 || v:val.filename == '".expand('%')."'"
         return filter(l:tags_list, l:pattern)
     endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Apr 2009
+" Last Modified: 07 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,13 +23,20 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.19, for Vim 7.0
+" Version: 2.20, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.20:
+"     - Improved dictionary check.
+"     - Fixed manual complete wildcard bug.
+"     - Fixed assuming filetype bug.
+"     - Implemented camel case completion.
+"     - Improved filetype and filename check.
 "   2.19:
 "     - Plugin interface changed.
 "     - Patterns use very magic.
+"     - Fixed syntax_complete.
 "   2.18:
 "     - Implemented tags_complete plugin.
 "     - Fixed default completion bug.
@@ -434,6 +441,9 @@ if !exists('g:NeoComplCache_MaxInfoList')
 endif
 if !exists('g:NeoComplCache_CachingRandomize')
     let g:NeoComplCache_CachingRandomize = has('reltime')
+endif
+if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
+    let g:NeoComplCache_EnableCamelCaseCompletion = 1
 endif
 if !exists('g:NeoComplCache_EnableMFU')
     let g:NeoComplCache_EnableMFU = 0

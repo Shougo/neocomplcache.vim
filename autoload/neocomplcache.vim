@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Apr 2009
+" Last Modified: 07 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.19, for Vim 7.0
+" Version: 2.20, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -196,9 +196,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
         let l:pattern = neocomplcache#keyword_complete#current_keyword_pattern() . '$'
         let l:cur_keyword_pos = match(l:cur_text, l:pattern)
-        if l:cur_keyword_pos < 0
-            return -1
-        endif
         let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
         if g:NeoComplCache_EnableWildCard
@@ -264,6 +261,12 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
         let l:keyword_escape = l:head . substitute(substitute(l:keyword_escape, '\\\*', '.*', 'g'), '-', '.\\+', 'g')
         unlet l:head
     endif"}}}
+
+    " Camel case completion."{{{
+    if g:NeoComplCache_EnableCamelCaseCompletion
+        let l:keyword_escape = substitute(l:keyword_escape, '\v(\u\U*)', '\1.*', 'g')
+    endif
+    "}}}
 
     " Keyword filter."{{{
     let l:cur_len = len(a:cur_keyword_str)
@@ -515,12 +518,9 @@ function! neocomplcache#assume_buffer_pattern(bufname)"{{{
         let l:keyword_array = []
         let l:keyword_default = 0
         for l:f in split(l:ft, '\.')
-            if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-                if !l:keyword_default
-                    " Assuming failed.
-                    call add(l:keyword_array, g:NeoComplCache_KeywordPatterns['default'])
-                    let l:keyword_default = 1
-                endif
+            if !has_key(g:NeoComplCache_KeywordPatterns, l:ft) && !l:keyword_default
+                call add(l:keyword_array, g:NeoComplCache_KeywordPatterns['default'])
+                let l:keyword_default = 1
             else
                 call add(l:keyword_array, g:NeoComplCache_KeywordPatterns[l:ft])
             endif
@@ -529,11 +529,7 @@ function! neocomplcache#assume_buffer_pattern(bufname)"{{{
     else
         " Normal filetypes.
         if !has_key(g:NeoComplCache_KeywordPatterns, l:ft)
-            let l:keyword_pattern = neocomplcache#assume_pattern(fnamemodify(bufname(a:bufname), ':t'))
-            if empty(l:keyword_pattern)
-                " Assuming failed.
-                let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
-            endif
+            let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
         else
             let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[l:ft]
         endif
@@ -630,7 +626,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('c',
                 \'\v(-\>(\h\w*(\s*\()?)?|^\s*#\s*\h\w*|.?\h\w*(\s*\()?)')
     call s:set_keyword_pattern('cpp',
-                \'\v(-\>(\h\w*(\s*[(<])?)?|::(\h\w*)?|[.#]?\h\w*(\s*[(<])?)')
+                \'\v(-\>(\h\w*(\s*[(<])?)?|::(\h\w*)?|[.#]?\h\w*(\s*\(|<)?)')
     call s:set_keyword_pattern('d',
                 \'\v\.?\h\w*(!?\s*\()?')
     call s:set_keyword_pattern('python',

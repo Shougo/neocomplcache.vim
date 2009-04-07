@@ -367,6 +367,18 @@ Vimの豊富なシンタックスキーワードを有効活用するので、�
 ソースコードも短いので、プラグイン作りの勉強にも最適です。
 
 --------------------------------
+CamelCase補完
+
+thincaさんの発案により実装。Eclipseで実装されているらしいのですが、
+大文字でAIOOBEと打つと、ArrayIndexOutOfBoundsException が候補に出てきます。
+つまり、大文字を単語の区切りとして認識しています。
+小文字を混ぜたり最後まで完全に打たなくてもよしなに解釈してくれます。
+
+この機能を使用するには、
+let g:NeoComplCache_EnableCamelCaseCompletion = 1
+とする必要があります。
+
+--------------------------------
 プラグインで拡張可能
 
 Ver.2.10にて、複雑だったソースコードを分割し、ついに補完をプラグインで拡張できるようになりました。
@@ -399,6 +411,8 @@ let g:NeoComplCache_TryDefaultCompletion = 1
 let g:NeoComplCache_EnableInfo = 1
 " Delete keyword when rank is 0.
 let g:NeoComplCache_DeleteRank0 = 0
+" Use camel case completion.
+let g:NeoComplCache_EnableCamelCaseCompletion = 1
 
 " Define dictionary.
 let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -512,6 +526,7 @@ let g:NeoComplCache_EnableAtStartup = 1
 --------------------------------
 更新履歴
 
+2009/04/07     neocomplcache Ver.2.20に対応。
 2009/04/04     neocomplcache Ver.2.18に対応。
 2009/04/03     neocomplcache Ver.2.17に対応。
 2009/04/01     neocomplcache Ver.2.16に対応。

@@ -263,6 +263,12 @@ g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
 		
 		初期値は+reltimeの時に1となる。
 
+g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompletion*
+		大文字を入力したときに、それを単語の区切りとしてあいまい検索を行うかどうか制御する。
+		1ならば有効になる。
+		
+		副作用があるので、初期値は0となっている。
+
 g:NeoComplCache_EnableMFU				*g:NeoComplCache_EnableMFU*
 		MFU(Most Frequently Used)なキーワードをファイルタイプごとに自動保存し、
 		辞書ファイルとして使用するかどうか制御する。1ならば有効になる。
@@ -325,19 +331,21 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableInfo = 1
 	" Delete keyword when rank is 0.
 	let g:NeoComplCache_DeleteRank0 = 1
+	" Use camel case completion.
+	let g:NeoComplCache_EnableCamelCaseCompletion = 1
 	
 	" Define dictionary.
 	let g:NeoComplCache_DictionaryFileTypeLists = {
-	            \ 'default' : '',
-	            \ 'vimshell' : $HOME.'/.vimshell_hist',
-	            \ 'scheme' : $HOME.'/.gosh_completions'
-	            \ }
+	    \ 'default' : '',
+	    \ 'vimshell' : $HOME.'/.vimshell_hist',
+	    \ 'scheme' : $HOME.'/.gosh_completions'
+	        \ }
 	
-	" Define keyword.
-	if !exists('g:NeoComplCache_KeywordPatterns')
-	    let g:NeoComplCache_KeywordPatterns = {}
-	endif
-	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+	        " Define keyword.
+	        if !exists('g:NeoComplCache_KeywordPatterns')
+	        let g:NeoComplCache_KeywordPatterns = {}
+	        endif
+	        let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
 <
 
 ==============================================================================

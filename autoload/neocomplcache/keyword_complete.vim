@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Apr 2009
+" Last Modified: 07 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.19, for Vim 7.0
+" Version: 2.20, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -220,15 +220,12 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
     if !has_key(s:sources, a:srcname)
         " Initialize source.
         call s:initialize_source(a:srcname)
-    elseif a:srcname =~ '^\d'
-        if s:sources[a:srcname].name != fnamemodify(bufname(a:srcname), ':t')
-                \ || s:sources[a:srcname].keyword_pattern != neocomplcache#assume_buffer_pattern(a:srcname) 
-            " Initialize source if bufname changed.
-            call s:initialize_source(a:srcname)
-            let l:start_line = 1
-            let l:end_line = g:NeoComplCache_CacheLineCount
-            let s:sources[a:srcname].cached_last_line = l:end_line
-        endif
+    elseif a:srcname =~ '^\d' && s:check_changed_buffer(a:srcname)
+        " Initialize source if bufname changed.
+        call s:initialize_source(a:srcname)
+        let l:start_line = 1
+        let l:end_line = g:NeoComplCache_CacheLineCount
+        let s:sources[a:srcname].cached_last_line = l:end_line
     endif
 
     let l:source = s:sources[a:srcname]
@@ -240,14 +237,19 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
         else
             let l:filename = l:source.name
         endif
+
+        let l:is_dictionary = 0
     else
         " Dictionary.
         if a:srcname =~ '^dict:'
             let l:prefix = '[B] '
+            let l:is_dictionary = 0
         elseif a:srcname =~ '^mfu:'
             let l:prefix = '[M] '
+            let l:is_dictionary = 1
         else
             let l:prefix = '[F] '
+            let l:is_dictionary = 1
         endif
         let l:filename = l:prefix . fnamemodify(l:source.name, ':t')
     endif
@@ -331,7 +333,7 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                 endif
 
                 " Calc previous keyword rank.
-                if l:line !~ '^\$\s'
+                if !l:is_dictionary
                     if !empty(l:prepre_word)
                         if !has_key(l:source.next_next_word_list, l:prepre_word)
                             let l:source.next_next_word_list[l:prepre_word] = {}
@@ -425,6 +427,16 @@ function! s:initialize_source(srcname)"{{{
                 \'end_line' : l:end_line , 'cached_last_line' : 1 }
 endfunction"}}}
 
+function! s:check_changed_buffer(bufname)"{{{
+    let l:ft = getbufvar(a:bufname, '&filetype')
+    if empty(l:ft)
+        let l:ft = 'nothing'
+    endif
+
+    return s:sources[a:bufname].name != fnamemodify(bufname(a:bufname), ':t')
+                \ || s:sources[a:bufname].filetype != l:ft
+endfunction"}}}
+
 function! s:caching_source(srcname, start_line, end_line)"{{{
     if !has_key(s:sources, a:srcname)
         " Initialize source.
@@ -437,7 +449,7 @@ function! s:caching_source(srcname, start_line, end_line)"{{{
         let l:start_line = l:source.cached_last_line
         " Check overflow.
         if l:start_line > l:source.end_line &&
-                    \(a:srcname !~ '^\d' || fnamemodify(bufname(a:srcname), ':t') == l:source.name)
+                    \(a:srcname !~ '^\d' || !s:check_changed_buffer(a:srcname))
             " Caching end.
             return -1
         endif
