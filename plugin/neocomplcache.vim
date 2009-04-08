@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Apr 2009
+" Last Modified: 08 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.20, for Vim 7.0
+" Version: 2.21, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.21:
+"     - Fixed haskell and ocaml syntax.
+"     - Fixed g:NeoComplCache_EnableCamelCaseCompletion default value.
+"     - Extend skip time.
+"     - Added NeoCompleCacheAutoCompletionLength and NeoCompleCachePartialCompletionLength command.
+"     - Fixed extend complete length bug.
+"     - Improved camel case completion.
 "   2.20:
 "     - Improved dictionary check.
 "     - Fixed manual complete wildcard bug.
@@ -443,7 +450,7 @@ if !exists('g:NeoComplCache_CachingRandomize')
     let g:NeoComplCache_CachingRandomize = has('reltime')
 endif
 if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
-    let g:NeoComplCache_EnableCamelCaseCompletion = 1
+    let g:NeoComplCache_EnableCamelCaseCompletion = 0
 endif
 if !exists('g:NeoComplCache_EnableMFU')
     let g:NeoComplCache_EnableMFU = 0

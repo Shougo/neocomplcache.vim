@@ -64,6 +64,12 @@ COMMANDS 					*neocomplcache-commands*
 :NeoCompleCacheUnLock					*:NeoComplCacheUnLock*
 		自動補完にかけたロックを解除する。
 
+:NeoCompleCacheAutoCompletionLength			*:NeoCompleCacheAutoCompletionLength*
+		自動補完する文字数を変更する。
+
+:NeoCompleCachePartialCompletionLength			*:NeoCompleCachePartialCompletionLength*
+		部分マッチ補完する文字数を変更する。
+
 :NeoCompleCacheCachingBuffer [bufnr]			*:NeoComplCacheCachingBuffer*
 		[bufnr]で示されるバッファを完全にキャッシュする。
 		大きなバッファに対しては、かなり時間がかかるので注意。

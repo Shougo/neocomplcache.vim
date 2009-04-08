@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.20, for Vim 7.0
+" Version: 2.21, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -707,16 +707,16 @@ function! neocomplcache#keyword_complete#set_buffer_dictionary(files)"{{{
     silent execute printf("let g:NeoComplCache_DictionaryBufferLists[%d] = '%s'", 
                 \bufnr('%') , substitute(l:files, ';', ' ', 'g'))
     " Caching.
-    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*5)
+    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*3)
 endfunction "}}}
 
 function! neocomplcache#keyword_complete#initialize()"{{{
     augroup neocomplecache_keyword_complete"{{{
         autocmd!
         " Caching events
-        autocmd BufEnter,BufWritePost,CursorHold * call neocomplcache#keyword_complete#update_source(g:NeoComplCache_CacheLineCount*5, 
-                    \ g:NeoComplCache_CacheLineCount*15)
-        autocmd BufAdd * call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*5)
+        autocmd BufEnter,BufWritePost,CursorHold * call neocomplcache#keyword_complete#update_source(g:NeoComplCache_CacheLineCount*3, 
+                    \ g:NeoComplCache_CacheLineCount*9)
+        autocmd BufAdd * call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*3)
         " Caching current buffer events
         autocmd InsertEnter * call neocomplcache#keyword_complete#caching_cache_line()
         " MFU events.
@@ -768,7 +768,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     let g:NeoComplCache_CtagsArgumentsList['default'] = ''
 
     " Initialize cache.
-    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*5)
+    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*3)
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#finalize()"{{{
@@ -802,7 +802,7 @@ endfunction"}}}
 
 function! neocomplcache#keyword_complete#caching_dictionary()"{{{
     " Create source.
-    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*5)
+    call neocomplcache#keyword_complete#check_source(g:NeoComplCache_CacheLineCount*3)
 
     " Check dictionaries are exists.
     if !empty(&filetype) && has_key(g:NeoComplCache_DictionaryFileTypeLists, &filetype)

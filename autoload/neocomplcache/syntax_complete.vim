@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Apr 2009
+" Last Modified: 07 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.02, for Vim 7.0
+" Version: 1.03, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.03:
+"    - Not complete 'Syntax items' message.
 "   1.02:
 "    - Fixed get syntax list.
 "   1.01:
@@ -76,7 +78,7 @@ function! s:initialize_syntax()
             let l:keywords = split(l:line)
         endif
 
-        if l:line[0] =~ '^--' || empty(l:keywords) || l:keywords[0] == 'match' || l:keywords[0] == 'links' ||
+        if l:line =~ 'Syntax items' || empty(l:keywords) || l:keywords[0] == 'match' || l:keywords[0] == 'links' ||
                     \l:keywords[0] =~ '^\h\w*='
             " Next line.
             continue

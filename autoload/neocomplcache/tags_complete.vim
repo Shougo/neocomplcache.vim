@@ -66,7 +66,7 @@ function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
 
         " Camel case completion."{{{
         if g:NeoComplCache_EnableCamelCaseCompletion
-            let l:keyword_escape = substitute(l:keyword_escape, '\v(\u\U*)', '\1.*', 'g')
+            let l:keyword_escape = substitute(l:keyword_escape, '\v\u?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
         endif
         "}}}
 

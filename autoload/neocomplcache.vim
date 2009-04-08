@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.20, for Vim 7.0
+" Version: 2.21, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -264,7 +264,7 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
 
     " Camel case completion."{{{
     if g:NeoComplCache_EnableCamelCaseCompletion
-        let l:keyword_escape = substitute(l:keyword_escape, '\v(\u\U*)', '\1.*', 'g')
+        let l:keyword_escape = substitute(l:keyword_escape, '\v\u?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
     endif
     "}}}
 
@@ -300,7 +300,7 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
         endif
     endif
 
-    if g:NeoComplCache_AlphabeticalOrder "{{{
+    if g:NeoComplCache_AlphabeticalOrder
         " Not calc rank.
         let l:order_func = 'neocomplcache#compare_words'
     else
@@ -317,10 +317,10 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
         let l:order_func = 'neocomplcache#compare_rank'"}}}
     endif
 
-    if exists('l:start_time')"{{{
+    " Skip completion if takes too much time."{{{
+    if exists('l:start_time')
         "let l:end_time = split(reltimestr(reltime(l:start_time)))[0]
-        if split(reltimestr(reltime(l:start_time)))[0] > '0.15'
-            " Skip completion if takes too much time.
+        if split(reltimestr(reltime(l:start_time)))[0] > '0.20'
             echo 'Skipped completion'
             let s:skipped = 1
 
@@ -331,6 +331,8 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
                     " Extend complete length.
                     let g:NeoComplCache_KeywordCompletionStartLength += 1
                     let g:NeoComplCache_PartialCompletionStartLength += 1
+
+                    let s:skipped = 0
                 endif
             endif
 
@@ -579,7 +581,6 @@ function! neocomplcache#enable() "{{{
     augroup neocomplecache "{{{
         autocmd!
         " Auto complete events
-        "autocmd CursorMovedI,InsertEnter * call neocomplcache#complete()
         autocmd CursorMovedI * call neocomplcache#complete()
     augroup END "}}}
 
@@ -610,39 +611,39 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('lisp,scheme', 
                 \'\v\(?[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
-                \'\v([:@]{1,2}(\h\w*)?|[.$]?\h\w*[!?]?(\s*\()?)')
+                \'\v%([:@]{1,2}(\h\w*)?|[.$]?\h\w*[!?]?(\s*\()?)')
     call s:set_keyword_pattern('php',
-                \'\v(\</?[^>]*\>?|\<\h[[:alnum:]_-]*(\s*/?\>)?|(\$|->|::)?\h\w*(\s*\()?)')
+                \'\v%(\</?[^>]*\>?|\<\h[[:alnum:]_-]*%(\s*/?\>)?|%(\$|->|::)?\h\w*%(\s*\()?)')
     call s:set_keyword_pattern('perl',
-                \'\v(\<\h\w*\>?|-\>\h\w*(?|::\h\w*|[$@%&*]\h\w*|\h\w*(\s*\()?)')
+                \'\v%(\<\h\w*\>?|-\>\h\w*\(?|::\h\w*|[$@%&*]\h\w*|\h\w*%(\s*\()?)')
     call s:set_keyword_pattern('vim,help',
-                \'\v(\<\h[[:alnum:]_-]*\>?|[.$]\h\w*\(?|[&#]?\h[[:alnum:]_:]*[(!]?)')
+                \'\v%(\<\h[[:alnum:]_-]*\>?|[.$]\h\w*\(?|[&#]?\h[[:alnum:]_:]*[(!]?)')
     call s:set_keyword_pattern('tex',
-                \'\v(\\[[:alpha:]_@][[:alnum:]_@]*\*?[[{]?|\h\w*)')
+                \'\v%(\\[[:alpha:]_@][[:alnum:]_@]*\*?[[{]?|\h\w*)')
     call s:set_keyword_pattern('sh,zsh,vimshell',
-                \'\v($\w+|[[:alpha:]_.-][[:alnum:]_.-]*(\s*[[(])?)')
+                \'\v%($\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?)')
     call s:set_keyword_pattern('ps1',
-                \'\v($\w+|[[:alpha:]_.-][[:alnum:]_.-]*(\s*\()?)')
+                \'\v%($\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\()?)')
     call s:set_keyword_pattern('c',
-                \'\v(-\>(\h\w*(\s*\()?)?|^\s*#\s*\h\w*|.?\h\w*(\s*\()?)')
+                \'\v%(-\>%(\h\w*%(\s*\()?)?|^\s*#\s*\h\w*|.?\h\w*%(\s*\()?)')
     call s:set_keyword_pattern('cpp',
-                \'\v(-\>(\h\w*(\s*[(<])?)?|::(\h\w*)?|[.#]?\h\w*(\s*\(|<)?)')
+                \'\v%(-\>%(\h\w*%(\s*[(<])?)?|::%(\h\w*)?|[.#]?\h\w*%(\s*\(|<)?)')
     call s:set_keyword_pattern('d',
-                \'\v\.?\h\w*(!?\s*\()?')
+                \'\v\.?\h\w*%(!?\s*\()?')
     call s:set_keyword_pattern('python',
-                \'\v\.?\h\w*(\s*\()?')
+                \'\v\.?\h\w*%(\s*\()?')
     call s:set_keyword_pattern('cs,java',
-                \'\v\.?\h\w*(\s*[(<])?')
+                \'\v\.?\h\w*%(\s*[(<])?')
     call s:set_keyword_pattern('javascript',
-                \'\v\.?\h\w*(\s*\()?')
+                \'\v\.?\h\w*%(\s*\()?')
     call s:set_keyword_pattern('awk',
-                \'\v\h\w*(\s*\()?')
+                \'\v\h\w*%(\s*\()?')
     call s:set_keyword_pattern('haskell',
-                \"\v\.?\h\w*[']?")
+                \"\\v\\.?\\h\\w*[']?")
     call s:set_keyword_pattern('ocaml',
-                \"\v[.#]?[[:alpha:]_'][[:alnum:]_]*[']?")
+                \"\\v[.#]?[[:alpha:]_'][[:alnum:]_]*[']?")
     call s:set_keyword_pattern('html,xhtml,xml',
-                \'\v(\</?\h[[:alnum:]_-]*\s*(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*(\=")?)')
+                \'\v%(\</?\h[[:alnum:]_-]*\s*%(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*%(\=")?)')
     call s:set_keyword_pattern('tags',
                 \'\v^[^!/[:blank:]][^[:blank:]]*')
     "}}}
@@ -667,25 +668,27 @@ function! neocomplcache#enable() "{{{
         let g:NeoComplCache_OmniPatterns = {}
     endif
     if has('ruby')
-        call s:set_omni_pattern('ruby', '\v((^|[^:]):|[^. \t](\.|::))')
+        call s:set_omni_pattern('ruby', '\v%(%(^|[^:]):|[^. \t]%(\.|::))')
     endif
     if has('python')
         call s:set_omni_pattern('python', '\v[^. \t]\.')
     endif
-    call s:set_omni_pattern('html,xhtml,xml', '\v(\<|\</|\<[^>]+|\<[^>]+(\=")?)')
-    call s:set_omni_pattern('css', '\v((^\s|[;{])\s*|[:@!]\s*)')
+    call s:set_omni_pattern('html,xhtml,xml', '\v%(\<|\</|\<[^>]+|\<[^>]+%(\=")?)')
+    call s:set_omni_pattern('css', '\v%(%(^\s|[;{])\s*|[:@!]\s*)')
     call s:set_omni_pattern('javascript', '\v[^. \t]\.')
-    call s:set_omni_pattern('c', '\v[^. \t](\.|-\>)')
-    call s:set_omni_pattern('cpp', '\v[^. \t](\.|-\>|::)')
-    call s:set_omni_pattern('php', '\v[^. \t](-\>|::)')
+    call s:set_omni_pattern('c', '\v[^. \t]%(\.|-\>)')
+    call s:set_omni_pattern('cpp', '\v[^. \t]%(\.|-\>|::)')
+    call s:set_omni_pattern('php', '\v[^. \t]%(-\>|::)')
     call s:set_omni_pattern('java', '\v[^. \t]\.')
-    call s:set_omni_pattern('vim', '\v(^\s*:).*')
+    call s:set_omni_pattern('vim', '\v%(^\s*:).*')
     "}}}
     
     " Add commands."{{{
     command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
     command! -nargs=0 NeoCompleCacheLock call neocomplcache#lock()
     command! -nargs=0 NeoCompleCacheUnlock call neocomplcache#unlock()
+    command! -nargs=1 NeoCompleCacheAutoCompletionLength let g:NeoComplCache_KeywordCompletionStartLength = <args>
+    command! -nargs=1 NeoCompleCachePartialCompletionLength let g:NeoComplCache_PartialCompletionStartLength = <args> 
     "}}}
     
     " Must g:NeoComplCache_StartCharLength > 1.
@@ -719,6 +722,8 @@ function! neocomplcache#disable()"{{{
     delcommand Neco
     delcommand NeoCompleCacheLock
     delcommand NeoCompleCacheUnlock
+    delcommand NeoCompleCacheAutoCompletionLength
+    delcommand NeoCompleCachePartialCompletionLength
 
     for l:plugin in values(s:plugins_func_table)
         call call(l:plugin . 'finalize', [])
