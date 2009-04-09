@@ -23,12 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.21, for Vim 7.0
+" Version: 2.22, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.22:
+"     - Improved tex syntax.
+"     - Improved keyword completion.
+"     - Fixed sequential caching bug.
 "   2.21:
-"     - Fixed haskell and ocaml syntax.
+"     - Fixed haskell and ocaml and perl syntax.
 "     - Fixed g:NeoComplCache_EnableCamelCaseCompletion default value.
 "     - Extend skip time.
 "     - Added NeoCompleCacheAutoCompletionLength and NeoCompleCachePartialCompletionLength command.

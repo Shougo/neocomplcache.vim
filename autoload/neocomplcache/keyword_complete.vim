@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Apr 2009
+" Last Modified: 08 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.21, for Vim 7.0
+" Version: 2.22, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -364,7 +364,7 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                 endif
             endif
 
-            let l:match_num += len(l:match_str) + 1
+            let l:match_num += len(l:match_str)
             if l:match_num > l:line_max
                 break
             endif

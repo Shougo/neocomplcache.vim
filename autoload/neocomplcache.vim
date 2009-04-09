@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Apr 2009
+" Last Modified: 08 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.21, for Vim 7.0
+" Version: 2.22, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -103,7 +103,7 @@ function! neocomplcache#complete()"{{{
 
     if empty(s:complete_words) && !s:skipped && g:NeoComplCache_TryDefaultCompletion
                 \&& len(l:cur_keyword_str) <= g:NeoComplCache_MaxTryKeywordLength
-                \&& l:cur_keyword_str =~ '\h\w\+$' && l:cur_keyword_str !~ '\h\w*[*-]\w*$'
+                \&& l:cur_keyword_str =~ '\k\+$' && l:cur_keyword_str !~ '\k\+[*-]\k\+$'
         let l:default_pattern = g:NeoComplCache_KeywordPatterns['default'] . '$'
         if l:default_pattern != l:pattern
             " Try default completion.
@@ -617,9 +617,9 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('perl',
                 \'\v%(\<\h\w*\>?|-\>\h\w*\(?|::\h\w*|[$@%&*]\h\w*|\h\w*%(\s*\()?)')
     call s:set_keyword_pattern('vim,help',
-                \'\v%(\<\h[[:alnum:]_-]*\>?|[.$]\h\w*\(?|[&#]?\h[[:alnum:]_:]*[(!]?)')
+                \'\v%(\<\h[[:alnum:]_-]*\>?|[.$]\h\w*\(?|[&#]?\h[[:alnum:]_:]*[(!>]?)')
     call s:set_keyword_pattern('tex',
-                \'\v%(\\[[:alpha:]_@][[:alnum:]_@]*\*?[[{]?|\h\w*)')
+                \'\v%(\\\a\{\a{1,2}\}?|\\[[:alpha:]_@][[:alnum:]_@]*[[{]?|\h\w*[[{]?)')
     call s:set_keyword_pattern('sh,zsh,vimshell',
                 \'\v%($\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?)')
     call s:set_keyword_pattern('ps1',

@@ -499,6 +499,16 @@ let g:NeoComplCache_EnableAtStartup = 1
 :NeoCompleCacheDisableで無効になります。
 
 --------------------------------
+アップグレード方法
+
+neocomplcacheは更新が頻繁にあるので、簡単にアップグレードできると便利です。
+Windowsでは使えないですが、drryさんがワンライナーを作ってくれました。
+
+wget -qO - http://github.com/Shougo/neocomplcache/tarball/master | tar -xzC ~/.vim --strip-components=1 --exclude=presen
+
+Windowsでも使えるワンライナーを現在募集中です。
+
+--------------------------------
 今後の予定
 
 考え得る限りほとんどの機能を実装しました。
@@ -526,6 +536,7 @@ let g:NeoComplCache_EnableAtStartup = 1
 --------------------------------
 更新履歴
 
+2009/04/09     アップグレード方法を追加。
 2009/04/07     neocomplcache Ver.2.20に対応。
 2009/04/04     neocomplcache Ver.2.18に対応。
 2009/04/03     neocomplcache Ver.2.17に対応。

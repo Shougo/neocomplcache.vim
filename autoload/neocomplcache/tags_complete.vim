@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Apr 2009
+" Last Modified: 08 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.02:
 "    - Escape input keyword.
 "    - Supported camel case completion.
+"    - Fixed echo.
 "   1.01:
 "    - Not caching.
 "   1.00:
@@ -74,7 +75,6 @@ function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
             " Head match.
             let l:keyword_escape = '^'.l:keyword_escape
         endif
-        echo l:keyword_escape
         let l:tags_list = s:initialize_tags(l:keyword_escape)
         let l:pattern = "v:val.static == 0 || v:val.filename == '".expand('%')."'"
         return filter(l:tags_list, l:pattern)
