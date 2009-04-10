@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Apr 2009
+" Last Modified: 10 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.22, for Vim 7.0
+" Version: 2.23, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.23:
+"     - Fixed compound keyword pattern.
+"     - Optimized keyword pattern.
+"     - Fixed can't quick match bug on g:NeoComplCache_EnableCamelCaseCompletion is 1.
 "   2.22:
 "     - Improved tex syntax.
 "     - Improved keyword completion.

@@ -145,6 +145,10 @@ neocomplcacheの代表的機能
 標準でも様々な言語に対応していますが、
 「この言語に対応して欲しい」という要望があれば、可能な限り対応します。
 
+追記：
+Ver.2.23より、正規表現には\vを使わなければいけなくなりました。
+カスタマイズする場合には注意してください。
+
 --------------------------------
 部分マッチ
 
@@ -366,6 +370,10 @@ Ver.2.17より、プラグインで実装しました。
 Vimの豊富なシンタックスキーワードを有効活用するので、非常に便利です。
 ソースコードも短いので、プラグイン作りの勉強にも最適です。
 
+追記：
+Ver.2.23より、正規表現のパターンも解析するようになりました。
+これで、HaskellやTeXといったファイルでもシンタックス補完が有効になります。
+
 --------------------------------
 CamelCase補完
 
@@ -425,7 +433,7 @@ let g:NeoComplCache_DictionaryFileTypeLists = {
 if !exists('g:NeoComplCache_KeywordPatterns')
     let g:NeoComplCache_KeywordPatterns = {}
 endif
-let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
 むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
@@ -536,6 +544,7 @@ Windowsでも使えるワンライナーを現在募集中です。
 --------------------------------
 更新履歴
 
+2009/04/10     neocomplcache Ver.2.23に対応。
 2009/04/09     アップグレード方法を追加。
 2009/04/07     neocomplcache Ver.2.20に対応。
 2009/04/04     neocomplcache Ver.2.18に対応。

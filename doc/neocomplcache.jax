@@ -295,12 +295,14 @@ g:NeoComplCache_MFUThreshold				*g:NeoComplCache_MFUThreshold*
 g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
 		補完するためのキーワードパターンを記録する。
 		これはファイルタイプ毎に正規表現で指定されている。
+		カスタマイズする場合は、パターンに\vを使用しなければならない。
 		
 		初期値はautoload/neocomplcache.vimを参照せよ。
 
 g:NeoComplCache_OmniPatterns				*g:NeoComplCache_OmniPatterns*
 		オムニ補完するためのキーワードパターンを記録する。
 		これはファイルタイプ毎に正規表現で指定されている。
+		カスタマイズする場合は、パターンに\vを使用しなければならない。
 		
 		初期値はautoload/neocomplcache.vimを参照せよ。
 
