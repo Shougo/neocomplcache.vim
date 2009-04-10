@@ -166,28 +166,30 @@ endfunction"}}}
 function! s:substitute_parenthesis(candidate)"{{{
     let l:head = matchstr(a:candidate, '.*\ze\\%\?(')
     if l:head =~ '\\%\?(.*\\)'
-        let l:head = s:substitute_parenthesis(l:head)
+        "let l:head = s:substitute_parenthesis(l:head)
     endif
 
-    let l:start = matchend(a:candidate, '\\%\?(')
-    let l:paren_cnt = 0
-    let l:paren_match = l:start
-    let l:paren_str = a:candidate[l:start : match(a:candidate, '\\)', l:start)]
-    while l:paren_match >= 0
-        let l:paren_cnt += 1
-        let l:paren_match = matchend(l:paren_str, '\\%\?(', l:paren_match)
-    endwhile
-    let l:end = match(a:candidate, '\\)', l:paren_match, l:paren_cnt)
-    let l:match = split(a:candidate[l:start : l:end], '\\|')
+    "let l:start = matchend(a:candidate, '\\%\?(')
+    "let l:paren_cnt = 0
+    "let l:paren_match = l:start
+    "let l:paren_str = a:candidate[l:start : match(a:candidate, '\\)', l:start)]
+    "while l:paren_match >= 0
+        "let l:paren_cnt += 1
+        "let l:paren_match = matchend(l:paren_str, '\\%\?(', l:paren_match)
+    "endwhile
+    "let l:end = match(a:candidate, '\\)', l:paren_match, l:paren_cnt)
+    "let l:match = split(a:candidate[l:start : l:end], '\\|')
+    let l:match = split(matchstr(a:candidate, '\\%\?(\zs.*\ze\\)'), '\\|')
     for l:m in l:match
         if l:m =~ '\\%\?(.*\\)'
-            let l:m = s:substitute_parenthesis(l:m)
+           " let l:m = s:substitute_parenthesis(l:m)
         endif
     endfor
 
-    let l:tail = a:candidate[l:end+2 :]
+    "let l:tail = a:candidate[l:end+2 :]
+    let l:tail = matchstr(a:candidate, '\\)\zs.*')
     if l:tail =~ '\\%\?(.*\\)'
-        let l:tail = s:substitute_parenthesis(l:tail)
+        "let l:tail = s:substitute_parenthesis(l:tail)
     endif
 
     let l:result = ''
