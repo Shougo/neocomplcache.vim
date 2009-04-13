@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Apr 2009
+" Last Modified: 13 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.02, for Vim 7.0
+" Version: 1.04, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.04:
+"    - Don't return static member.
+"   1.03:
+"    - Optimized memory.
 "   1.02:
 "    - Escape input keyword.
 "    - Supported camel case completion.
@@ -71,13 +75,11 @@ function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
         endif
         "}}}
 
-        if !g:NeoComplCache_PartialMatch || len(l:keyword_escape) < g:NeoComplCache_PartialCompletionStartLength
+        if !g:NeoComplCache_PartialMatch || len(a:cur_keyword_str) < g:NeoComplCache_PartialCompletionStartLength
             " Head match.
             let l:keyword_escape = '^'.l:keyword_escape
         endif
-        let l:tags_list = s:initialize_tags(l:keyword_escape)
-        let l:pattern = "v:val.static == 0 || v:val.filename == '".expand('%')."'"
-        return filter(l:tags_list, l:pattern)
+        return s:initialize_tags(l:keyword_escape)
     endif
 endfunction"}}}
 
@@ -90,11 +92,11 @@ function! s:initialize_tags(cur_keyword_str)
     let l:dup_check = {}
     for l:tag in taglist(a:cur_keyword_str)
         " Add keywords.
-        if len(l:tag.name) >= g:NeoComplCache_MinKeywordLength && !has_key(l:dup_check, l:tag.cmd)
+        if len(l:tag.name) >= g:NeoComplCache_MinKeywordLength
+                    \&& !has_key(l:dup_check, l:tag.cmd) && !l:tag.static
             let l:dup_check[l:tag.cmd] = 1
             let l:keyword = {
                         \ 'word' : l:tag.name, 'menu' : printf(l:manu_pattern, l:tag.kind, fnamemodify(l:tag.filename, ':t')),
-                        \ 'dup' : 1, 'static' : l:tag.static, 'filename' : l:tag.filename, 
                         \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
                         \}
             let l:keyword.abbr = 

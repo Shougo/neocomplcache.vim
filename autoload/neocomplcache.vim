@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Apr 2009
+" Last Modified: 12 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.23, for Vim 7.0
+" Version: 2.24, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -114,12 +114,7 @@ function! neocomplcache#complete()"{{{
 
         if empty(s:complete_words)
             " Try keyword completion.
-            if &filetype == 'perl'
-                " Perl has a lot of included files.
-                call feedkeys("\<C-n>\<C-p>", 'n')
-            else
-                call feedkeys("\<C-x>\<C-i>\<C-p>", 'n')
-            endif
+            call feedkeys("\<C-n>\<C-p>", 'n')
         endif
     endif
 
@@ -467,7 +462,7 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
 
     " Remove next keyword."{{{
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
-                \'^%(' . neocomplcache#keyword_complete#current_keyword_pattern())[1:] . ')'
+                \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
     if !empty(l:next_keyword_str)
         let l:next_keyword_str .= '$'
         let l:cache_keyword_filtered = deepcopy(l:cache_keyword_filtered[:g:NeoComplCache_MaxList-1])
@@ -611,37 +606,37 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('lisp,scheme', 
                 \'\v\(?[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
-                \'\v[:@]{1,2}(\h\w*)?|[.$]?\h\w*[!?]?(\s*\()?')
+                \'\v|\h\w*::|%(@{1,2}|\$)?\h\w*[!?]?%(\s*\()?')
     call s:set_keyword_pattern('php',
-                \'\v\</?[^>]*\>?|\<\h[[:alnum:]_-]*%(\s*/?\>)?|%(\$|->|::)?\h\w*%(\s*\()?')
+                \'\v\</?[^>]*\>?|\<\h[[:alnum:]_-]*%(\s*/?\>)?|\h\w*::|\$\h\w*|\h\w*%(\s*\()?')
     call s:set_keyword_pattern('perl',
-                \'\v\<\h\w*\>?|-\>\h\w*\(?|::\h\w*|[$@%&*]\h\w*|\h\w*%(\s*\()?')
+                \'\v\<\h\w*\>?|\h\w*::|[$@%&*]\h\w*|\h\w*%(\s*\()?')
     call s:set_keyword_pattern('vim,help',
-                \'\v\<\h[[:alnum:]_-]*\>?|[.$]\h\w*\(?|[&]?\h[[:alnum:]_:]*[(!>#]?')
+                \'\v\$\h\w*|\<\h[[:alnum:]_-]*\>?|-\h\w*[>]?|[&]?\h[[:alnum:]_:]*[(!>#]?')
     call s:set_keyword_pattern('tex',
-                \'\v\\\a\{\a{1,2}\}?|\\[[:alpha:]_@][[:alnum:]_@]*[[{]?|\h\w*[[{]?')
+                \'\v\\\a\{\a{1,2}\}?|\\[[:alpha:]_@][[:alnum:]_@]*[[{]?|\h\w*[*[{]?')
     call s:set_keyword_pattern('sh,zsh,vimshell',
-                \'\v$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
+                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
     call s:set_keyword_pattern('ps1',
-                \'\v$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\()?')
+                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\()?')
     call s:set_keyword_pattern('c',
-                \'\v-\>%(\h\w*%(\s*\()?)?|^\s*#\s*\h\w*|.?\h\w*%(\s*\()?')
+                \'\v^\s*#\s*\h\w*|\h\w*%(\s*\()?')
     call s:set_keyword_pattern('cpp',
-                \'\v-\>%(\h\w*%(\s*[(<])?)?|::%(\h\w*)?|[.#]?\h\w*%(\s*\(|<)')
+                \'\v\h\w*::?|^\s*#\s*\h\w*|\h\w*%(\s*\(|<)')
     call s:set_keyword_pattern('d',
-                \'\v\.?\h\w*%(!?\s*\()?')
+                \'\v\h\w*%(!?\s*\()?')
     call s:set_keyword_pattern('python',
-                \'\v\.?\h\w*%(\s*\()?')
+                \'\v\h\w*%(\s*\()?')
     call s:set_keyword_pattern('cs,java',
-                \'\v\.?\h\w*%(\s*[(<])?')
+                \'\v\h\w*%(\s*[(<])?')
     call s:set_keyword_pattern('javascript',
-                \'\v\.?\h\w*%(\s*\()?')
+                \'\v\h\w*%(\s*\()?')
     call s:set_keyword_pattern('awk',
                 \'\v\h\w*%(\s*\()?')
     call s:set_keyword_pattern('haskell',
-                \"\\v\\.?\\h\\w*[']?")
+                \'\v\h\w*['']?')
     call s:set_keyword_pattern('ocaml',
-                \"\\v[.#]?[[:alpha:]_'][[:alnum:]_]*[']?")
+                \'\\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
     call s:set_keyword_pattern('html,xhtml,xml',
                 \'\v\</?\h[[:alnum:]_-]*\s*%(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',

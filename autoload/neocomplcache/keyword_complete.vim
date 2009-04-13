@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Apr 2009
+" Last Modified: 12 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.23, for Vim 7.0
+" Version: 2.24, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -147,7 +147,7 @@ function! neocomplcache#keyword_complete#calc_rank(cache_keyword_buffer_list)"{{
         if s:rank_cache_count <= 0
             " Reset count.
             let s:rank_cache_count = (g:NeoComplCache_CalcRankRandomize)? 
-                        \ reltimestr(reltime())[l:match_end : ] % l:calc_cnt : l:calc_cnt
+                        \ reltimestr(reltime())[l:match_end : ] % l:calc_cnt + 1 : l:calc_cnt
 
             if g:NeoComplCache_EnableInfo
                 " Create info.
@@ -162,13 +162,26 @@ endfunction"}}}
 
 function! neocomplcache#keyword_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
     " Get next keyword list.
-    let [l:source_next, l:source_next_next] = [{}, {}]
+    let [l:source_next, l:source_next_next, l:operator_list] = [{}, {}, {}]
+    " Get operator keyword list.
+    let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
+    let l:cur_text = strpart(getline('.'), 0, col('.') - 1)
+    let l:cur_keyword_pos = match(l:cur_text, l:pattern)
+    if l:cur_keyword_pos > 0
+        let l:cur_text = l:cur_text[: l:cur_keyword_pos-1]
+    endif
+    let l:operator = matchstr(l:cur_text,
+                \'[!@#$%^&*(=+\\|`~[{:/?.><-]\{1,2}\ze\s*$')
+
     for src in s:get_sources_list()
         if has_key(s:sources[src].next_word_list, a:prev_word)
             let l:source_next[src] = s:sources[src].next_word_list[a:prev_word]
         endif
         if !empty(a:prepre_word) && has_key(s:sources[src].next_next_word_list, a:prepre_word)
             let l:source_next_next[src] = s:sources[src].next_next_word_list[a:prepre_word]
+        endif
+        if !empty(l:operator) && has_key(s:sources[src].operator_word_list, l:operator)
+            let l:operator_list[src] = s:sources[src].operator_word_list[l:operator]
         endif
     endfor
 
@@ -198,6 +211,11 @@ function! neocomplcache#keyword_complete#calc_prev_rank(cache_keyword_buffer_lis
             if a:prepre_word != '^'
                 let keyword.prepre_rank = keyword.prepre_rank * 3
             endif
+        endif
+        if has_key(l:operator_list, keyword.srcname)
+                    \&& has_key(l:operator_list[keyword.srcname], keyword.word)
+            let keyword.prev_rank = keyword.prev_rank * 2
+            let keyword.prev_rank += 100
         endif
     endfor
 endfunction"}}}
@@ -298,10 +316,12 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                     \[0, '^', '', substitute(l:line, '^\s\+', '', '')[:100],
                     \ len(l:line) - g:NeoComplCache_MinKeywordLength]
         while 1
-            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
-            if empty(l:match_str)
+            let l:match = match(l:line, l:keyword_pattern, l:match_num)
+            if l:match < 0
                 break
             endif
+            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
+            let l:match_num += len(l:match_str)
 
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
@@ -313,8 +333,8 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                     if !has_key(l:source.keyword_cache, l:match_str)
                         " Append list.
                         let l:source.keyword_cache[l:match_str] = {
-                                    \'word' : l:match_str, 'menu' : l:menu,  'dup' : 0, 'info' : l:info_line,
-                                    \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : [l:info_line]
+                                    \'word' : l:match_str, 'menu' : l:menu,  'info' : l:info_line,
+                                    \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : []
                                     \}
 
                         if !g:NeoComplCache_EnableQuickMatch
@@ -362,9 +382,17 @@ function! neocomplcache#keyword_complete#caching(srcname, start_line, end_line)"
                         let l:match_cache_line.prev_rank[l:prev_word] = 1
                     endif
                 endif
+
+                " Check operator.
+                let l:operator = matchstr(l:line[: l:match-1], '[!@#$%^&*(=+\\|`~[{:;/?.><-]\{1,2}\ze\s*$')
+                if !empty(l:operator)
+                    if !has_key(l:source.operator_word_list, l:operator)
+                        let l:source.operator_word_list[l:operator] = {}
+                    endif
+                    let l:source.operator_word_list[l:operator][l:match_str] = 1
+                endif
             endif
 
-            let l:match_num += len(l:match_str)
             if l:match_num > l:line_max
                 break
             endif
@@ -422,7 +450,8 @@ function! s:initialize_source(srcname)"{{{
     endif
 
     let s:sources[a:srcname] = {
-                \'keyword_cache' : {}, 'rank_cache_lines' : {}, 'next_word_list' : {}, 'next_next_word_list' : {},
+                \'keyword_cache' : {}, 'rank_cache_lines' : {},
+                \'next_word_list' : {}, 'next_next_word_list' : {}, 'operator_word_list' : {},
                 \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
                 \'end_line' : l:end_line , 'cached_last_line' : 1 }
 endfunction"}}}
