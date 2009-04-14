@@ -31,6 +31,7 @@
 "     - Optimized syntax caching.
 "     - Fixed ruby and ocaml syntax.
 "     - Fixed error when g:NeoComplCache_AlphabeticalOrder is set.
+"     - Improved syntax_complete caching event.
 "   2.24:
 "     - Optimized calc rank.
 "     - Optimized keyword pattern.

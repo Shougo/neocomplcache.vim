@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.12:
 "    - Optimized caching.
+"    - Caching event changed.
 "   1.11:
 "    - Optimized.
 "   1.10:
@@ -52,12 +53,8 @@
 "=============================================================================
 
 function! neocomplcache#syntax_complete#get_keyword_list(cur_keyword_str)"{{{
-    if empty(&filetype)
+    if empty(&filetype) || !has_key(s:syntax_list, &filetype)
         return []
-    endif
-
-    if !has_key(s:syntax_list, &filetype)
-        let s:syntax_list[&filetype] = s:initialize_syntax()
     endif
 
     return s:syntax_list[&filetype]
@@ -181,7 +178,7 @@ function! neocomplcache#syntax_complete#initialize()"{{{
     augroup neocomplecache_syntax_complete"{{{
         autocmd!
         " Caching events
-        autocmd FileType * call s:caching_event() 
+        autocmd CursorHold * call s:caching_event() 
     augroup END"}}}
 
 endfunction"}}}
