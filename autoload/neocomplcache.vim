@@ -345,7 +345,7 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
     let l:cache_keyword_filtered = []
 
     " Previous keyword completion.
-    if g:NeoComplCache_PreviousKeywordCompletion"{{{
+    if g:NeoComplCache_PreviousKeywordCompletion && !g:NeoComplCache_AlphabeticalOrder "{{{
         let [l:prev_word, l:prepre_word] = s:get_prev_word(a:cur_keyword_str)
         for l:plugin in keys(l:loaded_plugins)
             let l:cache_keyword_list = l:cache_keyword_lists[l:plugin]
@@ -606,7 +606,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('lisp,scheme', 
                 \'\v\(?[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
-                \'\v|\h\w*::|%(@{1,2}|\$)?\h\w*[!?]?%(\s*\()?')
+                \'\v\h\w*::|%(\@{1,2}|\$)?\h\w*[!?]?%(\s*\()?')
     call s:set_keyword_pattern('php',
                 \'\v\</?[^>]*\>?|\<\h[[:alnum:]_-]*%(\s*/?\>)?|\h\w*::|\$\h\w*|\h\w*%(\s*\()?')
     call s:set_keyword_pattern('perl',
@@ -636,7 +636,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('haskell',
                 \'\v\h\w*['']?')
     call s:set_keyword_pattern('ocaml',
-                \'\\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
+                \'\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
     call s:set_keyword_pattern('html,xhtml,xml',
                 \'\v\</?\h[[:alnum:]_-]*\s*%(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',

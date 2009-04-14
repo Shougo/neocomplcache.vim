@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Apr 2009
+" Last Modified: 14 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
+" Version: 1.12, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.12:
+"    - Optimized caching.
 "   1.11:
 "    - Optimized.
 "   1.10:
@@ -147,65 +149,19 @@ function! s:substitute_candidate(candidate)"{{{
                     \'\%(\\\\\|[^\\]\)\zs\%([=?+*]\|%[\|\\s\*\)', '', 'g')
         " Space.
         let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\%([<>{|$^]\|\\z\?\a\)', ' ', 'g')
+                    \'\%(\\\\\|[^\\]\)\zs\%([<>{()|$^]\|\\z\?\a\)', ' ', 'g')
     else
         " Delete.
         let l:candidate = substitute(l:candidate,
                     \'\%(\\\\\|[^\\]\)\zs\%(\\[=?+]\|\\%[\|\\s\*\|\*\)', '', 'g')
         " Space.
         let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\%(\\[<>{]\|[$^]\|\\z\?\a\)', ' ', 'g')
-        " Parenthesis.
-        if l:candidate =~ '\%(\\\\\|[^\\]\)\\%\?(.*\a.*\a.*\\)'
-            "let l:candidate = join(s:substitute_parenthesis(l:candidate))
-        endif
-        " Space2.
-        let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\\%\?[()|]', ' ', 'g')
+                    \'\%(\\\\\|[^\\]\)\zs\%(\\[<>{()|]\|[$^]\|\\z\?\a\)', ' ', 'g')
     endif
 
     " \
     let l:candidate = substitute(l:candidate, '\\\\', '\\', 'g')
     return l:candidate
-endfunction"}}}
-
-function! s:substitute_parenthesis(candidate)"{{{
-    let l:head = matchstr(a:candidate, '.*\ze\%(\\\\\|[^\\]\)\\%\?(')
-
-    let l:start = matchend(a:candidate, '\%(\\\\\|[^\\]\)\zs\\%\?(')
-    let l:paren_cnt = 0
-    let l:paren_match = l:start
-    let l:paren_str = a:candidate[l:start : match(a:candidate, '\%(\\\\\|[^\\]\)\zs\\)', l:start)]
-    while l:paren_match >= 0
-        let l:paren_cnt += 1
-        let l:paren_match = matchend(l:paren_str, '\%(\\\\\|[^\\]\)\zs\\%\?(', l:paren_match)
-    endwhile
-    let l:end = match(a:candidate, '\%(\\\\\|[^\\]\)\\)', l:paren_match, l:paren_cnt)
-    let l:match = split(a:candidate[l:start : l:end], '\%(\\\\\|[^\\]\)\zs\\|')
-    "let l:match = split(matchstr(a:candidate, '\\%\?(\zs.*\ze\\)'), '\\|')
-    for l:m in l:match
-        if l:m =~ '\\%\?(.*\a.*\a.*\\)'
-           "let l:m = s:substitute_parenthesis(l:m)
-        endif
-    endfor
-
-    "let l:tail = matchstr(a:candidate, '\\)\zs.*')
-    if a:candidate[l:end+2 :] =~ '\%(\\\\\|[^\\]\)\\%\?(.*\a.*\a.*\\)'
-        "let l:tail = s:substitute_parenthesis(a:candidate[l:end+2 :])
-        let l:tail = [a:candidate[l:end+2 :]]
-    else
-        let l:tail = [a:candidate[l:end+2 :]]
-    endif
-
-    let l:result = []
-    for l:t in l:tail
-        for l:m in l:match
-            call add(l:result, l:head . l:m . l:t)
-        endfor
-    endfor
-    echomsg string(l:result)
-
-    return l:result
 endfunction"}}}
 
 " Dummy function.
