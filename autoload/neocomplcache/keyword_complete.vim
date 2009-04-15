@@ -740,8 +740,7 @@ function! neocomplcache#keyword_complete#set_buffer_dictionary(files)"{{{
 endfunction "}}}
 
 function! neocomplcache#keyword_complete#initialize()"{{{
-    augroup neocomplecache_keyword_complete"{{{
-        autocmd!
+    augroup neocomplecache"{{{
         " Caching events
         autocmd BufEnter,BufWritePost,CursorHold * call neocomplcache#keyword_complete#update_source(g:NeoComplCache_CacheLineCount*3, 
                     \ g:NeoComplCache_CacheLineCount*9)
@@ -755,7 +754,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     augroup END"}}}
 
     if g:NeoComplCache_TagsAutoUpdate
-        augroup neocomplecache_keyword_complete
+        augroup neocomplecache
             autocmd BufWritePost * call neocomplcache#keyword_complete#update_tags()
         augroup END
     endif
@@ -801,10 +800,6 @@ function! neocomplcache#keyword_complete#initialize()"{{{
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#finalize()"{{{
-    augroup neocomplecache_keyword_complete
-        autocmd!
-    augroup END
-
     delcommand NeoCompleCacheCachingBuffer
     delcommand NeoCompleCacheCachingDictionary
     delcommand NeoCompleCacheSaveMFU

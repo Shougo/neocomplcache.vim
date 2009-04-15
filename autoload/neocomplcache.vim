@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2009
+" Last Modified: 15 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.24, for Vim 7.0
+" Version: 2.26, for Vim 7.0
 "=============================================================================
 
 let s:disable_neocomplcache = 1
@@ -69,7 +69,6 @@ function! neocomplcache#complete()"{{{
     let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
-    "echo l:cur_keyword_str
 
     if g:NeoComplCache_EnableWildCard
         " Check wildcard.
@@ -242,7 +241,7 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
     let l:loaded_plugins = copy(s:plugins_func_table)
 
     " Escape."{{{
-    let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$*'), "'", "''", 'g')
+    let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$*[]'), "'", "''", 'g')
     if g:NeoComplCache_EnableWildCard
         if l:keyword_escape =~ '^\\\*'
             let l:head = l:keyword_escape[:1]
@@ -606,13 +605,15 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('lisp,scheme', 
                 \'\v\(?[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
-                \'\v\h\w*::|%(\@{1,2}|\$)?\h\w*[!?]?%(\s*\()?')
+                \'\v\h\w*::|%(\@{1,2}|[:$])?\h\w*[!?]?%(\s*\()?')
+    call s:set_keyword_pattern('eruby',
+                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\h\w*::|%(\@{1,2}|[:$])?\h\w*[!?]?%(\s*\()?')
     call s:set_keyword_pattern('php',
-                \'\v\</?[^>]*\>?|\<\h[[:alnum:]_-]*%(\s*/?\>)?|\h\w*::|\$\h\w*|\h\w*%(\s*\()?')
+                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\h\w*::|\$\h\w*|\h\w*%(\s*\()?')
     call s:set_keyword_pattern('perl',
                 \'\v\<\h\w*\>?|\h\w*::|[$@%&*]\h\w*|\h\w*%(\s*\()?')
     call s:set_keyword_pattern('vim,help',
-                \'\v\$\h\w*|\<\h[[:alnum:]_-]*\>?|-\h\w*[>]?|[&]?\h[[:alnum:]_:]*[(!>#]?')
+                \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&]?\h[[:alnum:]_:]*[(!>#]?')
     call s:set_keyword_pattern('tex',
                 \'\v\\\a\{\a{1,2}\}?|\\[[:alpha:]_@][[:alnum:]_@]*[[{]?|\h\w*[*[{]?')
     call s:set_keyword_pattern('sh,zsh,vimshell',
@@ -637,10 +638,20 @@ function! neocomplcache#enable() "{{{
                 \'\v\h\w*['']?')
     call s:set_keyword_pattern('ocaml',
                 \'\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
+    call s:set_keyword_pattern('erlang',
+                \'\v^\s*-\h\w*[(]?|\h\w*[:(.]?')
     call s:set_keyword_pattern('html,xhtml,xml',
-                \'\v\</?\h[[:alnum:]_-]*\s*%(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*%(\=")?')
+                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',
                 \'\v^[^!/[:blank:]][^[:blank:]]*')
+    call s:set_keyword_pattern('pic',
+                \'\v^\s*#\h\w*|\h\w*')
+    call s:set_keyword_pattern('masm',
+                \'\v\.\h\w|[[:alpha:]_@?$][[:alnum:]_@?$]*')
+    call s:set_keyword_pattern('asm',
+                \'\v[%$.]?\h\w*')
+    call s:set_keyword_pattern('erlang',
+                \'\v^\s*-\h\w*[(]?|\h\w*[:(.]?')
     "}}}
 
     " Initialize assume file type lists."{{{

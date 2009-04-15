@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Apr 2009
+" Last Modified: 15 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.12, for Vim 7.0
+" Version: 1.13, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.13:
+"    - Delete nextgroup.
 "   1.12:
 "    - Optimized caching.
 "    - Caching event changed.
@@ -92,12 +94,13 @@ function! s:initialize_syntax()
             continue
         endif
 
-        let l:line = substitute(l:line, 'contained\|skipwhite', '', 'g')
+        let l:line = substitute(l:line, 'contained\|skipwhite\|skipnl\|oneline', '', 'g')
+        let l:line = substitute(l:line, '^\s*nextgroup=.*\ze\s', '', '')
 
         if l:line =~ '^\s*match'
             let l:line = s:substitute_candidate(matchstr(l:line, '/\zs[^/]\+\ze/'))
             "echomsg l:line
-        elseif l:line =~ '^\s*nextgroup=' || l:line =~ '^\s*start='
+        elseif l:line =~ '^\s*start='
             let l:line = 
                         \s:substitute_candidate(matchstr(l:line, 'start=/\zs[^/]\+\ze/')) . ' ' .
                         \s:substitute_candidate(matchstr(l:line, 'end=/zs[^/]\+\ze/'))
@@ -175,8 +178,7 @@ function! neocomplcache#syntax_complete#initialize()"{{{
     " Initialize
     let s:syntax_list = {}
 
-    augroup neocomplecache_syntax_complete"{{{
-        autocmd!
+    augroup neocomplecache"{{{
         " Caching events
         autocmd CursorHold * call s:caching_event() 
     augroup END"}}}
@@ -191,9 +193,6 @@ function! s:caching_event()"{{{
 endfunction"}}}
 
 function! neocomplcache#syntax_complete#finalize()"{{{
-    augroup neocomplecache_syntax_complete"{{{
-        autocmd!
-    augroup END"}}}
 endfunction"}}}
 
 " vim: foldmethod=marker
