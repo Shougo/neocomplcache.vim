@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.13:
 "    - Delete nextgroup.
+"    - Improved filtering.
 "   1.12:
 "    - Optimized caching.
 "    - Caching event changed.
@@ -59,7 +60,7 @@ function! neocomplcache#syntax_complete#get_keyword_list(cur_keyword_str)"{{{
         return []
     endif
 
-    return s:syntax_list[&filetype]
+    return neocomplcache#keyword_filter(copy(s:syntax_list[&filetype]), a:cur_keyword_str)
 endfunction"}}}
 
 function! s:initialize_syntax()

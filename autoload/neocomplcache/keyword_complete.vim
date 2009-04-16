@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2009
+" Last Modified: 16 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.24, for Vim 7.0
+" Version: 2.27, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -31,7 +31,7 @@ function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
     for src in s:get_sources_list()
         call extend(l:keyword_list, values(s:sources[src].keyword_cache))
     endfor
-    return l:keyword_list
+    return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! s:get_sources_list()"{{{
@@ -807,6 +807,21 @@ function! neocomplcache#keyword_complete#finalize()"{{{
     delcommand NeoCompleCachePrintSource
     delcommand NeoCompleCacheOutputKeyword
     delcommand NeoCompleCacheCreateTags
+endfunction"}}}
+
+function! neocomplcache#keyword_complete#caching_percent(number)"{{{
+    if empty(a:number)
+        let l:number = bufnr('%')
+    else
+        let l:number = a:number
+    endif
+    if !has_key(s:sources, l:number)
+        return 0
+    elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
+        return 100
+    else
+        return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
+    endif
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#caching_buffer(number)"{{{
