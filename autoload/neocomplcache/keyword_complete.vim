@@ -405,8 +405,8 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
                     if !has_key(l:source.keyword_cache, l:match_str)
                         " Append list.
                         let l:source.keyword_cache[l:match_str] = {
-                                    \'word' : l:match_str, 'menu' : l:menu,  'info' : l:info_line,
-                                    \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : []
+                                    \'word' : l:match_str, 'menu' : l:menu,
+                                    \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : [l:info_line]
                                     \}
 
                         let l:source.keyword_cache[l:match_str].abbr_save = 

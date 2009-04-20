@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Apr 2009
+" Last Modified: 20 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -30,6 +30,7 @@
 "   2.32:
 "     - Implemented variable cache line.
 "     - Don't complete '/cygdrive/'.
+"     - Fixed popup preview window bug if g:NeoComplCache_EnableInfo is 0.
 "   2.31:
 "     - Optimized caching.
 "     - Improved html omni syntax.
