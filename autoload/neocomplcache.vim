@@ -471,7 +471,7 @@ function! s:check_filename_completion(cur_text)"{{{
     " Filename pattern.
     let l:pattern = printf('[/~]\=\f\+[%s]\f*$', l:PATH_SEPARATOR)
     " Not Filename pattern.
-    let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*$'
+    let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$'
 
     " Check filename completion.
     return match(a:cur_text, l:pattern) >= 0 && match(a:cur_text, l:exclude_pattern) < 0

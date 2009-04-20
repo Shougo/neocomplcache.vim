@@ -29,6 +29,7 @@
 " ChangeLog NeoCompleCache2: "{{{
 "   2.32:
 "     - Implemented variable cache line.
+"     - Don't complete '/cygdrive/'.
 "   2.31:
 "     - Optimized caching.
 "     - Improved html omni syntax.
