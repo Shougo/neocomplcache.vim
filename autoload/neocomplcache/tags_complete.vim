@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2009
+" Last Modified: 17 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.05, for Vim 7.0
+" Version: 1.06, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.06:
+"    - Improved abbr.
+"    - Refactoring.
 "   1.05:
 "    - Improved filtering.
 "   1.04:
@@ -50,42 +53,37 @@
 ""}}}
 "=============================================================================
 
+function! neocomplcache#tags_complete#initialize()"{{{
+    " Initialize
+endfunction"}}}
+
+function! neocomplcache#tags_complete#finalize()"{{{
+endfunction"}}}
+
 function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
     if &l:completefunc == 'neocomplcache#auto_complete' ||
                 \len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
         return []
     endif
 
-    " Escape."{{{
-    let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$*'), "'", "''", 'g')
-    if g:NeoComplCache_EnableWildCard
-        if l:keyword_escape =~ '^\\\*'
-            let l:head = l:keyword_escape[:1]
-            let l:keyword_escape = l:keyword_escape[2:]
-        elseif l:keyword_escape =~ '^-'
-            let l:head = l:keyword_escape[0]
-            let l:keyword_escape = l:keyword_escape[1:]
-        else
-            let l:head = ''
-        endif
-        let l:keyword_escape = l:head . substitute(substitute(l:keyword_escape, '\\\*', '.*', 'g'), '-', '.\\+', 'g')
-        unlet l:head
-    endif"}}}
+    let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
-    " Camel case completion."{{{
-    if g:NeoComplCache_EnableCamelCaseCompletion
-        let l:keyword_escape = substitute(l:keyword_escape, '\v\u?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
-    endif
-    "}}}
-
-    if !g:NeoComplCache_PartialMatch || len(a:cur_keyword_str) < g:NeoComplCache_PartialCompletionStartLength
+    if !g:NeoComplCache_PartialMatch || neocomplcache#skipped() || len(a:cur_keyword_str) < g:NeoComplCache_PartialCompletionStartLength
         " Head match.
         let l:keyword_escape = '^'.l:keyword_escape
     endif
     return neocomplcache#keyword_filter(s:initialize_tags(l:keyword_escape), a:cur_keyword_str)
 endfunction"}}}
 
-function! s:initialize_tags(cur_keyword_str)
+" Dummy function.
+function! neocomplcache#tags_complete#calc_rank(cache_keyword_buffer_list)"{{{
+endfunction"}}}
+
+" Dummy function.
+function! neocomplcache#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
+endfunction"}}}
+
+function! s:initialize_tags(cur_keyword_str)"{{{
     " Get current tags list.
 
     let l:keyword_list = []
@@ -101,7 +99,7 @@ function! s:initialize_tags(cur_keyword_str)
                         \ 'word' : l:tag.name, 'menu' : printf(l:manu_pattern, l:tag.kind, fnamemodify(l:tag.filename, ':t')),
                         \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
                         \}
-            let l:keyword.abbr = 
+            let l:keyword.abbr_save = 
                         \ (len(l:tag.name) > g:NeoComplCache_MaxKeywordWidth)? 
                         \ printf(l:abbr_pattern, l:tag.name, l:tag.name[-8:]) : l:tag.name
 
@@ -133,21 +131,6 @@ function! s:initialize_tags(cur_keyword_str)
     endfor
 
     return sort(l:keyword_list, 'neocomplcache#compare_words')
-endfunction
-
-" Dummy function.
-function! neocomplcache#tags_complete#calc_rank(cache_keyword_buffer_list)"{{{
-endfunction"}}}
-
-" Dummy function.
-function! neocomplcache#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
-endfunction"}}}
-
-function! neocomplcache#tags_complete#initialize()"{{{
-    " Initialize
-endfunction"}}}
-
-function! neocomplcache#tags_complete#finalize()"{{{
 endfunction"}}}
 
 " Global options definition."{{{

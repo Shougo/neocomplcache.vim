@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2009
+" Last Modified: 19 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,32 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.27, for Vim 7.0
+" Version: 2.32, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.32:
+"     - Implemented variable cache line.
+"   2.31:
+"     - Optimized caching.
+"     - Improved html omni syntax.
+"     - Changed g:NeoComplCache_MaxInfoList default value.
+"     - Try empty keyword completion if candidate is empty in manual complete.
+"     - Delete candidate from source if rank is low.
+"     - Disable filename completion in tex filetype.
+"   2.30:
+"     - Deleted MFU.
+"     - Optimized match.
+"     - Fixed cpp keyword bugs.
+"     - Improved snippets_complete.
+"   2.29:
+"     - Improved plugin interface.
+"     - Refactoring.
+"   2.28:
+"     - Improved autocmd.
+"     - Fixed delete source bug when g:NeoComplCache_EnableMFU is set.
+"     - Implemented snippets_complete.
+"     - Optimized abbr.
 "   2.27:
 "     - Improved filtering.
 "     - Supported actionscript.
@@ -473,32 +495,13 @@ if !exists('g:NeoComplCache_EnableInfo')
     let g:NeoComplCache_EnableInfo = 0
 endif
 if !exists('g:NeoComplCache_MaxInfoList')
-    let g:NeoComplCache_MaxInfoList = 3
+    let g:NeoComplCache_MaxInfoList = 1
 endif
 if !exists('g:NeoComplCache_CachingRandomize')
     let g:NeoComplCache_CachingRandomize = has('reltime')
 endif
 if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
     let g:NeoComplCache_EnableCamelCaseCompletion = 0
-endif
-if !exists('g:NeoComplCache_EnableMFU')
-    let g:NeoComplCache_EnableMFU = 0
-elseif g:NeoComplCache_EnableMFU
-    " Most frequently used settings.
-    
-    if !exists('g:NeoComplCache_MFUDirectory')
-        let g:NeoComplCache_MFUDirectory = $HOME . '/.vim_mfu'
-    endif
-    if !isdirectory(g:NeoComplCache_MFUDirectory)
-        call mkdir(g:NeoComplCache_MFUDirectory, 'p')
-    endif
-
-    if !exists('g:NeoComplCache_MFUThreshold')
-        let g:NeoComplCache_MFUThreshold = 20
-    endif
-    if !exists('g:NeoComplCache_MFUMax')
-        let g:NeoComplCache_MFUMax = 200
-    endif
 endif
 if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
     " Enable startup.

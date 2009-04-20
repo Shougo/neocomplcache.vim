@@ -83,10 +83,6 @@ COMMANDS 					*neocomplcache-commands*
 		カレントバッファに関連づけられたタグファイルを完全にキャッシュする。
 		大きなタグファイルに対しては、かなり時間がかかるので注意。
 
-:NeoCompleCacheSaveMFU					*:NeoComplCacheCachingMFU*
-		MFU(Most Frequently Used)ファイルを書き出する。
-		デバッグ用なので、ユーザーが使うことはないだろう。
-
 :NeoCompleCacheSetBufferDictionary [filename],...	*:NeoComplCacheSetBufferDictionary*
 		バッファに関連づけられる辞書ファイルを設定する。
 		インクルードファイルの補完に便利かもしれない。
@@ -105,6 +101,12 @@ COMMANDS 					*neocomplcache-commands*
 		[bufnr]で示されるバッファから、タグ情報を生成する。
 		[bufnr]を省略すると、カレントバッファを指定したことになる。
 		これにより生成されたタグファイルは、neocomplcacheにより、自動的にキャッシュされる。
+
+:NeoCompleCacheEditSnippets [filetype]			*:NeoCompleCacheEditSnippets*
+		[filetype]のスニペット補完ファイルを編集する。
+		[filetype]を省略すると、カレントバッファのファイルタイプを編集する。
+		[filetype]のスニペット補完ファイルが存在しない場合、新しく生成される。
+		スニペット補完ファイルを保存すると、自動的にキャッシュされる。
 
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
@@ -176,7 +178,8 @@ g:NeoComplCache_AlphabeticalOrder			*g:NeoComplCache_AlphabeticalOrder*
 
 g:NeoComplCache_CacheLineCount				*g:NeoComplCache_CacheLineCount*
 		バッファの何行ごとにキャッシュするかを制御する。
-		これが大きいほど候補の探索は早くなるが、キャッシュするのに時間がかかる。
+		Ver.2.31までキャッシュラインは固定だったが、HTMLやTeXで重いために可変となった。
+		これが小さいほど候補の探索は早くなるが、キャッシュするのに時間がかかる。
 		
 		初期値は70である。
 
@@ -275,23 +278,6 @@ g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompl
 		
 		副作用があるので、初期値は0となっている。
 
-g:NeoComplCache_EnableMFU				*g:NeoComplCache_EnableMFU*
-		MFU(Most Frequently Used)なキーワードをファイルタイプごとに自動保存し、
-		辞書ファイルとして使用するかどうか制御する。1ならば有効になる。
-		
-		初期値は0となっている。
-
-g:NeoComplCache_MFUDirectiory				*g:NeoComplCache_MFUDirectiory*
-		MFUを保存するディレクトリへのパスを設定する。
-		
-		初期値は'~/.vim_mfu'となっている。
-
-g:NeoComplCache_MFUThreshold				*g:NeoComplCache_MFUThreshold*
-		MFUとして認識する頻度の閾値を設定する。
-		頻度を計算するようになっていないと意味がない。
-		
-		初期値は20となっている。
-
 g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
 		補完するためのキーワードパターンを記録する。
 		これはファイルタイプ毎に正規表現で指定されている。
@@ -327,8 +313,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
 	let g:NeoComplCache_SmartCase = 1
-	" Use mfu.
-	let g:NeoComplCache_EnableMFU = 1
 	" Use previous keyword completion.
 	let g:NeoComplCache_PreviousKeywordCompletion = 1
 	" Use tags auto update.
