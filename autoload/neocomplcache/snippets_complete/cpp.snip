@@ -1,4 +1,4 @@
 include c
-'name' : 'template', 'word' : 'template<typename T> ', 'abbr' : 'template<T>', 'prev_word' : [ '^' ]
-'name' : 'class', 'word' : 'class name {};', 'prev_word' : [ '^' ]
-'name' : 'try', 'word' : 'try () {} catch () {}', 'abbr' : 'try catch', 'prev_word' : [ '^' ]
+'name' : 'template', 'word' : 'template<typename ${1:T}> ', 'abbr' : 'template<T>', 'prev_word' : [ '^' ]
+'name' : 'class', 'word' : 'class ${1} {<\n>${2}</n>};', 'abbr' : 'class {}', 'prev_word' : [ '^' ]
+'name' : 'try', 'word' : 'try ${1} {<\n>${2}<\n>} catch ${3} {<\n>${4}<\n>}', 'abbr' : 'try catch', 'prev_word' : [ '^' ]
