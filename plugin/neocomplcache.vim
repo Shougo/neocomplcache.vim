@@ -30,6 +30,7 @@
 "   2.33:
 "    - Implemented <Plug>(neocomplcache_snippets_expand) keymapping.
 "    - Implemented place holder.
+"    - Improved place holder's default value behaivior.
 "   2.32:
 "     - Implemented variable cache line.
 "     - Don't complete '/cygdrive/'.

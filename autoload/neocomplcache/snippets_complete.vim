@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.05, for Vim 7.0
+" Version: 1.06, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.06:
+"    - Improved place holder's default value behaivior.
 "   1.05:
 "    - Implemented place holder.
 "   1.04:
@@ -253,17 +255,22 @@ function! s:search_snippet_range(start, end)"{{{
     let l:pattern2 = '\${'.s:snippet_holder_cnt.':\zs.*\ze}'
 
     while l:line <= a:end
-        let l:match = matchend(getline(l:line), l:pattern)
-        if l:match >= 0
-            let l:match_len = len(matchstr(getline(l:line), l:pattern)) - 1
-                        \ - len(matchstr(getline(l:line), l:pattern2))
-
-            " Move.
-            call setpos('.', [0, l:line, 0, 0])
+        let l:match = match(getline(l:line), l:pattern) + 1
+        if l:match > 0
+            let l:match_len2 = len(matchstr(getline(l:line), l:pattern2))
 
             " Substitute holder.
-            silent! execute 's/'.l:pattern.'/\1/'
-            call setpos('.', [0, l:line, l:match-l:match_len, 0])
+            silent! execute l:line.'s/'.l:pattern.'/\1/'
+            if l:match_len2 > 0
+                call setpos('.', [0, line('.'), l:match, 0])
+                normal! v
+                call setpos('.', [0, line('.'), l:match+l:match_len2-1, 0])
+                if &l:selection == "exclusive"
+                    exec "normal! l"
+                endif
+            else
+                call setpos('.', [0, line('.'), l:match, 0])
+            endif
 
             " Next count.
             let s:snippet_holder_cnt += 1
@@ -277,21 +284,26 @@ function! s:search_snippet_range(start, end)"{{{
     return 0
 endfunction"}}}
 function! s:search_outof_range()"{{{
-    let [l:line, l:column] = searchpos('\${\d\+\%(:\(.*\)\)\?}', 'we')
-    if l:line != 0
-        let l:match = matchend(getline(l:line), '\${\d\+\%(:\(.*\)\)\?}')
-        let l:match_len = len(matchstr(getline(l:line), '\${\d\+\%(:\(.*\)\)\?}')) - 1
-                    \ - len(matchstr(getline(l:line), '\${\d\+:\zs.*\ze}'))
-
-        " Move.
-        call setpos('.', [0, l:line, 0, 0])
+    if search('\${\d\+\%(:\(.*\)\)\?}', 'w') > 0
+        let l:match = match(getline('.'), '\${\d\+\%(:\(.*\)\)\?}') + 1
+        let l:match_len2 = len(matchstr(getline('.'), '\${\d\+:\zs.*\ze}'))
 
         " Substitute holder.
         silent! s/\${\d\+\%(:\(.*\)\)\?}/\1/
-        call setpos('.', [0, l:line, l:match-l:match_len, 0])
+        if l:match_len2 > 0
+            call setpos('.', [0, line('.'), l:match, 0])
+            normal! v
+            call setpos('.', [0, line('.'), l:match+l:match_len2-1, 0])
+            if &l:selection == "exclusive"
+                exec "normal! l"
+            endif
+        else
+            call setpos('.', [0, line('.'), l:match, 0])
+        endif
     endif
 endfunction"}}}
 
 inoremap <silent> <Plug>(neocomplcache_snippets_expand)  <C-o>:<C-u>call <SID>snippets_expand()<CR>
+vnoremap <silent> <Plug>(neocomplcache_snippets_expand)  :<C-u>call <SID>snippets_expand()<CR>
 
 " vim: foldmethod=marker

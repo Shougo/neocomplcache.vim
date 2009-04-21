@@ -470,6 +470,7 @@ filetypeを省略すると、&filetypeとなります。
 追記：
 Ver.2.33にて、遂に改行文字に対応しました！
 imap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
+vmap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
 のようにplugin keymappingを定義しておけば、<C-l>で改行付きのスニペットを展開できます。
 改行付きのスニペットはこのように記述します。
 <\n>が改行コードを表します。
@@ -482,7 +483,7 @@ imap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
 'name' : 'if', 'word' : 'if ${1:condition}<\n>${2}<\n>endif', 'abbr' : 'if endif', 'prev_word' : [ '^' ]
 ${1}が最初に入力する単語です。もう一回<Plug>(neocomplcache_snippets_expand)を押すと、
 ${2}, ${3}, ...に移動します。
-${1:condition}はデフォルトでconditionという単語が入力された状態になります。
+${1:condition}はデフォルトでconditionという単語が選択された状態になります。
 <Plug>(neocomplcache_snippets_expand)しなければならない候補の場合、
 <expand>が最後に付くので参考にしてください。
 
