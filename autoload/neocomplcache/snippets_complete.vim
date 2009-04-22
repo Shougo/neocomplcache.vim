@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2009
+" Last Modified: 22 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.06, for Vim 7.0
+" Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.08:
+"    - Fixed place holder's default value bug.
+"   1.07:
+"    - Increment rank when snippet expanded.
+"    - Use selection.
 "   1.06:
 "    - Improved place holder's default value behaivior.
 "   1.05:
@@ -91,7 +96,7 @@ function! neocomplcache#snippets_complete#calc_prev_rank(cache_keyword_buffer_li
     " Calc previous rank.
     for keyword in a:cache_keyword_buffer_list
         " Set prev rank.
-        let keyword.prev_rank = has_key(keyword.prev_word, a:prev_word)? 10 : 0
+        let keyword.prev_rank = has_key(keyword.prev_word, a:prev_word)? 10+keyword.rank/2 : 0
     endfor
 endfunction"}}}
 
@@ -112,7 +117,7 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     for keyword in l:list
         let keyword.word = keyword.word_save
         while keyword.word =~ '`.*`'
-            let keyword.word = substitute(keyword.word, '`.*`', 
+            let keyword.word = substitute(keyword.word, '`[^`]*`', 
                         \eval(matchstr(keyword.word_save, '`\zs.*\ze`')), '')
         endwhile
     endfor
@@ -226,6 +231,18 @@ function! s:snippets_expand()"{{{
     endif
 endfunction"}}}
 function! s:expand_newline()"{{{
+    " Check expand word.
+    if !empty(&filetype) && has_key(s:snippets, &filetype)
+        let l:expand = matchstr(getline('.'), '^.*<expand>')
+        for keyword in s:snippets[&filetype]
+            if keyword.word_save !~ '`[^`]*`' &&
+                        \l:expand =~ substitute(escape(keyword.word_save, '" \.^$*[]'), "'", "''", 'g').'$'
+                let keyword.rank += 1
+                break
+            endif
+        endfor
+    endif
+
     " Substitute expand marker.
     silent! s/<expand>//
 
@@ -251,25 +268,29 @@ function! s:expand_newline()"{{{
 endfunction"}}}
 function! s:search_snippet_range(start, end)"{{{
     let l:line = a:start
-    let l:pattern = '\${'.s:snippet_holder_cnt.'\%(:\(.*\)\)\?}'
-    let l:pattern2 = '\${'.s:snippet_holder_cnt.':\zs.*\ze}'
+    let l:pattern = '\${'.s:snippet_holder_cnt.'\%(:\([^}]*\)\)\?}'
+    let l:pattern2 = '\${'.s:snippet_holder_cnt.':\zs[^}]*\ze}'
 
     while l:line <= a:end
-        let l:match = match(getline(l:line), l:pattern) + 1
+        let l:match = match(getline(l:line), l:pattern)
         if l:match > 0
             let l:match_len2 = len(matchstr(getline(l:line), l:pattern2))
 
             " Substitute holder.
             silent! execute l:line.'s/'.l:pattern.'/\1/'
+            call setpos('.', [0, line('.'), l:match, 0])
             if l:match_len2 > 0
-                call setpos('.', [0, line('.'), l:match, 0])
-                normal! v
-                call setpos('.', [0, line('.'), l:match+l:match_len2-1, 0])
+                " Select default value.
+                let l:len = l:match_len2-1
                 if &l:selection == "exclusive"
-                    exec "normal! l"
+                    let l:len += 1
                 endif
+                execute "normal! lv".l:len."l\<C-g>"
+            elseif col('.') < col('$')-1
+                normal! l
+                startinsert
             else
-                call setpos('.', [0, line('.'), l:match, 0])
+                startinsert!
             endif
 
             " Next count.
@@ -284,26 +305,33 @@ function! s:search_snippet_range(start, end)"{{{
     return 0
 endfunction"}}}
 function! s:search_outof_range()"{{{
-    if search('\${\d\+\%(:\(.*\)\)\?}', 'w') > 0
-        let l:match = match(getline('.'), '\${\d\+\%(:\(.*\)\)\?}') + 1
-        let l:match_len2 = len(matchstr(getline('.'), '\${\d\+:\zs.*\ze}'))
+    if search('\${\d\+\%(:\([^}]*\)\)\?}', 'w') > 0
+        let l:match = match(getline('.'), '\${\d\+\%(:\([^}]*\)\)\?}')
+        let l:match_len2 = len(matchstr(getline('.'), '\${\d\+:\zs[^}]*\ze}'))
 
         " Substitute holder.
         silent! s/\${\d\+\%(:\(.*\)\)\?}/\1/
+        call setpos('.', [0, line('.'), l:match, 0])
         if l:match_len2 > 0
-            call setpos('.', [0, line('.'), l:match, 0])
-            normal! v
-            call setpos('.', [0, line('.'), l:match+l:match_len2-1, 0])
+            " Select default value.
+            let l:len = l:match_len2-1
             if &l:selection == "exclusive"
-                exec "normal! l"
+                let l:len += 1
             endif
-        else
-            call setpos('.', [0, line('.'), l:match, 0])
+            execute 'normal! lv'.l:len."l\<C-g>"
+            return
         endif
+    endif
+
+    if col('.') < col('$')-1
+        normal! l
+        startinsert
+    else
+        startinsert!
     endif
 endfunction"}}}
 
-inoremap <silent> <Plug>(neocomplcache_snippets_expand)  <C-o>:<C-u>call <SID>snippets_expand()<CR>
-vnoremap <silent> <Plug>(neocomplcache_snippets_expand)  :<C-u>call <SID>snippets_expand()<CR>
+inoremap <silent> <Plug>(neocomplcache_snippets_expand)  <ESC>:<C-u>call <SID>snippets_expand()<CR>
+snoremap <silent> <Plug>(neocomplcache_snippets_expand)  <C-g>:<C-u>call <SID>snippets_expand()<CR>
 
 " vim: foldmethod=marker

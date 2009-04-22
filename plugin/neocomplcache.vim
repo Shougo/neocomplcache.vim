@@ -23,14 +23,19 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.33, for Vim 7.0
+" Version: 2.34, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.34:
+"    - Increment rank when snippet expanded.
+"    - Use selection.
+"    - Fixed place holder's default value bug.
 "   2.33:
 "    - Implemented <Plug>(neocomplcache_snippets_expand) keymapping.
 "    - Implemented place holder.
 "    - Improved place holder's default value behaivior.
+"    - Enable filename completion in lisp filetype.
 "   2.32:
 "     - Implemented variable cache line.
 "     - Don't complete '/cygdrive/'.

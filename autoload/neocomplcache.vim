@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.33, for Vim 7.0
+" Version: 2.34, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -58,7 +58,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('default',
                 \'\v\k+')
     call s:set_keyword_pattern('lisp,scheme', 
-                \'\v\(?[[:alpha:]*/@$%^&_=<>~.][[:alnum:]+*/@$%^&_=<>~.-]*[!?]?')
+                \'\v\(?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
                 \'\v\h\w*::|%(\@\@|[:$@])\h\w*|\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call s:set_keyword_pattern('eruby',

@@ -485,7 +485,16 @@ ${1}が最初に入力する単語です。もう一回<Plug>(neocomplcache_snip
 ${2}, ${3}, ...に移動します。
 ${1:condition}はデフォルトでconditionという単語が選択された状態になります。
 <Plug>(neocomplcache_snippets_expand)しなければならない候補の場合、
-<expand>が最後に付くので参考にしてください。
+補完時に<expand>が最後に付くので参考にしてください。
+
+追記３：
+expandするときにスニペットを解析するので、展開したスニペットのランクが上昇するようにしました。
+これで、よく使用するスニペットは補完時に上位に来るようになります。
+expandしないスニペットや評価を行うスニペットには使えませんが、仕方がありません。
+
+追記４：
+vnoremapやvmapはselect modeでも有効になるので、デフォルト値の選択時に上手く入力できなくなります。
+.vimrcにそのような記述があれば、xnorempやxmapに修正することをオススメします。
 
 --------------------------------
 私の設定
@@ -523,6 +532,10 @@ if !exists('g:NeoComplCache_KeywordPatterns')
     let g:NeoComplCache_KeywordPatterns = {}
 endif
 let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
+
+" Plugin key-mappings.
+imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
+smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
 
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
 むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
@@ -637,6 +650,7 @@ http://github.com/Shougo/neocomplcache/issues
 --------------------------------
 更新履歴
 
+2009/04/21     neocomplcache Ver.2.34に対応。
 2009/04/21     neocomplcache Ver.2.33に対応。
 2009/04/19     neocomplcache Ver.2.32に対応。
 2009/04/18     neocomplcache Ver.2.31に対応。
