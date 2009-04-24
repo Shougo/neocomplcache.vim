@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2009
+" Last Modified: 23 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.33, for Vim 7.0
+" Version: 2.35, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#initialize()"{{{
@@ -80,6 +80,10 @@ function! neocomplcache#keyword_complete#initialize()"{{{
 
     " Initialize cache.
     call s:check_source(3)
+
+    " Plugin key-mappings.
+    nnoremap <silent> <Plug>(neocomplcache_keyword_caching)  :<C-u>call <SID>caching(bufnr('%'), line('.'), 1)<CR>
+    inoremap <silent> <Plug>(neocomplcache_keyword_caching)  <C-o>:<C-u>call <SID>caching(bufnr('%'), line('.'), 1)<CR>
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#finalize()"{{{
@@ -89,6 +93,9 @@ function! neocomplcache#keyword_complete#finalize()"{{{
     delcommand NeoCompleCachePrintSource
     delcommand NeoCompleCacheOutputKeyword
     delcommand NeoCompleCacheCreateTags
+
+    nunmap <Plug>(neocomplcache_keyword_caching)
+    iunmap <Plug>(neocomplcache_keyword_caching)
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -454,7 +461,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
                 endif
 
                 " Check operator.
-                let l:operator = matchstr(l:line[: l:match-1], '[!@#$%^&*(=+\\|`~[{:;/?.><-]\{1,2}\ze\s*$')
+                let l:operator = matchstr(l:line[: l:match-1], '[!@#$%^&*=+|~:/.><-]\{1,2}\ze\s*$')
                 if !empty(l:operator)
                     if !has_key(l:source.operator_word_list, l:operator)
                         let l:source.operator_word_list[l:operator] = {}
@@ -653,11 +660,7 @@ function! s:update_source(caching_num, caching_max)"{{{
     endfor
 
     " Caching current cache line.
-    if !has_key(s:sources, bufnr('%'))
-        " Initialize source.
-        call s:initialize_source(bufnr('%'))   
-    endif
-    call s:caching(bufnr('%'), line('.'), 1)
+    call s:caching_cache_line()
 endfunction"}}}
 function! s:check_deleted_buffer()"{{{
     " Check deleted buffer.
@@ -682,9 +685,9 @@ function! s:caching_cache_line()"{{{
         call s:caching(bufnr('%'), line('.'), 1)
         if g:NeoComplCache_CachingRandomize
             let l:match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
-            let s:prev_cached_count = reltimestr(reltime())[l:match_end : ] % 3
+            let s:prev_cached_count = reltimestr(reltime())[l:match_end : ] % 4
         else
-            let s:prev_cached_count = 1
+            let s:prev_cached_count = 2
         endif
     else
         let s:prev_cached_count = 0

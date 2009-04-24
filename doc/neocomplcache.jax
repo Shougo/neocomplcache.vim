@@ -28,6 +28,7 @@ Introduction		|neocomplcache-introduction|
 Interface		|neocomplcache-interface|
   Commands		  |neocomplcache-commands|
   Variables		  |neocomplcache-variables|
+  Key mappings		  |neocomplcache-key-mappings|
 Examples		|neocomplcache-examples|
 Bugs			|neocomplcache-bugs|
 Changelog		|neocomplcache-changelog|
@@ -153,7 +154,12 @@ g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletion
 		初期値は3である。
 
 g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
-		キャッシュし、補完の対象となるキーワードの最小長さを制御する。
+		バッファや辞書ファイルをキャッシュし、補完の対象となるキーワードの最小長さを制御する。
+		
+		初期値は4である。
+
+g:NeoComplCache_MinSyntaxLength				*g:NeoComplCache_MinSyntaxLength*
+		シンタックスファイルをキャッシュし、補完の対象となるキーワードの最小長さを制御する。
 		
 		初期値は4である。
 
@@ -304,6 +310,17 @@ g:NeoComplCache_NonBufferFileTypeDetect			*g:NeoComplCache_NonBufferFileTypeDete
 		
 		初期値はautoload/neocomplcache.vimを参照せよ。
 
+------------------------------------------------------------------------------
+KEY MAPPINGS 					*neocomplcache-key-mappings*
+
+<Plug>(neocomplcache_keyword_caching)				*<Plug>(neocomplcache_keyword_caching)*
+		現在のキャッシュラインをキャッシュする。
+		打ち込んだ単語をすぐにキャッシュしたい時に便利である。
+
+<Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
+		複数行のスニペットを展開する。プレースホルダの処理も行う。
+		展開したスニペットはランクが上昇する。
+
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
 >
@@ -333,13 +350,18 @@ EXAMPLES					*neocomplcache-examples*
 	    \ 'scheme' : $HOME.'/.gosh_completions'
 	        \ }
 	
-	        " Define keyword.
-	        if !exists('g:NeoComplCache_KeywordPatterns')
-	        let g:NeoComplCache_KeywordPatterns = {}
-	        endif
-	        let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+	" Define keyword.
+	if !exists('g:NeoComplCache_KeywordPatterns')
+	    let g:NeoComplCache_KeywordPatterns = {}
+	endif
+	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+	
+	" Plugin key-mappings.
+	imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
+	smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
+	nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
+	imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
 <
-
 ==============================================================================
 BUGS						*neocomplcache-bugs*
 

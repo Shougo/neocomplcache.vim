@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2009
+" Last Modified: 24 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,14 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.34, for Vim 7.0
+" Version: 2.35, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoCompleCache2: "{{{
+"   2.35:
+"    - Fixed NeoCompleCacheDisable bug.
+"    - Implemented <Plug>(neocomplcache_keyword_caching) keymapping.
+"    - Improved operator completion.
+"    - Added syntax highlight.
+"    - Implemented g:NeoComplCache_SnippetsDir.
 "   2.34:
 "    - Increment rank when snippet expanded.
 "    - Use selection.
 "    - Fixed place holder's default value bug.
+"    - Added g:NeoComplCache_MinSyntaxLength option.
 "   2.33:
 "    - Implemented <Plug>(neocomplcache_snippets_expand) keymapping.
 "    - Implemented place holder.
@@ -429,7 +436,6 @@ if exists('g:loaded_neocomplcache') || v:version < 700
 endif
 
 command! -nargs=0 NeoCompleCacheEnable call neocomplcache#enable()
-command! -nargs=0 NeoCompleCacheDisable call neocomplcache#disable()
 command! -nargs=0 NeoCompleCacheToggle call neocomplcache#toggle()
 
 " Global options definition."{{{

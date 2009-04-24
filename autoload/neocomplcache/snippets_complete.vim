@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2009
+" Last Modified: 24 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.08, for Vim 7.0
+" Version: 1.09, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.09:
+"    - Added syntax highlight.
+"    - Implemented neocomplcache#snippets_complete#expandable().
+"    - Change menu when expandable snippet.
+"    - Implemented g:NeoComplCache_SnippetsDir.
 "   1.08:
 "    - Fixed place holder's default value bug.
 "   1.07:
@@ -65,6 +70,12 @@ function! neocomplcache#snippets_complete#initialize()"{{{
     let s:end_snippet = 0
     let s:snippet_holder_cnt = 1
 
+    " Set snippets dir.
+    let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete'), '\n')
+    if exists('g:NeoComplCache_SnippetsDir') && isdirectory(g:NeoComplCache_SnippetsDir)
+        call insert(s:snippets_dir, g:NeoComplCache_SnippetsDir)
+    endif
+
     augroup neocomplecache"{{{
         " Caching events
         autocmd CursorHold * call s:caching_event() 
@@ -73,10 +84,14 @@ function! neocomplcache#snippets_complete#initialize()"{{{
     augroup END"}}}
 
     command! -nargs=? NeoCompleCacheEditSnippets call s:edit_snippets(<q-args>)
+
+    syn match   NeoCompleCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
+    hi def link NeoCompleCacheExpandSnippets Special
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#finalize()"{{{
     delcommand NeoCompleCacheEditSnippets
+    hi clear NeoCompleCacheExpandSnippets
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -98,6 +113,10 @@ function! neocomplcache#snippets_complete#calc_prev_rank(cache_keyword_buffer_li
         " Set prev rank.
         let keyword.prev_rank = has_key(keyword.prev_word, a:prev_word)? 10+keyword.rank/2 : 0
     endfor
+endfunction"}}}
+
+function! neocomplcache#snippets_complete#expandable()"{{{
+    return match(getline('.'), '<expand>') >= 0 || search('\${\d\+\%(:\([^}]*\)\)\?}', 'w') > 0
 endfunction"}}}
 
 function! s:keyword_filter(list, cur_keyword_str)"{{{
@@ -126,11 +145,13 @@ endfunction"}}}
 
 function! s:set_snippet_pattern(dict)"{{{
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:menu_pattern = '[Snip] %.'.g:NeoComplCache_MaxFilenameWidth.'s'
 
     let l:word = a:dict.word
     if match(a:dict.word, '\${\d\+\%(:\(.*\)\)\?}\|<\\n>') >= 0
         let l:word .= '<expand>'
+        let l:menu_pattern = '<Snip> %.'.g:NeoComplCache_MaxFilenameWidth.'s'
+    else
+        let l:menu_pattern = '[Snip] %.'.g:NeoComplCache_MaxFilenameWidth.'s'
     endif
     let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : a:dict.word
     let l:rank = has_key(a:dict, 'rank')? a:dict.rank : 5
@@ -172,27 +193,15 @@ function! s:edit_snippets(filetype)"{{{
         let l:filetype = a:filetype
     endif
 
-    let l:snippets_files = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete/' . l:filetype .  '.snip'), '\n')
-    if empty(l:snippets_files)
-        " Set snippets dir.
-        let l:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete'), '\n')
-
-        if !empty(l:snippets_dir)
-            " Edit new snippet file.
-            edit `=l:snippets_dir[0].'/'.l:filetype.'.snip'`
-        endif
-
-        return
+    if !empty(s:snippets_dir)
+        " Edit snippet file.
+        edit `=s:snippets_dir[0].'/'.l:filetype.'.snip'`
     endif
-
-    for snippets_file in l:snippets_files
-        edit `=snippets_file`
-    endfor
 endfunction"}}}
 
 function! s:caching_snippets(filetype)"{{{
     let s:snippets[a:filetype] = []
-    let l:snippets_files = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete/' . a:filetype .  '.snip'), '\n')
+    let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip'), '\n')
     for snippets_file in l:snippets_files
         call extend(s:snippets[a:filetype], s:load_snippets(snippets_file))
     endfor
@@ -204,7 +213,7 @@ function! s:load_snippets(snippets_file)"{{{
         if line =~ '^\s*include'
             " Include snippets.
             let l:filetype = matchstr(l:line, '^\s*include\s\+\zs\h\w*')
-            let l:snippets_files = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete/' . l:filetype .  '.snip'), '\n')
+            let l:snippets_files = split(globpath(s:snippets, l:filetype .  '.snip'), '\n')
             for snippets_file in l:snippets_files
                 call extend(l:snippet, s:load_snippets(snippets_file))
             endfor
@@ -216,6 +225,8 @@ function! s:load_snippets(snippets_file)"{{{
 endfunction"}}}
 
 function! s:snippets_expand()"{{{
+    syn match   NeoCompleCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
+
     if match(getline('.'), '<expand>') >= 0
         call s:expand_newline()
         return
@@ -331,6 +342,7 @@ function! s:search_outof_range()"{{{
     endif
 endfunction"}}}
 
+" Plugin key-mappings.
 inoremap <silent> <Plug>(neocomplcache_snippets_expand)  <ESC>:<C-u>call <SID>snippets_expand()<CR>
 snoremap <silent> <Plug>(neocomplcache_snippets_expand)  <C-g>:<C-u>call <SID>snippets_expand()<CR>
 

@@ -26,6 +26,8 @@
 " Version: 1.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.15:
+"    - Added g:NeoComplCache_MinSyntaxLength option.
 "   1.14:
 "    - Improved abbr.
 "   1.13:
@@ -133,7 +135,7 @@ function! s:initialize_syntax()"{{{
 
         " Add keywords.
         let l:match_num = 0
-        let l:line_max = len(l:line) - g:NeoComplCache_MinKeywordLength
+        let l:line_max = len(l:line) - g:NeoComplCache_MinSyntaxLength
         while 1
             let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
             if empty(l:match_str)
@@ -141,7 +143,7 @@ function! s:initialize_syntax()"{{{
             endif
 
             " Ignore too short keyword.
-            if len(l:match_str) >= g:NeoComplCache_MinKeywordLength && !has_key(l:dup_check, l:match_str)
+            if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
                 let l:keyword = {
                             \ 'word' : l:match_str, 'menu' : l:group_name,
                             \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
@@ -195,5 +197,11 @@ function! s:caching_event()"{{{
         let s:syntax_list[&filetype] = s:initialize_syntax()
     endif
 endfunction"}}}
+
+" Global options definition."{{{
+if !exists('g:NeoComplCache_MinSyntaxLength')
+    let g:NeoComplCache_MinSyntaxLength = 4
+endif
+"}}}
 
 " vim: foldmethod=marker

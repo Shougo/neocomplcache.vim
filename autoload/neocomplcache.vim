@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2009
+" Last Modified: 24 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.34, for Vim 7.0
+" Version: 2.35, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -147,6 +147,7 @@ function! neocomplcache#enable() "{{{
     "}}}
     
     " Add commands."{{{
+    command! -nargs=0 NeoCompleCacheDisable call neocomplcache#disable()
     command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
     command! -nargs=0 NeoCompleCacheLock call s:lock()
     command! -nargs=0 NeoCompleCacheUnlock call s:unlock()
@@ -183,6 +184,7 @@ function! neocomplcache#disable()"{{{
         autocmd!
     augroup END
 
+    delcommand NeoCompleCacheDisable
     delcommand Neco
     delcommand NeoCompleCacheLock
     delcommand NeoCompleCacheUnlock

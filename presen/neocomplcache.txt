@@ -223,6 +223,13 @@ hoge-piyoは正規表現的にはhoge.\+piyoと同じ意味です。
 バッファがうまくキャッシュされないときには、
 :NeoCompleCacheCachingBufferを実行してください。
 
+追記：
+現在のキャッシュラインをキャッシュするkey-mappingsが追加されました。
+nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
+imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
+私は上記のように設定しています。
+自分の打ち込んだ単語をすぐにキャッシュしたい場合に便利です。
+
 --------------------------------
 ファイル名補完
 
@@ -464,37 +471,57 @@ snipMateのように、``を用いたevalも動作します。
 簡単にスニペットファイルを編集できるように、
 :NeoComplCacheEditSnippets [filetype]というコマンドを用意しています。
 このコマンドを用いると、filetypeのスニペット補完ファイルを簡単に編集することができます。
-filetypeを省略すると、&filetypeとなります。
-保存するとキャッシュされるので、さらに便利です。
+filetypeを省略すると、&filetypeとなります。保存すると自動的に再キャッシュされるので、さらに便利です。
 
 追記：
 Ver.2.33にて、遂に改行文字に対応しました！
 imap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
-vmap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
+smap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
 のようにplugin keymappingを定義しておけば、<C-l>で改行付きのスニペットを展開できます。
 改行付きのスニペットはこのように記述します。
 <\n>が改行コードを表します。
 'name' : 'if', 'word' : 'if condition<\n><\n>endif', 'abbr' : 'if endif', 'prev_word' : [ '^' ]
-インデントもきちんとなされるので便利です。
+展開時にインデントもきちんとなされるので便利です。
 これでスニペットの自由度が増しますね。
 
 追記２：
-その後の改良により、snipMate風のプレースホルダに対応。
+その後の改良により、snipMate風のプレースホルダに対応しました。
 'name' : 'if', 'word' : 'if ${1:condition}<\n>${2}<\n>endif', 'abbr' : 'if endif', 'prev_word' : [ '^' ]
-${1}が最初に入力する単語です。もう一回<Plug>(neocomplcache_snippets_expand)を押すと、
-${2}, ${3}, ...に移動します。
+${1}が最初に入力する単語です。スニペットの展開時に自動的に移動します。
+もう一回<Plug>(neocomplcache_snippets_expand)を押すと、${2}, ${3}, ...に移動します。
 ${1:condition}はデフォルトでconditionという単語が選択された状態になります。
 <Plug>(neocomplcache_snippets_expand)しなければならない候補の場合、
 補完時に<expand>が最後に付くので参考にしてください。
+スニペットの中でスニペットを補完したりといった複雑な場合も、ある程度直感的に動作するようになっています。
+Ver.2.35より、プレースホルダは色分けされるようになりました。
+これで分かり易くなります。
 
 追記３：
 expandするときにスニペットを解析するので、展開したスニペットのランクが上昇するようにしました。
 これで、よく使用するスニペットは補完時に上位に来るようになります。
-expandしないスニペットや評価を行うスニペットには使えませんが、仕方がありません。
+expandしないスニペットや評価を行うスニペットには使えませんので注意。
 
 追記４：
-vnoremapやvmapはselect modeでも有効になるので、デフォルト値の選択時に上手く入力できなくなります。
+vnoremapやvmap, mapはselect modeでも有効になるので、
+変なマッピングをしていると、デフォルト値の選択時に上手く文字が入力できなくなります。
 .vimrcにそのような記述があれば、xnorempやxmapに修正することをオススメします。
+
+追記５：
+thincaさんの要望により、機能がいろいろ追加されました。
+
+まず、snippetの保存場所を自由に指定できます。
+指定するときは、
+let g:NeoComplCache_SnippetsDir = $HOME.'/snippets'
+のように.vimrcに記述してください。
+
+展開可能かどうかを判断する関数として、neocomplcache#snippets_complete#expandable()を追加しました。
+これを使えば、
+imap <expr><silent><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
+のように設定でき、展開可能でない場合は他の機能にキーバインドを割り当てることが出来ます。
+
+展開可能なスニペットは表示が変わるようになりました。
+[Snippet]が<Snippet>に変化します。
+プレースホルダやマーカーが色分けされるようにもなりました。
 
 --------------------------------
 私の設定
@@ -536,6 +563,8 @@ let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 " Plugin key-mappings.
 imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
 smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
+nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
+imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
 
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
 むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
@@ -589,6 +618,14 @@ http://d.hatena.ne.jp/thinca/20090305/1236191531
 secondlifeさんが試用しているようです。
 http://subtech.g.hatena.ne.jp/secondlife/20090310/1236668086
 気に入ってもらえるとうれしいですね。
+
+--------------------------------
+現在開発されているプラグイン
+
+snipMate_complete.vim
+http://gist.github.com/99936
+snipMateの関数をneocomplcacheから呼び出し、補完します。
+このプラグインを使用するためには、snipMateにパッチを当てる必要があります。
 
 --------------------------------
 入手方法
@@ -650,6 +687,7 @@ http://github.com/Shougo/neocomplcache/issues
 --------------------------------
 更新履歴
 
+2009/04/23     neocomplcache Ver.2.35に対応。
 2009/04/21     neocomplcache Ver.2.34に対応。
 2009/04/21     neocomplcache Ver.2.33に対応。
 2009/04/19     neocomplcache Ver.2.32に対応。
