@@ -177,8 +177,8 @@ g:NeoComplCache_SmartCase				*g:NeoComplCache_SmartCase*
 
 g:NeoComplCache_AlphabeticalOrder			*g:NeoComplCache_AlphabeticalOrder*
 		候補をアルファベット順で並び替えるかを制御する。
-		このオプションを設定すると、neocomplcacheの機能がかなり無効になってしまうが、
-		補完は高速化する。1ならば有効。
+		このオプションを設定すると、neocomplcacheの機能がかなり制限されるが、
+		補完処理は高速化する。1ならば有効。
 		
 		初期値は0なので、頻度順に並び替える。
 
@@ -270,7 +270,7 @@ g:NeoComplCache_EnableInfo				*g:NeoComplCache_EnableInfo*
 g:NeoComplCache_MaxInfoList				*g:NeoComplCache_MaxInfoList*
 		プレビューウインドウに表示する、キャッシュ時の行の数。
 		
-		初期値は3である。
+		初期値は1である。
 
 g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
 		インサートモード時、現在のキャッシュラインをキャッシュするかどうか決定するのに、
@@ -319,7 +319,7 @@ KEY MAPPINGS 					*neocomplcache-key-mappings*
 
 <Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
 		複数行のスニペットを展開する。プレースホルダの処理も行う。
-		展開したスニペットはランクが上昇する。
+		展開したスニペットはランクが上昇するため、上位に表示されやすくなる。
 
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*

@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.09, for Vim 7.0
+" Version: 1.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.10:
+"    - Implemented snipMate like snippet.
+"    - Added syntax file.
+"    - Detect snippet file.
+"    - Fixed default value selection bug.
 "   1.09:
 "    - Added syntax highlight.
 "    - Implemented neocomplcache#snippets_complete#expandable().
@@ -81,6 +86,8 @@ function! neocomplcache#snippets_complete#initialize()"{{{
         autocmd CursorHold * call s:caching_event() 
         " Recaching events
         autocmd BufWritePost *.snip call s:caching_snippets(expand('<afile>:t:r')) 
+        " Detect syntax file.
+        autocmd BufNew,BufRead *.snip setfiletype snippet
     augroup END"}}}
 
     command! -nargs=? NeoCompleCacheEditSnippets call s:edit_snippets(<q-args>)
@@ -209,18 +216,43 @@ endfunction"}}}
 
 function! s:load_snippets(snippets_file)"{{{
     let l:snippet = []
+    let l:snippet_pattern = { 'word' : '' }
     for line in readfile(a:snippets_file)
-        if line =~ '^\s*include'
+        if line =~ '^include'
             " Include snippets.
-            let l:filetype = matchstr(l:line, '^\s*include\s\+\zs\h\w*')
-            let l:snippets_files = split(globpath(s:snippets, l:filetype .  '.snip'), '\n')
+            let l:filetype = matchstr(line, '^\s*include\s\+\zs\h\w*')
+            let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
             for snippets_file in l:snippets_files
                 call extend(l:snippet, s:load_snippets(snippets_file))
             endfor
-        elseif line !~ '^\s*$\|^\s*#'
-            call add(l:snippet, s:set_snippet_pattern(eval('{' . line . '}')))
+        elseif line =~ '^snippet\s'
+            if has_key(l:snippet_pattern, 'name')
+                call add(l:snippet, s:set_snippet_pattern(l:snippet_pattern))
+                let l:snippet_pattern = { 'word' : '' }
+            endif
+            let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*\ze$')
+        elseif line =~ '^abbr\s'
+            let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze$')
+        elseif line =~ '^rank\s'
+            let l:snippet_pattern.rank = matchstr(line, '^rank\s\+\zs\d\+\ze\s*$')
+        elseif line =~ '^prev_word\s'
+            let l:snippet_pattern.prev_word = []
+            for word in split(matchstr(line, '^prev_word\s\+\zs.*\ze$'), ',')
+                call add(l:snippet_pattern.prev_word, matchstr(word, "'\\zs[^']*\\ze'"))
+            endfor
+        elseif line =~ '^\s'
+            if empty(l:snippet_pattern['word'])
+                let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*\ze$')
+            else
+                let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*\ze$')
+            endif
         endif
     endfor
+
+    if has_key(l:snippet_pattern, 'name')
+        call add(l:snippet, s:set_snippet_pattern(l:snippet_pattern))
+    endif
+
     return l:snippet
 endfunction"}}}
 
@@ -296,7 +328,12 @@ function! s:search_snippet_range(start, end)"{{{
                 if &l:selection == "exclusive"
                     let l:len += 1
                 endif
-                execute "normal! lv".l:len."l\<C-g>"
+
+                if l:len == 0
+                    execute "normal! lv\<C-g>"
+                else
+                    execute "normal! lv".l:len."l\<C-g>"
+                endif
             elseif col('.') < col('$')-1
                 normal! l
                 startinsert
@@ -329,7 +366,13 @@ function! s:search_outof_range()"{{{
             if &l:selection == "exclusive"
                 let l:len += 1
             endif
-            execute 'normal! lv'.l:len."l\<C-g>"
+
+            if l:len == 0
+                execute "normal! lv\<C-g>"
+            else
+                execute "normal! lv".l:len."l\<C-g>"
+            endif
+
             return
         endif
     endif

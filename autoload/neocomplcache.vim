@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2009
+" Last Modified: 27 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.35, for Vim 7.0
+" Version: 2.36, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -221,13 +221,13 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     endif
 
     " Save options.
-    let l:ignorecase_save = &l:ignorecase
+    let l:ignorecase_save = &ignorecase
 
     " Complete.
     if g:NeoComplCache_SmartCase && a:base =~ '\u'
-        let &l:ignorecase = 0
+        let &ignorecase = 0
     else
-        let &l:ignorecase = g:NeoComplCache_IgnoreCase
+        let &ignorecase = g:NeoComplCache_IgnoreCase
     endif
 
     let l:complete_words = s:get_complete_words(a:base)
@@ -237,7 +237,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     endif
 
     " Restore options.
-    let &l:ignorecase = l:ignorecase_save
+    let &ignorecase = l:ignorecase_save
 
     return l:complete_words
 endfunction"}}}
@@ -249,7 +249,7 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 
     " Restore options.
     let &l:completefunc = 'neocomplcache#manual_complete'
-    let &l:ignorecase = s:ignorecase_save
+    let &ignorecase = s:ignorecase_save
     " Unlock auto complete.
     let s:complete_lock = 0
 
@@ -424,16 +424,16 @@ function! s:complete()"{{{
     endif
 
     " Save options.
-    let s:ignorecase_save = &l:ignorecase
+    let s:ignorecase_save = &ignorecase
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
 
     " Extract complete words.
     if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
-        let &l:ignorecase = 0
+        let &ignorecase = 0
     else
-        let &l:ignorecase = g:NeoComplCache_IgnoreCase
+        let &ignorecase = g:NeoComplCache_IgnoreCase
     endif
 
     let s:complete_words = s:get_complete_words(l:cur_keyword_str)
@@ -458,7 +458,7 @@ function! s:complete()"{{{
     if empty(s:complete_words)
         " Restore options
         let &l:completefunc = 'neocomplcache#manual_complete'
-        let &l:ignorecase = s:ignorecase_save
+        let &ignorecase = s:ignorecase_save
         return
     endif
 
