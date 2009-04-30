@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2009
+" Last Modified: 30 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.14, for Vim 7.0
+" Version: 1.17, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.17:
+"    - Fixed typo.
+"    - Optimized caching.
+"   1.16:
+"    - Optimized.
+"    - Delete command abbreviations in vim filetype.
 "   1.15:
 "    - Added g:NeoComplCache_MinSyntaxLength option.
 "   1.14:
@@ -60,14 +66,11 @@
 "=============================================================================
 
 function! neocomplcache#syntax_complete#initialize()"{{{
-    " Initialize
+    " Initialize.
     let s:syntax_list = {}
 
-    augroup neocomplecache"{{{
-        " Caching events
-        autocmd CursorHold * call s:caching_event() 
-    augroup END"}}}
-
+    " Set caching event.
+    autocmd neocomplcache CursorHold * call s:caching()
 endfunction"}}}
 
 function! neocomplcache#syntax_complete#finalize()"{{{
@@ -87,6 +90,13 @@ function! neocomplcache#syntax_complete#calc_rank(cache_keyword_buffer_list)"{{{
 endfunction"}}}
 function! neocomplcache#syntax_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
     return
+endfunction"}}}
+
+function! s:caching()"{{{
+    " Caching.
+    if !empty(&filetype) && !has_key(s:syntax_list, &filetype)
+        let s:syntax_list[&filetype] = s:initialize_syntax()
+    endif
 endfunction"}}}
 
 function! s:initialize_syntax()"{{{
@@ -111,7 +121,7 @@ function! s:initialize_syntax()"{{{
     for l:line in split(l:syntax_list, '\n')
         if l:line =~ '^\h\w\+'
             " Change syntax group name.
-            let l:group_name = printf('[S] %.'. g:NeoComplCache_MaxFilenameWidth.'s', matchstr(l:line, '^\h\w\+'))
+            let l:menu = printf('[S] %.'. g:NeoComplCache_MaxFilenameWidth.'s', matchstr(l:line, '^\h\w\+'))
             let l:line = substitute(l:line, '^\h\w\+\s*xxx', '', '')
         endif
 
@@ -145,7 +155,7 @@ function! s:initialize_syntax()"{{{
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
                 let l:keyword = {
-                            \ 'word' : l:match_str, 'menu' : l:group_name,
+                            \ 'word' : l:match_str, 'menu' : l:menu,
                             \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
                             \}
                 let l:keyword.abbr_save = 
@@ -161,7 +171,39 @@ function! s:initialize_syntax()"{{{
         endwhile
     endfor
 
-    return sort(l:keyword_list, 'neocomplcache#compare_words')
+    if &filetype == 'vim'
+        " Delete vim command abbreviation."{{{
+        let l:command_list = filter(copy(l:keyword_list),
+                    \'v:val.menu =~ "\\[S\\] vim\\%(Command\\|UserCommand\\|UserAttrbKey\\|FuncKey\\)"')
+        call filter(l:keyword_list,
+                    \'v:val.menu !~ "\\[S\\] vim\\%(Command\\|UserCommand\\|UserAttrbKey\\|FuncKey\\)"')
+        let l:groups = {}
+        for command in l:command_list
+            let l:name = command.word[: g:NeoComplCache_MinSyntaxLength-1]
+            if !has_key(l:groups, l:name)
+                let l:groups[l:name] = {}
+            endif
+            let l:groups[l:name][command.word] = command
+        endfor
+
+        for group in values(l:groups)
+            for word in keys(group)
+                for another_word in keys(group)
+                    if word != another_word && word =~ '^' . another_word
+                        call remove(group, another_word)
+                    endif
+                endfor
+            endfor
+            call extend(l:keyword_list, values(group))
+        endfor"}}}
+    endif
+
+    return l:keyword_list
+endfunction"}}}
+
+" LengthOrder."{{{
+function! s:compare_length(i1, i2)
+    return a:i1.word < a:i2.word ? 1 : a:i1.word == a:i2.word ? 0 : -1
 endfunction"}}}
 
 function! s:substitute_candidate(candidate)"{{{
@@ -189,13 +231,6 @@ function! s:substitute_candidate(candidate)"{{{
     " \
     let l:candidate = substitute(l:candidate, '\\\\', '\\', 'g')
     return l:candidate
-endfunction"}}}
-
-function! s:caching_event()"{{{
-    " Caching.
-    if !empty(&filetype) && !has_key(s:syntax_list, &filetype)
-        let s:syntax_list[&filetype] = s:initialize_syntax()
-    endif
 endfunction"}}}
 
 " Global options definition."{{{

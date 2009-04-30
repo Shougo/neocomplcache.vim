@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Apr 2009
+" Last Modified: 30 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,14 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.35, for Vim 7.0
+" Version: 2.38, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#initialize()"{{{
-    augroup neocomplecache"{{{
+    augroup neocomplcache"{{{
         " Caching events
-        autocmd BufEnter,BufWritePost,CursorHold * call s:update_source(2, 6)
-        autocmd BufAdd * call s:check_source(3)
+        autocmd Filetype * call s:check_source(3)
+        autocmd BufWritePost,BufEnter,CursorHold * call s:update_source()
         " Caching current buffer events
         autocmd InsertEnter * call s:caching_cache_line()
         " Garbage collect.
@@ -38,7 +38,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     augroup END"}}}
 
     if g:NeoComplCache_TagsAutoUpdate
-        augroup neocomplecache
+        augroup neocomplcache
             autocmd BufWritePost * call s:update_tags()
         augroup END
     endif
@@ -64,12 +64,12 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     "let g:NeoComplCache_DictionaryBufferLists[1] = '256colors2.pl'"}}}
 
     " Add commands."{{{
-    command! -nargs=? NeoCompleCacheCachingBuffer call s:caching_buffer(<q-args>)
-    command! -nargs=0 NeoCompleCacheCachingDictionary call s:caching_dictionary()
-    command! -nargs=* -complete=file NeoCompleCacheSetBufferDictionary call s:set_buffer_dictionary(<q-args>)
-    command! -nargs=? NeoCompleCachePrintSource call s:print_source(<q-args>)
-    command! -nargs=? NeoCompleCacheOutputKeyword call s:output_keyword(<q-args>)
-    command! -nargs=? NeoCompleCacheCreateTags call s:create_tags()
+    command! -nargs=? NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
+    command! -nargs=0 NeoComplCacheCachingDictionary call s:caching_dictionary()
+    command! -nargs=* -complete=file NeoComplCacheSetBufferDictionary call s:set_buffer_dictionary(<q-args>)
+    command! -nargs=? NeoComplCachePrintSource call s:print_source(<q-args>)
+    command! -nargs=? NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
+    command! -nargs=? NeoComplCacheCreateTags call s:create_tags()
     "}}}
 
     " Initialize ctags arguments.
@@ -87,12 +87,12 @@ function! neocomplcache#keyword_complete#initialize()"{{{
 endfunction"}}}
 
 function! neocomplcache#keyword_complete#finalize()"{{{
-    delcommand NeoCompleCacheCachingBuffer
-    delcommand NeoCompleCacheCachingDictionary
-    delcommand NeoCompleCacheSetBufferDictionary
-    delcommand NeoCompleCachePrintSource
-    delcommand NeoCompleCacheOutputKeyword
-    delcommand NeoCompleCacheCreateTags
+    delcommand NeoComplCacheCachingBuffer
+    delcommand NeoComplCacheCachingDictionary
+    delcommand NeoComplCacheSetBufferDictionary
+    delcommand NeoComplCachePrintSource
+    delcommand NeoComplCacheOutputKeyword
+    delcommand NeoComplCacheCreateTags
 
     nunmap <Plug>(neocomplcache_keyword_caching)
     iunmap <Plug>(neocomplcache_keyword_caching)
@@ -160,6 +160,11 @@ function! neocomplcache#keyword_complete#calc_rank(cache_keyword_buffer_list)"{{
             if g:NeoComplCache_EnableInfo
                 " Create info.
                 let keyword.info = join(keyword.info_list, "\n")
+            endif
+
+            " Check skip time.
+            if neocomplcache#check_skip_time()
+                return
             endif
         else
             let s:rank_cache_count -= 1
@@ -249,6 +254,22 @@ function! neocomplcache#keyword_complete#caching_percent(number)"{{{
     else
         return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
     endif
+endfunction"}}}
+
+function! s:update_source()"{{{
+    let l:caching_num = 0
+    for source_name in keys(s:sources)
+        " Lazy caching.
+        let name = (source_name =~ '^\d')? str2nr(source_name) : source_name
+
+        if s:caching_source(name, '^', 2) == 0
+            let l:caching_num += 2
+
+            if l:caching_num >= 6
+                break
+            endif
+        endif
+    endfor
 endfunction"}}}
 
 function! s:get_sources_list()"{{{
@@ -643,24 +664,6 @@ function! s:check_source(caching_num)"{{{
             endfor
         endif
     endfor
-endfunction"}}}
-function! s:update_source(caching_num, caching_max)"{{{
-    let l:caching_num = 0
-    for source_name in keys(s:sources)
-        " Lazy caching.
-        let name = (source_name =~ '^\d')? str2nr(source_name) : source_name
-
-        if s:caching_source(name, '^', a:caching_num) == 0
-            let l:caching_num += a:caching_num
-
-            if l:caching_num >= a:caching_max
-                break
-            endif
-        endif
-    endfor
-
-    " Caching current cache line.
-    call s:caching_cache_line()
 endfunction"}}}
 function! s:check_deleted_buffer()"{{{
     " Check deleted buffer.

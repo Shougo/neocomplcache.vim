@@ -45,65 +45,65 @@ INTERFACE					*neocomplcache-interface*
 ------------------------------------------------------------------------------
 COMMANDS 					*neocomplcache-commands*
 
-:NeoCompleCacheEnable					*:NeoComplCacheEnable*
+:NeoComplCacheEnable					*:NeoComplCacheEnable*
 		neocomplcacheを有効にし、初期化を行う。
 		これを実行すると、今までのキャッシュが消えてしまうので注意。
 
-:NeoCompleCacheDisable					*:NeoComplCacheDisable*
+:NeoComplCacheDisable					*:NeoComplCacheDisable*
 		neocomplcacheを無効にし、後始末を行う。
 
-:NeoCompleCacheToggle					*:NeoComplCacheToggle*
+:NeoComplCacheToggle					*:NeoComplCacheToggle*
 		neocomplcacheのロック状態を切り替える。
 
 :Neco 							*:Neco*
 		？？？
 
-:NeoCompleCacheLock					*:NeoComplCacheLock*
+:NeoComplCacheLock					*:NeoComplCacheLock*
 		自動補完にロックをかけ、自動補完しないようにする。
 		自動補完をロックしていたとしても、手動補完は使用できる。
 
-:NeoCompleCacheUnLock					*:NeoComplCacheUnLock*
+:NeoComplCacheUnLock					*:NeoComplCacheUnLock*
 		自動補完にかけたロックを解除する。
 
-:NeoCompleCacheAutoCompletionLength			*:NeoCompleCacheAutoCompletionLength*
+:NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		自動補完する文字数を変更する。
 
-:NeoCompleCachePartialCompletionLength			*:NeoCompleCachePartialCompletionLength*
+:NeoComplCachePartialCompletionLength			*:NeoComplCachePartialCompletionLength*
 		部分マッチ補完する文字数を変更する。
 
-:NeoCompleCacheCachingBuffer [bufnr]			*:NeoComplCacheCachingBuffer*
+:NeoComplCacheCachingBuffer [bufnr]			*:NeoComplCacheCachingBuffer*
 		[bufnr]で示されるバッファを完全にキャッシュする。
 		大きなバッファに対しては、かなり時間がかかるので注意。
 		[bufnr]を省略すると、カレントバッファを指定したことになる。
 
-:NeoCompleCacheCachingDictionary			*:NeoComplCacheCachingDictionary*
+:NeoComplCacheCachingDictionary			*:NeoComplCacheCachingDictionary*
 		カレントバッファに関連づけられた辞書ファイルを完全にキャッシュする。
 		大きな辞書ファイルに対しては、かなり時間がかかるので注意。
 
-:NeoCompleCacheCachingTags				*:NeoComplCacheCachingTags*
+:NeoComplCacheCachingTags				*:NeoComplCacheCachingTags*
 		カレントバッファに関連づけられたタグファイルを完全にキャッシュする。
 		大きなタグファイルに対しては、かなり時間がかかるので注意。
 
-:NeoCompleCacheSetBufferDictionary [filename],...	*:NeoComplCacheSetBufferDictionary*
+:NeoComplCacheSetBufferDictionary [filename],...	*:NeoComplCacheSetBufferDictionary*
 		バッファに関連づけられる辞書ファイルを設定する。
 		インクルードファイルの補完に便利かもしれない。
 
-:NeoCompleCachePrintSource [bufnr]			*:NeoComplCachePrintSource*
+:NeoComplCachePrintSource [bufnr]			*:NeoComplCachePrintSource*
 		[bufnr]で示されるバッファのキャッシュ情報をカレントバッファに書き出す。
 		[bufnr]を省略すると、カレントバッファを指定したことになる。
 		デバッグ用なので、ユーザーが使うことはないだろう。
 
-:NeoCompleCacheOutputKeyword [bufnr]			*:NeoComplCacheOutputKeyword*
+:NeoComplCacheOutputKeyword [bufnr]			*:NeoComplCacheOutputKeyword*
 		[bufnr]で示されるバッファのキャッシュしたキーワードをカレントバッファに書き出す。
 		[bufnr]を省略すると、カレントバッファを指定したことになる。
 		辞書ファイルを自分で作成するときに便利かもしれない。
 
-:NeoCompleCacheCreateTags [bufnr]			*:NeoComplCacheCreateTags*
+:NeoComplCacheCreateTags [bufnr]			*:NeoComplCacheCreateTags*
 		[bufnr]で示されるバッファから、タグ情報を生成する。
 		[bufnr]を省略すると、カレントバッファを指定したことになる。
 		これにより生成されたタグファイルは、neocomplcacheにより、自動的にキャッシュされる。
 
-:NeoCompleCacheEditSnippets [filetype]			*:NeoCompleCacheEditSnippets*
+:NeoComplCacheEditSnippets [filetype]			*:NeoComplCacheEditSnippets*
 		[filetype]のスニペット補完ファイルを編集する。
 		[filetype]を省略すると、カレントバッファのファイルタイプを編集する。
 		[filetype]のスニペット補完ファイルが存在しない場合、新しく生成される。
@@ -225,11 +225,23 @@ g:NeoComplCache_QuickMatchMaxLists			*g:NeoComplCache_QuickMatchMaxLists*
 		
 		初期値は100である。
 
-g:NeoComplCache_SlowCompleteSkip			*g:NeoComplCache_SlowCompletionSkip*
+g:NeoComplCache_EnableCompletionSkip			*g:NeoComplCache_EnableCompletionSkip*
 		自動補完時、候補の計算に時間がかかりすぎると補完を中止するかどうか制御する。
 		1ならば有効になる。
 		
 		初期値は+reltimeの時に1となる。
+
+g:NeoComplCache_SkipCompleteTime			*g:NeoComplCache_EnableCompleteTime*
+		自動補完時、補完を中止するための計算時間を定義する。
+		このオプションの値は文字列でなければならない。
+		
+		初期値は'0.2'である。
+
+g:NeoComplCache_SkipInputTime				*g:NeoComplCache_EnableInputTime*
+		自動補完時、補完を中止するための入力時間を定義する。
+		このオプションの値は文字列でなければならない。
+		
+		初期値は'0.0'なので、連続入力により補完を中止されない。
 
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		単語の出現頻度だけではなく、単語のつながりも考慮して候補の並び替えを行うかどうかを制御する。
@@ -332,8 +344,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_SmartCase = 1
 	" Use previous keyword completion.
 	let g:NeoComplCache_PreviousKeywordCompletion = 1
-	" Use tags auto update.
-	let g:NeoComplCache_TagsAutoUpdate = 1
 	" Try keyword completion.
 	let g:NeoComplCache_TryKeywordCompletion = 1
 	" Use preview window.
@@ -342,6 +352,10 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_DeleteRank0 = 1
 	" Use camel case completion.
 	let g:NeoComplCache_EnableCamelCaseCompletion = 1
+	" Set minimum syntax keyword length.
+	let g:NeoComplCache_MinSyntaxLength = 3
+	" Set skip input time.
+	let g:NeoComplCache_SkipInputTime = '0.1'
 	
 	" Define dictionary.
 	let g:NeoComplCache_DictionaryFileTypeLists = {

@@ -231,9 +231,9 @@ hoge-piyoは正規表現的にはhoge.\+piyoと同じ意味です。
 キャッシュラインはg:NeoComplCache_CacheLineCountの値を元に、
 バッファの行数により決定することにしました。
 バッファがうまくキャッシュされないときには、
-:NeoCompleCacheCachingBufferを実行してください。
+:NeoComplCacheCachingBufferを実行してください。
 
-追記：
+追記２：
 現在のキャッシュラインをキャッシュするkey-mappingsが追加されました。
 nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
 imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
@@ -543,6 +543,16 @@ imap <expr><silent><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Pl
 プレースホルダやマーカーが色分けされるようにもなりました。
 
 --------------------------------
+自動補完のスキップ
+
+入力が高速だったり、補完に時間がかかるときは自動補完をスキップするようになりました。
+スキップする時間は
+let g:NeoComplCache_SkipCompletionTime = '0.3'
+let g:NeoComplCache_SkipInputTime = '0.1'
+のようにすることで調整ができます。
+値は文字列にしないと動作しないので注意。
+
+--------------------------------
 私の設定
 
 " Don't use autocomplpop.
@@ -553,8 +563,6 @@ let g:NeoComplCache_EnableAtStartup = 1
 let g:NeoComplCache_SmartCase = 1
 " Use previous keyword completion.
 let g:NeoComplCache_PreviousKeywordCompletion = 1
-" Use tags auto update.
-let g:NeoComplCache_TagsAutoUpdate = 1
 " Try keyword completion.
 let g:NeoComplCache_TryKeywordCompletion = 1
 " Try default completion.
@@ -565,6 +573,10 @@ let g:NeoComplCache_EnableInfo = 1
 let g:NeoComplCache_DeleteRank0 = 0
 " Use camel case completion.
 let g:NeoComplCache_EnableCamelCaseCompletion = 1
+" Set minimum syntax keyword length.
+let g:NeoComplCache_MinSyntaxLength = 3
+" Set skip input time.
+let g:NeoComplCache_SkipInputTime = '0.1'
 
 " Define dictionary.
 let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -643,6 +655,7 @@ http://subtech.g.hatena.ne.jp/secondlife/20090310/1236668086
 
 *snipMate_complete.vim*
 http://gist.github.com/99936
+thincaさん作。
 snipMateの関数をneocomplcacheから呼び出し、補完します。
 このプラグインを使用するためには、snipMateにパッチを当てる必要があります。
 
@@ -662,8 +675,8 @@ http://github.com/Shougo/neocomplcache/tree/master （毎週更新）
 let g:NeoComplCache_EnableAtStartup = 1
 すると、Vimの起動時に自動的に有効になります。
 手動で有効にしたいときには、
-:NeoCompleCacheEnableを実行してください。
-:NeoCompleCacheDisableで無効になります。
+:NeoComplCacheEnableを実行してください。
+:NeoComplCacheDisableで無効になります。
 
 --------------------------------
 アップグレード方法
@@ -706,6 +719,7 @@ http://github.com/Shougo/neocomplcache/issues
 --------------------------------
 更新履歴
 
+2009/04/29     neocomplcache Ver.2.38に対応。
 2009/04/25     neocomplcache Ver.2.36に対応。
                ついでに全体的に修正しました。
 2009/04/23     neocomplcache Ver.2.35に対応。

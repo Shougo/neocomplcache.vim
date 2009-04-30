@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Apr 2009
+" Last Modified: 29 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,20 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.36, for Vim 7.0
+" Version: 2.38, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-" ChangeLog NeoCompleCache2: "{{{
+" ChangeLog NeoComplCache2: "{{{
+"   2.38:
+"    - Fixed typo.
+"    - Optimized caching.
+"   2.37:
+"    - Added g:NeoComplCache_SkipCompletionTime option.
+"    - Added g:NeoComplCache_SkipInputTime option.
+"    - Changed g:NeoComplCache_SlowCompleteSkip option into g:NeoComplCache_EnableSkipCompletion.
+"    - Improved ruby omni pattern.
+"    - Optimized syntax complete.
+"    - Delete command abbreviations in vim filetype.
 "   2.36:
 "    - Implemented snipMate like snippet.
 "    - Added syntax file.
@@ -34,7 +44,7 @@
 "    - Fixed default value selection bug.
 "    - Fixed ignorecase.
 "   2.35:
-"    - Fixed NeoCompleCacheDisable bug.
+"    - Fixed NeoComplCacheDisable bug.
 "    - Implemented <Plug>(neocomplcache_keyword_caching) keymapping.
 "    - Improved operator completion.
 "    - Added syntax highlight.
@@ -106,7 +116,7 @@
 "     - Fixed haskell and ocaml and perl syntax.
 "     - Fixed g:NeoComplCache_EnableCamelCaseCompletion default value.
 "     - Extend skip time.
-"     - Added NeoCompleCacheAutoCompletionLength and NeoCompleCachePartialCompletionLength command.
+"     - Added NeoComplCacheAutoCompletionLength and NeoComplCachePartialCompletionLength command.
 "     - Fixed extend complete length bug.
 "     - Improved camel case completion.
 "   2.20:
@@ -164,7 +174,7 @@
 "     - Fixed freeze bug when InsertEnter and InsertLeave.
 "   2.10:
 "     - Divided as plugin.
-"     - NeoCompleCacheToggle uses lock() and unlock()
+"     - NeoComplCacheToggle uses lock() and unlock()
 "     - Abbreviation indication of the end.
 "     - Don't load MFU when MFU is empty.
 "     - Changed g:AltAutoComplPop_EnableAsterisk into g:NeoComplCache_EnableWildCard.
@@ -190,11 +200,11 @@
 "     - Improved commands.
 "     - Deleted g:NeoComplCache_DrawWordsRank option.
 "     "}}}
-" ChangeLog NeoCompleCache: "{{{
+" ChangeLog NeoComplCache: "{{{
 "   1.60:
 "     - Improved calc similar algorithm.
 "   1.59:
-"     - Improved NeoCompleCacheSetBufferDictionary.
+"     - Improved NeoComplCacheSetBufferDictionary.
 "     - Fixed MFU bug.
 "     - Don't try keyword completion when input non word character.
 "   1.58:
@@ -209,7 +219,7 @@
 "   1.56:
 "     - Use vim commands completion in vim filetype.
 "   1.55:
-"     - Implemented NeoCompleCacheCreateTags command.
+"     - Implemented NeoComplCacheCreateTags command.
 "     - Fixed tags auto update bug.
 "     - Added g:NeoComplCache_TryKeywordCompletion option.
 "   1.54:
@@ -220,7 +230,7 @@
 "   1.53:
 "     - Disable similar completion when auto complete.
 "     - Calc rank when NeoComplCacheCachingBuffer command.
-"     - Added NeoCompleCacheOutputKeyword command.
+"     - Added NeoComplCacheOutputKeyword command.
 "   1.52:
 "     - Fixed syntax keyword bug.
 "     - Improved syntax keyword.
@@ -238,7 +248,7 @@
 "     - Fixed g:NeoComplCache_MFUDirectory error.
 "     - Changed g:NeoComplCache_KeywordPatterns['default'] value.
 "   1.48:
-"     - Implemented NeoCompleCacheSetBufferDictionary command.
+"     - Implemented NeoComplCacheSetBufferDictionary command.
 "     - Implemented 2-gram MFU.
 "     - Improved syntax completion.
 "     - Fixed "complete from same filetype buffer" bug.
@@ -298,7 +308,7 @@
 "     - Optimized when buffer renamed.
 "   1.35:
 "     - Improved syntax complete.
-"     - Improved NeoCompleCacheToggle.
+"     - Improved NeoComplCacheToggle.
 "   1.34:
 "     - Fixed g:NeoComplCache_FirstCurrentBufferWords bug.
 "     - Fixed quick match bug.
@@ -319,10 +329,10 @@
 "     - Optimized keyword caching.
 "     - Fixed lazyredraw bug.
 "   1.30:
-"     - Added NeoCompleCachingTags, NeoCompleCacheDictionary command.
+"     - Added NeoCompleCachingTags, NeoComplCacheDictionary command.
 "     - Renamed NeoCompleCachingBuffer command.
 "   1.29:
-"     - Added NeoCompleCacheLock, NeoCompleCacheUnlock command.
+"     - Added NeoComplCacheLock, NeoComplCacheUnlock command.
 "     - Dup check when quick match.
 "     - Fixed error when manual complete.
 "   1.28:
@@ -441,8 +451,8 @@ if exists('g:loaded_neocomplcache') || v:version < 700
   finish
 endif
 
-command! -nargs=0 NeoCompleCacheEnable call neocomplcache#enable()
-command! -nargs=0 NeoCompleCacheToggle call neocomplcache#toggle()
+command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
+command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
 " Global options definition."{{{
 if !exists('g:NeoComplCache_MaxList')
@@ -496,8 +506,14 @@ endif
 if !exists('g:NeoComplCache_QuickMatchMaxLists')
     let g:NeoComplCache_QuickMatchMaxLists = 100
 endif
-if !exists('g:NeoComplCache_SlowCompleteSkip')
-    let g:NeoComplCache_SlowCompleteSkip = has('reltime')
+if !exists('g:NeoComplCache_EnableSkipCompletion')
+    let g:NeoComplCache_EnableSkipCompletion = has('reltime')
+endif
+if !exists('g:NeoComplCache_SkipCompletionTime')
+    let g:NeoComplCache_SkipCompletionTime = '0.2'
+endif
+if !exists('g:NeoComplCache_SkipInputTime')
+    let g:NeoComplCache_SkipInputTime = '0.0'
 endif
 if !exists('g:NeoComplCache_PreviousKeywordCompletion')
     let g:NeoComplCache_PreviousKeywordCompletion = 0

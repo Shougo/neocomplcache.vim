@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Apr 2009
+" Last Modified: 30 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.36, for Vim 7.0
+" Version: 2.38, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
-    augroup neocomplecache "{{{
+    augroup neocomplcache "{{{
         autocmd!
         " Auto complete events
         autocmd CursorMovedI * call s:complete()
@@ -39,8 +39,11 @@ function! neocomplcache#enable() "{{{
     let s:prev_numbered_list = []
     let s:prepre_numbered_list = []
     let s:skipped = 0
-    let s:skipped_cnt = 0
     let s:plugins_func_table = {}
+
+    if g:NeoComplCache_EnableSkipCompletion
+        let s:prev_input_time = reltime()
+    endif
     "}}}
     
     " Initialize plugins table.
@@ -60,7 +63,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('lisp,scheme', 
                 \'\v\(?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
-                \'\v\h\w*::|%(\@\@|[:$@])\h\w*|\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
+                \'\v\h\w*::|^\=%(b%[egin]|e%[nd])|%(\@\@|[:$@])\h\w*|\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call s:set_keyword_pattern('eruby',
                 \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\h\w*::|%(\@\@|[:$@])\h\w*|\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call s:set_keyword_pattern('php',
@@ -106,9 +109,9 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('masm',
                 \'\v\.\h\w*|[[:alpha:]_@?$][[:alnum:]_@?$]*')
     call s:set_keyword_pattern('nasm',
-                \'\v^\s*\[\h\w*|\h\w*')
+                \'\v^\s*\[\h\w*|[%.]?\h\w*|%(\.\.\@?|\%[%$!])%(\h\w*)?')
     call s:set_keyword_pattern('asm',
-                \'\v[%$.]?\h\w*')
+                \'\v[%$.]?\h\w*%(\$\h\w*)?')
     "}}}
 
     " Initialize assume file type lists."{{{
@@ -131,7 +134,7 @@ function! neocomplcache#enable() "{{{
         let g:NeoComplCache_OmniPatterns = {}
     endif
     if has('ruby')
-        call s:set_omni_pattern('ruby', '\v%(^|[^:]):|[^. \t]%(\.|::)')
+        call s:set_omni_pattern('ruby', '\v[^. \t]%(\.|::)')
     endif
     if has('python')
         call s:set_omni_pattern('python', '\v[^. \t]\.')
@@ -147,13 +150,13 @@ function! neocomplcache#enable() "{{{
     "}}}
     
     " Add commands."{{{
-    command! -nargs=0 NeoCompleCacheDisable call neocomplcache#disable()
+    command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
     command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
-    command! -nargs=0 NeoCompleCacheLock call s:lock()
-    command! -nargs=0 NeoCompleCacheUnlock call s:unlock()
-    command! -nargs=0 NeoCompleCacheToggle call s:toggle()
-    command! -nargs=1 NeoCompleCacheAutoCompletionLength let g:NeoComplCache_KeywordCompletionStartLength = <args>
-    command! -nargs=1 NeoCompleCachePartialCompletionLength let g:NeoComplCache_PartialCompletionStartLength = <args> 
+    command! -nargs=0 NeoComplCacheLock call s:lock()
+    command! -nargs=0 NeoComplCacheUnlock call s:unlock()
+    command! -nargs=0 NeoComplCacheToggle call s:toggle()
+    command! -nargs=1 NeoComplCacheAutoCompletionLength let g:NeoComplCache_KeywordCompletionStartLength = <args>
+    command! -nargs=1 NeoComplCachePartialCompletionLength let g:NeoComplCache_PartialCompletionStartLength = <args> 
     "}}}
     
     " Must g:NeoComplCache_StartCharLength > 1.
@@ -180,17 +183,17 @@ function! neocomplcache#disable()"{{{
     " Restore options.
     let &completefunc = s:completefunc_save
     
-    augroup neocomplecache
+    augroup neocomplcache
         autocmd!
     augroup END
 
-    delcommand NeoCompleCacheDisable
+    delcommand NeoComplCacheDisable
     delcommand Neco
-    delcommand NeoCompleCacheLock
-    delcommand NeoCompleCacheUnlock
-    delcommand NeoCompleCacheToggle
-    delcommand NeoCompleCacheAutoCompletionLength
-    delcommand NeoCompleCachePartialCompletionLength
+    delcommand NeoComplCacheLock
+    delcommand NeoComplCacheUnlock
+    delcommand NeoComplCacheToggle
+    delcommand NeoComplCacheAutoCompletionLength
+    delcommand NeoComplCachePartialCompletionLength
 
     for l:plugin in values(s:plugins_func_table)
         call call(l:plugin . 'finalize', [])
@@ -363,6 +366,20 @@ function! neocomplcache#assume_pattern(bufname)"{{{
         return ''
     endif
 endfunction "}}}
+
+function! neocomplcache#check_skip_time()"{{{
+    if !g:NeoComplCache_EnableSkipCompletion || &l:completefunc != 'neocomplcache#auto_complete'
+        return 0
+    endif
+
+    "let l:end_time = split(reltimestr(reltime(l:start_time)))[0]
+    if split(reltimestr(reltime(s:start_time)))[0] > g:NeoComplCache_SkipCompletionTime
+        "echo l:end_time
+        return 1
+    else
+        return 0
+    endif
+endfunction"}}}
 "}}}
 
 " Complete internal function."{{{
@@ -380,6 +397,16 @@ function! s:complete()"{{{
         return
     endif
     let s:old_text = l:cur_text
+
+    if g:NeoComplCache_EnableSkipCompletion
+        if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
+            echo 'Skipped auto completion'
+            let s:skipped = 1
+
+            return 1
+        endif
+        let s:prev_input_time = reltime()
+    endif
 
     " Not complete multi byte character for ATOK X3.
     if char2nr(l:cur_text[-1]) >= 0x80
@@ -465,6 +492,7 @@ function! s:complete()"{{{
     " Start original complete.
     let s:cur_keyword_pos = l:cur_keyword_pos
     let s:cur_keyword_str = l:cur_keyword_str
+    let s:skipped = 0
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
 endfunction"}}}
 
@@ -503,8 +531,8 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
 endfunction"}}}
 
 function! s:get_complete_words(cur_keyword_str)"{{{
-    if g:NeoComplCache_SlowCompleteSkip && &l:completefunc == 'neocomplcache#auto_complete'
-        let l:start_time = reltime()
+    if g:NeoComplCache_EnableSkipCompletion && &l:completefunc == 'neocomplcache#auto_complete'
+        let s:start_time = reltime()
     endif
 
     " Load plugin.
@@ -529,6 +557,12 @@ function! s:get_complete_words(cur_keyword_str)"{{{
         for l:plugin in keys(l:loaded_plugins)
             call call(l:loaded_plugins[l:plugin] . 'calc_rank', [l:cache_keyword_lists[l:plugin]])
 
+            " Skip completion if takes too much time."{{{
+            if neocomplcache#check_skip_time()
+                call s:skip_function(a:cur_keyword_str)
+                return []
+            endif"}}}
+
             if g:NeoComplCache_DeleteRank0
                 " Delete element if rank is 0.
                 call filter(l:cache_keyword_lists[l:plugin], 'v:val.rank > 0')
@@ -536,36 +570,6 @@ function! s:get_complete_words(cur_keyword_str)"{{{
         endfor
 
         let l:order_func = 'neocomplcache#compare_rank'"}}}
-    endif
-
-    " Skip completion if takes too much time."{{{
-    if exists('l:start_time')
-        "let l:end_time = split(reltimestr(reltime(l:start_time)))[0]
-        if split(reltimestr(reltime(l:start_time)))[0] > '0.20'
-            echo 'Skipped completion'
-            let s:skipped = 1
-
-            if len(a:cur_keyword_str) == g:NeoComplCache_KeywordCompletionStartLength
-                let s:skipped_cnt += 1
-
-                if s:skipped_cnt >= 5
-                    " Extend complete length.
-                    let g:NeoComplCache_KeywordCompletionStartLength += 1
-                    let g:NeoComplCache_PartialCompletionStartLength += 1
-
-                    let s:skipped = 0
-                endif
-            endif
-
-            return []
-        endif
-
-        "echo l:end_time
-    endif"}}}
-
-    let s:skipped = 0
-    if len(a:cur_keyword_str) == g:NeoComplCache_KeywordCompletionStartLength
-        let s:skipped_cnt = 0
     endif
 
     let l:cache_keyword_filtered = []
@@ -719,6 +723,11 @@ function! s:get_prev_word(cur_keyword_str)"{{{
     return [l:prev_word, l:prepre_word]
     "echo printf('prepre = %s, pre = %s', l:prepre_word, l:prev_word)
 endfunction"}}}
+
+function! s:skip_function(cur_keyword_str)
+    echo 'Skipped auto completion'
+    let s:skipped = 1
+endfunction
 "}}}
 
 " Set pattern helper."{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2009
+" Last Modified: 30 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.10, for Vim 7.0
+" Version: 1.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.11:
+"    - Fixed typo.
+"    - Optimized caching.
+"    - Fixed syntax highlight bug.
 "   1.10:
 "    - Implemented snipMate like snippet.
 "    - Added syntax file.
@@ -81,24 +85,24 @@ function! neocomplcache#snippets_complete#initialize()"{{{
         call insert(s:snippets_dir, g:NeoComplCache_SnippetsDir)
     endif
 
-    augroup neocomplecache"{{{
-        " Caching events
-        autocmd CursorHold * call s:caching_event() 
+    augroup neocomplcache"{{{
+        " Set caching event.
+        autocmd CursorHold * call s:caching()
         " Recaching events
         autocmd BufWritePost *.snip call s:caching_snippets(expand('<afile>:t:r')) 
         " Detect syntax file.
-        autocmd BufNew,BufRead *.snip setfiletype snippet
+        autocmd BufNewFile,BufRead *.snip setfiletype snippet
     augroup END"}}}
 
-    command! -nargs=? NeoCompleCacheEditSnippets call s:edit_snippets(<q-args>)
+    command! -nargs=? NeoComplCacheEditSnippets call s:edit_snippets(<q-args>)
 
-    syn match   NeoCompleCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
-    hi def link NeoCompleCacheExpandSnippets Special
+    syn match   NeoComplCachExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
+    hi def link NeoComplCachExpandSnippets Special
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#finalize()"{{{
-    delcommand NeoCompleCacheEditSnippets
-    hi clear NeoCompleCacheExpandSnippets
+    delcommand NeoComplCacheEditSnippets
+    hi clear NeoComplCacheExpandSnippets
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -124,6 +128,14 @@ endfunction"}}}
 
 function! neocomplcache#snippets_complete#expandable()"{{{
     return match(getline('.'), '<expand>') >= 0 || search('\${\d\+\%(:\([^}]*\)\)\?}', 'w') > 0
+endfunction"}}}
+
+function! s:caching()"{{{
+    if empty(&filetype) || has_key(s:snippets, &filetype)
+        return
+    endif
+
+    call s:caching_snippets(&filetype)
 endfunction"}}}
 
 function! s:keyword_filter(list, cur_keyword_str)"{{{
@@ -181,13 +193,6 @@ function! s:set_snippet_pattern(dict)"{{{
     return l:dict
 endfunction"}}}
 
-function! s:caching_event()"{{{
-    if empty(&filetype) || has_key(s:snippets, &filetype)
-        return
-    endif
-
-    call s:caching_snippets(&filetype)
-endfunction"}}}
 function! s:edit_snippets(filetype)"{{{
     if empty(a:filetype)
         if empty(&filetype)
@@ -257,7 +262,7 @@ function! s:load_snippets(snippets_file)"{{{
 endfunction"}}}
 
 function! s:snippets_expand()"{{{
-    syn match   NeoCompleCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
+    syn match   NeoComplCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
 
     if match(getline('.'), '<expand>') >= 0
         call s:expand_newline()
