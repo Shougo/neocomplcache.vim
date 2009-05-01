@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2009
+" Last Modified: 01 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.38, for Vim 7.0
+" Version: 2.39, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -101,7 +101,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%([:.]|\(\)?)?')
     call s:set_keyword_pattern('html,xhtml,xml',
-                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|&\h\w*;|\h[[:alnum:]_-]*%(\=")?')
+                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',
                 \'\v^[^!/[:blank:]][^[:blank:]]*')
     call s:set_keyword_pattern('pic',
@@ -218,31 +218,39 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
         if g:NeoComplCache_EnableWildCard
             " Check wildcard.
             let [l:cur_keyword_pos, l:cur_keyword_str] = s:check_wildcard(l:cur_text, l:pattern, l:cur_keyword_pos, l:cur_keyword_str)
+
+            if empty(l:cur_keyword_str)
+                " Add wildcard.
+                let l:cur_keyword_str  = l:cur_text[l:cur - 1] . '*'
+                let l:cur_keyword_pos = l:cur - 1
+            endif
         endif
+
+        " Save options.
+        let l:ignorecase_save = &ignorecase
+
+        " Complete.
+        if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+            let &ignorecase = 0
+        else
+            let &ignorecase = g:NeoComplCache_IgnoreCase
+        endif
+
+        let s:complete_words = s:get_complete_words(l:cur_keyword_str)
+
+        if empty(s:complete_words)
+            " Try empty completion.
+            let s:complete_words = s:get_complete_words('')
+            let l:cur_keyword_pos = l:cur
+        endif
+
+        " Restore options.
+        let &ignorecase = l:ignorecase_save
         
         return l:cur_keyword_pos
     endif
 
-    " Save options.
-    let l:ignorecase_save = &ignorecase
-
-    " Complete.
-    if g:NeoComplCache_SmartCase && a:base =~ '\u'
-        let &ignorecase = 0
-    else
-        let &ignorecase = g:NeoComplCache_IgnoreCase
-    endif
-
-    let l:complete_words = s:get_complete_words(a:base)
-    if empty(l:complete_words)
-        " Try empty completion.
-        let l:complete_words = s:get_complete_words('')
-    endif
-
-    " Restore options.
-    let &ignorecase = l:ignorecase_save
-
-    return l:complete_words
+    return s:complete_words
 endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{

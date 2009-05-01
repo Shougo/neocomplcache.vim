@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
+" Version: 1.12, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.12:
+"    - Fixed syntax highlight.
+"    - Overwrite snippet if name is same.
 "   1.11:
 "    - Fixed typo.
 "    - Optimized caching.
@@ -82,7 +85,7 @@ function! neocomplcache#snippets_complete#initialize()"{{{
     " Set snippets dir.
     let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete'), '\n')
     if exists('g:NeoComplCache_SnippetsDir') && isdirectory(g:NeoComplCache_SnippetsDir)
-        call insert(s:snippets_dir, g:NeoComplCache_SnippetsDir)
+        call add(s:snippets_dir, g:NeoComplCache_SnippetsDir)
     endif
 
     augroup neocomplcache"{{{
@@ -96,8 +99,8 @@ function! neocomplcache#snippets_complete#initialize()"{{{
 
     command! -nargs=? NeoComplCacheEditSnippets call s:edit_snippets(<q-args>)
 
-    syn match   NeoComplCachExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
-    hi def link NeoComplCachExpandSnippets Special
+    syn match   NeoComplCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
+    hi def link NeoComplCacheExpandSnippets Special
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#finalize()"{{{
@@ -207,20 +210,25 @@ function! s:edit_snippets(filetype)"{{{
 
     if !empty(s:snippets_dir)
         " Edit snippet file.
-        edit `=s:snippets_dir[0].'/'.l:filetype.'.snip'`
+        edit `=s:snippets_dir[-1].'/'.l:filetype.'.snip'`
     endif
 endfunction"}}}
 
 function! s:caching_snippets(filetype)"{{{
-    let s:snippets[a:filetype] = []
+    let l:snippet = {}
     let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip'), '\n')
     for snippets_file in l:snippets_files
-        call extend(s:snippets[a:filetype], s:load_snippets(snippets_file))
+        let l:snippet_dict = s:load_snippets(snippets_file)
+        for snip in keys(l:snippet_dict)
+            let l:snippet[snip] = l:snippet_dict[snip]
+        endfor
     endfor
+
+    let s:snippets[a:filetype] = values(l:snippet)
 endfunction"}}}
 
 function! s:load_snippets(snippets_file)"{{{
-    let l:snippet = []
+    let l:snippet = {}
     let l:snippet_pattern = { 'word' : '' }
     for line in readfile(a:snippets_file)
         if line =~ '^include'
@@ -228,11 +236,13 @@ function! s:load_snippets(snippets_file)"{{{
             let l:filetype = matchstr(line, '^\s*include\s\+\zs\h\w*')
             let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
             for snippets_file in l:snippets_files
-                call extend(l:snippet, s:load_snippets(snippets_file))
+                for snip in s:load_snippets(snippets_file)
+                    let l:snippet[snip.name] = snip
+                endfor
             endfor
         elseif line =~ '^snippet\s'
             if has_key(l:snippet_pattern, 'name')
-                call add(l:snippet, s:set_snippet_pattern(l:snippet_pattern))
+                let l:snippet[l:snippet_pattern.name] = s:set_snippet_pattern(l:snippet_pattern)
                 let l:snippet_pattern = { 'word' : '' }
             endif
             let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*\ze$')
@@ -255,7 +265,7 @@ function! s:load_snippets(snippets_file)"{{{
     endfor
 
     if has_key(l:snippet_pattern, 'name')
-        call add(l:snippet, s:set_snippet_pattern(l:snippet_pattern))
+        let l:snippet[l:snippet_pattern.name] = s:set_snippet_pattern(l:snippet_pattern)
     endif
 
     return l:snippet

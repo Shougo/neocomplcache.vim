@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2009
+" Last Modified: 01 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.17:
 "    - Fixed typo.
 "    - Optimized caching.
+"    - Fixed menu error.
 "   1.16:
 "    - Optimized.
 "    - Delete command abbreviations in vim filetype.
@@ -118,6 +119,8 @@ function! s:initialize_syntax()"{{{
         let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
     endif
     let l:dup_check = {}
+
+    let l:menu = '[S] '
     for l:line in split(l:syntax_list, '\n')
         if l:line =~ '^\h\w\+'
             " Change syntax group name.

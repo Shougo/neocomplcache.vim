@@ -28,6 +28,14 @@ prev_word   '^'
         ${2}
     }
 
+snippet     switch
+abbr        switch () {}
+    switch (${1:var}) {
+        case ${2:val}:
+            ${3}
+            break;
+    }
+
 snippet     function
 abbr        func() {}
 prev_word   '^'

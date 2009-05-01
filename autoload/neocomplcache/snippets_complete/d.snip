@@ -1,0 +1,29 @@
+include c
+
+snippet     foreach
+abbr        foreach() {}
+prev_word   '^'
+    foreach (${1:var}; ${2:list}) {
+        ${3}
+    }
+
+snippet     class
+abbr        class {}
+prev_word   '^'
+    class ${1:name} {
+        ${2}
+    }
+
+snippet     struct
+abbr        struct {}
+prev_word   '^'
+    struct ${1:name} {
+        ${2}
+    }
+
+snippet     enum
+abbr        enum {}
+prev_word   '^'
+    enum ${1:name} {
+        ${2}
+    }

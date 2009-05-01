@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Apr 2009
+" Last Modified: 01 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.38, for Vim 7.0
+" Version: 2.39, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.39:
+"    - Fixed syntax highlight.
+"    - Overwrite snippet if name is same.
+"    - Caching on InsertLeave.
+"    - Manual completion add wildcard when input non alphabetical character.
+"    - Fixed menu error in syntax complete.
 "   2.38:
 "    - Fixed typo.
 "    - Optimized caching.

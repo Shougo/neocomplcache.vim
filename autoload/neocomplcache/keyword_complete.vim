@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.38, for Vim 7.0
+" Version: 2.39, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#initialize()"{{{
@@ -32,7 +32,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
         autocmd Filetype * call s:check_source(3)
         autocmd BufWritePost,BufEnter,CursorHold * call s:update_source()
         " Caching current buffer events
-        autocmd InsertEnter * call s:caching_cache_line()
+        autocmd InsertEnter,InsertLeave * call s:caching_cache_line()
         " Garbage collect.
         autocmd BufWritePost * call s:garbage_collect()
     augroup END"}}}
