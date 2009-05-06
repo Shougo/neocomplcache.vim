@@ -84,9 +84,14 @@ COMMANDS 					*neocomplcache-commands*
 		カレントバッファに関連づけられたタグファイルを完全にキャッシュする。
 		大きなタグファイルに対しては、かなり時間がかかるので注意。
 
-:NeoComplCacheSetBufferDictionary [filename],...	*:NeoComplCacheSetBufferDictionary*
-		バッファに関連づけられる辞書ファイルを設定する。
-		インクルードファイルの補完に便利かもしれない。
+:NeoComplCacheCachingDisable [bufnr]			*:NeoComplCacheCachingDisable*
+		[bufnr]で示されるバッファをキャッシュしないようにする。
+		今までのキャッシュは削除されるので注意。
+		[bufnr]を省略すると、カレントバッファを指定したことになる。
+
+:NeoComplCacheCachingEnable [bufnr]			*:NeoComplCacheCachingEnable*
+		[bufnr]で示されるバッファをキャッシュできるようにする。
+		[bufnr]を省略すると、カレントバッファを指定したことになる。
 
 :NeoComplCachePrintSource [bufnr]			*:NeoComplCachePrintSource*
 		[bufnr]で示されるバッファのキャッシュ情報をカレントバッファに書き出す。
@@ -281,8 +286,9 @@ g:NeoComplCache_EnableInfo				*g:NeoComplCache_EnableInfo*
 
 g:NeoComplCache_MaxInfoList				*g:NeoComplCache_MaxInfoList*
 		プレビューウインドウに表示する、キャッシュ時の行の数。
+		このオプションを1以上に設定すると、メモリ使用量が増加する。
 		
-		初期値は1である。
+		初期値は0である。
 
 g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
 		インサートモード時、現在のキャッシュラインをキャッシュするかどうか決定するのに、

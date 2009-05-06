@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2009
+" Last Modified: 06 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.12, for Vim 7.0
+" Version: 1.13, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.13:
+"    - Fixed commentout bug.
 "   1.12:
 "    - Fixed syntax highlight.
 "    - Overwrite snippet if name is same.
@@ -157,9 +159,9 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     let l:list = filter(a:list, l:pattern)
     for keyword in l:list
         let keyword.word = keyword.word_save
-        while keyword.word =~ '`.*`'
+        while keyword.word =~ '`[^`]*`'
             let keyword.word = substitute(keyword.word, '`[^`]*`', 
-                        \eval(matchstr(keyword.word_save, '`\zs.*\ze`')), '')
+                        \eval(matchstr(keyword.word_save, '`\zs[^`]*\ze`')), '')
         endwhile
     endfor
     return l:list
@@ -308,6 +310,8 @@ function! s:expand_newline()"{{{
     let s:begin_snippet = line('.')
     let s:end_snippet = line('.')
 
+    let l:formatoptions = &l:formatoptions
+    setlocal formatoptions-=r
     while l:match >= 0
         " Substitute CR.
         silent! s/<\\n>//
@@ -320,6 +324,7 @@ function! s:expand_newline()"{{{
         let l:match = match(getline('.'), '<\\n>')
         let s:end_snippet += 1
     endwhile
+    let &l:formatoptions = l:formatoptions
 
     let s:snippet_holder_cnt = 1
     call s:search_snippet_range(s:begin_snippet, s:end_snippet)

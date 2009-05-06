@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2009
+" Last Modified: 06 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,19 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.39, for Vim 7.0
+" Version: 2.40, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.40:
+"    - Optimized caching in small files.
+"    - Deleted buffer dictionary.
+"    - Display cached from buffer.
+"    - Changed g:NeoComplCache_MaxInfoList default value.
+"    - Improved calc rank.
+"    - Improved caching timing.
+"    - Added NeoComplCacheCachingDisable and g:NeoComplCacheCachingEnable commands.
+"    - Fixed commentout bug in snippet complete.
 "   2.39:
 "    - Fixed syntax highlight.
 "    - Overwrite snippet if name is same.
@@ -540,7 +549,7 @@ if !exists('g:NeoComplCache_EnableInfo')
     let g:NeoComplCache_EnableInfo = 0
 endif
 if !exists('g:NeoComplCache_MaxInfoList')
-    let g:NeoComplCache_MaxInfoList = 1
+    let g:NeoComplCache_MaxInfoList = 0
 endif
 if !exists('g:NeoComplCache_CachingRandomize')
     let g:NeoComplCache_CachingRandomize = has('reltime')
