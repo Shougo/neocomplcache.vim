@@ -219,7 +219,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             " Check wildcard.
             let [l:cur_keyword_pos, l:cur_keyword_str] = s:check_wildcard(l:cur_text, l:pattern, l:cur_keyword_pos, l:cur_keyword_str)
 
-            if empty(l:cur_keyword_str)
+            if l:cur_keyword_str == ''
                 " Add wildcard.
                 let l:cur_keyword_str  = l:cur_text[l:cur - 1] . '*'
                 let l:cur_keyword_pos = l:cur - 1
@@ -331,7 +331,7 @@ endfunction"}}}
 
 function! neocomplcache#assume_buffer_pattern(bufname)"{{{
     let l:ft = getbufvar(a:bufname, '&filetype')
-    if empty(l:ft)
+    if l:ft == ''
         let l:ft = 'nothing'
     endif
 
@@ -361,7 +361,7 @@ endfunction"}}}
 function! neocomplcache#assume_pattern(bufname)"{{{
     " Extract extention.
     let l:ext = fnamemodify(a:bufname, ':e')
-    if empty(l:ext)
+    if l:ext == ''
         let l:ext = fnamemodify(a:bufname, ':t')
     endif
 
@@ -401,7 +401,7 @@ function! s:complete()"{{{
     " Get cursor word.
     let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
     " Prevent infinity loop.
-    if l:cur_text == s:old_text || empty(l:cur_text)
+    if l:cur_text == s:old_text || l:cur_text == ''
         return
     endif
     let s:old_text = l:cur_text
@@ -421,9 +421,9 @@ function! s:complete()"{{{
         return
     endif
 
-    if exists('&l:omnifunc') && !empty(&l:omnifunc) 
+    if exists('&l:omnifunc') && &l:omnifunc != '' 
                 \&& has_key(g:NeoComplCache_OmniPatterns, &filetype)
-                \&& !empty(g:NeoComplCache_OmniPatterns[&filetype])
+                \&& g:NeoComplCache_OmniPatterns[&filetype] != ''
         if l:cur_text =~ '\v%(' . g:NeoComplCache_OmniPatterns[&filetype] . ')$'
             if &filetype == 'vim'
                 call feedkeys("\<C-x>\<C-v>\<C-p>", 'n')
@@ -528,7 +528,7 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
         let l:cur_keyword_pos = match(l:left_text, a:pattern)
     endwhile
 
-    if empty(l:cur_keyword_str)
+    if l:cur_keyword_str == ''
         " Get cursor word.
         let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
         let l:pattern = '\(^\|[^[:alpha:]_]\)[^\t ][*-]$'
@@ -692,7 +692,7 @@ function! s:get_complete_words(cur_keyword_str)"{{{
     " Remove next keyword."{{{
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
-    if !empty(l:next_keyword_str)
+    if l:next_keyword_str != ''
         let l:next_keyword_str .= '$'
         let l:cache_keyword_filtered = deepcopy(l:cache_keyword_filtered[:g:NeoComplCache_MaxList-1])
         for r in l:cache_keyword_filtered

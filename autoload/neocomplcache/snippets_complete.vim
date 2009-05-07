@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: syntax_complete.vim
+" FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 May 2009
+" Last Modified: 07 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,9 @@
 " ChangeLog: "{{{
 "   1.13:
 "    - Fixed commentout bug.
+"    - Improved empty check.
+"    - Fixed eval bug.
+"    - Fixed include bug.
 "   1.12:
 "    - Fixed syntax highlight.
 "    - Overwrite snippet if name is same.
@@ -111,7 +114,7 @@ function! neocomplcache#snippets_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
-    if empty(&filetype) || !has_key(s:snippets, &filetype)
+    if &filetype == ''|| !has_key(s:snippets, &filetype)
         return []
     endif
 
@@ -136,7 +139,7 @@ function! neocomplcache#snippets_complete#expandable()"{{{
 endfunction"}}}
 
 function! s:caching()"{{{
-    if empty(&filetype) || has_key(s:snippets, &filetype)
+    if &filetype == '' || has_key(s:snippets, &filetype)
         return
     endif
 
@@ -161,7 +164,7 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
         let keyword.word = keyword.word_save
         while keyword.word =~ '`[^`]*`'
             let keyword.word = substitute(keyword.word, '`[^`]*`', 
-                        \eval(matchstr(keyword.word_save, '`\zs[^`]*\ze`')), '')
+                        \eval(matchstr(keyword.word, '`\zs[^`]*\ze`')), '')
         endwhile
     endfor
     return l:list
@@ -199,8 +202,8 @@ function! s:set_snippet_pattern(dict)"{{{
 endfunction"}}}
 
 function! s:edit_snippets(filetype)"{{{
-    if empty(a:filetype)
-        if empty(&filetype)
+    if a:filetype == ''
+        if &filetype == ''
             echo 'Filetype required'
             return
         endif
@@ -238,7 +241,7 @@ function! s:load_snippets(snippets_file)"{{{
             let l:filetype = matchstr(line, '^\s*include\s\+\zs\h\w*')
             let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
             for snippets_file in l:snippets_files
-                for snip in s:load_snippets(snippets_file)
+                for snip in values(s:load_snippets(snippets_file))
                     let l:snippet[snip.name] = snip
                 endfor
             endfor
@@ -258,7 +261,7 @@ function! s:load_snippets(snippets_file)"{{{
                 call add(l:snippet_pattern.prev_word, matchstr(word, "'\\zs[^']*\\ze'"))
             endfor
         elseif line =~ '^\s'
-            if empty(l:snippet_pattern['word'])
+            if l:snippet_pattern['word'] == ''
                 let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*\ze$')
             else
                 let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*\ze$')
@@ -292,7 +295,7 @@ function! s:snippets_expand()"{{{
 endfunction"}}}
 function! s:expand_newline()"{{{
     " Check expand word.
-    if !empty(&filetype) && has_key(s:snippets, &filetype)
+    if &filetype == '' && has_key(s:snippets, &filetype)
         let l:expand = matchstr(getline('.'), '^.*<expand>')
         for keyword in s:snippets[&filetype]
             if keyword.word_save !~ '`[^`]*`' &&

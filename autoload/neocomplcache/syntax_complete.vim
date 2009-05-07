@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2009
+" Last Modified: 06 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.17, for Vim 7.0
+" Version: 1.18, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.18:
+"    - Improved empty check.
 "   1.17:
 "    - Fixed typo.
 "    - Optimized caching.
@@ -78,7 +80,7 @@ function! neocomplcache#syntax_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#syntax_complete#get_keyword_list(cur_keyword_str)"{{{
-    if empty(&filetype) || !has_key(s:syntax_list, &filetype)
+    if &filetype == '' || !has_key(s:syntax_list, &filetype)
         return []
     endif
 
@@ -95,7 +97,7 @@ endfunction"}}}
 
 function! s:caching()"{{{
     " Caching.
-    if !empty(&filetype) && !has_key(s:syntax_list, &filetype)
+    if &filetype != '' && !has_key(s:syntax_list, &filetype)
         let s:syntax_list[&filetype] = s:initialize_syntax()
     endif
 endfunction"}}}
@@ -151,7 +153,7 @@ function! s:initialize_syntax()"{{{
         let l:line_max = len(l:line) - g:NeoComplCache_MinSyntaxLength
         while 1
             let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
-            if empty(l:match_str)
+            if l:match_str == ''
                 break
             endif
 

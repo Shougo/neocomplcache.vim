@@ -667,7 +667,9 @@ snipMateの関数をneocomplcacheから呼び出し、補完します。
 
 http://github.com/Shougo/neocomplcache/tree/master （毎週更新）
 
-ちゃんとした英語ドキュメントができたらwww.vim.orgにも登録したいです。
+vim.orgにも登録しました！
+ただし、最新版はgithubにあります。
+http://www.vim.org/scripts/script.php?script_id=2620
 
 --------------------------------
 使い方
