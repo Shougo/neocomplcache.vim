@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 May 2009
+" Last Modified: 11 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.18:
 "    - Improved empty check.
+"    - Fixed for neocomplcache 2.43.
 "   1.17:
 "    - Fixed typo.
 "    - Optimized caching.
@@ -163,7 +164,7 @@ function! s:initialize_syntax()"{{{
                             \ 'word' : l:match_str, 'menu' : l:menu,
                             \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
                             \}
-                let l:keyword.abbr_save = 
+                let l:keyword.abbr = 
                             \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
                             \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
                 call add(l:keyword_list, l:keyword)

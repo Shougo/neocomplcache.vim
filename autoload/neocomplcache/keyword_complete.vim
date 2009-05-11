@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 May 2009
+" Last Modified: 11 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.41, for Vim 7.0
+" Version: 2.43, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#keyword_complete#initialize()"{{{
@@ -82,8 +82,8 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     call s:check_source(3)
 
     " Plugin key-mappings.
-    nnoremap <silent> <Plug>(neocomplcache_keyword_caching)  :<C-u>call <SID>caching(bufnr('%'), line('.'), 1)<CR>
-    inoremap <silent> <Plug>(neocomplcache_keyword_caching)  <C-o>:<C-u>call <SID>caching(bufnr('%'), line('.'), 1)<CR>
+    nnoremap <silent> <Plug>(neocomplcache_keyword_caching)  :<C-u>call <SID>caching(bufnr('%'), line('.'), 1, 2)<CR>
+    inoremap <silent> <Plug>(neocomplcache_keyword_caching)  <C-o>:<C-u>call <SID>caching(bufnr('%'), line('.'), 1, 2)<CR>
 endfunction
 "}}}
 
@@ -383,7 +383,7 @@ function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
         " Dictionary.
         let l:buflines = readfile(l:source.name)[l:start_line : l:end_line]
     endif
-    let l:menu = printf(' %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
+    let l:menu = printf('%.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     let l:keyword_pattern = l:source.keyword_pattern
 
@@ -421,7 +421,7 @@ function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
                                     \'filename' : l:filename, 'srcname' : a:srcname, 'info_list' : []
                                     \}
 
-                        let l:source.keyword_cache[l:match_str].abbr_save = 
+                        let l:source.keyword_cache[l:match_str].abbr = 
                                     \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
                                     \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
                     endif

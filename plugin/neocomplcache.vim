@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 May 2009
+" Last Modified: 11 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.41, for Vim 7.0
+" Version: 2.43, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.43:
+"    - Improved wildcard.
+"    - Changed 'abbr_save' into 'abbr'.
+"   2.42:
+"    - Call completefunc when original completefunc.
+"    - Added g:NeoComplCache_TryFilenameCompletion option.
+"    - Fixed g:NeoComplCache_TryKeywordCompletion bug.
+"    - Fixed menu padding.
+"    - Fixed caching error.
+"    - Implemented underbar completion.
+"    - Added g:NeoComplCache_EnableUnderbarCompletion option.
 "   2.41:
 "    - Improved empty check.
 "    - Fixed eval bug in snippet complete.
@@ -546,6 +557,9 @@ endif
 if !exists('g:NeoComplCache_TryDefaultCompletion')
     let g:NeoComplCache_TryDefaultCompletion = 0
 endif
+if !exists('g:NeoComplCache_TryFilenameCompletion')
+    let g:NeoComplCache_TryFilenameCompletion = 1
+endif
 if !exists('g:NeoComplCache_MaxTryKeywordLength')
     let g:NeoComplCache_MaxTryKeywordLength = 5
 endif
@@ -560,6 +574,9 @@ if !exists('g:NeoComplCache_CachingRandomize')
 endif
 if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
     let g:NeoComplCache_EnableCamelCaseCompletion = 0
+endif
+if !exists('g:NeoComplCache_EnableUnderbarCompletion')
+    let g:NeoComplCache_EnableUnderbarCompletion = 0
 endif
 if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
     " Enable startup.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 May 2009
+" Last Modified: 11 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.13, for Vim 7.0
+" Version: 1.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.14:
+"    - Fixed for neocomplcache 2.43.
 "   1.13:
 "    - Fixed commentout bug.
 "    - Improved empty check.
@@ -159,9 +161,8 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
         let l:pattern = printf("v:val.name =~ '^%s'", l:keyword_escape)
     endif"}}}
 
-    let l:list = filter(a:list, l:pattern)
+    let l:list = deepcopy(filter(a:list, l:pattern))
     for keyword in l:list
-        let keyword.word = keyword.word_save
         while keyword.word =~ '`[^`]*`'
             let keyword.word = substitute(keyword.word, '`[^`]*`', 
                         \eval(matchstr(keyword.word, '`\zs[^`]*\ze`')), '')
@@ -190,12 +191,12 @@ function! s:set_snippet_pattern(dict)"{{{
     endif
 
     let l:dict = {
-                \'word_save' : l:word, 'name' : a:dict.name, 
+                \'word' : l:word, 'name' : a:dict.name, 
                 \'menu' : printf(l:menu_pattern, a:dict.name), 
                 \'prev_word' : l:prev_word, 
                 \'rank' : l:rank, 'prev_rank' : 0, 'prepre_rank' : 0
                 \}
-    let l:dict.abbr_save = 
+    let l:dict.abbr = 
                 \ (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
                 \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
     return l:dict
@@ -298,8 +299,8 @@ function! s:expand_newline()"{{{
     if &filetype == '' && has_key(s:snippets, &filetype)
         let l:expand = matchstr(getline('.'), '^.*<expand>')
         for keyword in s:snippets[&filetype]
-            if keyword.word_save !~ '`[^`]*`' &&
-                        \l:expand =~ substitute(escape(keyword.word_save, '" \.^$*[]'), "'", "''", 'g').'$'
+            if keyword.word !~ '`[^`]*`' &&
+                        \l:expand =~ substitute(escape(keyword.word, '" \.^$*[]'), "'", "''", 'g').'$'
                 let keyword.rank += 1
                 break
             endif

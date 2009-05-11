@@ -261,15 +261,21 @@ g:NeoComplCache_TagsAutoUpdate				*g:NeoComplCache_TagsAutoUpdate*
 
 g:NeoComplCache_TryKeywordCompletion			*g:NeoComplCache_TryKeywordCompletion*
 		補完候補が見つからなかったとき、通常のキーワード補完を行うかどうかを制御する。
-		1ならば有効になる。
+		1ならば有効になる。まだキャッシュされていないときに便利だが、neocomplcacheの先進的機能は利用できない。
 		
 		初期値は0である。
 
 g:NeoComplCache_TryDefaultCompletion			*g:NeoComplCache_TryDefaultCompletion*
-		補完候補が見つからなかったとき、通常のキーワード補完を行うかどうかを制御する。
+		補完候補が見つからなかったとき、キーワードタイプを'default'として再検索を行うかどうかを制御する。
 		1ならば有効になる。
 		
 		初期値は0である。
+
+g:NeoComplCache_TryFilenameCompletion			*g:NeoComplCache_TryFilenameCompletion*
+		ファイルパスとなる文字列を入力したとき、自動でファイル名補完を行うかどうかを制御する。
+		1ならば有効になる。
+		
+		初期値は1である。
 
 g:NeoComplCache_MaxTryKeywordLength			*g:NeoComplCache_MaxTryKeywordLength*
 		キーワード補完を行う入力文字数を制御する。
@@ -298,6 +304,12 @@ g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
 
 g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompletion*
 		大文字を入力したときに、それを単語の区切りとしてあいまい検索を行うかどうか制御する。
+		1ならば有効になる。
+		
+		副作用があるので、初期値は0となっている。
+
+g:NeoComplCache_EnableUnderbarCompletion		*g:NeoComplCache_EnableUnderbarCompletion*
+		_を入力したときに、それを単語の区切りとしてあいまい検索を行うかどうか制御する。
 		1ならば有効になる。
 		
 		副作用があるので、初期値は0となっている。
@@ -358,6 +370,8 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_DeleteRank0 = 1
 	" Use camel case completion.
 	let g:NeoComplCache_EnableCamelCaseCompletion = 1
+	" Use underbar completion.
+	let g:NeoComplCache_EnableUnderbarCompletion = 1
 	" Set minimum syntax keyword length.
 	let g:NeoComplCache_MinSyntaxLength = 3
 	" Set skip input time.
@@ -381,6 +395,7 @@ EXAMPLES					*neocomplcache-examples*
 	smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
 	nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
 	imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
+	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 BUGS						*neocomplcache-bugs*

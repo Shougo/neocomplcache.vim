@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2009
+" Last Modified: 11 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.06, for Vim 7.0
+" Version: 1.07, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.07:
+"    - Fixed for neocomplcache 2.43.
 "   1.06:
 "    - Improved abbr.
 "    - Refactoring.
@@ -99,7 +101,7 @@ function! s:initialize_tags(cur_keyword_str)"{{{
                         \ 'word' : l:tag.name, 'menu' : printf(l:manu_pattern, l:tag.kind, fnamemodify(l:tag.filename, ':t')),
                         \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
                         \}
-            let l:keyword.abbr_save = 
+            let l:keyword.abbr = 
                         \ (len(l:tag.name) > g:NeoComplCache_MaxKeywordWidth)? 
                         \ printf(l:abbr_pattern, l:tag.name, l:tag.name[-8:]) : l:tag.name
 
