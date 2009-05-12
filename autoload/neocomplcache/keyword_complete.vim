@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2009
+" Last Modified: 12 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -65,6 +65,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     " Add commands."{{{
     command! -nargs=0 NeoComplCacheCachingDictionary call s:caching_dictionary()
     command! -nargs=* -complete=file NeoComplCacheSetBufferDictionary call s:set_buffer_dictionary(<q-args>)
+    command! -nargs=? NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
     command! -nargs=? NeoComplCachePrintSource call s:print_source(<q-args>)
     command! -nargs=? NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
     command! -nargs=? NeoComplCacheCreateTags call s:create_tags()
@@ -752,9 +753,6 @@ function! s:caching_buffer(number)"{{{
 
     " Disable auto caching.
     let s:sources[l:number].cached_last_line = s:sources[l:number].end_line+1
-
-    " Calc rank.
-    call neocomplcache#get_complete_words('')
 endfunction"}}}
 
 function! s:caching_disable(number)"{{{

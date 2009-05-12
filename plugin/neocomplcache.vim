@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2009
+" Last Modified: 12 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -27,9 +27,10 @@
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
-"   2.43:
+"   2.43: Improved wildcard.
 "    - Improved wildcard.
 "    - Changed 'abbr_save' into 'abbr'.
+"    - Fixed :NeoComplCacheCachingBuffer bug.
 "   2.42:
 "    - Call completefunc when original completefunc.
 "    - Added g:NeoComplCache_TryFilenameCompletion option.
