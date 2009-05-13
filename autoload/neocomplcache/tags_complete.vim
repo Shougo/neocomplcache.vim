@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2009
+" Last Modified: 13 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.07, for Vim 7.0
+" Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.08:
+"    - Improved popup menu.
 "   1.07:
 "    - Fixed for neocomplcache 2.43.
 "   1.06:
@@ -90,31 +92,41 @@ function! s:initialize_tags(cur_keyword_str)"{{{
 
     let l:keyword_list = []
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:manu_pattern = '[T] %s %.'. g:NeoComplCache_MaxFilenameWidth . 's'
+    let l:menu_pattern = '[T] %s %.'. g:NeoComplCache_MaxFilenameWidth . 's'
     let l:dup_check = {}
     for l:tag in taglist(a:cur_keyword_str)
         " Add keywords.
         if len(l:tag.name) >= g:NeoComplCache_MinKeywordLength
                     \&& !has_key(l:dup_check, l:tag.cmd) && !l:tag.static
+                    \&& (!has_key(l:tag, 'access') || l:tag.access == 'public')
             let l:dup_check[l:tag.cmd] = 1
+            let l:name = substitute(l:tag.name, '\h\w*::', '', 'g')
+            let l:abbr = (l:tag.kind == 'd')? l:name :
+                        \ substitute(substitute(substitute(l:tag.cmd, '^/\^\=\s*\|\s*\$\=/$', '', 'g'),
+                        \           '\s\+', ' ', 'g'), '\\/', '/', 'g')
             let l:keyword = {
-                        \ 'word' : l:tag.name, 'menu' : printf(l:manu_pattern, l:tag.kind, fnamemodify(l:tag.filename, ':t')),
-                        \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
+                        \ 'word' : l:name, 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0,
+                        \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
+                        \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
                         \}
-            let l:keyword.abbr = 
-                        \ (len(l:tag.name) > g:NeoComplCache_MaxKeywordWidth)? 
-                        \ printf(l:abbr_pattern, l:tag.name, l:tag.name[-8:]) : l:tag.name
+            if has_key(l:tag, 'struct')
+                let keyword.menu = printf(l:menu_pattern, l:tag.kind, l:tag.struct)
+            elseif has_key(l:tag, 'class')
+                let keyword.menu = printf(l:menu_pattern, l:tag.kind, l:tag.class)
+            elseif has_key(l:tag, 'enum')
+                let keyword.menu = printf(l:menu_pattern, l:tag.kind, l:tag.enum)
+            else
+                let keyword.menu = '[T] '. l:tag.kind
+            endif
 
             if g:NeoComplCache_EnableInfo
                 " Create info.
-                let keyword.info = substitute(l:tag.cmd, '^/\^\=\|\$\=/$', '', 'g')
+                let keyword.info = l:abbr
                 if has_key(l:tag, 'struct')
                     let keyword.info .= "\nstruct: " . l:tag.struct 
-                endif
-                if has_key(l:tag, 'class')
+                elseif has_key(l:tag, 'class')
                     let keyword.info .= "\nclass: " . l:tag.class 
-                endif
-                if has_key(l:tag, 'enum')
+                elseif has_key(l:tag, 'enum')
                     let keyword.info .= "\nenum: " . l:tag.enum
                 endif
                 if has_key(l:tag, 'namespace')

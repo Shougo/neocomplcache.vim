@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2009
+" Last Modified: 13 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.14:
 "    - Fixed for neocomplcache 2.43.
+"    - Fixed escape.
 "   1.13:
 "    - Fixed commentout bug.
 "    - Improved empty check.
@@ -155,10 +156,10 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     let l:cur_len = len(a:cur_keyword_str)
     if g:NeoComplCache_PartialMatch && !neocomplcache#skipped() && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
-        let l:pattern = printf("v:val.name =~ '%s'", l:keyword_escape)
+        let l:pattern = printf("v:val.name =~ %s", string(l:keyword_escape))
     else
         " Head match.
-        let l:pattern = printf("v:val.name =~ '^%s'", l:keyword_escape)
+        let l:pattern = printf("v:val.name =~ %s", string('^' . l:keyword_escape))
     endif"}}}
 
     let l:list = deepcopy(filter(a:list, l:pattern))

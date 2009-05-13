@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.16
+Version: 2.44
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -153,7 +153,7 @@ g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletion
 		
 		初期値は2である。
 
-g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletion*
+g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletionStartLength*
 		補完時に部分マッチを行う入力数を制御する。
 		
 		初期値は3である。
@@ -230,19 +230,19 @@ g:NeoComplCache_QuickMatchMaxLists			*g:NeoComplCache_QuickMatchMaxLists*
 		
 		初期値は100である。
 
-g:NeoComplCache_EnableCompletionSkip			*g:NeoComplCache_EnableCompletionSkip*
+g:NeoComplCache_EnableSkipCompletion			*g:NeoComplCache_EnableSkipCompletion*
 		自動補完時、候補の計算に時間がかかりすぎると補完を中止するかどうか制御する。
 		1ならば有効になる。
 		
 		初期値は+reltimeの時に1となる。
 
-g:NeoComplCache_SkipCompleteTime			*g:NeoComplCache_EnableCompleteTime*
+g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		自動補完時、補完を中止するための計算時間を定義する。
 		このオプションの値は文字列でなければならない。
 		
 		初期値は'0.2'である。
 
-g:NeoComplCache_SkipInputTime				*g:NeoComplCache_EnableInputTime*
+g:NeoComplCache_SkipInputTime				*g:NeoComplCache_SkipInputTime*
 		自動補完時、補完を中止するための入力時間を定義する。
 		このオプションの値は文字列でなければならない。
 		
@@ -339,6 +339,12 @@ g:NeoComplCache_NonBufferFileTypeDetect			*g:NeoComplCache_NonBufferFileTypeDete
 		辞書ファイルなど、うまくファイルタイプが判定できないときに有効。
 		
 		初期値はautoload/neocomplcache.vimを参照せよ。
+
+g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLists*
+		ファイルタイプに辞書ファイルを関連づけるためのディクショナリ。
+		キーにファイルタイプ、値に辞書ファイルへのパスを指定する。
+		
+		初期値は空である。
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*

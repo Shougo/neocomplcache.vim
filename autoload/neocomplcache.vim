@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 May 2009
+" Last Modified: 13 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.42, for Vim 7.0
+" Version: 2.44, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -226,7 +226,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             endif
         endif
 
-        " Save options.
+        " Save option.
         let l:ignorecase_save = &ignorecase
 
         " Complete.
@@ -244,7 +244,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             let l:cur_keyword_pos = l:cur
         endif
 
-        " Restore options.
+        " Restore option.
         let &ignorecase = l:ignorecase_save
         
         return l:cur_keyword_pos
@@ -258,9 +258,8 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
         return s:cur_keyword_pos
     endif
 
-    " Restore options.
+    " Restore option.
     let &l:completefunc = 'neocomplcache#manual_complete'
-    let &ignorecase = s:ignorecase_save
     " Unlock auto complete.
     let s:complete_lock = 0
 
@@ -277,21 +276,21 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ '%s'", l:keyword_escape)
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string(l:keyword_escape))
     else
         " Head match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ '^%s'", l:keyword_escape)
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string('^' . l:keyword_escape))
     endif"}}}
 
     return filter(a:list, l:pattern)
 endfunction"}}}
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     " Escape."{{{
-    let l:keyword_escape = substitute(escape(a:cur_keyword_str, '" \.^$[]'), "'", "''", 'g')
+    let l:keyword_escape = escape(a:cur_keyword_str, '" \.^$[]')
     if g:NeoComplCache_EnableWildCard
-        let l:keyword_escape = substitute(substitute(l:keyword_escape, '.\zs\*', '.*', 'g'), '^\*', '\\*', '')
-        if &filetype != 'lisp' && &filetype != 'scheme'
+        let l:keyword_escape = substitute(substitute(l:keyword_escape, '.\zs\*', '.*', 'g'), '\%(^\|\*\)\zs\*', '\\*', 'g')
+        if '-' =~ '\k'
             let l:keyword_escape = substitute(l:keyword_escape, '.\zs-', '.\\+', 'g')
         endif
     else
@@ -301,7 +300,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     " Underbar completion."{{{
     if g:NeoComplCache_EnableUnderbarCompletion
         let l:keyword_escape = substitute(l:keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
-        if &filetype == 'lisp' || &filetype == 'scheme'
+        if '-' =~ '\k'
             let l:keyword_escape = substitute(l:keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
         endif
     endif
@@ -495,15 +494,20 @@ function! s:complete()"{{{
         endif
 
         if empty(s:complete_words)
+            let &ignorecase = s:ignorecase_save
+
             " Try keyword completion.
             call feedkeys("\<C-n>\<C-p>", 'n')
+            return
         endif
     endif
+
+    " Restore option.
+    let &ignorecase = s:ignorecase_save
 
     if empty(s:complete_words)
         " Restore options
         let &l:completefunc = 'neocomplcache#manual_complete'
-        let &ignorecase = s:ignorecase_save
         return
     endif
 
