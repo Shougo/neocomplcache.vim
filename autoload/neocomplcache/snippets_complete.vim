@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2009
+" Last Modified: 14 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.14, for Vim 7.0
+" Version: 1.15, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.15:
+"    - Ignore case.
 "   1.14:
 "    - Fixed for neocomplcache 2.43.
 "    - Fixed escape.
@@ -194,7 +196,7 @@ function! s:set_snippet_pattern(dict)"{{{
     let l:dict = {
                 \'word' : l:word, 'name' : a:dict.name, 
                 \'menu' : printf(l:menu_pattern, a:dict.name), 
-                \'prev_word' : l:prev_word, 
+                \'prev_word' : l:prev_word, 'icase' : 1,
                 \'rank' : l:rank, 'prev_rank' : 0, 'prepre_rank' : 0
                 \}
     let l:dict.abbr = 
@@ -301,7 +303,7 @@ function! s:expand_newline()"{{{
         let l:expand = matchstr(getline('.'), '^.*<expand>')
         for keyword in s:snippets[&filetype]
             if keyword.word !~ '`[^`]*`' &&
-                        \l:expand =~ substitute(escape(keyword.word, '" \.^$*[]'), "'", "''", 'g').'$'
+                        \l:expand =~ substitute(escape(keyword.word, '~" \.^$*[]'), "'", "''", 'g').'$'
                 let keyword.rank += 1
                 break
             endif

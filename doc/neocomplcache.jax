@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.44
+Version: 2.50
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -194,12 +194,6 @@ g:NeoComplCache_CacheLineCount				*g:NeoComplCache_CacheLineCount*
 		
 		初期値は70である。
 
-g:NeoComplCache_DeleteRank0				*g:NeoComplCache_DeleteRank0*
-		一度キャッシュされたが、その後削除された候補を除外するかどうか制御する。
-		1ならば有効。
-		
-		初期値は0である。
-
 g:NeoComplCache_DisableAutoComplete			*g:NeoComplCache_DisableAutoComplete*
 		自動補完を無効にするかどうかを制御する。
 		1ならば自動補完が無効になる。手動補完は使用できる。
@@ -256,18 +250,6 @@ g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompl
 
 g:NeoComplCache_TagsAutoUpdate				*g:NeoComplCache_TagsAutoUpdate*
 		バッファの保存時、タグファイルがあったら自動的にアップデートするかどうかを制御する。
-		
-		初期値は0である。
-
-g:NeoComplCache_TryKeywordCompletion			*g:NeoComplCache_TryKeywordCompletion*
-		補完候補が見つからなかったとき、通常のキーワード補完を行うかどうかを制御する。
-		1ならば有効になる。まだキャッシュされていないときに便利だが、neocomplcacheの先進的機能は利用できない。
-		
-		初期値は0である。
-
-g:NeoComplCache_TryDefaultCompletion			*g:NeoComplCache_TryDefaultCompletion*
-		補完候補が見つからなかったとき、キーワードタイプを'default'として再検索を行うかどうかを制御する。
-		1ならば有効になる。
 		
 		初期値は0である。
 
@@ -368,8 +350,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_SmartCase = 1
 	" Use previous keyword completion.
 	let g:NeoComplCache_PreviousKeywordCompletion = 1
-	" Try keyword completion.
-	let g:NeoComplCache_TryKeywordCompletion = 1
 	" Use preview window.
 	let g:NeoComplCache_EnableInfo = 1
 	" Delete keyword when rank is 0.

@@ -370,11 +370,8 @@ let g:NeoComplCache_SameFileTypeLists['cpp'] = 'c'
 --------------------------------
 preview windowに対応
 
-preview windowが存在するとき、キャッシュしたときの行を表示するようになりました。
-普通宣言がソースの上方に来ると考えられるので、Intellisenseのように使い方を参照することができます。
-ただし表示に時間がかかったり、ちらつきが激しいので注意してください。
-デフォルトではメモリ使用量を減らすため、0になっています。
-g:NeoComplCache_MaxInfoListの値を1以上に増やすことで、情報を表示させることが可能です。
+preview windowが存在するとき、プラグインによっては追加情報を表示します。
+現在tags_complete.vimのみ対応。
 
 追記：
 Ver.2.02より、この機能を使用するには、
@@ -562,6 +559,19 @@ Ver.2.42より、&l:completefuncがneocomplcacheのものでない場合にも�
 上手く使えば他のプラグインとも連携できるかもしれません。
 
 --------------------------------
+ポップアップメニューを閉じる
+
+Ver.2.45より実装。neocomplcache#close_popup()やneocomplcache#cansel_popup()を
+キーマッピングに使用することで、確実にポップアップを閉じます。
+neocomplcache#close_popup()の場合は使用することでキーワードのランクが上昇します。
+
+例：
+" <C-y>: paste.
+inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-r>0"
+" <C-e>: close popup.
+inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<End>"
+
+--------------------------------
 私の設定
 
 " Don't use autocomplpop.
@@ -572,10 +582,6 @@ let g:NeoComplCache_EnableAtStartup = 1
 let g:NeoComplCache_SmartCase = 1
 " Use previous keyword completion.
 let g:NeoComplCache_PreviousKeywordCompletion = 1
-" Try keyword completion.
-let g:NeoComplCache_TryKeywordCompletion = 1
-" Try default completion.
-let g:NeoComplCache_TryDefaultCompletion = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
 " Delete keyword when rank is 0.
@@ -709,8 +715,10 @@ Vimのメモリ使用量が多くなると、カーソル移動がかなり重�
 開いているバッファの大きさにもよりますが、特にバッファが8つを超えてくると、不安定になります。
 もしそのような現象が生じたら、不要なバッファを削除したり、
 :NeoComplCacheCachingDisableコマンドを実行して、バッファをキャッシュしないようにしてください。
-ちなみに、g:NeoComplCache_MaxInfoListを１以上に設定すると、メモリ使用量が増加します。
-注意してください。
+
+Ver.2.45より、起動時に簡単なキャッシュを行うようになりました。
+これでVim標準のキーワード補完は必要なくなります。
+ただし巨大なバッファを読み込むと、ある程度時間がかかるので注意。
 
 --------------------------------
 今後の予定
@@ -743,6 +751,7 @@ http://github.com/Shougo/neocomplcache/issues
 --------------------------------
 更新履歴
 
+2009/05/14     neocomplcache Ver.2.50に対応。
 2009/05/10     neocomplcache Ver.2.42に対応。
 2009/05/05     neocomplcache Ver.2.40に対応。
 2009/04/29     neocomplcache Ver.2.38に対応。

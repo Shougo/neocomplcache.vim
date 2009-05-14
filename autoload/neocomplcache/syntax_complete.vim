@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2009
+" Last Modified: 14 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.18, for Vim 7.0
+" Version: 1.19, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.19:
+"    - Ignore case.
 "   1.18:
 "    - Improved empty check.
 "    - Fixed for neocomplcache 2.43.
@@ -99,6 +101,7 @@ endfunction"}}}
 function! s:caching()"{{{
     " Caching.
     if &filetype != '' && !has_key(s:syntax_list, &filetype)
+        echo 'Caching syntax... please wait.'
         let s:syntax_list[&filetype] = s:initialize_syntax()
     endif
 endfunction"}}}
@@ -161,7 +164,7 @@ function! s:initialize_syntax()"{{{
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
                 let l:keyword = {
-                            \ 'word' : l:match_str, 'menu' : l:menu,
+                            \ 'word' : l:match_str, 'menu' : l:menu, 'icase' : 1,
                             \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
                             \}
                 let l:keyword.abbr = 

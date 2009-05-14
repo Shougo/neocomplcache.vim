@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2009
+" Last Modified: 14 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,19 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.44, for Vim 7.0
+" Version: 2.45, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.45: Caching on editing file.
+"    - Optimized NeoComplCacheCachingBuffer.
+"    - Implemented neocomplcache#close_popup() and neocomplcache#cansel_popup().
+"    - Fixed ignore case behaivior.
+"    - Fixed escape error.
+"    - Improved caching.
+"    - Deleted g:NeoComplCache_TryKeywordCompletion and g:NeoComplCache_TryDefaultCompletion options.
+"    - Deleted g:NeoComplCache_MaxInfoList and g:NeoComplCache_DeleteRank0 option.
+"    - Don't save info in keyword completion.
 "   2.44: Improved popup menu in tags completion.
 "    - Improved popup menu in tags completion.
 "    - Fixed escape error.
@@ -523,9 +532,6 @@ endif
 if !exists('g:NeoComplCache_CacheLineCount')
     let g:NeoComplCache_CacheLineCount = 70
 endif
-if !exists('g:NeoComplCache_DeleteRank0')
-    let g:NeoComplCache_DeleteRank0 = 0
-endif
 if !exists('g:NeoComplCache_DisableAutoComplete')
     let g:NeoComplCache_DisableAutoComplete = 0
 endif
@@ -556,12 +562,6 @@ endif
 if !exists('g:NeoComplCache_TagsAutoUpdate')
     let g:NeoComplCache_TagsAutoUpdate = 0
 endif
-if !exists('g:NeoComplCache_TryKeywordCompletion')
-    let g:NeoComplCache_TryKeywordCompletion = 0
-endif
-if !exists('g:NeoComplCache_TryDefaultCompletion')
-    let g:NeoComplCache_TryDefaultCompletion = 0
-endif
 if !exists('g:NeoComplCache_TryFilenameCompletion')
     let g:NeoComplCache_TryFilenameCompletion = 1
 endif
@@ -570,9 +570,6 @@ if !exists('g:NeoComplCache_MaxTryKeywordLength')
 endif
 if !exists('g:NeoComplCache_EnableInfo')
     let g:NeoComplCache_EnableInfo = 0
-endif
-if !exists('g:NeoComplCache_MaxInfoList')
-    let g:NeoComplCache_MaxInfoList = 0
 endif
 if !exists('g:NeoComplCache_CachingRandomize')
     let g:NeoComplCache_CachingRandomize = has('reltime')

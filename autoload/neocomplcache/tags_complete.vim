@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2009
+" Last Modified: 14 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.08:
 "    - Improved popup menu.
+"    - Ignore case.
 "   1.07:
 "    - Fixed for neocomplcache 2.43.
 "   1.06:
@@ -105,7 +106,7 @@ function! s:initialize_tags(cur_keyword_str)"{{{
                         \ substitute(substitute(substitute(l:tag.cmd, '^/\^\=\s*\|\s*\$\=/$', '', 'g'),
                         \           '\s\+', ' ', 'g'), '\\/', '/', 'g')
             let l:keyword = {
-                        \ 'word' : l:name, 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0,
+                        \ 'word' : l:name, 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
                         \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
                         \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
                         \}

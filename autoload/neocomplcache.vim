@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2009
+" Last Modified: 14 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.44, for Vim 7.0
+" Version: 2.50, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -40,6 +40,8 @@ function! neocomplcache#enable() "{{{
     let s:prepre_numbered_list = []
     let s:skipped = 0
     let s:plugins_func_table = {}
+    let s:skip_next_complete = 0
+    let s:cur_keyword_pos = -1
 
     if g:NeoComplCache_EnableSkipCompletion
         let s:prev_input_time = reltime()
@@ -287,10 +289,10 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
 endfunction"}}}
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     " Escape."{{{
-    let l:keyword_escape = escape(a:cur_keyword_str, '" \.^$[]')
+    let l:keyword_escape = escape(a:cur_keyword_str, '~" \.^$[]')
     if g:NeoComplCache_EnableWildCard
         let l:keyword_escape = substitute(substitute(l:keyword_escape, '.\zs\*', '.*', 'g'), '\%(^\|\*\)\zs\*', '\\*', 'g')
-        if '-' =~ '\k'
+        if '-' !~ '\k'
             let l:keyword_escape = substitute(l:keyword_escape, '.\zs-', '.\\+', 'g')
         endif
     else
@@ -393,8 +395,13 @@ function! neocomplcache#check_skip_time()"{{{
 endfunction"}}}
 "}}}
 
-" Complete internal function."{{{
+" Complete internal functions."{{{
 function! s:complete()"{{{
+    if s:skip_next_complete
+        let s:skip_next_complete = 0
+        return
+    endif
+
     if pumvisible() || &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
         return
     endif
@@ -480,28 +487,6 @@ function! s:complete()"{{{
 
     let s:complete_words = s:get_complete_words(l:cur_keyword_str)
 
-    if empty(s:complete_words) && !s:skipped && g:NeoComplCache_TryKeywordCompletion
-                \&& len(l:cur_keyword_str) <= g:NeoComplCache_MaxTryKeywordLength
-                \&& l:cur_keyword_str =~ '\a\+$' && l:cur_keyword_str !~ '\a\+[*-]\a\+$'
-        if g:NeoComplCache_TryDefaultCompletion
-            let l:default_pattern = '\v(' . g:NeoComplCache_KeywordPatterns['default'] . ')$'
-            if l:default_pattern != l:pattern
-                " Try default completion.
-                let l:cur_keyword_pos = match(l:cur_text, l:default_pattern)
-                let l:cur_keyword_str = matchstr(l:cur_text, l:default_pattern)
-                let s:complete_words = s:get_complete_words(l:cur_keyword_str)
-            endif
-        endif
-
-        if empty(s:complete_words)
-            let &ignorecase = s:ignorecase_save
-
-            " Try keyword completion.
-            call feedkeys("\<C-n>\<C-p>", 'n')
-            return
-        endif
-    endif
-
     " Restore option.
     let &ignorecase = s:ignorecase_save
 
@@ -562,12 +547,14 @@ function! s:get_complete_words(cur_keyword_str)"{{{
 
     " Get keyword list.
     let l:cache_keyword_lists = {}
-    let l:len = 0
+    let l:is_empty = 1
     for l:plugin in keys(l:loaded_plugins)
         let l:cache_keyword_lists[l:plugin] = call(l:loaded_plugins[l:plugin] . 'get_keyword_list', [a:cur_keyword_str])
-        let l:len += len(l:cache_keyword_lists[l:plugin])
+        if !empty(l:cache_keyword_lists[l:plugin])
+            let l:is_empty = 0
+        endif
     endfor
-    if l:len == 0 && (!g:NeoComplCache_EnableQuickMatch || match(a:cur_keyword_str, '\d$') < 0)
+    if l:is_empty && (!g:NeoComplCache_EnableQuickMatch || match(a:cur_keyword_str, '\d$') < 0)
         return []
     endif
 
@@ -584,11 +571,6 @@ function! s:get_complete_words(cur_keyword_str)"{{{
                 call s:skip_function(a:cur_keyword_str)
                 return []
             endif"}}}
-
-            if g:NeoComplCache_DeleteRank0
-                " Delete element if rank is 0.
-                call filter(l:cache_keyword_lists[l:plugin], 'v:val.rank > 0')
-            endif
         endfor
 
         let l:order_func = 'neocomplcache#compare_rank'"}}}
@@ -784,6 +766,26 @@ endfunction"}}}
 
 function! s:unlock()"{{{
     let s:complete_lock = 0
+endfunction"}}}
+"}}}
+
+" Key mapping functions."{{{
+function! neocomplcache#close_popup()"{{{
+    let s:old_text = strpart(getline('.'), 0, col('.') - 1) 
+
+    if neocomplcache#keyword_complete#exists_current_source()
+        let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
+        call neocomplcache#keyword_complete#caching_keyword(matchstr(s:old_text, l:pattern))
+    endif
+
+    return "\<C-y>"
+endfunction
+"}}}
+
+function! neocomplcache#cancel_popup()"{{{
+    let s:skip_next_complete = 1
+
+    return "\<C-e>"
 endfunction"}}}
 "}}}
 
