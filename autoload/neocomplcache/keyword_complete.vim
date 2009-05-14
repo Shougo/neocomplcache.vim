@@ -590,7 +590,8 @@ function! s:word_caching_buffer(bufname, start_line, end_line)"{{{
     endif
 
     if a:end_line == '$' && l:max_lines > 200
-        echomsg 'Caching... please wait.'
+        redraw
+        echo 'Caching... please wait.'
     endif
 
     " Initialize source.
@@ -624,7 +625,8 @@ function! s:word_caching_buffer(bufname, start_line, end_line)"{{{
     while l:line_num < l:max_lines
         " Percentage check.
         if l:line_cnt == 0
-            echomsg printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+            redraw
+            echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
             let l:line_cnt = l:print_cache_percent
         endif
         let l:line_cnt -= 1

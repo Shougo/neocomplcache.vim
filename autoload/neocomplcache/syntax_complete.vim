@@ -101,6 +101,7 @@ endfunction"}}}
 function! s:caching()"{{{
     " Caching.
     if &filetype != '' && !has_key(s:syntax_list, &filetype)
+        redraw
         echo 'Caching syntax... please wait.'
         let s:syntax_list[&filetype] = s:initialize_syntax()
     endif
