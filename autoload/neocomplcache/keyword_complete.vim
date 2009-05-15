@@ -26,6 +26,9 @@
 " Version: 2.50, for Vim 7.0
 "=============================================================================
 
+" Important variables.
+let s:sources = {}
+
 function! neocomplcache#keyword_complete#initialize()"{{{
     augroup neocomplcache"{{{
         " Caching events
@@ -44,7 +47,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
         augroup END
     endif
 
-    " Initialize"{{{
+    " Initialize script variables."{{{
     let s:sources = {}
     let s:rank_cache_count = 1
     let s:prev_cached_count = 0
