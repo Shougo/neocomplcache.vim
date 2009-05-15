@@ -337,25 +337,6 @@ let g:NeoComplCache_TagsAutoUpdate = 1
 とする必要があります。
 
 --------------------------------
-キーワード補完を試す
-
-thincaさんの要望により、試験的に実装。
-キャッシュされていないなどの理由により補完候補がない場合、Vim通常のキーワード補完を行います。
-これを有効にすると、コマンドライン部が少しちらつくので注意してください。
-
-追記：
-Ver.2.15より、g:NeoComplCache_MaxTryKeywordLengthを導入し、
-入力されたキーワード文字がこれより多かったら、キーワード補完をしないようにしました。
-これで補完時のちらつきが軽減されます。
-
-Ver.2.17より、g:NeoComplCache_TryDefaultCompletionが導入されました。
-これが設定されている場合、まずキーワードを'default'にして補完を試します。
-それでもだめならば、通常のキーワード補完を呼び出します。
-この機能を使用するには、
-let g:NeoComplCache_TryKeywordCompletion = 1
-とする必要があります。
-
---------------------------------
 Same filetype completion
 
 昔のneocomplcacheでは、すべてのバッファから補完できたのですが、
@@ -584,8 +565,6 @@ let g:NeoComplCache_SmartCase = 1
 let g:NeoComplCache_PreviousKeywordCompletion = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
-" Delete keyword when rank is 0.
-let g:NeoComplCache_DeleteRank0 = 0
 " Use camel case completion.
 let g:NeoComplCache_EnableCamelCaseCompletion = 1
 " Use underbar completion.

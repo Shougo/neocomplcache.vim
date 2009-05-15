@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 May 2009
+" Last Modified: 15 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -210,6 +210,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
         let l:cur_text = strpart(getline('.'), 0, l:cur)
 
         if !neocomplcache#keyword_complete#exists_current_source()
+            let s:complete_words = []
             return -1
         endif
 
@@ -228,6 +229,11 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             endif
         endif
 
+        if len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
+            let s:complete_words = []
+            return -1
+        endif
+
         " Save option.
         let l:ignorecase_save = &ignorecase
 
@@ -239,12 +245,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
         endif
 
         let s:complete_words = s:get_complete_words(l:cur_keyword_str)
-
-        if empty(s:complete_words)
-            " Try empty completion.
-            let s:complete_words = s:get_complete_words('')
-            let l:cur_keyword_pos = l:cur
-        endif
 
         " Restore option.
         let &ignorecase = l:ignorecase_save
@@ -433,6 +433,10 @@ function! s:complete()"{{{
                 \&& has_key(g:NeoComplCache_OmniPatterns, &filetype)
                 \&& g:NeoComplCache_OmniPatterns[&filetype] != ''
         if l:cur_text =~ '\v%(' . g:NeoComplCache_OmniPatterns[&filetype] . ')$'
+            " For feedkeys.
+            while getchar(0)
+            endwhile
+
             if &filetype == 'vim'
                 call feedkeys("\<C-x>\<C-v>\<C-p>", 'n')
             else
@@ -459,6 +463,9 @@ function! s:complete()"{{{
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
         " Try filename completion.
         if g:NeoComplCache_TryFilenameCompletion && &filetype != 'tex' && s:check_filename_completion(l:cur_text)
+            " For feedkeys.
+            while getchar(0)
+            endwhile
             call feedkeys("\<C-x>\<C-f>\<C-p>", 'n')
         endif
 
@@ -468,6 +475,10 @@ function! s:complete()"{{{
     if &l:completefunc != 'neocomplcache#manual_complete'
                 \&& &l:completefunc != 'neocomplcache#auto_complete'
         " Call completefunc.
+        
+        " For feedkeys.
+        while getchar(0)
+        endwhile
         call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
         return
     endif
@@ -500,6 +511,10 @@ function! s:complete()"{{{
     let s:cur_keyword_pos = l:cur_keyword_pos
     let s:cur_keyword_str = l:cur_keyword_str
     let s:skipped = 0
+
+    " For feedkeys.
+    while getchar(0)
+    endwhile
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
 endfunction"}}}
 
@@ -657,7 +672,7 @@ function! s:get_complete_words(cur_keyword_str)"{{{
         endfor
         let l:cache_keyword_filtered = l:cache_keyword_filtered[g:NeoComplCache_QuickMatchMaxLists :]
         for keyword in l:cache_keyword_filtered
-            let keyword.abbr = '    ' . keyword.abbr_save
+            let keyword.abbr = '    ' . keyword.abbr
         endfor
 
         " Append list.
@@ -672,7 +687,8 @@ function! s:get_complete_words(cur_keyword_str)"{{{
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
     if l:next_keyword_str != ''
-        let l:next_keyword_str .= '$'
+        let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
+        echo l:next_keyword_str
         for r in l:cache_keyword_filtered
             if r.word =~ l:next_keyword_str
                 let r.word = strpart(r.word, 0, match(r.word, l:next_keyword_str))
