@@ -63,7 +63,6 @@ function! neocomplcache#keyword_complete#initialize()"{{{
     "}}}
 
     " Add commands."{{{
-    command! -nargs=* -complete=file NeoComplCacheSetBufferDictionary call s:set_buffer_dictionary(<q-args>)
     command! -nargs=? NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
     command! -nargs=? NeoComplCachePrintSource call s:print_source(<q-args>)
     command! -nargs=? NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
@@ -89,8 +88,6 @@ endfunction
 
 function! neocomplcache#keyword_complete#finalize()"{{{
     delcommand NeoComplCacheCachingBuffer
-    delcommand NeoComplCacheCachingDictionary
-    delcommand NeoComplCacheSetBufferDictionary
     delcommand NeoComplCachePrintSource
     delcommand NeoComplCacheOutputKeyword
     delcommand NeoComplCacheCreateTags
