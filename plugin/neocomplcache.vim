@@ -23,10 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.51, for Vim 7.0
+" Version: 2.52, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.52: 
+"    - Changed g:NeoComplCache_PreviousKeywordCompletion default value.
+"    - Fixed NeoComplCacheDisable bug.
+"    - Fixed neocomplcache#keyword_complete#caching_percent() bug.
+"    - Fixed analyze caching bug.
+"    - Fixed quick match.
+"    - Improved wildcard.
+"
 "   2.51: Optimized dictionary and fixed bug.
 "    - Deleted g:NeoComplCache_MaxTryKeywordLength options.
 "    - Deleted NeoComplCacheCachingDictionary command.
@@ -611,7 +619,7 @@ if !exists('g:NeoComplCache_SkipInputTime')
     let g:NeoComplCache_SkipInputTime = '0.0'
 endif
 if !exists('g:NeoComplCache_PreviousKeywordCompletion')
-    let g:NeoComplCache_PreviousKeywordCompletion = 0
+    let g:NeoComplCache_PreviousKeywordCompletion = 1
 endif
 if !exists('g:NeoComplCache_TagsAutoUpdate')
     let g:NeoComplCache_TagsAutoUpdate = 0

@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.50, for Vim 7.0
+" Version: 2.52, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -288,13 +288,15 @@ function! s:update_source()"{{{
     call s:check_deleted_buffer()
 
     let l:caching_num = 0
-    for source_name in filter(keys(s:sources), 'v:val =~ "^\d"')
-        " Lazy caching.
-        if s:caching_source(str2nr(source_name), '^', 2) == 0
-            let l:caching_num += 2
+    for source_name in keys(s:sources)
+        if source_name =~ '^\d'
+            " Lazy caching.
+            if s:caching_source(str2nr(source_name), '^', 2) == 0
+                let l:caching_num += 2
 
-            if l:caching_num >= 6
-                break
+                if l:caching_num >= 6
+                    break
+                endif
             endif
         endif
     endfor
@@ -358,7 +360,7 @@ endfunction"}}}
 function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
     " Check exists s:sources.
     if !has_key(s:sources, a:srcname)
-        return
+        call s:word_caching(a:srcname, 1, '$')
     endif
 
     let l:source = s:sources[a:srcname]
@@ -565,7 +567,7 @@ function! s:initialize_source(srcname)"{{{
                 \}
 endfunction"}}}
 
-function! s:word_caching_buffer(srcname, start_line, end_line)"{{{
+function! s:word_caching(srcname, start_line, end_line)"{{{
     if a:srcname =~ '^\d'
         " Buffer.
         let l:buflines = getbufline(a:srcname, a:start_line, a:end_line)
@@ -707,7 +709,7 @@ function! s:check_source()"{{{
             if (!has_key(s:sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
                         \&& !has_key(s:caching_disable_list, l:bufnumber)
                 " Caching.
-                call s:word_caching_buffer(l:bufnumber, 1, '$')
+                call s:word_caching(l:bufnumber, 1, '$')
             endif
 
             if has_key(g:NeoComplCache_DictionaryFileTypeLists, getbufvar(l:bufnumber, '&filetype'))
@@ -726,7 +728,7 @@ function! s:check_source()"{{{
                 let l:dict_name = printf('%s,%s', l:ft_dict, dict)
                 if !has_key(s:sources, l:dict_name) && filereadable(dict)
                     " Caching.
-                    call s:word_caching_buffer(l:dict_name, 1, '$')
+                    call s:word_caching(l:dict_name, 1, '$')
                 endif
             endfor
         endif
@@ -743,8 +745,12 @@ function! s:check_deleted_buffer()"{{{
 endfunction"}}}
 
 function! s:caching_insert_enter()
-    if has_key(s:caching_disable_list, bufnr('%')) || !has_key(s:sources, bufnr('%'))
+    if has_key(s:caching_disable_list, bufnr('%'))
         return
+    endif
+
+    if !has_key(s:sources, bufnr('%'))
+        call s:word_caching(bufnr('%'), 1, '$')
     endif
 
     let l:source = s:sources[bufnr('%')]
@@ -774,7 +780,7 @@ function! s:caching_insert_leave()"{{{
         let l:source = s:sources[bufnr('%')]
         let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
         let l:end_line = l:start_line + l:source.cache_line_cnt
-        call s:word_caching_buffer(bufnr('%'), l:start_line, l:end_line)
+        call s:word_caching(bufnr('%'), l:start_line, l:end_line)
 
         let s:prev_cached_count -= 1
     endif
@@ -938,6 +944,10 @@ function! s:print_source(number)"{{{
         let l:number = bufnr('%')
     else
         let l:number = a:number
+    endif
+
+    if !has_key(s:sources, l:number)
+        return
     endif
 
     silent put=printf('Print neocomplcache %d source.', l:number)
