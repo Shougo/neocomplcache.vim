@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2009
+" Last Modified: 17 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.50, for Vim 7.0
+" Version: 2.55, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -620,10 +620,12 @@ function! s:get_complete_words(cur_keyword_str)"{{{
 
     " Filtering for optimize."{{{
     if !g:NeoComplCache_AlphabeticalOrder
-        if len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 5
+        if len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 10
             call filter(l:cache_keyword_list, 'v:val.rank > 2')
-        elseif len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 3
+        elseif len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 5
             call filter(l:cache_keyword_list, 'v:val.rank > 1')
+        elseif len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 3
+            call filter(l:cache_keyword_list, 'v:val.rank > 0')
         endif
     endif"}}}
 

@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.52
+Version: 2.55
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -297,6 +297,13 @@ g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
 		重複したスニペットは上書きされる。
 		
 		この変数はユーザが自分で定義しない限り存在しない。
+
+g:NeoComplCache_TemporaryDir				*g:NeoComplCache_TemporaryDir*
+		neocomplcacheが一時ファイルを書き出すディレクトリを指定する。
+		ここで指定したディレクトリが実際に存在しない場合、作成される。
+		例えばkeyword_complete.vimはキーワードのキャッシュをこの下の'keyword_cache'ディレクトリに保存する。
+		
+		初期値は'~/.neocon'である。
 
 g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
 		補完するためのキーワードパターンを記録する。
