@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 May 2009
+" Last Modified: 23 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.15:
 "    - Ignore case.
+"    - Improved edit snippet.
 "   1.14:
 "    - Fixed for neocomplcache 2.43.
 "    - Fixed escape.
@@ -104,7 +105,7 @@ function! neocomplcache#snippets_complete#initialize()"{{{
         " Recaching events
         autocmd BufWritePost *.snip call s:caching_snippets(expand('<afile>:t:r')) 
         " Detect syntax file.
-        autocmd BufNewFile,BufRead *.snip setfiletype snippet
+        autocmd BufNewFile,BufWinEnter *.snip setfiletype snippet
     augroup END"}}}
 
     command! -nargs=? NeoComplCacheEditSnippets call s:edit_snippets(<q-args>)

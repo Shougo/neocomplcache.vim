@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 May 2009
+" Last Modified: 20 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.55, for Vim 7.0
+" Version: 2.56, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.56: Implemented filename completion.
+"    - Don't caching when not buflisted in syntax complete.
+"    - Implemented neocomplcache#manual_filename_complete().
+"    - Improved filename toriming.
+"    - Fixed E220 in tex filetype.
+"    - Improved edit snippet.
+"
 "   2.55: Output cache file.
 "    - Added g:NeoComplCache_TemporaryDir option.
 "    - Improved garbage collect.

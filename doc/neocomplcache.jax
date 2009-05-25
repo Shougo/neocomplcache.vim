@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.55
+Version: 2.56
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -271,7 +271,7 @@ g:NeoComplCache_EnableInfo				*g:NeoComplCache_EnableInfo*
 		初期値は0である。
 
 g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
-		インサートモードから出る時、現在のキャッシュラインをキャッシュするかどうか決定するのに、
+		Insert modeから出る時、現在のキャッシュラインをキャッシュするかどうか決定するのに、
 		乱数を用いるかどうか制御する。1ならば有効になる。
 		
 		初期値は+reltimeの時に1となる。
@@ -348,6 +348,25 @@ KEY MAPPINGS 					*neocomplcache-key-mappings*
 		複数行のスニペットを展開する。プレースホルダの処理も行う。
 		展開したスニペットはランクが上昇するため、上位に表示されやすくなる。
 
+neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complete*
+		inoremap <expr>上で使用する。neocomplcacheのファイル名補完を手動で呼び出す。
+		Vim標準のファイル名補完を置き換えるときに使う。
+>
+		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
+<
+neocomplcache#close_popup				*neocomplcache#close_popup*
+		inoremap <expr>上で使用する。neocomplcacheのポップアップを閉じ、補完を終了する。
+		Vim標準の<C-y>よりも確実にポップアップを閉じることができる。
+		この関数を使ってポップアップを閉じると、選択した候補のランクが上昇する。
+>
+		inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-y>"
+<
+neocomplcache#cancel_popup				*neocomplcache#cancel_popup*
+		inoremap <expr>上で使用する。neocomplcacheの補完をキャンセルする。
+		Vim標準の<C-e>よりも確実にポップアップを閉じることができる。
+>
+		inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<C-e>"
+<
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
 >

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2009
+" Last Modified: 19 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.19, for Vim 7.0
+" Version: 1.20, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.20:
+"    - Don't caching when not buflisted.
 "   1.19:
 "    - Ignore case.
 "    - Echo on caching.
@@ -101,7 +103,7 @@ endfunction"}}}
 
 function! s:caching()"{{{
     " Caching.
-    if &filetype != '' && !has_key(s:syntax_list, &filetype)
+    if &filetype != '' && buflisted(bufnr('%')) && !has_key(s:syntax_list, &filetype)
         redraw
         echo 'Caching syntax... please wait.'
         let s:syntax_list[&filetype] = s:initialize_syntax()
