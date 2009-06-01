@@ -457,6 +457,10 @@ Ver.2.27より、keyword_completeにneocomplcache#keyword_complete#caching_perce
 let &statusline = '%=%m%y%{"[".(&fenc!=""?&fenc:&enc).",".&ff."]"}%{"[".neocomplcache#keyword_complete#caching_percent("")."%]"} %3l,%3c %3p%%'
 
 だんだん数字が増えていくのを楽しむのも、なかなか良いものですね。
+ちなみに、このキャッシュ率は詳細キャッシュ率を表しています。
+neocomplcache Ver.2.50より、ファイルを開くときにすべてのキーワードをキャッシュするようになっているので、
+キャッシュ率が0%であっても、キーワード補完は動作するので注意してください。
+このキャッシュ率が上昇するにつれて、補完候補が表示される順番が変化します。
 
 --------------------------------
 スニペット補完
@@ -543,6 +547,10 @@ imap <expr><silent><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Pl
 Ver.2.39より、スニペット名が同じスニペットを定義した場合、上書きされるようになりました。
 インクルードしたスニペットや標準のスニペットを書き換えるときに便利です。
 
+Ver.2.57より、どのファイルタイプでも読み込まれる、'_.snip'を追加しました。
+さらに、snipMate形式のスニペットファイルもそのまま読み込めます。
+ただしプレースホルダの動機には対応していませんので注意してください。
+
 --------------------------------
 自動補完のスキップ
 
@@ -562,7 +570,7 @@ Ver.2.42より、&l:completefuncがneocomplcacheのものでない場合にも�
 --------------------------------
 ポップアップメニューを閉じる
 
-Ver.2.45より実装。neocomplcache#close_popup()やneocomplcache#cansel_popup()を
+Ver.2.45より実装。neocomplcache#close_popup()やneocomplcache#cancel_popup()を
 キーマッピングに使用することで、確実にポップアップを閉じます。
 neocomplcache#close_popup()の場合は使用することでキーワードのランクが上昇します。
 
@@ -692,6 +700,7 @@ Ver.2.50より、起動時に簡単なキャッシュを行うようになりま
 
 Ver.2.55より、キャッシュしたファイルをg:NeoComplCache_TemporaryDir.'/keyword_cache'ディレクトリに
 書き出すようになりました。同じファイルを開く場合は格段に高速化されます。
+ただし、キャッシュを書き出すのは500行以上のファイルのみです。
 
 --------------------------------
 今後の予定
@@ -720,6 +729,7 @@ Twitterはneocomplcache開発日記とかしているので、チェックする
 --------------------------------
 更新履歴
 
+2009/05/30     neocomplcache Ver.2.57に対応。細々とした修正。
 2009/05/21     neocomplcache Ver.2.56に対応。
 2009/05/18     neocomplcache Ver.2.55に対応。
 2009/05/15     分かり易いように全体的に修正。
@@ -727,14 +737,12 @@ Twitterはneocomplcache開発日記とかしているので、チェックする
 2009/05/10     neocomplcache Ver.2.42に対応。
 2009/05/05     neocomplcache Ver.2.40に対応。
 2009/04/29     neocomplcache Ver.2.38に対応。
-2009/04/25     neocomplcache Ver.2.36に対応。
-               ついでに全体的に修正しました。
+2009/04/25     neocomplcache Ver.2.36に対応。ついでに全体的に修正しました。
 2009/04/23     neocomplcache Ver.2.35に対応。
 2009/04/21     neocomplcache Ver.2.34に対応。
 2009/04/21     neocomplcache Ver.2.33に対応。
 2009/04/19     neocomplcache Ver.2.32に対応。
-2009/04/18     neocomplcache Ver.2.31に対応。
-               ついでに全体的に修正しました。
+2009/04/18     neocomplcache Ver.2.31に対応。ついでに全体的に修正しました。
 2009/04/16     neocomplcache Ver.2.27に対応。
 2009/04/11     neocomplcache Ver.2.24に対応。
 2009/04/10     neocomplcache Ver.2.23に対応。

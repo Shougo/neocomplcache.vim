@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 May 2009
+" Last Modified: 01 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.56, for Vim 7.0
+" Version: 2.58, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.58: Improved caching timing.
+"
+"   2.57: Improved snippets_complete.
+"    - Fixed feedkeys.
+"    - Improved skip completion.
+"    - Changed g:NeoComplCache_PartialCompletionStartLength default value.
+"    - Improved camel case completion and underbar completion.
+"    - Fixed add rank bug in snippet completion.
+"    - Loadable snipMate snippets file in snippet completion.
+"    - Implemented _ snippets in snippet completion.
+"
 "   2.56: Implemented filename completion.
 "    - Don't caching when not buflisted in syntax complete.
 "    - Implemented neocomplcache#manual_filename_complete().
@@ -61,7 +72,7 @@
 "
 "   2.50: Caching on editing file.
 "    - Optimized NeoComplCacheCachingBuffer.
-"    - Implemented neocomplcache#close_popup() and neocomplcache#cansel_popup().
+"    - Implemented neocomplcache#close_popup() and neocomplcache#cancel_popup().
 "    - Fixed ignore case behaivior.
 "    - Fixed escape error.
 "    - Improved caching.
@@ -588,7 +599,7 @@ if !exists('g:NeoComplCache_ManualCompletionStartLength')
     let g:NeoComplCache_ManualCompletionStartLength = 2
 endif
 if !exists('g:NeoComplCache_PartialCompletionStartLength')
-    let g:NeoComplCache_PartialCompletionStartLength = 3
+    let g:NeoComplCache_PartialCompletionStartLength = 4
 endif
 if !exists('g:NeoComplCache_MinKeywordLength')
     let g:NeoComplCache_MinKeywordLength = 4

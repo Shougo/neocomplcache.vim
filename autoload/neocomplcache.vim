@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2009
+" Last Modified: 01 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.56, for Vim 7.0
+" Version: 2.57, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -200,6 +200,9 @@ function! neocomplcache#disable()"{{{
     for l:plugin in values(s:plugins_func_table)
         call call(l:plugin . 'finalize', [])
     endfor
+
+    let s:prev_numbered_list = []
+    let s:prepre_numbered_list = []
 endfunction"}}}
 
 " Complete functions."{{{
@@ -299,15 +302,15 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     endif"}}}
 
     " Underbar completion."{{{
-    if g:NeoComplCache_EnableUnderbarCompletion
+    if g:NeoComplCache_EnableUnderbarCompletion && l:keyword_escape =~ '_'
         let l:keyword_escape = substitute(l:keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
-        if '-' =~ '\k'
-            let l:keyword_escape = substitute(l:keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
-        endif
+    endif
+    if g:NeoComplCache_EnableUnderbarCompletion && '-' =~ '\k' && l:keyword_escape =~ '-'
+        let l:keyword_escape = substitute(l:keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
     endif
     "}}}
     " Camel case completion."{{{
-    if g:NeoComplCache_EnableCamelCaseCompletion
+    if g:NeoComplCache_EnableCamelCaseCompletion && l:keyword_escape =~ '\u'
         let l:keyword_escape = substitute(l:keyword_escape, '\v\u?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
     endif
     "}}}
@@ -413,21 +416,6 @@ function! s:complete()"{{{
     endif
     let s:old_text = l:cur_text
 
-    if g:NeoComplCache_EnableSkipCompletion
-        if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
-            echo 'Skipped auto completion'
-            let s:skipped = 1
-
-            return 1
-        endif
-        let s:prev_input_time = reltime()
-    endif
-
-    " Not complete multi byte character for ATOK X3.
-    if char2nr(l:cur_text[-1]) >= 0x80
-        return
-    endif
-
     " Try filename completion."{{{
     if g:NeoComplCache_TryFilenameCompletion && s:check_filename_completion(l:cur_text)
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
@@ -454,11 +442,7 @@ function! s:complete()"{{{
             " Set function.
             let &l:completefunc = 'neocomplcache#auto_complete'
 
-            " For feedkeys.
-            while getchar(0)
-            endwhile
             call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-
             return
         endif
     endif"}}}
@@ -468,9 +452,6 @@ function! s:complete()"{{{
                 \&& has_key(g:NeoComplCache_OmniPatterns, &filetype)
                 \&& g:NeoComplCache_OmniPatterns[&filetype] != ''
         if l:cur_text =~ '\v%(' . g:NeoComplCache_OmniPatterns[&filetype] . ')$'
-            " For feedkeys.
-            while getchar(0)
-            endwhile
 
             if &filetype == 'vim'
                 call feedkeys("\<C-x>\<C-v>\<C-p>", 'n')
@@ -491,22 +472,42 @@ function! s:complete()"{{{
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
+    if len(l:cur_keyword_str) >= g:NeoComplCache_MinKeywordLength
+        " Check candidate.
+        call neocomplcache#keyword_complete#check_candidate(l:cur_keyword_str)
+    endif
+
     if g:NeoComplCache_EnableWildCard
         " Check wildcard.
         let [l:cur_keyword_pos, l:cur_keyword_str] = s:check_wildcard(l:cur_text, l:pattern, l:cur_keyword_pos, l:cur_keyword_str)
+    endif
+
+    " Not complete multi byte character for ATOK X3.
+    if char2nr(l:cur_text[-1]) >= 0x80
+        return
     endif
 
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
         return
     endif
 
+    if g:NeoComplCache_EnableSkipCompletion
+        if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
+            echo 'Skipped auto completion'
+            let s:skipped = 1
+
+            return 1
+        else
+            echo ''
+            redraw
+        endif
+        let s:prev_input_time = reltime()
+    endif
+
     if &l:completefunc != 'neocomplcache#manual_complete'
                 \&& &l:completefunc != 'neocomplcache#auto_complete'
         " Call completefunc.
         
-        " For feedkeys.
-        while getchar(0)
-        endwhile
         call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
         return
     endif
@@ -538,9 +539,6 @@ function! s:complete()"{{{
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
 
-    " For feedkeys.
-    while getchar(0)
-    endwhile
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
 endfunction"}}}
 
@@ -612,7 +610,8 @@ function! s:get_complete_words(cur_keyword_str)"{{{
 
             " Skip completion if takes too much time."{{{
             if neocomplcache#check_skip_time()
-                call s:skip_function(a:cur_keyword_str)
+                echo 'Skipped auto completion'
+                let s:skipped = 1
                 return []
             endif"}}}
         endfor
@@ -753,7 +752,6 @@ function! s:get_complete_files(cur_keyword_str)"{{{
     let l:max_len = -1
     let l:num = 0
     let l:list = []
-    echo l:cur_keyword_str
     for word in split(glob(l:cur_keyword_str . '*'), '\n')
         if len(word) > l:max_len
             let l:max_len = len(word)
@@ -864,10 +862,6 @@ function! s:get_prev_word(cur_keyword_str)"{{{
     "echo printf('prepre = %s, pre = %s', l:prepre_word, l:prev_word)
 endfunction"}}}
 
-function! s:skip_function(cur_keyword_str)
-    echo 'Skipped auto completion'
-    let s:skipped = 1
-endfunction
 "}}}
 
 " Set pattern helper."{{{

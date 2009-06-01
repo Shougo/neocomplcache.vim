@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.56
+Version: 2.57
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -158,7 +158,7 @@ g:NeoComplCache_ManualCompletionStartLength		*g:NeoComplCache_ManualCompletionSt
 g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletionStartLength*
 		補完時に部分マッチを行う入力数を制御する。
 		
-		初期値は3である。
+		初期値は4である。
 
 g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
 		バッファや辞書ファイル中で、補完の対象となるキーワードの最小長さを制御する。

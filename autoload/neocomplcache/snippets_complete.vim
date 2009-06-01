@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2009
+" Last Modified: 30 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,54 +23,74 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.15, for Vim 7.0
+" Version: 1.16, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.16:
+"    - Fixed add rank bug.
+"    - Loadable snipMate snippets file.
+"    - Implemented _ snippets.
+"
 "   1.15:
 "    - Ignore case.
 "    - Improved edit snippet.
+"
 "   1.14:
 "    - Fixed for neocomplcache 2.43.
 "    - Fixed escape.
+"
 "   1.13:
 "    - Fixed commentout bug.
 "    - Improved empty check.
 "    - Fixed eval bug.
 "    - Fixed include bug.
+"
 "   1.12:
 "    - Fixed syntax highlight.
 "    - Overwrite snippet if name is same.
+"
 "   1.11:
 "    - Fixed typo.
 "    - Optimized caching.
 "    - Fixed syntax highlight bug.
+"
 "   1.10:
 "    - Implemented snipMate like snippet.
 "    - Added syntax file.
 "    - Detect snippet file.
 "    - Fixed default value selection bug.
+"
 "   1.09:
 "    - Added syntax highlight.
 "    - Implemented neocomplcache#snippets_complete#expandable().
 "    - Change menu when expandable snippet.
 "    - Implemented g:NeoComplCache_SnippetsDir.
+"
 "   1.08:
 "    - Fixed place holder's default value bug.
+"
 "   1.07:
 "    - Increment rank when snippet expanded.
 "    - Use selection.
+"
 "   1.06:
 "    - Improved place holder's default value behaivior.
+"
 "   1.05:
 "    - Implemented place holder.
+"
 "   1.04:
 "    - Implemented <Plug>(neocomplcache_snippets_expand) keymapping.
+"
 "   1.03:
 "    - Optimized caching.
+"
 "   1.02:
 "    - Caching snippets file.
+"
 "   1.01:
 "    - Refactoring.
+"
 "   1.00:
 "    - Initial version.
 " }}}
@@ -103,15 +123,18 @@ function! neocomplcache#snippets_complete#initialize()"{{{
         " Set caching event.
         autocmd CursorHold * call s:caching()
         " Recaching events
-        autocmd BufWritePost *.snip call s:caching_snippets(expand('<afile>:t:r')) 
+        autocmd BufWritePost *.snip,*.snippets call s:caching_snippets(expand('<afile>:t:r')) 
         " Detect syntax file.
-        autocmd BufNewFile,BufWinEnter *.snip setfiletype snippet
+        autocmd BufNewFile,BufWinEnter *.snip,*.snippets setfiletype snippet
     augroup END"}}}
 
     command! -nargs=? NeoComplCacheEditSnippets call s:edit_snippets(<q-args>)
 
     syn match   NeoComplCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
     hi def link NeoComplCacheExpandSnippets Special
+
+    " Caching _ snippets.
+    call s:caching_snippets('_')
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#finalize()"{{{
@@ -120,11 +143,11 @@ function! neocomplcache#snippets_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
-    if &filetype == ''|| !has_key(s:snippets, &filetype)
-        return []
+    if &filetype == '' || !has_key(s:snippets, &filetype)
+        return s:keyword_filter(copy(s:snippets['_']), a:cur_keyword_str)
     endif
 
-    return s:keyword_filter(copy(s:snippets[&filetype]), a:cur_keyword_str)
+    return s:keyword_filter(extend(copy(s:snippets['_']), s:snippets[&filetype]), a:cur_keyword_str)
 endfunction"}}}
 
 " Dummy function.
@@ -226,7 +249,7 @@ endfunction"}}}
 
 function! s:caching_snippets(filetype)"{{{
     let l:snippet = {}
-    let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip'), '\n')
+    let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip*'), '\n')
     for snippets_file in l:snippets_files
         let l:snippet_dict = s:load_snippets(snippets_file)
         for snip in keys(l:snippet_dict)
@@ -300,11 +323,10 @@ function! s:snippets_expand()"{{{
 endfunction"}}}
 function! s:expand_newline()"{{{
     " Check expand word.
-    if &filetype == '' && has_key(s:snippets, &filetype)
+    if &filetype != '' && has_key(s:snippets, &filetype)
         let l:expand = matchstr(getline('.'), '^.*<expand>')
         for keyword in s:snippets[&filetype]
-            if keyword.word !~ '`[^`]*`' &&
-                        \l:expand =~ substitute(escape(keyword.word, '~" \.^$*[]'), "'", "''", 'g').'$'
+            if l:expand =~ substitute(escape(keyword.word, '~"\.^$*[]'), "'", "''", 'g') . '$'
                 let keyword.rank += 1
                 break
             endif
