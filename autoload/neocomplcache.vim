@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2009
+" Last Modified: 02 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.57, for Vim 7.0
+" Version: 2.58, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -105,7 +105,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('html,xhtml,xml',
                 \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',
-                \'\v^[^!/[:blank:]][^[:blank:]]*')
+                \'\v^[^!][^/[:blank:]]*')
     call s:set_keyword_pattern('pic',
                 \'\v^\s*#\h\w*|\h\w*')
     call s:set_keyword_pattern('masm',

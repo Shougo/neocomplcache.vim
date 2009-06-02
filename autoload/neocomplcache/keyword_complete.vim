@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2009
+" Last Modified: 02 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.57, for Vim 7.0
+" Version: 2.58, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -296,6 +296,12 @@ endfunction"}}}
 
 function! neocomplcache#keyword_complete#check_candidate(keyword)"{{{
     let l:source = s:sources[bufnr('%')]
+    if !empty(s:candidates)
+        " Garbage collect.
+        let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
+        let l:end_line = l:start_line + l:source.cache_line_cnt
+        call s:garbage_collect_candidate(l:start_line, l:end_line)
+    endif
 
     " Check cache.
     if !has_key(l:source.keyword_cache, a:keyword)
@@ -600,35 +606,15 @@ function! s:initialize_source(srcname)"{{{
 endfunction"}}}
 
 function! s:word_caching(srcname, start_line, end_line)"{{{
-    if a:srcname =~ '^\d'
-        " Buffer.
-        let l:buflines = getbufline(a:srcname, a:start_line, a:end_line)
-    else
-        " Dictionary.
-        let l:buflines = readfile(split(a:srcname, ',')[1])
-    endif
-    let [l:max_lines, l:line_num] = [len(l:buflines), 0]
-
     " Initialize source.
-    if a:end_line == '$'
-        call s:initialize_source(a:srcname)
+    call s:initialize_source(a:srcname)
+
+    if s:caching_from_cache(a:srcname) == 0
+        " Caching from cache.
+        return
     endif
+
     let l:source = s:sources[a:srcname]
-
-    if a:end_line == '$' && l:max_lines > 200
-        if s:caching_from_cache(a:srcname) == 0
-            " Caching from cache.
-            return
-        endif
-
-        redraw
-
-        if a:srcname =~ '^\d'
-            echo 'Caching buffer... please wait.'
-        else
-            echo 'Caching dictionary... please wait.'
-        endif
-    endif
 
     if a:srcname =~ '^\d'
         " Buffer.
@@ -641,6 +627,24 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     let l:menu = printf('%.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     let l:keyword_pattern = l:source.keyword_pattern
+
+    if a:srcname =~ '^\d'
+        " Buffer.
+        let l:buflines = getbufline(a:srcname, a:start_line, a:end_line)
+    else
+        " Dictionary.
+        let l:buflines = readfile(split(a:srcname, ',')[1])
+    endif
+    let [l:max_lines, l:line_num] = [len(l:buflines), 0]
+
+    if l:max_lines > 200
+        redraw
+        if a:srcname =~ '^\d'
+            echo 'Caching buffer... please wait.'
+        else
+            echo 'Caching dictionary... please wait.'
+        endif
+    endif
 
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 9
@@ -693,7 +697,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
         let l:line_num += 1
     endwhile
 
-    if a:end_line == '$' && l:max_lines > 200
+    if l:max_lines > 200
         redraw
         echo 'Caching done.'
     endif
@@ -734,9 +738,11 @@ function! s:caching_from_cache(srcname)"{{{
     let l:buflines = readfile(l:cache_name)
     let l:max_lines = len(l:buflines)
 
-    if l:max_lines > 10000
+    if l:max_lines > 5000
+        let l:print_cache_percent = l:max_lines / 5
+    elseif l:max_lines > 3000
         let l:print_cache_percent = l:max_lines / 3
-    elseif l:max_lines > 5000
+    elseif l:max_lines > 1000
         let l:print_cache_percent = l:max_lines / 2
     else
         let l:print_cache_percent = -1
@@ -744,10 +750,12 @@ function! s:caching_from_cache(srcname)"{{{
     let l:line_cnt = l:print_cache_percent
 
     redraw
-    if a:srcname =~ '^\d'
-        echo 'Caching buffer... please wait.'
-    else
-        echo 'Caching dictionary... please wait.'
+    if l:max_lines > 1000
+        if a:srcname =~ '^\d'
+            echo 'Caching buffer... please wait.'
+        else
+            echo 'Caching dictionary... please wait.'
+        endif
     endif
 
     let l:line_num = 0
@@ -760,7 +768,7 @@ function! s:caching_from_cache(srcname)"{{{
         endif
         let l:line_cnt -= 1
 
-        let l:match_str = matchstr(buflines[l:line_num], l:keyword_pattern)
+        let l:match_str = buflines[l:line_num]
         " Ignore too short keyword.
         if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
             " Append list.
@@ -778,8 +786,10 @@ function! s:caching_from_cache(srcname)"{{{
         let l:line_num += 1
     endwhile
 
-    redraw
-    echo 'Caching done.'
+    if l:max_lines > 1000
+        redraw
+        echo 'Caching done.'
+    endif
 
     return 0
 endfunction"}}}
@@ -787,29 +797,29 @@ endfunction"}}}
 function! s:garbage_collect_candidate(start_line, end_line)"{{{
     let l:source = s:sources[bufnr('%')]
 
-    let l:buflines = getbufline(bufnr('%'), a:start_line, a:end_line)
-    let l:max_lines = len(l:buflines)
+    let l:buflines = join(getbufline(bufnr('%'), a:start_line, a:end_line), "\<CR>")
     let l:keyword_pattern = l:source.keyword_pattern
 
-    let l:line_num = 0
-    while l:line_num < l:max_lines
-        let [l:line, l:match_num] = [buflines[l:line_num], 0]
-        let l:match_str = matchstr(l:line, l:keyword_pattern)
-        while l:match_str != ''
-            if has_key(s:candidates, l:match_str)
-                " Remove from candidate.
-                call remove(s:candidates, l:match_str)
+    let l:match_str = matchstr(l:buflines, l:keyword_pattern)
+    let l:match_num = 0
+    while l:match_str != ''
+        if has_key(s:candidates, l:match_str)
+            " Remove from candidate.
+            call remove(s:candidates, l:match_str)
+
+            if empty(s:candidates)
+                return
             endif
+        endif
 
-            let l:match_num += len(l:match_str)
-            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
-        endwhile
-
-        let l:line_num += 1
+        let l:match_num += len(l:match_str)
+        let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match_num)
     endwhile
 
     for l:candidate in keys(s:candidates)
-        call remove(l:source.keyword_cache, l:candidate)
+        if has_key(l:source.keyword_cache, l:candidate)
+            call remove(l:source.keyword_cache, l:candidate)
+        endif
     endfor
 
     " Clear candidates.
@@ -919,11 +929,7 @@ function! s:caching_insert_leave()"{{{
         let s:prev_cached_count -= 1
     endif
 
-    " Garbage collect.
-    let l:source = s:sources[bufnr('%')]
-    let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
-    let l:end_line = l:start_line + l:source.cache_line_cnt
-    call s:garbage_collect_candidate(l:start_line, l:end_line)
+    let s:candidates = {}
 endfunction"}}}
 
 function! s:output_keyword(number)"{{{

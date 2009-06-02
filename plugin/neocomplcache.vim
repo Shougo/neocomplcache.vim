@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2009
+" Last Modified: 02 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
 "   2.58: Improved caching timing.
+"    - Optimized caching.
 "
 "   2.57: Improved snippets_complete.
 "    - Fixed feedkeys.
