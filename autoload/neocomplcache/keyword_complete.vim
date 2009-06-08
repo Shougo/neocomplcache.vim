@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2009
+" Last Modified: 04 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.58, for Vim 7.0
+" Version: 2.59, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -32,10 +32,10 @@ let s:sources = {}
 function! neocomplcache#keyword_complete#initialize()"{{{
     augroup neocomplcache"{{{
         " Caching events
-        autocmd Filetype * call s:check_source()
+        autocmd FileType * call s:check_source()
         autocmd BufWritePost,CursorHold * call s:update_source()
         " Caching current buffer events
-        autocmd InsertLeave * call s:caching_insert_leave()
+        autocmd InsertEnter * call s:caching_insert_enter()
         " Garbage collect.
         autocmd BufWritePost * call s:garbage_collect_keyword()
         autocmd VimLeavePre * call s:save_all_cache()
@@ -703,6 +703,45 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     endif
 endfunction"}}}
 
+function! s:word_caching_current_line()"{{{
+    let l:source = s:sources[bufnr('%')]
+
+    " Buffer.
+    let l:filename = '[B] ' . fnamemodify(l:source.name, ':t')
+
+    let l:menu = printf('%.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+    let l:keyword_pattern = l:source.keyword_pattern
+
+    " Buffer.
+    let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
+    let l:end_line = l:start_line + l:source.cache_line_cnt
+    let l:buflines = join(getbufline(bufnr('%'), l:start_line, l:end_line), "\<CR>")
+
+    let l:match = match(l:buflines, l:keyword_pattern)
+    let l:match_num = 0
+    while l:match >= 0
+        let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match)
+        " Ignore too short keyword.
+        if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
+                    \&& !has_key(l:source.keyword_cache, l:match_str)
+            " Append list.
+            let l:source.keyword_cache[l:match_str] = {
+                        \'word' : l:match_str, 'menu' : l:menu,
+                        \'filename' : l:filename, 'srcname' : bufnr('%'), 'icase' : 1,
+                        \'user_rank' : 0, 'rank' : 1
+                        \}
+
+            let l:source.keyword_cache[l:match_str].abbr = 
+                        \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
+                        \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
+        endif
+
+        let l:match_num += len(l:match_str)
+        let l:match = match(l:buflines, l:keyword_pattern, l:match_num)
+    endwhile
+endfunction"}}}
+
 function! s:caching_from_cache(srcname)"{{{
     if a:srcname =~ '^\d'
         if getbufvar(a:srcname, '&buftype') =~ 'nofile'
@@ -800,9 +839,10 @@ function! s:garbage_collect_candidate(start_line, end_line)"{{{
     let l:buflines = join(getbufline(bufnr('%'), a:start_line, a:end_line), "\<CR>")
     let l:keyword_pattern = l:source.keyword_pattern
 
-    let l:match_str = matchstr(l:buflines, l:keyword_pattern)
+    let l:match = match(l:buflines, l:keyword_pattern)
     let l:match_num = 0
-    while l:match_str != ''
+    while l:match >= 0
+        let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match_num)
         if has_key(s:candidates, l:match_str)
             " Remove from candidate.
             call remove(s:candidates, l:match_str)
@@ -813,7 +853,7 @@ function! s:garbage_collect_candidate(start_line, end_line)"{{{
         endif
 
         let l:match_num += len(l:match_str)
-        let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match_num)
+        let l:match = match(l:buflines, l:keyword_pattern, l:match_num)
     endwhile
 
     for l:candidate in keys(s:candidates)
@@ -911,7 +951,7 @@ function! s:check_deleted_buffer()"{{{
     endfor
 endfunction"}}}
 
-function! s:caching_insert_leave()"{{{
+function! s:caching_insert_enter()"{{{
     if !has_key(s:sources, bufnr('%')) || has_key(s:caching_disable_list, bufnr('%')) || @. == ''
         return
     endif
@@ -926,6 +966,9 @@ function! s:caching_insert_leave()"{{{
             let s:prev_cached_count = 2
         endif
     else
+        " Word caching.
+        call s:word_caching_current_line()
+
         let s:prev_cached_count -= 1
     endif
 
