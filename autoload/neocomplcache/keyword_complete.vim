@@ -395,7 +395,7 @@ function! s:get_sources_list()"{{{
     return l:sources_list
 endfunction"}}}
 
-function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
+function! s:caching(srcname, start_line, end_cache_cnt)"{{{
     " Check exists s:sources.
     if !has_key(s:sources, a:srcname)
         call s:word_caching(a:srcname, 1, '$')
@@ -453,7 +453,7 @@ function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
                 if !has_key(l:rank_cache_line, l:match_str) 
-                    let l:rank_cache_line[l:match_str] = { 'rank' : a:add_rank, 'prev_rank' : {}, 'prepre_rank' : {} }
+                    let l:rank_cache_line[l:match_str] = { 'rank' : 1, 'prev_rank' : {}, 'prepre_rank' : {} }
                     let l:match_cache_line = l:rank_cache_line[l:match_str]
 
                     " Check dup.
@@ -471,7 +471,7 @@ function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
                     endif
                 else
                     let l:match_cache_line = l:rank_cache_line[l:match_str]
-                    let l:match_cache_line.rank += a:add_rank
+                    let l:match_cache_line.rank += 1
                 endif
 
                 " Calc previous keyword rank.
@@ -484,9 +484,9 @@ function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
                     endif
 
                     if has_key(l:match_cache_line.prepre_rank, l:prepre_word)
-                        let l:match_cache_line.prepre_rank[l:prepre_word] += a:add_rank
+                        let l:match_cache_line.prepre_rank[l:prepre_word] += 1
                     else
-                        let l:match_cache_line.prepre_rank[l:prepre_word] = a:add_rank
+                        let l:match_cache_line.prepre_rank[l:prepre_word] = 1
                     endif
                 endif
 
@@ -498,9 +498,9 @@ function! s:caching(srcname, start_line, end_cache_cnt, add_rank)"{{{
                 endif
 
                 if has_key(l:match_cache_line.prev_rank, l:prev_word)
-                    let l:match_cache_line.prev_rank[l:prev_word] += a:add_rank
+                    let l:match_cache_line.prev_rank[l:prev_word] += 1
                 else
-                    let l:match_cache_line.prev_rank[l:prev_word] = a:add_rank
+                    let l:match_cache_line.prev_rank[l:prev_word] = 1
                 endif
 
                 " Check operator.
@@ -897,7 +897,7 @@ function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
         let l:start_line = a:start_line
     endif
 
-    call s:caching(a:srcname, l:start_line, a:end_cache_cnt, 1)
+    call s:caching(a:srcname, l:start_line, a:end_cache_cnt)
 
     return 0
 endfunction"}}}
@@ -958,9 +958,9 @@ function! s:caching_insert_enter()"{{{
 
     if s:prev_cached_count <= 0
         " Full caching.
-        call s:caching(bufnr('%'), line('.'), 1, 2)
+        call s:caching(bufnr('%'), line('.'), 1)
         if g:NeoComplCache_CachingRandomize
-            let l:match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
+            let l:match_end = matchend(reltimestr(reltime()), '\d\+\.')
             let s:prev_cached_count = reltimestr(reltime())[l:match_end : ] % 3
         else
             let s:prev_cached_count = 2

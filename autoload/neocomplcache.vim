@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2009
+" Last Modified: 14 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.58, for Vim 7.0
+" Version: 2.60, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -630,7 +630,7 @@ function! s:get_complete_words(cur_keyword_str)"{{{
 
             " Sort.
             call extend(l:cache_keyword_filtered, sort(
-                        \filter(copy(l:cache_keyword_list), 'v:val.prev_rank > 0'), 'neocomplcache#compare_prev_rank'))
+                        \filter(copy(l:cache_keyword_list), 'v:val.prev_rank > 0 || v:val.prepre_rank > 0'), 'neocomplcache#compare_prev_rank'))
             call filter(l:cache_keyword_lists[l:plugin], 'v:val.prev_rank == 0 && v:val.prepre_rank == 0')
         endfor
     endif"}}}
@@ -640,17 +640,6 @@ function! s:get_complete_words(cur_keyword_str)"{{{
     for l:plugin in keys(l:loaded_plugins)
         call extend(l:cache_keyword_list, l:cache_keyword_lists[l:plugin])
     endfor
-
-    " Filtering for optimize."{{{
-    if !g:NeoComplCache_AlphabeticalOrder
-        if len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 10
-            call filter(l:cache_keyword_list, 'v:val.rank > 2')
-        elseif len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 5
-            call filter(l:cache_keyword_list, 'v:val.rank > 1')
-        elseif len(l:cache_keyword_list) > g:NeoComplCache_MaxList * 3
-            call filter(l:cache_keyword_list, 'v:val.rank > 0')
-        endif
-    endif"}}}
 
     " Sort.
     call extend(l:cache_keyword_filtered, sort(l:cache_keyword_list, l:order_func))
@@ -749,13 +738,9 @@ function! s:get_complete_files(cur_keyword_str)"{{{
         let l:cur_keyword_str = substitute(l:cur_keyword_str, '[^-]\zs-', '\*', 'g')
     endif
 
-    let l:max_len = -1
     let l:num = 0
     let l:list = []
     for word in split(glob(l:cur_keyword_str . '*'), '\n')
-        if len(word) > l:max_len
-            let l:max_len = len(word)
-        endif
         call add(list, { 'word' : word, 'menu' : '[F]', 'icase' : 1 })
         let l:num += 1
     endfor
@@ -766,10 +751,8 @@ function! s:get_complete_files(cur_keyword_str)"{{{
         let l:prefix = matchstr(a:cur_keyword_str, printf('^.\+\ze[%s]', l:PATH_SEPARATOR))
     endif
     let l:len_prefix = len(l:prefix)
-    if l:max_len > g:NeoComplCache_MaxKeywordWidth
-        let l:prefix = '...' . l:prefix[l:max_len-g:NeoComplCache_MaxKeywordWidth+3 : ]
-    endif
 
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     if g:NeoComplCache_EnableQuickMatch"{{{
         let l:save_list = l:list
         let l:list = []
@@ -801,10 +784,17 @@ function! s:get_complete_files(cur_keyword_str)"{{{
         let l:num = 0
         for keyword in l:save_list[:g:NeoComplCache_QuickMatchMaxLists]
             let l:abbr = keyword.word[l:len_prefix :]
+            if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
+                let l:pre = '...' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
+                let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
+            else
+                let l:pre = l:prefix
+            endif
             if isdirectory(keyword.word)
                 let l:abbr .= '/'
             endif
-            let keyword.abbr = printf('%2d: %s%s', l:num, l:prefix, l:abbr)
+
+            let keyword.abbr = printf('%2d: %s%s', l:num, l:pre, l:abbr)
             let l:num += 1
 
             call add(l:list, keyword)
@@ -812,10 +802,17 @@ function! s:get_complete_files(cur_keyword_str)"{{{
         let l:cache_keyword_filtered = l:list[g:NeoComplCache_QuickMatchMaxLists :]
         for keyword in l:cache_keyword_filtered
             let l:abbr = keyword.word[l:len_prefix :]
+            if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
+                let l:pre = '...' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
+                let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
+            else
+                let l:pre = l:prefix
+            endif
             if isdirectory(keyword.word)
                 let l:abbr .= '/'
             endif
-            let keyword.abbr = '    ' . l:abbr
+
+            let keyword.abbr = printf('    %s%s', l:pre, l:abbr)
             call add(l:list, keyword)
         endfor"}}}
 
@@ -826,10 +823,17 @@ function! s:get_complete_files(cur_keyword_str)"{{{
     else
         for keyword in l:list
             let l:abbr = keyword.word[l:len_prefix :]
+            if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
+                let l:pre = '...' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
+                let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
+            else
+                let l:pre = l:prefix
+            endif
             if isdirectory(keyword.word)
                 let l:abbr .= '/'
             endif
-            let keyword.abbr = l:prefix . l:abbr
+
+            let keyword.abbr = l:pre . l:abbr
         endfor
     endif
 
