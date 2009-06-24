@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2009
+" Last Modified: 24 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.60, for Vim 7.0
+" Version: 2.61, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -43,9 +43,7 @@ function! neocomplcache#enable() "{{{
     let s:skip_next_complete = 0
     let s:cur_keyword_pos = -1
 
-    if g:NeoComplCache_EnableSkipCompletion
-        let s:prev_input_time = reltime()
-    endif
+    let s:prev_input_time = reltime()
     "}}}
     
     " Initialize plugins table.
@@ -76,8 +74,10 @@ function! neocomplcache#enable() "{{{
                 \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&]?\h[[:alnum:]_:]*%([!>#]|\(\)?)?')
     call s:set_keyword_pattern('tex',
                 \'\v\\\a\{\a{1,2}\}?|\\[[:alpha:]@]+[[{]?|\a[[:alnum:]]*[*[{]?')
-    call s:set_keyword_pattern('sh,zsh,vimshell',
+    call s:set_keyword_pattern('sh,zsh',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
+    call s:set_keyword_pattern('vimshell',
+                \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
     call s:set_keyword_pattern('ps1',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\(\)?)?')
     call s:set_keyword_pattern('c',
@@ -399,6 +399,20 @@ endfunction"}}}
 
 " Complete internal functions."{{{
 function! s:complete()"{{{
+    if g:NeoComplCache_EnableSkipCompletion
+        if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
+            echo 'Skipped auto completion'
+            let s:skipped = 1
+
+            let s:prev_input_time = reltime()
+            return
+        endif
+
+        echo ''
+        redraw
+        let s:prev_input_time = reltime()
+    endif
+
     if s:skip_next_complete
         let s:skip_next_complete = 0
         return
@@ -459,6 +473,7 @@ function! s:complete()"{{{
                 call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
             endif
 
+            let s:prev_input_time = reltime()
             return
         endif
     endif
@@ -489,19 +504,6 @@ function! s:complete()"{{{
 
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
         return
-    endif
-
-    if g:NeoComplCache_EnableSkipCompletion
-        if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
-            echo 'Skipped auto completion'
-            let s:skipped = 1
-
-            return 1
-        else
-            echo ''
-            redraw
-        endif
-        let s:prev_input_time = reltime()
     endif
 
     if &l:completefunc != 'neocomplcache#manual_complete'

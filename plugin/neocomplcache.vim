@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2009
+" Last Modified: 17 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.60, for Vim 7.0
+" Version: 2.61, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.61:
+"    - Fixed ATOK X3 on when snippets expanded.
+"    - Improved vimshell syntax.
+"    - Improved skip completion.
+"
 "   2.60: Improved filename completion.
 "    - Improved long filename view.
 "    - Improved filtering.
