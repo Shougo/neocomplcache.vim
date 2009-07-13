@@ -269,16 +269,19 @@ autocomplpopで便利だったので、移植しました。
 特にvimshellではこれがないと生きていけません。
 自動補完に慣れてしまうと、通常のシェルの<TAB>補完が馬鹿らしくなります。
 
-追記：
-Ver.2.42より、g:NeoComplCache_TryFilenameCompletionの値を0にすることによって、ファイル名を自動補完しないようにできます。
-Ver.2.56ではついにファイル名補完を自前実装！
+g:NeoComplCache_TryFilenameCompletionの値を0にすることによって、ファイル名を自動補完しないようにできます。
+ついにファイル名補完を自前実装したので、
 ワイルドカード（-のみ）や、数字によるクイックマッチが動作します。
-vimshellで使うと、かなり便利です。
+/で補完を続けることができるので、vimshellで使うとかなり便利です。
 ただしSmartCaseやUnderbar completionなど、一部の機能は動作しません。
+実行ファイルには'*'マークが付くので判別も容易です。
 
 手動でファイル名補完を呼び出すこともできるので、
 inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 このようにマッピングすると、標準のファイル名補完を置き換えることができます。
+
+補完スキップも指定でき、g:NeoComplCache_FilenameCompletionSkipItems以上の候補があった場合、
+自動補完はスキップされます。手動補完はスキップされません。
 
 --------------------------------
 カーソル後方のキーワードに応じた補完
@@ -732,6 +735,7 @@ Twitterはneocomplcache開発日記とかしているので、チェックする
 --------------------------------
 更新履歴
 
+2009/07/10     neocomplcache Ver.2.62に対応。
 2009/05/30     neocomplcache Ver.2.57に対応。細々とした修正。
 2009/05/21     neocomplcache Ver.2.56に対応。
 2009/05/18     neocomplcache Ver.2.55に対応。

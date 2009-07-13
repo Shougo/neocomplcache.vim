@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2009
+" Last Modified: 10 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.61, for Vim 7.0
+" Version: 2.62, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.62:
+"    - Added make syntax.
+"    - Put up the priority of directory in filename completion.
+"    - Draw executable files in filename completion.
+"    - Added g:NeoComplCache_FilenameCompletionSkipItems option.
+"    - Fixed filename completion bug on enable quick match.
+"
 "   2.61:
 "    - Fixed ATOK X3 on when snippets expanded.
 "    - Improved vimshell syntax.
@@ -673,6 +680,9 @@ if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
 endif
 if !exists('g:NeoComplCache_EnableUnderbarCompletion')
     let g:NeoComplCache_EnableUnderbarCompletion = 0
+endif
+if !exists('g:NeoComplCache_FilenameCompletionSkipItems')
+    let g:NeoComplCache_FilenameCompletionSkipItems = 100
 endif
 if !exists('g:NeoComplCache_TemporaryDir')
     let g:NeoComplCache_TemporaryDir = $HOME . '/.neocon'

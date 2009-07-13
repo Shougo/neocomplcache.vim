@@ -290,6 +290,12 @@ g:NeoComplCache_EnableUnderbarCompletion		*g:NeoComplCache_EnableUnderbarComplet
 		
 		副作用があるので、初期値は0となっている。
 
+g:NeoComplCache_FilenameCompletionSkipItems		*g:NeoComplCache_FilenameCompletionSkipItems*
+		ファイル名を自動補完するときに、スキップを行う候補数を制御する。
+		候補がこの数以上ならば、自動補完はスキップされる。
+		
+		初期値は100となっている。
+
 g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。
 		ここで指定したディレクトリが実際に存在しない場合、無視される。
