@@ -23,10 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.63, for Vim 7.0
+" Version: 2.64, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.64:
+"    - Substitute \ -> / in Windows.
+"
 "   2.63:
 "    - Substitute ... -> ../.. .
 "    - Changed short filename into ~.
