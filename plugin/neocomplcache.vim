@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2009
+" Last Modified: 23 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.62, for Vim 7.0
+" Version: 2.63, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.63:
+"    - Substitute ... -> ../.. .
+"    - Changed short filename into ~.
+"    - Improved filename completion.
+"    - Callable get_complete_words() and word_caching_current_line() function.
+"    - Erb is same filetype with ruby.
+"    - Improved html and erb filetype.
+"    - Improved erb snippets.
+"    - Improved css omni completion.
+"    - Improved vimshell keyword pattern.
+"
 "   2.62:
 "    - Added make syntax.
 "    - Put up the priority of directory in filename completion.

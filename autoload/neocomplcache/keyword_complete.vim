@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2009
+" Last Modified: 15 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.59, for Vim 7.0
+" Version: 2.63, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -703,7 +703,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     endif
 endfunction"}}}
 
-function! s:word_caching_current_line()"{{{
+function! neocomplcache#keyword_complete#word_caching_current_line()"{{{
     let l:source = s:sources[bufnr('%')]
 
     " Buffer.
@@ -967,7 +967,7 @@ function! s:caching_insert_enter()"{{{
         endif
     else
         " Word caching.
-        call s:word_caching_current_line()
+        call neocomplcache#keyword_complete#word_caching_current_line()
 
         let s:prev_cached_count -= 1
     endif
