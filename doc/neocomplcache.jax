@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.57
+Version: 2.64
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -80,6 +80,7 @@ COMMANDS 					*neocomplcache-commands*
 		[bufnr]で示されるバッファを完全にキャッシュする。
 		大きなバッファに対しては、かなり時間がかかるので注意。
 		[bufnr]を省略すると、カレントバッファを指定したことになる。
+		[bufnr]のバッファがまだキャッシュされていない場合、簡易キャッシュのみを行う。
 
 :NeoComplCacheCachingDisable [bufnr]			*:NeoComplCacheCachingDisable*
 		[bufnr]で示されるバッファをキャッシュしないようにする。
@@ -295,6 +296,18 @@ g:NeoComplCache_FilenameCompletionSkipItems		*g:NeoComplCache_FilenameCompletion
 		候補がこの数以上ならば、自動補完はスキップされる。
 		
 		初期値は100となっている。
+
+g:NeoComplCache_CachingLimitFileSize			*g:NeoComplCache_CachingLimitFileSize*
+		ファイルをキャッシュするファイルサイズを設定する。
+		開いたファイルがこのサイズより大きいとキャッシュしない。
+		
+		初期値は1000000となっている。
+
+g:NeoComplCache_CachingDisablePattern			*g:NeoComplCache_CachingDisablePattern*
+		バッファをキャッシュしないバッファ名のパターンを正規表現で設定する。
+		空文字列だと無効になる。
+		
+		初期値は空となっている。
 
 g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2009
+" Last Modified: 26 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,11 @@
 " ChangeLog NeoComplCache2: "{{{
 "   2.64:
 "    - Substitute \ -> / in Windows.
+"    - Improved NeoComplCacheCachingBuffer command.
+"    - Added g:NeoComplCache_CachingLimitFileSize option.
+"    - Added g:NeoComplCache_CachingDisablePattern option.
+"    - Don't caching readonly file.
+"    - Improved neocomplcache#keyword_complete#caching_percent.
 "
 "   2.63:
 "    - Substitute ... -> ../.. .
@@ -697,6 +702,12 @@ if !exists('g:NeoComplCache_EnableUnderbarCompletion')
 endif
 if !exists('g:NeoComplCache_FilenameCompletionSkipItems')
     let g:NeoComplCache_FilenameCompletionSkipItems = 100
+endif
+if !exists('g:NeoComplCache_CachingLimitFileSize')
+    let g:NeoComplCache_CachingLimitFileSize = 1000000
+endif
+if !exists('g:NeoComplCache_CachingDisablePattern')
+    let g:NeoComplCache_CachingDisablePattern = ''
 endif
 if !exists('g:NeoComplCache_TemporaryDir')
     let g:NeoComplCache_TemporaryDir = $HOME . '/.neocon'
