@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2009
+" Last Modified: 31 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.17:
 "    - Fixed ATOK X3 on when snippets expanded.
+"    - Fixed syntax match timing(Thanks thinca!).
+"    - Added snippet delete.
 "
 "   1.16:
 "    - Fixed add rank bug.
@@ -129,11 +131,11 @@ function! neocomplcache#snippets_complete#initialize()"{{{
         autocmd BufWritePost *.snip,*.snippets call s:caching_snippets(expand('<afile>:t:r')) 
         " Detect syntax file.
         autocmd BufNewFile,BufWinEnter *.snip,*.snippets setfiletype snippet
+        autocmd BufNewFile,BufWinEnter * syn match   NeoComplCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
     augroup END"}}}
 
     command! -nargs=? NeoComplCacheEditSnippets call s:edit_snippets(<q-args>)
 
-    syn match   NeoComplCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
     hi def link NeoComplCacheExpandSnippets Special
 
     " Caching _ snippets.
@@ -281,21 +283,26 @@ function! s:load_snippets(snippets_file)"{{{
                 let l:snippet[l:snippet_pattern.name] = s:set_snippet_pattern(l:snippet_pattern)
                 let l:snippet_pattern = { 'word' : '' }
             endif
-            let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*\ze$')
+            let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
         elseif line =~ '^abbr\s'
-            let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze$')
+            let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*$')
         elseif line =~ '^rank\s'
             let l:snippet_pattern.rank = matchstr(line, '^rank\s\+\zs\d\+\ze\s*$')
         elseif line =~ '^prev_word\s'
             let l:snippet_pattern.prev_word = []
-            for word in split(matchstr(line, '^prev_word\s\+\zs.*\ze$'), ',')
+            for word in split(matchstr(line, '^prev_word\s\+\zs.*$'), ',')
                 call add(l:snippet_pattern.prev_word, matchstr(word, "'\\zs[^']*\\ze'"))
             endfor
         elseif line =~ '^\s'
             if l:snippet_pattern['word'] == ''
-                let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*\ze$')
+                let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
             else
-                let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*\ze$')
+                let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
+            endif
+        elseif line =~ '^delete\s'
+            let l:name = matchstr(line, '^delete\s\+\zs.*$')
+            if l:name != '' && has_key(l:snippet, l:name)
+                call remove(l:snippet, l:name)
             endif
         endif
     endfor
@@ -308,10 +315,11 @@ function! s:load_snippets(snippets_file)"{{{
 endfunction"}}}
 
 function! s:snippets_expand()"{{{
-    syn match   NeoComplCacheExpandSnippets         '<expand>\|<\\n>\|\${\d\+\%(:\([^}]*\)\)\?}'
-
     if match(getline('.'), '<expand>') >= 0
         call s:expand_newline()
+
+        let &l:iminsert = 0
+        let &l:imsearch = 0
         return
     endif
 
@@ -323,6 +331,9 @@ function! s:snippets_expand()"{{{
 
         call s:search_outof_range()
     endif
+
+    let &iminsert = 0
+    let &imsearch = 0
 endfunction"}}}
 function! s:expand_newline()"{{{
     " Check expand word.
@@ -351,9 +362,6 @@ function! s:expand_newline()"{{{
 
         " Return.
         call setpos('.', [0, line('.'), l:match, 0])
-        if has('multi_byte_ime')
-            let &l:iminsert = 0
-        endif
         silent execute "normal! a\<CR>"
 
         " Next match.

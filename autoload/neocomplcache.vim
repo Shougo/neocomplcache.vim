@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2009
+" Last Modified: 31 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.64, for Vim 7.0
+" Version: 2.65, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -77,7 +77,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('sh,zsh',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
     call s:set_keyword_pattern('vimshell',
-                \'\v\$\$?\w*|[[:alpha:]_-][[:alnum:]_-]*|\w+%(\.[[:alnum:]_-]+)*')
+                \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
     call s:set_keyword_pattern('ps1',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\(\)?)?')
     call s:set_keyword_pattern('c',
@@ -739,9 +739,6 @@ endfunction"}}}
 function! s:get_complete_files(cur_keyword_str, skip_flag)"{{{
     let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
     let l:cur_keyword_str = substitute(a:cur_keyword_str, '[{}]', '', 'g')
-    if g:NeoComplCache_EnableWildCard
-        let l:cur_keyword_str = substitute(l:cur_keyword_str, '[^-]\zs-', '\*', 'g')
-    endif
     " Substitute ... -> ../..
     while match(l:cur_keyword_str, '\.\.\.') >= 0
         let l:cur_keyword_str = substitute(l:cur_keyword_str, '\.\.\zs\.', '/\.\.', 'g')
@@ -766,11 +763,7 @@ function! s:get_complete_files(cur_keyword_str, skip_flag)"{{{
     endfor
     call sort(l:list, 'neocomplcache#compare_rank')
 
-    if g:NeoComplCache_EnableWildCard
-        let l:prefix = matchstr(a:cur_keyword_str, printf('^[^-]\+\ze[%s]', l:PATH_SEPARATOR))
-    else
-        let l:prefix = matchstr(a:cur_keyword_str, printf('^.\+\ze[%s]', l:PATH_SEPARATOR))
-    endif
+    let l:prefix = matchstr(a:cur_keyword_str, printf('^.\+\ze[%s]', l:PATH_SEPARATOR))
     let l:len_prefix = len(l:prefix)
     if len(l:prefix) > g:NeoComplCache_MaxKeywordWidth
         let l:prefix = printf('%.10s~%s', l:prefix, l:prefix[-10:])
