@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jul 2009
+" Last Modified: 05 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.17, for Vim 7.0
+" Version: 1.18, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.18:
+"    - Fixed snippet expand bugs.
+"
 "   1.17:
 "    - Fixed ATOK X3 on when snippets expanded.
 "    - Fixed syntax match timing(Thanks thinca!).
@@ -380,12 +383,12 @@ function! s:search_snippet_range(start, end)"{{{
 
     while l:line <= a:end
         let l:match = match(getline(l:line), l:pattern)
-        if l:match > 0
+        if l:match >= 0
             let l:match_len2 = len(matchstr(getline(l:line), l:pattern2))
 
             " Substitute holder.
             silent! execute l:line.'s/'.l:pattern.'/\1/'
-            call setpos('.', [0, line('.'), l:match, 0])
+            call setpos('.', [0, l:line, l:match+1, 0])
             if l:match_len2 > 0
                 " Select default value.
                 let l:len = l:match_len2-1
@@ -394,12 +397,11 @@ function! s:search_snippet_range(start, end)"{{{
                 endif
 
                 if l:len == 0
-                    execute "normal! lv\<C-g>"
+                    execute "normal! v\<C-g>"
                 else
-                    execute "normal! lv".l:len."l\<C-g>"
+                    execute 'normal! v'.l:len."l\<C-g>"
                 endif
             elseif col('.') < col('$')-1
-                normal! l
                 startinsert
             else
                 startinsert!
@@ -422,8 +424,8 @@ function! s:search_outof_range()"{{{
         let l:match_len2 = len(matchstr(getline('.'), '\${\d\+:\zs[^}]*\ze}'))
 
         " Substitute holder.
-        silent! s/\${\d\+\%(:\(.*\)\)\?}/\1/
-        call setpos('.', [0, line('.'), l:match, 0])
+        silent! s/\${\d\+\%(:\([^}]*\)\)\?}/\1/
+        call setpos('.', [0, line('.'), l:match+1, 0])
         if l:match_len2 > 0
             " Select default value.
             let l:len = l:match_len2-1
@@ -432,9 +434,9 @@ function! s:search_outof_range()"{{{
             endif
 
             if l:len == 0
-                execute "normal! lv\<C-g>"
+                execute "normal! v\<C-g>"
             else
-                execute "normal! lv".l:len."l\<C-g>"
+                execute "normal! v".l:len."l\<C-g>"
             endif
 
             return
