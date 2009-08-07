@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.64
+Version: 2.66
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -311,6 +311,7 @@ g:NeoComplCache_CachingDisablePattern			*g:NeoComplCache_CachingDisablePattern*
 
 g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。
+		カンマ区切りで複数のディレクトリを設定可能。
 		ここで指定したディレクトリが実際に存在しない場合、無視される。
 		ユーザ定義のスニペット補完ファイルは標準のスニペット補完ファイルを読み込んだ後に読み込まれる。
 		重複したスニペットは上書きされる。
@@ -419,7 +420,7 @@ EXAMPLES					*neocomplcache-examples*
 	if !exists('g:NeoComplCache_KeywordPatterns')
 	    let g:NeoComplCache_KeywordPatterns = {}
 	endif
-	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+	let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 	
 	" Plugin key-mappings.
 	imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)

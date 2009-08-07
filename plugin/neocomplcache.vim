@@ -30,6 +30,8 @@
 "   2.66:
 "    - Improved manual.
 "    - Fixed snippet expand bugs.
+"    - Caching snippets when file open.
+"    - g:NeoComplCache_SnippetsDir is comma-separated list.
 "
 "   2.65:
 "    - Deleted wildcard from filename completion.

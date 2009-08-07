@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.65
+Version: 2.66
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -316,6 +316,7 @@ g:NeoComplCache_CachingDisablePattern			*g:NeoComplCache_CachingDisablePattern*
 
 g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
 		This variable appoints the pass of the snippet files which user defined.
+		It cuts the directory by plural appointment in comma separated value.
 		When there is not the directory which appointed here, neocomplcache will ignore.
 		User defined snippet files are read after having read a normal snippet files.
 		It is overwritten redundant snippet.
@@ -425,7 +426,7 @@ EXAMPLES					*neocomplcache-examples*
 	if !exists('g:NeoComplCache_KeywordPatterns')
 	    let g:NeoComplCache_KeywordPatterns = {}
 	endif
-	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+	let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 
 	" Plugin key-mappings.
 	imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
