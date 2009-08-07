@@ -126,7 +126,7 @@ function! neocomplcache#snippets_complete#initialize()"{{{
     " Set snippets dir.
     let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete'), '\n')
     if exists('g:NeoComplCache_SnippetsDir') && isdirectory(g:NeoComplCache_SnippetsDir)
-        call add(s:snippets_dir, split(g:NeoComplCache_SnippetsDir, ','))
+        call extend(s:snippets_dir, split(g:NeoComplCache_SnippetsDir, ','))
     endif
 
     augroup neocomplcache"{{{
