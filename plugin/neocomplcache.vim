@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2009
+" Last Modified: 09 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -32,6 +32,8 @@
 "    - Fixed snippet expand bugs.
 "    - Caching snippets when file open.
 "    - g:NeoComplCache_SnippetsDir is comma-separated list.
+"    - Supported escape sequence in filename completion.
+"    - Improved set complete function timing.
 "
 "   2.65:
 "    - Deleted wildcard from filename completion.
