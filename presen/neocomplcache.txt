@@ -120,7 +120,7 @@ autocomplpopに満足できない、アルファギーク向け。
 
 安定した物が良ければ、vim.orgに置いてある物を使ってください。
 http://www.vim.org/scripts/script.php?script_id=2620
-こちらも数週間に一度は更新されると思います。
+こちらも一ヶ月に一度は更新されると思います。
 
 --------------------------------
 neocomplcacheの歴史
@@ -146,7 +146,7 @@ Linux GVim上のATOK X3でおかしくなる
 　　　　　　↓
 　　そして現在に至る……
 
-詳しくはChangeLog:で。
+詳しくはplugin/neocomplcache.vim内のChangeLog:で。
 
 --------------------------------
 neocomplcacheの代表的機能
@@ -600,7 +600,7 @@ g:NeoComplCache_CachingDisablePatternオプションではキャッシュしな�
 --------------------------------
 私の設定
 
-私が使用しているneocomplcacheの設定を紹介しておきます。
+参考までに、私が使用しているneocomplcacheの設定を紹介しておきます。
 neocomplcacheのオプションはdoc/neocomplcache.jaxに詳しい解説があるので、そこを参照してください。
 
 " Don't use autocomplpop.
@@ -611,6 +611,8 @@ let g:NeoComplCache_EnableAtStartup = 1
 let g:NeoComplCache_SmartCase = 1
 " Use previous keyword completion.
 let g:NeoComplCache_PreviousKeywordCompletion = 1
+" Use tags auto update.
+"let g:NeoComplCache_TagsAutoUpdate = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
 " Use camel case completion.
@@ -620,7 +622,9 @@ let g:NeoComplCache_EnableUnderbarCompletion = 1
 " Set minimum syntax keyword length.
 let g:NeoComplCache_MinSyntaxLength = 3
 " Set skip input time.
-let g:NeoComplCache_SkipInputTime = '0.1'
+let g:NeoComplCache_SkipInputTime = '0.2'
+" Set manual completion length.
+let g:NeoComplCache_ManualCompletionStartLength = 0
 
 " Define dictionary.
 let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -692,6 +696,12 @@ http://d.hatena.ne.jp/thinca/20090305/1236191531
 
 追記２：
 はてなキーワードにも登録されました！
+http://d.hatena.ne.jp/keyword/neocomplcache
+
+追記３：
+snippetファイルの設定例
+http://d.hatena.ne.jp/cooldaemon/20090807/1249644264
+解説がなかなか詳しいので役立ちます。
 
 --------------------------------
 現在開発されているプラグイン
@@ -722,13 +732,16 @@ Ver.2.55より、キャッシュしたファイルをg:NeoComplCache_TemporaryDi
 Ver.2.64より、readonlyなファイルは自動的にキャッシュしません。
 どうしてもキャッシュしたい場合、:NeoComplCacheCachingBufferコマンドを使用してください。
 
+githubにて指摘されたのですが、
+set completeopt=menuone
+を.vimrcに書いていないと、数字キーを入力してもクイックマッチの候補が表示されません。
+注意してください。
+
 --------------------------------
 今後の予定
 
-機能追加も一段落したので、あとはおざなりなドキュメントを何とかしたいと思っています。
-せっかくvim.orgに登録したので、英語のヘルプファイルも作成しなければなりません。
+何とか英語のヘルプファイルを作成することができました。
 あと一つほど大きな機能追加も考えていますが、それは今後のお楽しみです。
-最近ではvimshellがらみの変更も多いです。
 
 --------------------------------
 まとめ
@@ -750,6 +763,7 @@ Twitterはneocomplcache開発日記と化しているので、こまめにチェ
 --------------------------------
 更新履歴
 
+2009/08/10     neocomplcache Ver.2.67に対応。
 2009/07/26     neocomplcache Ver.2.64に対応。
 2009/07/10     neocomplcache Ver.2.62に対応。
 2009/05/30     neocomplcache Ver.2.57に対応。細々とした修正。

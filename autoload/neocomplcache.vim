@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Aug 2009
+" Last Modified: 11 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.66, for Vim 7.0
+" Version: 2.67, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -42,6 +42,7 @@ function! neocomplcache#enable() "{{{
     let s:plugins_func_table = {}
     let s:skip_next_complete = 0
     let s:cur_keyword_pos = -1
+    let s:quickmatched = 0
 
     let s:prev_input_time = reltime()
     "}}}
@@ -63,15 +64,15 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('lisp,scheme', 
                 \'\v\(?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]?')
     call s:set_keyword_pattern('ruby',
-                \'\v\h\w*::|^\=%(b%[egin]|e%[nd])|%(\@\@|[:$@])\h\w*|\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
+                \'\v^\=%(b%[egin]|e%[nd])|%(\@\@|[:$@])\h\w*|\h\w*%(::\h\w*)*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call s:set_keyword_pattern('eruby',
-                \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|\h\w*::|%(\@\@|[:$@])\h\w*|\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
+                \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|%(\@\@|[:$@])\h\w*|\h\w*%(::\h\w*)*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call s:set_keyword_pattern('php',
-                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\h\w*::|\$\h\w*|\h\w*%(\s*\(\)?)?')
+                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\$\h\w*|\h\w*%(::\h\w*)*%(\s*\(\)?)?')
     call s:set_keyword_pattern('perl',
-                \'\v\<\h\w*\>?|\h\w*::|[$@%&*]\h\w*|\h\w*%(\s*\(\)?)?')
+                \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|\h\w*%(::\h\w*)*%(\s*\(\)?)?')
     call s:set_keyword_pattern('vim,help',
-                \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&]?\h[[:alnum:]_:]*%([!>#]|\(\)?)?')
+                \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
     call s:set_keyword_pattern('tex',
                 \'\v\\\a\{\a{1,2}\}?|\\[[:alpha:]@]+[[{]?|\a[[:alnum:]]*[*[{]?')
     call s:set_keyword_pattern('sh,zsh',
@@ -83,7 +84,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('c',
                 \'\v^\s*#\s*\h\w*|\h\w*%(\s*\(\)?)?')
     call s:set_keyword_pattern('cpp',
-                \'\v\h\w*::|^\s*#\s*\h\w*|\h\w*%(\s*\(\)?|\<\>?)?')
+                \'\v^\s*#\s*\h\w*|\h\w*%(::\h\w*)*%(\s*\(\)?|\<\>?)?')
     call s:set_keyword_pattern('d',
                 \'\v\h\w*%(!?\s*\(\)?)?')
     call s:set_keyword_pattern('python',
@@ -101,7 +102,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('ocaml',
                 \'\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
     call s:set_keyword_pattern('erlang',
-                \'\v^\s*-\h\w*[(]?|\h\w*%([:.]|\(\)?)?')
+                \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call s:set_keyword_pattern('html,xhtml,xml',
                 \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',
@@ -433,6 +434,9 @@ function! s:complete()"{{{
     endif
     let s:old_text = l:cur_text
 
+    " Reset quick match flag.
+    let s:quickmatched = 0
+
     " Try filename completion."{{{
     if g:NeoComplCache_TryFilenameCompletion && s:check_filename_completion(l:cur_text)
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
@@ -459,7 +463,11 @@ function! s:complete()"{{{
             let s:cur_keyword_str = l:cur_keyword_str
             let s:skipped = 0
 
-            call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+            if s:quickmatched
+                call feedkeys("\<C-x>\<C-u>", 'n')
+            else
+                call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+            endif
             return
         endif
 
@@ -493,7 +501,7 @@ function! s:complete()"{{{
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
-    if len(l:cur_keyword_str) >= g:NeoComplCache_MinKeywordLength
+    if len(l:cur_keyword_str) >= g:NeoComplCache_MinKeywordLength && l:cur_keyword_str !~ '\d\+$'
         " Check candidate.
         call neocomplcache#keyword_complete#check_candidate(l:cur_keyword_str)
     endif
@@ -548,7 +556,11 @@ function! s:complete()"{{{
     let s:cur_keyword_str = l:cur_keyword_str
     let s:skipped = 0
 
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    if s:quickmatched
+        call feedkeys("\<C-x>\<C-u>", 'n')
+    else
+        call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    endif
 endfunction"}}}
 
 function! s:check_filename_completion(cur_text)"{{{
@@ -661,10 +673,15 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
         " Append numbered list."{{{
         if match(a:cur_keyword_str, '\d$') >= 0
             " Get numbered list.
-            let l:numbered = get(s:prev_numbered_list, str2nr(matchstr(a:cur_keyword_str, '\d$')))
+            let l:num = str2nr(matchstr(a:cur_keyword_str, '\d$'))
+            let l:numbered = get(s:prev_numbered_list, l:num)
             if type(l:numbered) == type({})
                 let l:numbered.abbr = substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
                 call insert(l:cache_keyword_filtered, l:numbered)
+
+                if l:num == 0 || len(s:prev_numbered_list) < l:num*10
+                    let s:quickmatched = 1
+                endif
             endif
 
             " Get next numbered list.
@@ -676,6 +693,8 @@ function! neocomplcache#get_complete_words(cur_keyword_str)"{{{
                     if type(l:numbered) == type({})
                         let l:numbered.abbr = substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
                         call insert(l:cache_keyword_filtered, l:numbered)
+
+                        let s:quickmatched = 1
                     endif
                 endif
             endif
@@ -791,6 +810,8 @@ function! s:get_complete_files(cur_keyword_str)"{{{
             if type(l:numbered) == type({})
                 let l:numbered.abbr = substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
                 call insert(l:list, l:numbered)
+
+                let s:quickmatched = 1
             endif
 
             " Get next numbered list.
@@ -802,6 +823,8 @@ function! s:get_complete_files(cur_keyword_str)"{{{
                     if type(l:numbered) == type({})
                         let l:numbered.abbr = substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
                         call insert(l:list, l:numbered)
+
+                        let s:quickmatched = 1
                     endif
                 endif
             endif

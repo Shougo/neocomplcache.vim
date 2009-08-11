@@ -218,6 +218,7 @@ g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
 		with a number displayed beside a candidate.
 	
 		Default value is 1.
+		It is necessary for menuone to be included in 'completeopt' to use this function.
 
 g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 		When neocomplcache calculate frequency again,

@@ -214,6 +214,7 @@ g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
 		1ならば有効になる。
 		
 		初期値は1なので、有効になっている。
+		この機能を使用するためには、'completeopt'にmenuoneが含まれている必要がある。
 
 g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 		頻度を再計算するときに、乱数を使用するかを制御する。

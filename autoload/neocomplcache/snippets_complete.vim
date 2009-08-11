@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2009
+" Last Modified: 10 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -30,6 +30,7 @@
 "    - Fixed snippet expand bugs.
 "    - Caching snippets when file open.
 "    - g:NeoComplCache_SnippetsDir is comma-separated list.
+"    - Fixed snippet without default value expand bug.
 "
 "   1.17:
 "    - Fixed ATOK X3 on when snippets expanded.
@@ -446,7 +447,6 @@ function! s:search_outof_range()"{{{
     endif
 
     if col('.') < col('$')-1
-        normal! l
         startinsert
     else
         startinsert!
