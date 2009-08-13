@@ -27,9 +27,12 @@
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
-"   2.69:
+"   2.69: - Improved quick match.
 "    - Fixed html omni completion error.
 "    - Improved html omni completion pattern.
+"    - Improved g:NeoComplCache_CtagsArgumentsList in vim filetype.
+"    - Delete quick match cache when BufWinEnter.
+"    - Convert string omni completion.
 "
 "   2.68:
 "    - Improved quick match in filename completion.
