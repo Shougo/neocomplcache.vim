@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Aug 2009
+" Last Modified: 13 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.68, for Vim 7.0
+" Version: 2.69, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -145,7 +145,7 @@ function! neocomplcache#enable() "{{{
     if has('python')
         call s:set_omni_pattern('python', '\v[^. \t]\.')
     endif
-    call s:set_omni_pattern('html,xhtml,xml', '\v\<|\</|\<[^>]+\s')
+    call s:set_omni_pattern('html,xhtml,xml', '\v\</?%([[:alnum:]_-]+\s*)?|\<[^>]+\s')
     call s:set_omni_pattern('css', '\v^\s+\w+|\w+[):;]?\s+|[@!]')
     call s:set_omni_pattern('javascript', '\v[^. \t]\.')
     call s:set_omni_pattern('c', '\v[^. \t]%(\.|-\>)')
@@ -975,9 +975,9 @@ function! s:get_complete_omni(cur_keyword_str)"{{{
     if len(l:omni_list) > 1 && type(l:omni_list[0]) == type('')
         " Convert string list.
         let l:list = []
-        for omni in l:omni_list
+        for l:omni in l:omni_list
             call add(l:list, {
-                        \'word' : omni, 'menu' : '[O]', 
+                        \'word' : l:omni, 'menu' : '[O]', 
                         \'icase' : 1, 'rank' : 5
                         \})
         endfor
@@ -987,9 +987,9 @@ function! s:get_complete_omni(cur_keyword_str)"{{{
 
     let l:num = 0
     let l:list = []
-    for omni in l:omni_list
-        call add(list, {
-                    \'word' : omni.word, 'menu' : '[O]', 
+    for l:omni in l:omni_list
+        call add(l:list, {
+                    \'word' : l:omni['word'], 'menu' : '[O]', 
                     \'icase' : 1, 'rank' : 5
                     \})
         let l:num += 1
@@ -1035,7 +1035,7 @@ function! s:get_complete_omni(cur_keyword_str)"{{{
         " Add number."{{{
         let l:num = 0
         for keyword in l:save_list[:g:NeoComplCache_QuickMatchMaxLists-1]
-            let l:abbr = keyword.word
+            let l:abbr = has_key(keyword, 'abbr')? keyword.abbr : keyword.word
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
                 let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
             endif
@@ -1046,7 +1046,7 @@ function! s:get_complete_omni(cur_keyword_str)"{{{
             call add(l:list, keyword)
         endfor
         for keyword in l:save_list[g:NeoComplCache_QuickMatchMaxLists :]
-            let l:abbr = keyword.word
+            let l:abbr = has_key(keyword, 'abbr')? keyword.abbr : keyword.word
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
                 let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
             endif
@@ -1061,7 +1061,7 @@ function! s:get_complete_omni(cur_keyword_str)"{{{
         "}}}
     else
         for keyword in l:list
-            let l:abbr = keyword.word
+            let l:abbr = has_key(keyword, 'abbr')? keyword.abbr : keyword.word
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
                 let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
             endif
