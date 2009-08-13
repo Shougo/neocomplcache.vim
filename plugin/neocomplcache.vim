@@ -23,10 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.67, for Vim 7.0
+" Version: 2.68, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.68:
+"    - Improved quick match in filename completion.
+"    - Deleted g:NeoComplCache_FilenameCompletionSkipItems option.
+"    - Search quick match if no keyword match.
+"    - Fixed manual_complete wildcard bug.
+"    - Caching from cache in syntax_complete.
+"    - Added NeoComplCacheCachingSyntax command.
+"
 "   2.67:
 "    - Fixed snippet without default value expand bug.
 "    - Added snippet file snippet.
@@ -722,9 +730,6 @@ if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
 endif
 if !exists('g:NeoComplCache_EnableUnderbarCompletion')
     let g:NeoComplCache_EnableUnderbarCompletion = 0
-endif
-if !exists('g:NeoComplCache_FilenameCompletionSkipItems')
-    let g:NeoComplCache_FilenameCompletionSkipItems = 100
 endif
 if !exists('g:NeoComplCache_CachingLimitFileSize')
     let g:NeoComplCache_CachingLimitFileSize = 1000000

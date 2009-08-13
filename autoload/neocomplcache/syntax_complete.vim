@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 May 2009
+" Last Modified: 12 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,45 +23,63 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.20, for Vim 7.0
+" Version: 1.21, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.21:
+"    - Caching from cache.
+"    - Added NeoComplCacheCachingSyntax command.
+"
 "   1.20:
 "    - Don't caching when not buflisted.
+"
 "   1.19:
 "    - Ignore case.
 "    - Echo on caching.
+"
 "   1.18:
 "    - Improved empty check.
 "    - Fixed for neocomplcache 2.43.
+"
 "   1.17:
 "    - Fixed typo.
 "    - Optimized caching.
 "    - Fixed menu error.
+"
 "   1.16:
 "    - Optimized.
 "    - Delete command abbreviations in vim filetype.
+"
 "   1.15:
 "    - Added g:NeoComplCache_MinSyntaxLength option.
+"
 "   1.14:
 "    - Improved abbr.
+"
 "   1.13:
 "    - Delete nextgroup.
 "    - Improved filtering.
+"
 "   1.12:
 "    - Optimized caching.
 "    - Caching event changed.
+"
 "   1.11:
 "    - Optimized.
+"
 "   1.10:
 "    - Caching when set filetype.
 "    - Analyze match.
+"
 "   1.03:
 "    - Not complete 'Syntax items' message.
+"
 "   1.02:
 "    - Fixed get syntax list.
+"
 "   1.01:
 "    - Caching when initialize.
+"
 "   1.00:
 "    - Initial version.
 " }}}
@@ -79,10 +97,19 @@ function! neocomplcache#syntax_complete#initialize()"{{{
     let s:syntax_list = {}
 
     " Set caching event.
-    autocmd neocomplcache CursorHold * call s:caching()
+    autocmd neocomplcache FileType * call s:caching()
+
+    " Add command.
+    command! -nargs=? NeoComplCacheCachingSyntax call s:recaching(<q-args>)
+
+    " Create cache directory.
+    if !isdirectory(g:NeoComplCache_TemporaryDir . '/syntax_cache')
+        call mkdir(g:NeoComplCache_TemporaryDir . '/syntax_cache')
+    endif
 endfunction"}}}
 
 function! neocomplcache#syntax_complete#finalize()"{{{
+    delcommand NeoComplCacheCachingSyntax
 endfunction"}}}
 
 function! neocomplcache#syntax_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -107,11 +134,39 @@ function! s:caching()"{{{
         redraw
         echo 'Caching syntax... please wait.'
         let s:syntax_list[&filetype] = s:initialize_syntax()
+        redraw
+        echo 'Caching done.'
+    endif
+endfunction"}}}
+
+function! s:recaching(filetype)"{{{
+    if a:filetype == ''
+        let l:filetype = &filetype
+    else
+        let l:filetype = a:filetype
+    endif
+
+    " Caching.
+    if l:filetype != ''
+        redraw
+        echo 'Caching syntax... please wait.'
+        let s:syntax_list[l:filetype] = s:caching_from_syn()
+        redraw
         echo 'Caching done.'
     endif
 endfunction"}}}
 
 function! s:initialize_syntax()"{{{
+    let l:keyword_list = s:caching_from_cache()
+    if !empty(l:keyword_list)
+        " Caching from cache.
+        return l:keyword_list
+    endif
+
+    return s:caching_from_syn()
+endfunction"}}}
+
+function! s:caching_from_syn()"{{{
     " Get current syntax list.
     redir => l:syntax_list
     silent! syntax list
@@ -122,7 +177,6 @@ function! s:initialize_syntax()"{{{
     endif
 
     let l:group_name = ''
-    let l:keyword_list = []
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     if has_key(g:NeoComplCache_KeywordPatterns, &filetype)
         let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[&filetype]
@@ -130,8 +184,9 @@ function! s:initialize_syntax()"{{{
         let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
     endif
     let l:dup_check = {}
-
     let l:menu = '[S] '
+
+    let l:keyword_list = []
     for l:line in split(l:syntax_list, '\n')
         if l:line =~ '^\h\w\+'
             " Change syntax group name.
@@ -211,6 +266,39 @@ function! s:initialize_syntax()"{{{
             call extend(l:keyword_list, values(group))
         endfor"}}}
     endif
+
+    " Save syntax cache.
+    let l:save_list = []
+    for keyword in l:keyword_list
+        call add(l:save_list, keyword.word .','. keyword.menu)
+    endfor
+    let l:cache_name = printf('%s/syntax_cache/%s=', g:NeoComplCache_TemporaryDir, &filetype)
+    call writefile(l:save_list, l:cache_name)
+
+    return l:keyword_list
+endfunction"}}}
+
+function! s:caching_from_cache()"{{{
+    let l:cache_name = printf('%s/syntax_cache/%s=', g:NeoComplCache_TemporaryDir, &filetype)
+    let l:syntax_files = split(globpath(&runtimepath, 'syntax/'.&filetype.'.vim'), '\n')
+    if getftime(l:cache_name) == -1 || (!empty(l:syntax_files) && getftime(l:cache_name) <= getftime(l:syntax_files[-1]))
+        return []
+    endif
+
+    let l:syntax_lines = readfile(l:cache_name)
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+    let l:keyword_list = []
+    for syntax in l:syntax_lines
+        let l:splited = split(syntax, ',')
+        let l:keyword =  {
+                    \ 'word' : l:splited[0], 'menu' : l:splited[1], 'icase' : 1,
+                    \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
+                    \}
+        let l:keyword.abbr = 
+                    \ (len(l:splited[0]) > g:NeoComplCache_MaxKeywordWidth)? 
+                    \ printf(l:abbr_pattern, l:splited[0], l:splited[-8:]) : l:splited[0]
+        call add(l:keyword_list, l:keyword)
+    endfor
 
     return l:keyword_list
 endfunction"}}}

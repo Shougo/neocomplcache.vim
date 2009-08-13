@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.66
+Version: 2.68
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -81,6 +81,10 @@ COMMANDS 					*neocomplcache-commands*
 		Warning: considerably take time, for the big buffer.
 		Select current buffer when [bufnr] omitted.
 		When [bufnr] buffer is not cashed, perform only simple cashing.
+
+:NeoComplCacheCachingSyntax [filetype]			*:NeoComplCacheCachingSyntax*
+		Caching [filetype] syntax file.
+		Select current buffer filetype when [filetype] omitted.
 
 :NeoComplCacheCachingDisable [bufnr]			*:NeoComplCacheCachingDisable*
 		Disable [bufnr] buffer's cache.
@@ -295,13 +299,6 @@ g:NeoComplCache_EnableUnderbarCompletion		*g:NeoComplCache_EnableUnderbarComplet
 		For example, neocomplcache come to match it with 'public_html' when you input it with 'p_h'.
 	
 		Default value is 0.
-
-g:NeoComplCache_FilenameCompletionSkipItems		*g:NeoComplCache_FilenameCompletionSkipItems*
-		When neocomplcache complete filename automatically,
-		this variable controls the number of the skipping candidates.
-		The automatic completion is skipped if candidates are more than this number.
-	
-		Default value is 100.
 
 g:NeoComplCache_CachingLimitFileSize			*g:NeoComplCache_CachingLimitFileSize*
 		This variable set file size to make a cash of a file.
