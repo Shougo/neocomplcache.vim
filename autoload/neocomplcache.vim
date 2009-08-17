@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2009
+" Last Modified: 15 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.69, for Vim 7.0
+" Version: 2.70, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -740,12 +740,17 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
     if l:next_keyword_str != ''
         let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
+
+        " No ignorecase.
+        let l:save_ignorecase = &ignorecase
+        let &ignorecase = 0
         for r in l:cache_keyword_filtered
             if r.word =~ l:next_keyword_str
                 let r.word = strpart(r.word, 0, match(r.word, l:next_keyword_str))
                 let r.dup = 1
             endif
         endfor
+        let &ignorecase = l:save_ignorecase
     endif"}}}
 
     if g:NeoComplCache_EnableInfo"{{{
@@ -790,14 +795,16 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
     echo ''
     redraw
         
-    let l:num = 0
     let l:list = []
     for word in l:files
-        call add(list, {
+        let l:dict = {
                     \'word' : word, 'menu' : '[F]', 
                     \'icase' : 1, 'rank' : 5 + isdirectory(word)
-                    \})
-        let l:num += 1
+                    \}
+        if !filewritable(word)
+            let l:dict.menu .= ' [-]'
+        endif
+        call add(list, l:dict)
     endfor
     call sort(l:list, 'neocomplcache#compare_rank')
     " Trunk many items.
@@ -817,7 +824,7 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         " Add number."{{{
         let l:num = 0
         for keyword in l:save_list[:g:NeoComplCache_QuickMatchMaxLists-1]
-            let l:abbr = keyword.word
+            let l:abbr = keyword.word[l:len_prefix :]
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
                 let l:pre = '~' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
                 let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
@@ -925,22 +932,25 @@ function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
         " Convert string list.
         let l:list = []
         for str in l:omni_list
-            call add(l:list, {
-                        \'word' : str, 'menu' : '[O]', 
-                        \})
+            call add(l:list, { 'word' : str })
         endfor
 
         let l:omni_list = l:list
     endif
 
-    let l:num = 0
     let l:list = []
     for l:omni in l:omni_list
-        call add(l:list, {
-                    \'word' : l:omni['word'], 'menu' : '[O]', 
+        let l:dict = {
+                    \'word' : l:omni.word, 'menu' : '[O]', 
                     \'icase' : 1, 'rank' : 5
-                    \})
-        let l:num += 1
+                    \}
+        if has_key(l:omni, 'kind')
+            let l:dict.menu = ' ' . l:omni.kind
+        endif
+        if has_key(l:omni, 'menu')
+            let l:dict.menu = ' ' . l:omni.menu
+        endif
+        call add(l:list, l:dict)
     endfor
     " Trunk many items.
     let l:list = l:list[: g:NeoComplCache_MaxList-1]
@@ -1034,6 +1044,7 @@ function! s:get_quickmatch_list(cur_keyword_pos, cur_keyword_str, type)"{{{
         let l:prefix = ''
         if a:type != s:prev_quickmatch_type
             if s:prev_quickmatch_type == 'file'
+                let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
                 let l:pattern = printf('[/~]\?\%%(\\.\|\f\)\+[%s]\%%(\\.\|\f\)*$', l:PATH_SEPARATOR)
                 let l:quick_keyword_pos = match(getline('.'), l:pattern)
             elseif s:prev_quickmatch_type == 'omni' && &l:omnifunc != ''

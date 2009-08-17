@@ -85,6 +85,7 @@ function! neocomplcache#keyword_complete#initialize()"{{{
         let g:NeoComplCache_CtagsArgumentsList = {}
     endif
     let g:NeoComplCache_CtagsArgumentsList['default'] = ''
+    let g:NeoComplCache_CtagsArgumentsList['vim'] = "'--extra=fq --fields=afmiKlnsStz '--regex-vim=/function!? ([a-z#:_0-9A-Z]+)/\\1/function/''"
 
     " Initialize cache.
     call s:check_source()

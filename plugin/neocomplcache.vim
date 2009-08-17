@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2009
+" Last Modified: 15 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.69, for Vim 7.0
+" Version: 2.70, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.70:
+"    - Improved omni completion.
+"    - Display readonly files.
+"    - Fixed filename completion bug.
+"    - No ignorecase in next keyword completion.
+"
 "   2.69: - Improved quick match.
 "    - Fixed html omni completion error.
 "    - Improved html omni completion pattern.
