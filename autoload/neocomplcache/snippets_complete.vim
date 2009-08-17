@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Aug 2009
+" Last Modified: 17 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.18, for Vim 7.0
+" Version: 1.19, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.19:
+"    - Create g:NeoComplCache_SnippetsDir directory if not exists.
+"
 "   1.18:
 "    - Fixed snippet expand bugs.
 "    - Caching snippets when file open.
@@ -126,8 +129,13 @@ function! neocomplcache#snippets_complete#initialize()"{{{
 
     " Set snippets dir.
     let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete'), '\n')
-    if exists('g:NeoComplCache_SnippetsDir') && isdirectory(g:NeoComplCache_SnippetsDir)
-        call extend(s:snippets_dir, split(g:NeoComplCache_SnippetsDir, ','))
+    if exists('g:NeoComplCache_SnippetsDir')
+        for dir in split(g:NeoComplCache_SnippetsDir, ',')
+            if !isdirectory(dir)
+                call mkdir(dir, 'p')
+            endif
+            call add(s:snippets_dir, dir)
+        endfor
     endif
 
     augroup neocomplcache"{{{
