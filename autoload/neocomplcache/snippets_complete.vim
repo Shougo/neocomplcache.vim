@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2009
+" Last Modified: 24 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -31,6 +31,7 @@
 "    - Implemented direct expantion.
 "    - Implemented snippet alias.
 "    - Fixed expand jump bug.
+"    - Fixed expand() bug.
 "
 "   1.18:
 "    - Fixed snippet expand bugs.
@@ -207,7 +208,7 @@ function! neocomplcache#snippets_complete#expandable()"{{{
     if &filetype == '' || !has_key(s:snippets, &filetype)
         let l:snippets = s:snippets['_']
     else
-        let l:snippets = extend(s:snippets['_'], s:snippets[&filetype])
+        let l:snippets = extend(copy(s:snippets['_']), s:snippets[&filetype])
     endif
 
     let l:cur_text = strpart(getline('.'), 0, col('.'))
@@ -352,7 +353,7 @@ function! s:snippets_expand()"{{{
     if &filetype == '' || !has_key(s:snippets, &filetype)
         let l:snippets = s:snippets['_']
     else
-        let l:snippets = extend(s:snippets['_'], s:snippets[&filetype])
+        let l:snippets = extend(copy(s:snippets['_']), s:snippets[&filetype])
     endif
 
     let l:cur_text = strpart(getline('.'), 0, col('.'))

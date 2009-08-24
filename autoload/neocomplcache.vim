@@ -31,7 +31,7 @@ function! neocomplcache#enable() "{{{
         autocmd!
         " Auto complete events
         autocmd CursorMovedI * call s:complete()
-        autocmd BufWinLeave * call s:remove_cache()
+        autocmd InsertLeave * call s:remove_cache()
     augroup END "}}}
 
     " Initialize"{{{

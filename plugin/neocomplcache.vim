@@ -28,7 +28,8 @@
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
 "   2.72:
-"    - 
+"    - Improved quickmatch behaivior.
+"    - Fixed expand() bug in snippets_complete.
 "
 "   2.71:
 "    - Create g:NeoComplCache_TemporaryDir directory if not exists.
