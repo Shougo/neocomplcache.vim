@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Aug 2009
+" Last Modified: 23 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,13 +23,26 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.71, for Vim 7.0
+" Version: 2.72, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.72:
+"    - 
+"
 "   2.71:
 "    - Create g:NeoComplCache_TemporaryDir directory if not exists.
 "    - Create g:NeoComplCache_SnippetsDir directory if not exists.
+"    - Implemented direct expantion in snippet complete.
+"    - Implemented snippet alias in snippet complete.
+"    - Added g:NeoComplCache_PluginCompletionLength option.
+"    - Improved get cursour word.
+"    - Added Objective-C/C++ support.
+"    - Fixed filename completion bug when environment variable used.
+"    - Improved skipped behaivior.
+"    - Implemented short filename completion.
+"    - Check cdpath in filename completion.
+"    - Fixed expand jump bug in snippets completion.
 "
 "   2.70:
 "    - Improved omni completion.
@@ -753,6 +766,9 @@ if !exists('g:NeoComplCache_CachingLimitFileSize')
 endif
 if !exists('g:NeoComplCache_CachingDisablePattern')
     let g:NeoComplCache_CachingDisablePattern = ''
+endif
+if !exists('g:NeoComplCache_PluginCompletionLength')
+    let g:NeoComplCache_PluginCompletionLength = {}
 endif
 if !exists('g:NeoComplCache_TemporaryDir')
     let g:NeoComplCache_TemporaryDir = $HOME . '/.neocon'

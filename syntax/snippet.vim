@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/snippet.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 31 Jul 2009
+" Last Modified: 18 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Added alias.
+"     - Improved color.
+"
 "   1.1:
 "     - Added delete.
 "
@@ -53,7 +57,7 @@ syn match   SnippetWord               '^\s\+.*$' contains=SnippetEval,SnippetExp
 syn match   SnippetExpand             '\${\d\+\%(:\([^}]*\)\)\?}' contained
 syn match   SnippetComment            '^#.*$'
 
-syn match   SnippetKeyword            '^\%(include\|snippet\|abbr\|prev_word\|rank\|delete\)' contained
+syn match   SnippetKeyword            '^\%(include\|snippet\|abbr\|prev_word\|rank\|delete\|alias\)' contained
 syn match   SnippetPrevWords          '^prev_word\s\+.*$' contains=SnippetPrevWord,SnippetKeyword
 syn match   SnippetStatementName      '^snippet\s.*$' contains=SnippetName,SnippetKeyword
 syn match   SnippetName               '\s\+.*$' contained
@@ -65,6 +69,8 @@ syn match   SnippetStatementInclude   '^include\s.*$' contains=SnippetInclude,Sn
 syn match   SnippetInclude            '\s\+.*$' contained
 syn match   SnippetStatementDelete   '^delete\s.*$' contains=SnippetDelete,SnippetKeyword
 syn match   SnippetDelete            '\s\+.*$' contained
+syn match   SnippetStatementAlias    '^alias\s.*$' contains=SnippetAlias,SnippetKeyword
+syn match   SnippetAlias             '\s\+.*$' contained
 
 hi def link SnippetPrevWord String
 hi def link SnippetEval Type
@@ -73,8 +79,10 @@ hi def link SnippetExpand Special
 hi def link SnippetComment Comment
 hi def link SnippetKeyword Statement
 hi def link SnippetName Identifier
+hi def link SnippetAbbr Type
 hi def link SnippetRank Constant
-hi def link SnippetInclude Identifier
-hi def link SnippetDelete Identifier
+hi def link SnippetInclude PreProc
+hi def link SnippetDelete PreProc
+hi def link SnippetAlias Identifier
 
 let b:current_syntax = "snippet"

@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.68
+Version: 2.71
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -356,6 +356,12 @@ g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLis
 		
 		初期値は空である。
 
+g:NeoComplCache_PluginCompletionLength			*g:NeoComplCache_PluginCompletionLength*
+		補完関数を呼び出す文字数をプラグインごとに指定するディクショナリ。
+		重いプラグインは文字数が多いときにのみ呼び出せるようにするなどが考えられる。
+		
+		初期値は空である。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
@@ -364,7 +370,7 @@ KEY MAPPINGS 					*neocomplcache-key-mappings*
 		打ち込んだ単語をすぐにキャッシュしたい時に便利である。
 
 <Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
-		複数行のスニペットを展開する。プレースホルダの処理も行う。
+		カーソル位置にあるスニペットを展開する。プレースホルダの処理も行う。
 		展開したスニペットはランクが上昇するため、上位に表示されやすくなる。
 
 neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complete*

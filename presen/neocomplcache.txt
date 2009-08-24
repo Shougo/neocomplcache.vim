@@ -274,21 +274,25 @@ Ver.2.58より、キャッシュタイミングを改善し、入力した候補
 バッファ内で../といったディレクトリ名を入力するとファイル名の補完ができます。
 autocomplpopで便利だったので、移植しました。
 特にvimshellではこれがないと生きていけません。
-自動補完に慣れてしまうと、通常のシェルの<TAB>補完が馬鹿らしくなります。
+ファイル名の自動補完に慣れてしまうと、いちいち<TAB>を入力しなければならない通常のシェルが馬鹿らしくなります。
+この機能が邪魔な場合は、g:NeoComplCache_TryFilenameCompletionの値を0にすることによって、ファイル名を自動補完しないようにできます。
 
-g:NeoComplCache_TryFilenameCompletionの値を0にすることによって、ファイル名を自動補完しないようにできます。
-ついにファイル名補完を自前実装したので、
-ワイルドカード（-のみ）や、数字によるクイックマッチが動作します。
-/で補完を続けることができるので、vimshellで使うとかなり便利です。
+ファイル名補完は自前実装したので、数字によるクイックマッチが動作します。
 ただしSmartCaseやUnderbar completionなど、一部の機能は動作しません。
 実行ファイルには'*'マークが付くので判別も容易です。
 
 手動でファイル名補完を呼び出すこともできるので、
 inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 このようにマッピングすると、標準のファイル名補完を置き換えることができます。
+補完スキップも指定できます。手動補完はスキップされません。
 
-補完スキップも指定でき、g:NeoComplCache_FilenameCompletionSkipItems以上の候補があった場合、
-自動補完はスキップされます。手動補完はスキップされません。
+Ver.2.71より、短縮ファイル名補完に対応。
+ディレクトリ名の先頭の文字を入力し、/で区切ることで簡単に補完できます。
+例：
+/hoge/piyo/hoge.vim
+を補完したい場合、
+/h/p/
+と入力するだけで、hoge.vimが候補として現れます。
 
 --------------------------------
 カーソル後方のキーワードに応じた補完
@@ -511,17 +515,16 @@ snippet     hoge
 prev_word   '^'
     `expand("%")`
 例えばこのように記述すると、現在開いているバッファ名を補完できます。
-ただしevalを用いると、補完候補を生成するときに毎回評価を行うため、副作用には十分注意してください。
+ただし補完候補を展開するときに評価を行うため、副作用には十分注意してください。
 
 簡単にスニペットファイルを編集できるように、
 :NeoComplCacheEditSnippets [filetype]というコマンドを用意しています。
 このコマンドを用いると、filetypeのスニペット補完ファイルを簡単に編集することができます。
 filetypeを省略すると、&filetypeとなります。保存すると自動的に再キャッシュされるので、さらに便利です。
 
-Ver.2.33にて、遂に改行文字に対応しました！
 imap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
 smap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
-のようにplugin keymappingを定義しておけば、<C-l>で改行付きのスニペットを展開できます。
+のようにplugin keymappingを定義しておけば、<C-l>でスニペットを展開できます。
 展開時にインデントもきちんとなされるので便利です。これでスニペットの自由度が増しますね。
 
 snipMate風のプレースホルダにも対応しています。
@@ -541,7 +544,6 @@ ${1:condition}はデフォルトでconditionという単語が選択された状
 
 expandするときにスニペットを解析するので、展開したスニペットのランクが上昇するようにしました。
 これで、よく使用するスニペットは補完時に上位に来るようになります。
-expandしないスニペットや評価を行うスニペットには効果がないので注意してください。
 
 vnoremapやvmap, mapはselect modeでも有効になるので、
 変なマッピングをしていると、デフォルト値の選択時に上手く文字が入力できなくなります。
@@ -558,15 +560,18 @@ let g:NeoComplCache_SnippetsDir = $HOME.'/snippets'
 imap <expr><silent><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 のように設定でき、展開可能でない場合は他の機能にキーバインドを割り当てることが出来ます。
 
-展開可能なスニペットは表示が変わるようになりました。
-[Snippet]が<Snippet>に変化します。
+複数回展開が必要ななスニペットは表示が変わり、[Snippet]が<Snippet>に変化します。
 
 Ver.2.39より、スニペット名が同じスニペットを定義した場合、上書きされるようになりました。
 インクルードしたスニペットや標準のスニペットを書き換えるときに便利です。
 
 Ver.2.57より、どのファイルタイプでも読み込まれる、'_.snip'を追加しました。
 さらに、snipMate形式のスニペットファイルもそのまま読み込めます。
-ただしプレースホルダの動機には対応していませんので注意してください。
+ただしプレースホルダの同期には対応していませんので注意してください。
+
+alias hoge hogera hogehoge
+のように空白で区切って指定すると、スニペットの別名定義ができます。
+スニペット名を直接入力するときに、覚えることが簡単になるので便利です。
 
 --------------------------------
 自動補完のスキップ
@@ -577,12 +582,6 @@ let g:NeoComplCache_SkipCompletionTime = '0.3'
 let g:NeoComplCache_SkipInputTime = '0.1'
 のようにすることで調整ができます。
 値は文字列にしないと動作しないので注意。
-
---------------------------------
-completefuncの自動呼び出し
-
-Ver.2.42より、&l:completefuncがneocomplcacheのものでない場合にも、自動的に呼び出すようにしました。
-上手く使えば他のプラグインとも連携できるかもしれません。
 
 --------------------------------
 ポップアップメニューを閉じる
@@ -605,6 +604,25 @@ g:NeoComplCache_CachingLimitFileSizeオプションではキャッシュする�
 これより大きいファイルは自動でキャッシュされません。
 g:NeoComplCache_CachingDisablePatternオプションではキャッシュしないバッファ名パターンを設定します。
 正規表現で指定するので、\|で区切れば複数のパターンを指定できます。
+
+--------------------------------
+プラグインごとに補完開始文字数を設定
+
+Ver.2.71より、プラグインごとに補完開始文字数を設定できるようになりました。
+
+例：
+let g:NeoComplCache_KeywordCompletionStartLength = 1
+if !exists('g:NeoComplCache_PluginCompletionLength')
+    let g:NeoComplCache_PluginCompletionLength = {}
+endif
+let g:NeoComplCache_PluginCompletionLength['snippets_complete'] = 1
+let g:NeoComplCache_PluginCompletionLength['keyword_complete'] = 2
+let g:NeoComplCache_PluginCompletionLength['syntax_complete'] = 2
+let g:NeoComplCache_PluginCompletionLength['tags_complete'] = 3
+
+この例ではsnippets_completeのみ1文字で補完、tags_completeは3文字、他は2文字で補完するようにしています。
+g:NeoComplCache_KeywordCompletionStartLengthを変更しないと、
+入力文字数がg:NeoComplCache_KeywordCompletionStartLengthを超えるまで自動補完が呼び出されないので注意してください。
 
 --------------------------------
 私の設定
@@ -750,10 +768,8 @@ set completeopt=menuone
 今後の予定
 
 何とか英語のヘルプファイルを作成することができました。
-これからは要望されたり、思いついた機能を加えつつ、
-neocomplcacheを使いやすく改良することになると思います。
-さらに、インクルード補完を自前で実装したいと思っていて、
-これが実装できればtags_completeは必要なくなると思います。
+これからは要望されたり、思いついた機能を加えつつ、neocomplcacheを使いやすく改良することになると思います。
+さらに、インクルード補完を自前で実装したいと思っていて、これが実装できればtags_completeは必要なくなると思います。
 
 --------------------------------
 まとめ
@@ -775,6 +791,7 @@ Twitterはneocomplcache開発日記と化しているので、こまめにチェ
 --------------------------------
 更新履歴
 
+2009/08/22     neocomplcache Ver.2.71に対応。
 2009/08/12     neocomplcache Ver.2.68に対応。
 2009/08/10     neocomplcache Ver.2.67に対応。
 2009/07/26     neocomplcache Ver.2.64に対応。
