@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Aug 2009
+" Last Modified: 26 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -448,7 +448,7 @@ function! s:search_snippet_range(start, end)"{{{
                 else
                     execute 'normal! v'.l:len."l\<C-g>"
                 endif
-            elseif col('.') < col('$')
+            elseif l:match+1 < col('$')
                 startinsert
             else
                 startinsert!
@@ -488,12 +488,12 @@ function! s:search_outof_range()"{{{
 
             return
         endif
-    endif
 
-    if col('.') < col('$')
-        startinsert
-    else
-        startinsert!
+        if l:match+1 < col('$')
+            startinsert
+        else
+            startinsert!
+        endif
     endif
 endfunction"}}}
 

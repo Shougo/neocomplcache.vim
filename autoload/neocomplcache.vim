@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2009
+" Last Modified: 26 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -797,10 +797,11 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
     endif
 
     try
+        let l:files = split(substitute(glob(l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
         if l:cur_keyword_str =~ printf('^\.\+[%s]', l:PATH_SEPARATOR)
-            let l:files = split(substitute(glob(l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
+            let l:cdfiles = []
         else
-            let l:files = split(substitute(globpath(&cdpath, l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
+            let l:cdfiles = split(substitute(globpath(&cdpath, l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
         endif
     catch /.*/
         return []
@@ -817,6 +818,16 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
     for word in l:files
         let l:dict = {
                     \'word' : word, 'menu' : '[F]', 
+                    \'icase' : 1, 'rank' : 6 + isdirectory(word)
+                    \}
+        if !filewritable(word)
+            let l:dict.menu .= ' [-]'
+        endif
+        call add(list, l:dict)
+    endfor
+    for word in l:cdfiles
+        let l:dict = {
+                    \'word' : word, 'menu' : '[CD]', 
                     \'icase' : 1, 'rank' : 5 + isdirectory(word)
                     \}
         if !filewritable(word)
@@ -824,21 +835,24 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         endif
         call add(list, l:dict)
     endfor
+    if exists('w:vimshell_directory_stack')
+        " Add directory stack.
+        for word in w:vimshell_directory_stack
+            let l:dict = {
+                        \'word' : word, 'menu' : '[Stack]', 
+                        \'icase' : 1, 'rank' : 4
+                        \}
+            if !filewritable(word)
+                let l:dict.menu .= ' [-]'
+            endif
+            call add(list, l:dict)
+        endfor 
+    endif
     call sort(l:list, 'neocomplcache#compare_rank')
     " Trunk many items.
     let l:list = l:list[: g:NeoComplCache_MaxList-1]
 
-    if l:cur_keyword_str =~ '^\$\h\w*'
-        let l:prefix = ''
-    else
-        let l:prefix = matchstr(l:cur_keyword_str, printf('^.\+\ze[%s]', l:PATH_SEPARATOR))
-    endif
-    let l:len_prefix = len(l:prefix)
-    if len(l:prefix) > g:NeoComplCache_MaxKeywordWidth
-        let l:prefix = printf('%.10s~%s', l:prefix, l:prefix[-10:])
-    endif
-
-    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+    let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
     if g:NeoComplCache_EnableQuickMatch"{{{
         let l:save_list = l:list
         let l:list = s:get_quickmatch_list(a:cur_keyword_pos, a:cur_keyword_str, 'omni')
@@ -846,12 +860,9 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         " Add number."{{{
         let l:num = 0
         for keyword in l:save_list[:g:NeoComplCache_QuickMatchMaxLists-1]
-            let l:abbr = keyword.word[l:len_prefix :]
+            let l:abbr = substitute(keyword.word, l:home_pattern, '\~/', '')
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-                let l:pre = '~' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
-                let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
-            else
-                let l:pre = l:prefix
+                let l:abbr = printf('%s..%s', l:abbr[:8], l:abbr[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth-10:])
             endif
             if isdirectory(keyword.word)
                 let l:abbr .= '/'
@@ -865,18 +876,15 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
                 endif
             endif
 
-            let keyword.abbr = printf('%2d: %s%s', l:num, l:pre, l:abbr)
+            let keyword.abbr = printf('%2d: %s', l:num, l:abbr)
             let l:num += 1
 
             call add(l:list, keyword)
         endfor
         for keyword in l:save_list[g:NeoComplCache_QuickMatchMaxLists :]
-            let l:abbr = keyword.word[l:len_prefix :]
+            let l:abbr = substitute(keyword.word, l:home_pattern, '\~/', '')
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-                let l:pre = '~' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
-                let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
-            else
-                let l:pre = l:prefix
+                let l:abbr = printf('%s..%s', l:abbr[:8], l:abbr[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth-10:])
             endif
             if isdirectory(keyword.word)
                 let l:abbr .= '/'
@@ -890,7 +898,7 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
                 endif
             endif
 
-            let keyword.abbr = printf('    %s%s', l:pre, l:abbr)
+            let keyword.abbr = '    ' . l:abbr
             call add(l:list, keyword)
         endfor"}}}
 
@@ -902,12 +910,9 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         "}}}
     else
         for keyword in l:list
-            let l:abbr = keyword.word[l:len_prefix :]
+            let l:abbr = keyword.word
             if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-                let l:pre = '~' . l:prefix[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth+3 : ]
-                let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
-            else
-                let l:pre = l:prefix
+                let l:abbr = printf('%s..%s', l:abbr[:8], l:abbr[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth-10:])
             endif
             if isdirectory(keyword.word)
                 let l:abbr .= '/'
@@ -921,7 +926,7 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
                 endif
             endif
 
-            let keyword.abbr = l:pre . l:abbr
+            let keyword.abbr = l:abbr
         endfor
     endif
 

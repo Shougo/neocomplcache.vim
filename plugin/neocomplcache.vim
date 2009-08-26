@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2009
+" Last Modified: 25 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -30,6 +30,11 @@
 "   2.72:
 "    - Improved quickmatch behaivior.
 "    - Fixed expand() bug in snippets_complete.
+"    - Fixed prefix bug in filename completion.
+"    - Improved filename completion.
+"    - Substitute $HOME into '~' in filename completion.
+"    - Dispay 'cdpath' files in filename completion.
+"    - Dispay 'w:vimshell_directory_stack' files in filename completion.
 "
 "   2.71:
 "    - Create g:NeoComplCache_TemporaryDir directory if not exists.
