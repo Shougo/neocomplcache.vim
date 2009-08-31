@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Aug 2009
+" Last Modified: 28 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.72, for Vim 7.0
+" Version: 2.73, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 " ChangeLog NeoComplCache2: "{{{
+"   2.73:
+"    - Improved manual completion.
+"    - Fixed error in manual omni completion when omnifunc is empty.
+"    - Improved filename completion.
+"    - Improved check candidate.
+"    - Improved omni completion.
+"    - Fixed dup bug in snippets_complete.
+"
 "   2.72:
 "    - Improved quickmatch behaivior.
 "    - Fixed expand() bug in snippets_complete.

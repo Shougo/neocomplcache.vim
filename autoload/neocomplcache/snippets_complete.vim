@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Aug 2009
+" Last Modified: 29 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.19, for Vim 7.0
+" Version: 1.20, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.20:
+"    - Fixed dup bug.
+"
 "   1.19:
 "    - Create g:NeoComplCache_SnippetsDir directory if not exists.
 "    - Implemented direct expantion.
@@ -246,7 +249,7 @@ function! s:set_snippet_pattern(dict)"{{{
     let l:dict = {
                 \'word' : a:dict.name, 'snip' : l:word,
                 \'menu' : printf(l:menu_pattern, a:dict.name), 
-                \'prev_word' : l:prev_word, 'icase' : 1,
+                \'prev_word' : l:prev_word, 'icase' : 1, 'dup' : 1,
                 \'rank' : l:rank, 'prev_rank' : 0, 'prepre_rank' : 0, 
                 \}
     let l:dict.abbr = 

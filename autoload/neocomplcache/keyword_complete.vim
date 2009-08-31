@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jul 2009
+" Last Modified: 29 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.64, for Vim 7.0
+" Version: 2.73, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -305,7 +305,7 @@ function! neocomplcache#keyword_complete#check_candidate(keyword)"{{{
     endif
 
     " Check cache.
-    if !has_key(l:source.keyword_cache, a:keyword)
+    if a:keyword != '' && !has_key(l:source.keyword_cache, a:keyword)
         " Append list.
         let l:filename = '[B] ' . fnamemodify(bufname('%'), ':t')
         let l:source.keyword_cache[a:keyword] = {
