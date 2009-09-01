@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2009
+" Last Modified: 01 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -44,6 +44,7 @@ function! neocomplcache#enable() "{{{
     let s:skip_next_complete = 0
     let s:cur_keyword_pos = -1
     let s:quickmatched = 0
+    let s:short_cur_keyword = 0
     let s:prev_quickmatch_type = 'normal'
     let s:prepre_quickmatch_type = 'normal'
 
@@ -551,9 +552,9 @@ function! s:complete()"{{{
     endif
 
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
-        if g:NeoComplCache_EnableQuickMatch
+        if g:NeoComplCache_EnableQuickMatch && s:short_cur_keyword
             " Search quick match.
-            let l:pattern = '\v[^[:digit:]]\zs\d\d?$'
+            let l:pattern = '\v\d{1,2}$'
             let l:cur_keyword_pos = match(l:cur_text, l:pattern)
             let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
@@ -638,6 +639,9 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
 endfunction"}}}
 
 function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+    " Check keyword length.
+    let s:short_cur_keyword = (len(a:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength)? 1 : 0
+
     if g:NeoComplCache_EnableSkipCompletion && &l:completefunc == 'neocomplcache#auto_complete'
         let s:start_time = reltime()
     endif
@@ -785,6 +789,9 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
 endfunction"}}}
 
 function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
+    " Check keyword length.
+    let s:short_cur_keyword = (len(a:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength)? 1 : 0
+
     let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
     let l:cur_keyword_str = substitute(substitute(a:cur_keyword_str, '\\ ', ' ', 'g'),
                 \printf('\w\+\ze[%s]', l:PATH_SEPARATOR), '\0*', 'g')
@@ -950,6 +957,9 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
 endfunction"}}}
 
 function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
+    " Check keyword length.
+    let s:short_cur_keyword = (len(a:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength)? 1 : 0
+
     if g:NeoComplCache_EnableSkipCompletion && &l:completefunc == 'neocomplcache#auto_complete'
         let s:start_time = reltime()
     endif
@@ -1100,8 +1110,7 @@ function! s:get_quickmatch_list(cur_keyword_pos, cur_keyword_str, type)"{{{
         let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
         call insert(l:list, l:numbered)
 
-        if match(a:cur_keyword_str, '^\d\+$') <0 &&
-                    \(l:num == 0 || len(s:prev_numbered_list) < l:num*10)
+        if l:num == 0 || len(s:prev_numbered_list) < l:num*10
             let s:quickmatched = 1
         endif
     endif
@@ -1277,6 +1286,7 @@ function! s:remove_cache()
     let s:prepre_numbered_list = []
     let s:skipped = 0
     let s:skip_next_complete = 0
+    let s:short_cur_keyword = 0
 endfunction
 "}}}
 

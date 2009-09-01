@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.71
+Version: 2.74
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -32,7 +32,6 @@ Interface		|neocomplcache-interface|
 Examples		|neocomplcache-examples|
 Plugins			|neocomplcache-plugins|
 Create plugin		|neocomplcache-create-plugin|
-Bugs			|neocomplcache-bugs|
 Changelog		|neocomplcache-changelog|
 
 ==============================================================================
@@ -465,9 +464,6 @@ syntax_complete.vim					*syntax_complete*
 		autoload/syntaxcomplete.vimよりもたくさんの候補を認識できる。
 
 ==============================================================================
-BUGS						*neocomplcache-bugs*
-
-==============================================================================
 CREATE PLUGIN					*neocomplcache-create-plugin*
 
 この項では、neocomplcacheのプラグインを作成する方法について解説する。
@@ -476,7 +472,7 @@ CREATE PLUGIN					*neocomplcache-create-plugin*
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
-量が多いため、plugin/neocomplcache.vimを参照せよ。
+doc/neocomplcache.txtを参照せよ。
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:fen:fdl=0:fdm=marker:
