@@ -491,6 +491,11 @@ ChangeLog NeoComplCache 2.51-: {{{
    2.74:
     - Added ChangeLog.
     - Improved quick match.
+    - Fixed no new line snippet expand bug in snippet completion.
+    - Recognize next keyword in omni completion.
+    - Optimized filename completion.
+    - Ignore japanese syntax message in syntax completion.
+    - Improved next keyword completion.
 
    2.73:
     - Improved manual completion.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Aug 2009
+" Last Modified: 03 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,10 @@
 " Version: 1.21, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.22:
+"    - Fixed long abbr bug.
+"    - Ignore japanese syntax message.
+"
 "   1.21:
 "    - Caching from cache.
 "    - Added NeoComplCacheCachingSyntax command.
@@ -223,6 +227,7 @@ function! s:caching_from_syn()"{{{
 
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
+                        \&& l:match_str =~ '^[[:print:]]\+$'
                 let l:keyword = {
                             \ 'word' : l:match_str, 'menu' : l:menu, 'icase' : 1,
                             \ 'rank' : 1, 'prev_rank' : 0, 'prepre_rank' : 0
@@ -296,7 +301,7 @@ function! s:caching_from_cache()"{{{
                     \}
         let l:keyword.abbr = 
                     \ (len(l:splited[0]) > g:NeoComplCache_MaxKeywordWidth)? 
-                    \ printf(l:abbr_pattern, l:splited[0], l:splited[-8:]) : l:splited[0]
+                    \ printf(l:abbr_pattern, l:splited[0], l:splited[0][-8:]) : l:splited[0]
         call add(l:keyword_list, l:keyword)
     endfor
 

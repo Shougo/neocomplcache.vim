@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2009
+" Last Modified: 02 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.20:
 "    - Fixed dup bug.
+"    - Fixed no new line snippet expand bug.
 "
 "   1.19:
 "    - Create g:NeoComplCache_SnippetsDir directory if not exists.
@@ -375,11 +376,17 @@ function! s:snippets_expand()"{{{
         let l:snippet.rank += 1
 
         " Insert snippets.
-        call setline(line('.'), l:cur_text . l:snip_word . getline('.')[col('.') :])
-        call setpos('.', [0, line('.'), len(l:cur_text)+len(l:snip_word), 0])
+        let l:next_line = getline('.')[col('.') :]
+        call setline(line('.'), l:cur_text . l:snip_word . l:next_line)
+        call setpos('.', [0, line('.'), len(l:cur_text)+len(l:snip_word)+1, 0])
+        echo col('.')
 
         if matchstr(l:snip_word, '<expand>$') != ''
             call s:expand_newline()
+        elseif l:next_line != ''
+            startinsert
+        else
+            startinsert!
         endif
 
         let &l:iminsert = 0

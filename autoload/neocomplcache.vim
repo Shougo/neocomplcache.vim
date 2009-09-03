@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2009
+" Last Modified: 04 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.73, for Vim 7.0
+" Version: 2.74, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -112,7 +112,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call s:set_keyword_pattern('html,xhtml,xml',
-                \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?')
+                \'\v[[:alnum:]_-]*\>|\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?')
     call s:set_keyword_pattern('tags',
                 \'\v^[^!][^/[:blank:]]*')
     call s:set_keyword_pattern('pic',
@@ -281,17 +281,24 @@ endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
+    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
+                \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
+    let l:next_keyword_escape = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g')
+
     " Keyword filter."{{{
     let l:cur_len = len(a:cur_keyword_str)
     if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string(l:keyword_escape))
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s",
+                    \string(l:keyword_escape . '.*' . l:next_keyword_str . '$'))
     else
         " Head match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string('^' . l:keyword_escape))
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", 
+                    \string('^' . l:keyword_escape . '.*' . l:next_keyword_str . '$'))
     endif"}}}
+    "echomsg l:pattern
 
     return filter(a:list, l:pattern)
 endfunction"}}}
@@ -759,6 +766,7 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     " Remove next keyword."{{{
     let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
+                
     if l:next_keyword_str != ''
         let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
@@ -844,19 +852,6 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         endif
         call add(list, l:dict)
     endfor
-    if exists('w:vimshell_directory_stack')
-        " Add directory stack.
-        for word in w:vimshell_directory_stack
-            let l:dict = {
-                        \'word' : substitute(word, l:home_pattern, '\~/', ''), 'menu' : '[Stack]', 
-                        \'icase' : 1, 'rank' : 4
-                        \}
-            if !filewritable(word)
-                let l:dict.menu .= ' [-]'
-            endif
-            call add(list, l:dict)
-        endfor 
-    endif
     call sort(l:list, 'neocomplcache#compare_rank')
     " Trunk many items.
     let l:list = l:list[: g:NeoComplCache_MaxList-1]
@@ -1047,6 +1042,24 @@ function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
             let keyword.abbr = l:abbr
         endfor
     endif
+
+    " Remove next keyword."{{{
+    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
+                \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
+    if l:next_keyword_str != ''
+        let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
+
+        " No ignorecase.
+        let l:save_ignorecase = &ignorecase
+        let &ignorecase = 0
+        for r in l:list
+            if r.word =~ l:next_keyword_str
+                let r.word = strpart(r.word, 0, match(r.word, l:next_keyword_str))
+                let r.dup = 1
+            endif
+        endfor
+        let &ignorecase = l:save_ignorecase
+    endif"}}}
 
     return l:list
 endfunction"}}}
