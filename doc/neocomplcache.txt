@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.74
+Version: 2.75
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -488,6 +488,12 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 2.51-: {{{
+   2.75:
+    - Added css support.
+    - Improved vim keyword.
+    - Add rank if match next keyword.
+    - Improved tex keyword.
+
    2.74:
     - Added ChangeLog.
     - Improved quick match.

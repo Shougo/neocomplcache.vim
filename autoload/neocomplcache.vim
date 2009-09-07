@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Sep 2009
+" Last Modified: 05 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.74, for Vim 7.0
+" Version: 2.75, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -76,9 +76,9 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|\h\w*%(::\h\w*)*%(\s*\(\)?)?')
     call s:set_keyword_pattern('vim,help',
-                \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
+                \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&.]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
     call s:set_keyword_pattern('tex',
-                \'\v\\\a\{\a{1,2}\}?|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]]*[*[{]?')
+                \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call s:set_keyword_pattern('sh,zsh',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
     call s:set_keyword_pattern('vimshell',
@@ -113,6 +113,8 @@ function! neocomplcache#enable() "{{{
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call s:set_keyword_pattern('html,xhtml,xml',
                 \'\v[[:alnum:]_-]*\>|\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?')
+    call s:set_keyword_pattern('css',
+                \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
     call s:set_keyword_pattern('tags',
                 \'\v^[^!][^/[:blank:]]*')
     call s:set_keyword_pattern('pic',
@@ -281,22 +283,16 @@ endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
-    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
-                \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
-    let l:next_keyword_escape = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g')
-
     " Keyword filter."{{{
     let l:cur_len = len(a:cur_keyword_str)
     if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s",
-                    \string(l:keyword_escape . '.*' . l:next_keyword_str . '$'))
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string(l:keyword_escape))
     else
         " Head match.
         " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", 
-                    \string('^' . l:keyword_escape . '.*' . l:next_keyword_str . '$'))
+        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string('^' . l:keyword_escape))
     endif"}}}
     "echomsg l:pattern
 
@@ -616,7 +612,8 @@ function! s:check_filename_completion(cur_text)"{{{
     let l:exclude_pattern = '[*/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$'
 
     " Check filename completion.
-    return match(a:cur_text, l:pattern) >= 0 && match(a:cur_text, l:exclude_pattern) < 0
+    return !((has('win32') || has('win64')) && &filetype == 'tex')
+                \ && match(a:cur_text, l:pattern) >= 0 && match(a:cur_text, l:exclude_pattern) < 0
                 \ && len(matchstr(a:cur_text, l:pattern)) >= g:NeoComplCache_KeywordCompletionStartLength
 endfunction"}}}
 
@@ -665,7 +662,7 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
             call remove(l:loaded_plugins, l:plugin)
             let l:cache_keyword_lists[l:plugin] = []
         else
-            let l:cache_keyword_lists[l:plugin] = call(l:loaded_plugins[l:plugin] . 'get_keyword_list', [a:cur_keyword_str])
+            let l:cache_keyword_lists[l:plugin] = deepcopy(call(l:loaded_plugins[l:plugin] . 'get_keyword_list', [a:cur_keyword_str]))
         endif
 
         if !empty(l:cache_keyword_lists[l:plugin])
@@ -697,12 +694,33 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
 
     let l:cache_keyword_filtered = []
 
+    " Get next keyword.
+    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
+                \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
+    let l:next_keyword_escape = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g')
+
     " Previous keyword completion.
     if g:NeoComplCache_PreviousKeywordCompletion && !g:NeoComplCache_AlphabeticalOrder "{{{
         let [l:prev_word, l:prepre_word] = s:get_prev_word(a:cur_keyword_str)
         for l:plugin in keys(l:loaded_plugins)
             let l:cache_keyword_list = l:cache_keyword_lists[l:plugin]
             call call(l:loaded_plugins[l:plugin] . 'calc_prev_rank', [l:cache_keyword_list, l:prev_word, l:prepre_word])
+
+            " Add rank if match next keyword."{{{
+            if l:next_keyword_escape != ''
+                " No ignorecase.
+                let l:save_ignorecase = &ignorecase
+                let &ignorecase = 0
+
+                let l:pattern = l:next_keyword_escape . '$'
+                for l:keyword in filter(copy(l:cache_keyword_list), 'v:val.word =~ l:pattern')
+                    let l:keyword.rank = l:keyword.rank * 10
+                    let l:keyword.prev_rank = l:keyword.prev_rank * 10
+                    let l:keyword.prepre_rank = l:keyword.prepre_rank * 10
+                endfor
+
+                let &ignorecase = l:save_ignorecase
+            endif"}}}
 
             " Sort.
             call extend(l:cache_keyword_filtered, sort(
@@ -717,11 +735,25 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
         call extend(l:cache_keyword_list, l:cache_keyword_lists[l:plugin])
     endfor
 
+    " Add rank if match next keyword."{{{
+    if l:next_keyword_escape != ''
+        " No ignorecase.
+        let l:save_ignorecase = &ignorecase
+        let &ignorecase = 0
+
+        let l:pattern = l:next_keyword_escape . '$'
+        for l:keyword in filter(copy(l:cache_keyword_list), 'v:val.word =~ l:pattern')
+            let l:keyword.rank = l:keyword.rank * 10
+        endfor
+
+        let &ignorecase = l:save_ignorecase
+    endif"}}}
+
     " Sort.
     call extend(l:cache_keyword_filtered, sort(l:cache_keyword_list, l:order_func))
 
     " Trunk too many item.
-    let l:cache_keyword_filtered = deepcopy(l:cache_keyword_filtered[:g:NeoComplCache_MaxList-1])
+    let l:cache_keyword_filtered = l:cache_keyword_filtered[:g:NeoComplCache_MaxList-1]
 
     " Quick match.
     if g:NeoComplCache_EnableQuickMatch"{{{
@@ -764,21 +796,17 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     endif"}}}
 
     " Remove next keyword."{{{
-    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
-                \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
-                
-    if l:next_keyword_str != ''
-        let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
-
+    if l:next_keyword_escape != ''
         " No ignorecase.
         let l:save_ignorecase = &ignorecase
         let &ignorecase = 0
-        for r in l:cache_keyword_filtered
-            if r.word =~ l:next_keyword_str
-                let r.word = strpart(r.word, 0, match(r.word, l:next_keyword_str))
-                let r.dup = 1
-            endif
+
+        let l:pattern = l:next_keyword_escape . '$'
+        for l:keyword in filter(copy(l:cache_keyword_filtered), 'v:val.word =~ l:pattern')
+            let l:keyword.word = strpart(l:keyword.word, 0, match(l:keyword.word, l:pattern))
+            let l:keyword.dup = 1
         endfor
+
         let &ignorecase = l:save_ignorecase
     endif"}}}
 
