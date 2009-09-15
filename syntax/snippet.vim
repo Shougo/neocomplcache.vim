@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/snippet.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 Apr 2009
+" Last Modified: 13 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Added variable.
+"
 "   1.2:
 "     - Added alias.
 "     - Improved color.
@@ -55,6 +58,7 @@ syn region  SnippetPrevWord           start=+'+ end=+'+ contained
 syn region  SnippetEval               start=+`+ end=+`+ contained
 syn match   SnippetWord               '^\s\+.*$' contains=SnippetEval,SnippetExpand
 syn match   SnippetExpand             '\${\d\+\%(:\([^}]*\)\)\?}' contained
+syn match   SnippetVariable           '\$\d\+' contained
 syn match   SnippetComment            '^#.*$'
 
 syn match   SnippetKeyword            '^\%(include\|snippet\|abbr\|prev_word\|rank\|delete\|alias\)' contained
@@ -67,15 +71,16 @@ syn match   SnippetStatementRank      '^rank\s.*$' contains=SnippetRank,SnippetK
 syn match   SnippetRank               '\s\+\d\+$' contained
 syn match   SnippetStatementInclude   '^include\s.*$' contains=SnippetInclude,SnippetKeyword
 syn match   SnippetInclude            '\s\+.*$' contained
-syn match   SnippetStatementDelete   '^delete\s.*$' contains=SnippetDelete,SnippetKeyword
-syn match   SnippetDelete            '\s\+.*$' contained
-syn match   SnippetStatementAlias    '^alias\s.*$' contains=SnippetAlias,SnippetKeyword
-syn match   SnippetAlias             '\s\+.*$' contained
+syn match   SnippetStatementDelete    '^delete\s.*$' contains=SnippetDelete,SnippetKeyword
+syn match   SnippetDelete             '\s\+.*$' contained
+syn match   SnippetStatementAlias     '^alias\s.*$' contains=SnippetAlias,SnippetKeyword
+syn match   SnippetAlias              '\s\+.*$' contained
 
 hi def link SnippetPrevWord String
 hi def link SnippetEval Type
 hi def link SnippetWord String
 hi def link SnippetExpand Special
+hi def link SnippetVariable Special
 hi def link SnippetComment Comment
 hi def link SnippetKeyword Statement
 hi def link SnippetName Identifier

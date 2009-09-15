@@ -2,7 +2,7 @@ snippet     if
 abbr        if endif
 prev_word   '^'
     if ${1:condition}
-        ${2}
+        ${0}
     endif
 
 snippet     ifelse
@@ -19,14 +19,14 @@ snippet     for
 abbr        for in endfor
 prev_word   '^'
     for ${1:var} in ${2:list}
-        ${3}
+        ${0}
     endfor
 
 snippet     while
 abbr        while endwhile
 prev_word   '^'
     while ${1:condition}
-        ${2}
+        ${0}
     endwhile
 
 snippet     function
@@ -34,5 +34,5 @@ abbr        func endfunc
 alias       func
 prev_word   '^'
     function! ${1:func_name}(${2})
-        ${3}
+        ${0}
     endfunction

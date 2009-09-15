@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.75
+Version: 2.76
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -471,8 +471,6 @@ syntax_complete.vim					*syntax_complete*
 TODO						*neocomplcache-todo*
 - Implement include completion.
 
-- Sync snippet in snippet completion.
-
 - Nested default value in snippet completion.
 
 ==============================================================================
@@ -488,6 +486,19 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 2.51-: {{{
+   2.76:
+    - Don't select in manual completion.
+    - Clear numbered list when close popup.
+    - Added snippet indent file.
+    - Added NeoComplCachePrintSnippets command.
+    - Supported placeholder 0.
+    - Implemented sync placeholder.
+    - Improved caching.
+    - Supported snipMate's multi snippet.
+    - Improved no new line snippet expand.
+    - Fixed cursor pos bug.
+    - Fixed next keyword completion bug.
+
    2.75:
     - Added css support.
     - Improved vim keyword.

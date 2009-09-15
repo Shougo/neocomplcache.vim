@@ -2,12 +2,12 @@ snippet     if
 abbr        if () {}
 prev_word   '^'
     if (${1:/* condition */}) {
-        ${2:/* code */}
+        ${0:/* code */}
     }
 
 snippet el
     else {
-        ${1}
+        ${0}
     }
 
 snippet     ifelse
@@ -22,27 +22,27 @@ prev_word   '^'
 snippet     for
 abbr        for () {}
 prev_word   '^'
-    for (${1} = 0; ${2} < ${3}; ${4}++) {
-        ${5}
+    for (${1} = 0; $1 < ${2}; $1++) {
+        ${0}
     }
 
 snippet     while
 abbr        while () {}
 prev_word   '^'
     while (${1:/* condition */}) {
-        ${2:/* code */}
+        ${0:/* code */}
     }
 
 snippet     do_while
     do {
-        ${2:/* code */}
+        ${0:/* code */}
     } while (${1:/* condition */});
 
 snippet     switch
 abbr        switch () {}
     switch (${1:var}) {
         case ${2:val}:
-            ${3}
+            ${0}
             break;
     }
 
@@ -50,59 +50,60 @@ snippet     function
 abbr        func() {}
 prev_word   '^'
     ${1:void} ${2:func_name}(${3}) {
-        ${4}
+        ${0}
     }
 
 snippet     struct
 abbr        struct {}
 prev_word   '^'
     struct ${1:name} {
-        ${2:/* data */}
+        ${0:/* data */}
     };
 
 # Typedef struct
 snippet struct_typedef
     typedef struct ${1:name}{
-        ${2:/* data */}
+        ${0:/* data */}
     };
 
 snippet     enum
 abbr        enum {}
 prev_word   '^'
     enum ${1:name} {
-        ${2}
+        ${0}
     };
 
 # main function.
 snippet main
     int main(int argc, char const* argv[])
     {
-        ${1}
+        ${0}
         return 0;
     }
 
 # #include <...>
 snippet inc
-    #include <${1:stdio}.h>${2}
+    #include <${1:stdio}.h>${0}
 # #include "..."
 snippet Inc
-    #include "${1:}.h"${2}
+    #include "${1:}.h"${0}
 
-# #ifndef ... #define ... #endif
 snippet Def
+abbr #ifndef ... #define ... #endif
     #ifndef $1
     #define ${1:SYMBOL} ${2:value}
-    #endif${3}
+    #endif${0}
 
 snippet def
     #define 
 
 # Include-Guard
 snippet once
-    #ifndef ${1}
-        #define ${2}
+abbr include-guard
+    #ifndef ${1:SYMBOL}
+        #define $1
 
-        ${2}
+        ${0}
     #endif /* end of include guard */
 
 # Tertiary conditional
@@ -114,12 +115,12 @@ snippet typedef
     typedef ${1:base_type} ${2:custom_type};
 
 snippet printf
-    printf("${1}\n"${2});${3}
+    printf("${1}\n"${2});${0}
 
 snippet fprintf
-    fprintf(${1:stderr}, "${2}\n"${3});${4}
+    fprintf(${1:stderr}, "${2}\n"${3});${0}
 
 snippet comment
     /* ${1:comment} */
-    ${2}
+    ${0}
 

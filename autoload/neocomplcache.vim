@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2009
+" Last Modified: 13 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.75, for Vim 7.0
+" Version: 2.76, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -224,7 +224,10 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
-        let l:cur_text = strpart(getline('.'), 0, col('.'))
+        let l:save_ve = &l:virtualedit
+        setlocal virtualedit=all
+        let l:cur_text = getline('.')[: virtcol('.')-2]
+        let &l:virtualedit = l:save_ve
 
         if !neocomplcache#keyword_complete#exists_current_source()
             let s:complete_words = []
@@ -408,9 +411,26 @@ endfunction"}}}
 
 " Complete internal functions."{{{
 function! s:complete()"{{{
+    if !neocomplcache#keyword_complete#exists_current_source()
+        return
+    endif
+
     if g:NeoComplCache_EnableSkipCompletion
         if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
+            let l:save_ve = &l:virtualedit
+            setlocal virtualedit=all
+            let l:cur_text = getline('.')[: virtcol('.')-2]
+            let &l:virtualedit = l:save_ve
+            let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
+            let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
+
+            if len(l:cur_keyword_str) >= g:NeoComplCache_MinKeywordLength && l:cur_keyword_str !~ '\d\+$'
+                " Check candidate.
+                call neocomplcache#keyword_complete#check_candidate(l:cur_keyword_str)
+            endif
+
             echo 'Skipped auto completion'
+
             let s:skipped = 1
 
             let s:prev_input_time = reltime()
@@ -434,7 +454,10 @@ function! s:complete()"{{{
     endif
 
     " Get cursor word.
-    let l:cur_text = strpart(getline('.'), 0, col('.')-1)
+    let l:save_ve = &l:virtualedit
+    setlocal virtualedit=all
+    let l:cur_text = getline('.')[: virtcol('.')-2]
+    let &l:virtualedit = l:save_ve
     " Prevent infinity loop.
     if l:cur_text == s:old_text || l:cur_text == ''
         return
@@ -530,18 +553,13 @@ function! s:complete()"{{{
     endif
     "}}}
 
-    if !neocomplcache#keyword_complete#exists_current_source()
-        return
-    endif
-
     let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
     if len(l:cur_keyword_str) >= g:NeoComplCache_MinKeywordLength && l:cur_keyword_str !~ '\d\+$'
-        let l:candidate = matchstr(getline('.')[: col('.')], l:pattern)
         " Check candidate.
-        call neocomplcache#keyword_complete#check_candidate(l:candidate)
+        call neocomplcache#keyword_complete#check_candidate(l:cur_keyword_str)
     endif
 
     if g:NeoComplCache_EnableWildCard
@@ -622,7 +640,7 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
     let l:cur_keyword_str = a:cur_keyword_str
 
     while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] =~ '[*-]'
-        let l:left_text = strpart(a:cur_text, 0, l:cur_keyword_pos - 1) 
+        let l:left_text = a:cur_text[: l:cur_keyword_pos - 1]
         let l:left_keyword_str = matchstr(l:left_text, a:pattern)
         if l:left_keyword_str == ''
             break
@@ -634,7 +652,10 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
 
     if l:cur_keyword_str == ''
         " Get cursor word.
-        let l:cur_text = strpart(getline('.'), 0, col('.')-1)
+        let l:save_ve = &l:virtualedit
+        setlocal virtualedit=all
+        let l:cur_text = getline('.')[: virtcol('.')-2]
+        let &l:virtualedit = l:save_ve
         let l:pattern = '\%(^\|\W\)\S[*-]$'
         let [l:cur_keyword_pos, l:cur_keyword_str] = [match(l:cur_text, l:pattern), matchstr(l:cur_text, l:pattern)]
     endif
@@ -695,8 +716,11 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:cache_keyword_filtered = []
 
     " Get next keyword.
-    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
+    let l:save_ve = &l:virtualedit
+    setlocal virtualedit=all
+    let l:next_keyword_str = matchstr('a'.getline('.')[virtcol('.')-1 :],
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
+    let &l:virtualedit = l:save_ve
     let l:next_keyword_escape = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g')
 
     " Previous keyword completion.
@@ -803,7 +827,12 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
 
         let l:pattern = l:next_keyword_escape . '$'
         for l:keyword in filter(copy(l:cache_keyword_filtered), 'v:val.word =~ l:pattern')
-            let l:keyword.word = strpart(l:keyword.word, 0, match(l:keyword.word, l:pattern))
+            let l:match = match(l:keyword.word, l:pattern)
+            if l:match != 0
+                let l:keyword.word = l:keyword.word[: l:match - 1]
+            else
+                let l:keyword.word = ''
+            endif
             let l:keyword.dup = 1
         endfor
 
@@ -851,7 +880,6 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         return []
     endtry
 
-    " Skip completion if takes too much time."{{{
     if neocomplcache#check_skip_time()
         echo 'Skipped auto completion'
         let s:skipped = 1
@@ -868,7 +896,15 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         if !filewritable(word)
             let l:dict.menu .= ' [-]'
         endif
-        call add(list, l:dict)
+
+        " Skip completion if takes too much time."{{{
+        if neocomplcache#check_skip_time()
+            echo 'Skipped auto completion'
+            let s:skipped = 1
+            return []
+        endif"}}}
+
+        call add(l:list, l:dict)
     endfor
     for word in l:cdfiles
         let l:dict = {
@@ -878,8 +914,9 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         if !filewritable(word)
             let l:dict.menu .= ' [-]'
         endif
-        call add(list, l:dict)
+        call add(l:list, l:dict)
     endfor
+
     call sort(l:list, 'neocomplcache#compare_rank')
     " Trunk many items.
     let l:list = l:list[: g:NeoComplCache_MaxList-1]
@@ -960,13 +997,6 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
             let keyword.abbr = l:abbr
         endfor
     endif
-
-    " Skip completion if takes too much time."{{{
-    if neocomplcache#check_skip_time()
-        echo 'Skipped auto completion'
-        let s:skipped = 1
-        return []
-    endif"}}}
 
     echo ''
     redraw
@@ -1072,8 +1102,11 @@ function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
     endif
 
     " Remove next keyword."{{{
-    let l:next_keyword_str = matchstr('a'.strpart(getline('.'), col('.')-1),
+    let l:save_ve = &l:virtualedit
+    setlocal virtualedit=all
+    let l:next_keyword_str = matchstr('a'.getline('.')[virtcol('.') - 1 :],
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
+    let &l:virtualedit = l:save_ve
     if l:next_keyword_str != ''
         let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
@@ -1082,7 +1115,7 @@ function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
         let &ignorecase = 0
         for r in l:list
             if r.word =~ l:next_keyword_str
-                let r.word = strpart(r.word, 0, match(r.word, l:next_keyword_str))
+                let r.word = r.word[: match(r.word, l:next_keyword_str)]
                 let r.dup = 1
             endif
         endfor
@@ -1094,7 +1127,7 @@ endfunction"}}}
 
 function! s:get_prev_word(cur_keyword_str)"{{{
     let l:keyword_pattern = neocomplcache#keyword_complete#current_keyword_pattern()
-    let l:line_part = strpart(getline('.'), 0, col('.')-1 - len(a:cur_keyword_str))
+    let l:line_part = getline('.')[: col('.')-1 - len(a:cur_keyword_str)]
     let l:prev_word_end = matchend(l:line_part, l:keyword_pattern)
     if l:prev_word_end > 0
         let l:word_end = matchend(l:line_part, l:keyword_pattern, l:prev_word_end)
@@ -1239,12 +1272,15 @@ endfunction"}}}
 
 " Key mapping functions."{{{
 function! neocomplcache#close_popup()"{{{
-    let s:old_text = strpart(getline('.'), 0, col('.')-1) 
+    let s:old_text = getline('.')[: col('.')-1]
 
     if neocomplcache#keyword_complete#exists_current_source()
         let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
         call neocomplcache#keyword_complete#caching_keyword(matchstr(s:old_text, l:pattern))
     endif
+
+    let s:prev_numbered_list = []
+    let s:prepre_numbered_list = []
 
     return "\<C-y>"
 endfunction
@@ -1252,13 +1288,18 @@ endfunction
 
 function! neocomplcache#cancel_popup()"{{{
     let s:skip_next_complete = 1
+    let s:prev_numbered_list = []
+    let s:prepre_numbered_list = []
 
     return "\<C-e>"
 endfunction"}}}
 
 function! neocomplcache#manual_filename_complete()"{{{
     " Get cursor word.
-    let l:cur_text = strpart(getline('.'), 0, col('.')) 
+    let l:save_ve = &l:virtualedit
+    setlocal virtualedit=all
+    let l:cur_text = getline('.')[: virtcol('.')-2]
+    let &l:virtualedit = l:save_ve
 
     let l:pattern = '[/~]\?\%(\\.\|\f\)\+$'
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
@@ -1282,13 +1323,16 @@ function! neocomplcache#manual_filename_complete()"{{{
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
 
-    return "\<C-x>\<C-u>"
+    return "\<C-x>\<C-u>\<C-p>"
 endfunction"}}}
 
 function! neocomplcache#manual_omni_complete()"{{{
     " Get cursor word.
     let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
-    let l:cur_text = strpart(getline('.'), 0, col('.')) 
+    let l:save_ve = &l:virtualedit
+    setlocal virtualedit=all
+    let l:cur_text = getline('.')[: virtcol('.')-2]
+    let &l:virtualedit = l:save_ve
     let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
 
     " Save options.
@@ -1316,7 +1360,7 @@ function! neocomplcache#manual_omni_complete()"{{{
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
 
-    return "\<C-x>\<C-u>"
+    return "\<C-x>\<C-u>\<C-p>"
 endfunction"}}}
 "}}}
 
