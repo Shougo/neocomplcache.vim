@@ -138,7 +138,7 @@ endfunction"}}}
 function! s:caching()"{{{
     " Caching.
     if &filetype != '' && buflisted(bufnr('%')) && !has_key(s:syntax_list, &filetype)
-        if g:NeoComplCache_CachingPercentInStatus
+        if g:NeoComplCache_CachingPercentInStatusline
             let l:statusline_save = &l:statusline
             let &l:statusline = 'Caching syntax... please wait.'
             redrawstatus

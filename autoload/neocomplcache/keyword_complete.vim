@@ -629,7 +629,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     let [l:max_lines, l:line_num] = [len(l:buflines), 0]
 
     if l:max_lines > 200
-        if g:NeoComplCache_CachingPercentInStatus
+        if g:NeoComplCache_CachingPercentInStatusline
             let l:statusline_save = &l:statusline
 
             if a:srcname =~ '^\d'
