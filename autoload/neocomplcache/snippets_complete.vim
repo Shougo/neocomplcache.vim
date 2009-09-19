@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Sep 2009
+" Last Modified: 17 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,9 @@
 " Version: 1.21, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.22:
+"    - Fixed non-initialize error.
+"
 "   1.21:
 "    - Added NeoComplCachePrintSnippets command.
 "    - Supported placeholder 0.
@@ -134,6 +137,10 @@
 
 let s:begin_snippet = 0
 let s:end_snippet = 0
+
+if !exists('s:snippets')
+    let s:snippets = {}
+endif
 
 function! neocomplcache#snippets_complete#initialize()"{{{
     " Initialize.

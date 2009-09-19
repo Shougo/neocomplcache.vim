@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Sep 2009
+" Last Modified: 19 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.76, for Vim 7.0
+" Version: 2.77, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -224,10 +224,7 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
-        let l:save_ve = &l:virtualedit
-        setlocal virtualedit=all
-        let l:cur_text = getline('.')[: virtcol('.')-2]
-        let &l:virtualedit = l:save_ve
+        let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
 
         if !neocomplcache#keyword_complete#exists_current_source()
             let s:complete_words = []
@@ -417,10 +414,7 @@ function! s:complete()"{{{
 
     if g:NeoComplCache_EnableSkipCompletion
         if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
-            let l:save_ve = &l:virtualedit
-            setlocal virtualedit=all
-            let l:cur_text = getline('.')[: virtcol('.')-2]
-            let &l:virtualedit = l:save_ve
+            let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
             let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
             let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
@@ -454,10 +448,7 @@ function! s:complete()"{{{
     endif
 
     " Get cursor word.
-    let l:save_ve = &l:virtualedit
-    setlocal virtualedit=all
-    let l:cur_text = getline('.')[: virtcol('.')-2]
-    let &l:virtualedit = l:save_ve
+    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
     " Prevent infinity loop.
     if l:cur_text == s:old_text || l:cur_text == ''
         return
@@ -493,7 +484,7 @@ function! s:complete()"{{{
             let s:cur_keyword_str = l:cur_keyword_str
             let s:skipped = 0
 
-            if s:quickmatched
+            if s:quickmatched && len(s:complete_words) == 1
                 call feedkeys("\<C-x>\<C-u>", 'n')
             else
                 call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -536,7 +527,7 @@ function! s:complete()"{{{
             let s:cur_keyword_str = l:cur_keyword_str
             let s:skipped = 0
 
-            if s:quickmatched
+            if s:quickmatched && len(s:complete_words) == 1
                 call feedkeys("\<C-x>\<C-u>", 'n')
             else
                 call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -615,7 +606,7 @@ function! s:complete()"{{{
     let s:cur_keyword_str = l:cur_keyword_str
     let s:skipped = 0
 
-    if s:quickmatched
+    if s:quickmatched && len(s:complete_words) == 1
         call feedkeys("\<C-x>\<C-u>", 'n')
     else
         call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -640,7 +631,7 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
     let l:cur_keyword_str = a:cur_keyword_str
 
     while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] =~ '[*-]'
-        let l:left_text = a:cur_text[: l:cur_keyword_pos - 1]
+        let l:left_text = a:cur_text[: l:cur_keyword_pos - 2]
         let l:left_keyword_str = matchstr(l:left_text, a:pattern)
         if l:left_keyword_str == ''
             break
@@ -652,14 +643,10 @@ function! s:check_wildcard(cur_text, pattern, cur_keyword_pos, cur_keyword_str)"
 
     if l:cur_keyword_str == ''
         " Get cursor word.
-        let l:save_ve = &l:virtualedit
-        setlocal virtualedit=all
-        let l:cur_text = getline('.')[: virtcol('.')-2]
-        let &l:virtualedit = l:save_ve
+        let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
         let l:pattern = '\%(^\|\W\)\S[*-]$'
         let [l:cur_keyword_pos, l:cur_keyword_str] = [match(l:cur_text, l:pattern), matchstr(l:cur_text, l:pattern)]
     endif
-
     return [l:cur_keyword_pos, l:cur_keyword_str]
 endfunction"}}}
 
@@ -716,11 +703,8 @@ function! neocomplcache#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:cache_keyword_filtered = []
 
     " Get next keyword.
-    let l:save_ve = &l:virtualedit
-    setlocal virtualedit=all
-    let l:next_keyword_str = matchstr('a'.getline('.')[virtcol('.')-1 :],
+    let l:next_keyword_str = matchstr('a'.getline('.')[col('.')-1 :],
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
-    let &l:virtualedit = l:save_ve
     let l:next_keyword_escape = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g')
 
     " Previous keyword completion.
@@ -1102,11 +1086,8 @@ function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
     endif
 
     " Remove next keyword."{{{
-    let l:save_ve = &l:virtualedit
-    setlocal virtualedit=all
-    let l:next_keyword_str = matchstr('a'.getline('.')[virtcol('.') - 1 :],
+    let l:next_keyword_str = matchstr('a'.getline('.')[col('.') - 1 :],
                 \'\v^%(' . neocomplcache#keyword_complete#current_keyword_pattern() . ')')[1:]
-    let &l:virtualedit = l:save_ve
     if l:next_keyword_str != ''
         let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
@@ -1152,7 +1133,7 @@ function! s:get_prev_word(cur_keyword_str)"{{{
 endfunction"}}}
 
 function! s:get_quickmatch_list(cur_keyword_pos, cur_keyword_str, type)"{{{
-    if match(a:cur_keyword_str, '\d$') < 0
+    if a:cur_keyword_str !~ '\d$'
         return []
     endif
 
@@ -1181,10 +1162,11 @@ function! s:get_quickmatch_list(cur_keyword_pos, cur_keyword_str, type)"{{{
         endif
 
         let l:numbered.word = l:prefix . l:numbered.word
-        let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
+        let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*\d*: \|^    ', '', '')
         call insert(l:list, l:numbered)
 
-        if l:num == 0 || len(s:prev_numbered_list) < l:num*10
+        if a:cur_keyword_str !~ '^\d\+$' && len(a:cur_keyword_str) <= g:NeoComplCache_KeywordCompletionStartLength + 3
+                    \&& (l:num == 0 || len(s:prev_numbered_list) < l:num*10)
             let s:quickmatched = 1
         endif
     endif
@@ -1215,10 +1197,12 @@ function! s:get_quickmatch_list(cur_keyword_pos, cur_keyword_str, type)"{{{
                 endif
 
                 let l:numbered.word = l:prefix . l:numbered.word
-                let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*\d*: ', '', '')
+                let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*\d*: \|^    ', '', '')
                 call insert(l:list, l:numbered)
 
-                let s:quickmatched = 1
+                if a:cur_keyword_str !~ '^\d\+$'  && len(a:cur_keyword_str) <= g:NeoComplCache_KeywordCompletionStartLength + 4
+                    let s:quickmatched = 1
+                endif
             endif
         endif
     endif
@@ -1272,7 +1256,11 @@ endfunction"}}}
 
 " Key mapping functions."{{{
 function! neocomplcache#close_popup()"{{{
-    let s:old_text = getline('.')[: col('.')-1]
+    if !exists(':NeoComplCacheDisable')
+        return ''
+    endif
+
+    let s:old_text = getline('.')[: col('.')-2]
 
     if neocomplcache#keyword_complete#exists_current_source()
         let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
@@ -1287,6 +1275,10 @@ endfunction
 "}}}
 
 function! neocomplcache#cancel_popup()"{{{
+    if !exists(':NeoComplCacheDisable')
+        return ''
+    endif
+
     let s:skip_next_complete = 1
     let s:prev_numbered_list = []
     let s:prepre_numbered_list = []
@@ -1295,11 +1287,12 @@ function! neocomplcache#cancel_popup()"{{{
 endfunction"}}}
 
 function! neocomplcache#manual_filename_complete()"{{{
+    if !exists(':NeoComplCacheDisable')
+        return ''
+    endif
+
     " Get cursor word.
-    let l:save_ve = &l:virtualedit
-    setlocal virtualedit=all
-    let l:cur_text = getline('.')[: virtcol('.')-2]
-    let &l:virtualedit = l:save_ve
+    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
 
     let l:pattern = '[/~]\?\%(\\.\|\f\)\+$'
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
@@ -1327,12 +1320,13 @@ function! neocomplcache#manual_filename_complete()"{{{
 endfunction"}}}
 
 function! neocomplcache#manual_omni_complete()"{{{
+    if !exists(':NeoComplCacheDisable')
+        return ''
+    endif
+
     " Get cursor word.
     let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
-    let l:save_ve = &l:virtualedit
-    setlocal virtualedit=all
-    let l:cur_text = getline('.')[: virtcol('.')-2]
-    let &l:virtualedit = l:save_ve
+    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
     let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
 
     " Save options.
@@ -1361,6 +1355,29 @@ function! neocomplcache#manual_omni_complete()"{{{
     let &l:completefunc = 'neocomplcache#auto_complete'
 
     return "\<C-x>\<C-u>\<C-p>"
+endfunction"}}}
+
+function! neocomplcache#undo_completion()"{{{
+    if !exists(':NeoComplCacheDisable')
+        return ''
+    endif
+
+    " Get cursor word.
+    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+
+    if !neocomplcache#keyword_complete#exists_current_source()
+        return ''
+    endif
+
+    let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
+    let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
+    let l:old_keyword_str = s:cur_keyword_str
+    let s:cur_keyword_str = l:cur_keyword_str
+
+    let s:skip_next_complete = 1
+
+    return (pumvisible() ? "\<C-e>" : '')
+                \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:old_keyword_str
 endfunction"}}}
 "}}}
 

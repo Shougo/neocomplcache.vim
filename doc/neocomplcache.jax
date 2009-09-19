@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.75
+Version: 2.77
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -114,6 +114,11 @@ COMMANDS 					*neocomplcache-commands*
 		[filetype]のスニペット補完ファイルが存在しない場合、新しく生成される。
 		このコマンドでは、|g:NeoComplCache_SnippetsDir|にあるスニペット補完ファイルを優先的に編集する。
 		スニペット補完ファイルを保存すると、自動的に再キャッシュされる。
+
+:NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*
+		[filetype]のスニペットをすべて表示する。
+		[filetype]を省略すると、カレントバッファのファイルタイプを指定したことになる。
+		スニペットの名前を忘れてしまったときに便利であろう。
 
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
@@ -391,11 +396,15 @@ neocomplcache#cancel_popup				*neocomplcache#cancel_popup*
 >
 		inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<C-e>"
 <
+neocomplcache#undo_completion				*neocomplcache#undo_completion*
+		inoremap <expr>上で使用する。neocomplcacheによって補完した候補を元に戻す。
+		Vimには確定した補完をキャンセルする機構がないため、活用すると便利であろう。
+>
+		inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
+<
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
 >
-	" Don't use autocomplpop.
-	let g:AutoComplPop_NotEnableAtStartup = 1
 	" Use neocomplcache.
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
@@ -429,9 +438,8 @@ EXAMPLES					*neocomplcache-examples*
 	" Plugin key-mappings.
 	imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
 	smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
-	nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
-	imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
 <
 ==============================================================================
 PLUGINS					*neocomplcache-plugins*

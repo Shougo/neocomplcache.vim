@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.76
+Version: 2.77
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -112,11 +112,15 @@ COMMANDS 					*neocomplcache-commands*
 		Select current buffer when [bufnr] omitted.
 
 :NeoComplCacheEditSnippets [filetype]			*:NeoComplCacheEditSnippets*
-		Edit [filetype] snippet.
-		Edit current buffer's filetype snippet when [filetype] omitted.
+		Edit [filetype] snippets.
+		Edit current buffer's filetype snippets when [filetype] omitted.
 		When there is not [filetype] snippet file, it is generated newly.
 		This command edits a snippet file in g:NeoComplCache_SnippetsDir with precedence.
 		It is done re-cash automatically when you store a snippet file.
+
+:NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*
+		Print [filetype] snippets.
+		Print current buffer's filetype snippets when [filetype] omitted.
 
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
@@ -393,16 +397,20 @@ neocomplcache#close_popup				*neocomplcache#close_popup*
 		inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-y>"
 <
 neocomplcache#cancel_popup				*neocomplcache#cancel_popup*
-		Use this function on inoremap <expr>.  Cansel completion.
+		Use this function on inoremap <expr>.  Cancel completion.
 		You can close popup more surely than <C-e> of the Vim standard.
 >
 		inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<C-e>"
 <
+neocomplcache#undo_completion				*neocomplcache#undo_completion*
+		Use this function on inoremap <expr>.  Undo inputed candidate.
+		Because there is not mechanism to cancel candidate in Vim, it will be convenient when it inflects.
+>
+		inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
+<
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
 >
-	" Don't use autocomplpop.
-	let g:AutoComplPop_NotEnableAtStartup = 1
 	" Use neocomplcache.
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
@@ -436,9 +444,8 @@ EXAMPLES					*neocomplcache-examples*
 	" Plugin key-mappings.
 	imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
 	smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
-	nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
-	imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
 <
 ==============================================================================
 PLUGINS					*neocomplcache-plugins*
@@ -486,6 +493,15 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 2.51-: {{{
+   2.77:
+    - Improved caching message.
+    - Implemented completion undo.
+    - Fixed non-initialize error.
+    - Fixed wildcard bug.
+    - Improved quickmatch behaivior.
+    - Added g:NeoComplCache_CachingPercentInStatusline option.
+    - Fixed completion column bug.
+
    2.76:
     - Don't select in manual completion.
     - Clear numbered list when close popup.

@@ -603,8 +603,8 @@ let g:NeoComplCache_SkipInputTime = '0.1'
 --------------------------------
 ポップアップメニューを閉じる
 
-Ver.2.45より実装。neocomplcache#close_popup()やneocomplcache#cancel_popup()を
-キーマッピングに使用することで、確実にポップアップを閉じます。
+Ver.2.45より実装。通常では二回<C-y>や<C-e>を押さなければポップアップが消えませんが、
+neocomplcache#close_popup()やneocomplcache#cancel_popup()をキーマッピングに使用することで、確実にポップアップを閉じることができます。
 neocomplcache#close_popup()の場合は使用することでキーワードのランクが上昇します。
 
 例：
@@ -612,6 +612,16 @@ neocomplcache#close_popup()の場合は使用することでキーワードの�
 inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-r>0"
 " <C-e>: close popup.
 inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<End>"
+
+--------------------------------
+確定した補完候補をキャンセルする
+
+Ver.2.67より実装。キーマッピングを定義することで、確定した補完候補をキャンセルできます。
+カーソル前のキーワードを補完前の文字列で置き換える形で実装しているので、<C-y>で確定していなくても動作します。
+確定前の補完候補のキャンセルには使用できないので注意してください。
+
+例：
+inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
 
 --------------------------------
 自動キャッシュの制御
@@ -647,8 +657,6 @@ g:NeoComplCache_KeywordCompletionStartLengthを変更しないと、
 参考までに、私が使用しているneocomplcacheの設定を紹介しておきます。
 neocomplcacheのオプションはdoc/neocomplcache.jaxに詳しい解説があるので、そこを参照してください。
 
-" Don't use autocomplpop.
-let g:AutoComplPop_NotEnableAtStartup = 1
 " Use neocomplcache.
 let g:NeoComplCache_EnableAtStartup = 1
 " Use smartcase.
@@ -686,8 +694,8 @@ let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 " Plugin key-mappings.
 imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
 smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
-nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
-imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
+inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
 
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
 むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
@@ -810,6 +818,7 @@ Twitterはneocomplcache開発日記と化しているので、こまめにチェ
 --------------------------------
 更新履歴
 
+2009/09/17     neocomplcache Ver.2.77に対応。
 2009/09/12     neocomplcache Ver.2.76に対応。
 2009/08/22     neocomplcache Ver.2.71に対応。
 2009/08/12     neocomplcache Ver.2.68に対応。

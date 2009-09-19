@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2009
+" Last Modified: 19 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.75, for Vim 7.0
+" Version: 2.77, for Vim 7.0
 "=============================================================================
 
 if exists('g:loaded_neocomplcache') || v:version < 700
@@ -123,6 +123,9 @@ if !exists('g:NeoComplCache_CachingDisablePattern')
 endif
 if !exists('g:NeoComplCache_PluginCompletionLength')
     let g:NeoComplCache_PluginCompletionLength = {}
+endif
+if !exists('g:NeoComplCache_CachingPercentInStatusline')
+    let g:NeoComplCache_CachingPercentInStatusline = 0
 endif
 if !exists('g:NeoComplCache_TemporaryDir')
     let g:NeoComplCache_TemporaryDir = $HOME . '/.neocon'

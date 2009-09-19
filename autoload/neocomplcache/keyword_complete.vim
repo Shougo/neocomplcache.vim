@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2009
+" Last Modified: 19 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.75, for Vim 7.0
+" Version: 2.77, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -629,11 +629,22 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     let [l:max_lines, l:line_num] = [len(l:buflines), 0]
 
     if l:max_lines > 200
-        redraw
-        if a:srcname =~ '^\d'
-            echo 'Caching buffer... please wait.'
+        if g:NeoComplCache_CachingPercentInStatus
+            let l:statusline_save = &l:statusline
+
+            if a:srcname =~ '^\d'
+                let &l:statusline = 'Caching buffer... please wait.'
+            else
+                let &l:statusline = 'Caching dictionary... please wait.'
+            endif
+            redrawstatus
         else
-            echo 'Caching dictionary... please wait.'
+            redraw
+            if a:srcname =~ '^\d'
+                echo 'Caching buffer... please wait.'
+            else
+                echo 'Caching dictionary... please wait.'
+            endif
         endif
     endif
 
@@ -657,8 +668,13 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     while l:line_num < l:max_lines
         " Percentage check.
         if l:line_cnt == 0
-            redraw
-            echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+            if g:NeoComplCache_CachingPercentInStatus
+                let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                redrawstatus
+            else
+                redraw
+                echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+            endif
             let l:line_cnt = l:print_cache_percent
         endif
         let l:line_cnt -= 1
@@ -689,8 +705,14 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     endwhile
 
     if l:max_lines > 200
-        redraw
-        echo 'Caching done.'
+        if g:NeoComplCache_CachingPercentInStatus
+            let &l:statusline = l:statusline_save
+            redrawstatus
+        else
+            redraw
+            echo ''
+            redraw
+        endif
     endif
 endfunction"}}}
 
@@ -779,8 +801,8 @@ function! s:caching_from_cache(srcname)"{{{
     endif
     let l:line_cnt = l:print_cache_percent
 
-    redraw
     if l:max_lines > 1000
+        redraw
         if a:srcname =~ '^\d'
             echo 'Caching buffer... please wait.'
         else
@@ -818,7 +840,7 @@ function! s:caching_from_cache(srcname)"{{{
 
     if l:max_lines > 1000
         redraw
-        echo 'Caching done.'
+        echo ''
     endif
 
     return 0
@@ -955,7 +977,7 @@ function! s:caching_insert_enter()"{{{
         " Full caching.
         call s:caching(bufnr('%'), line('.'), 1)
         if g:NeoComplCache_CachingRandomize
-            let l:match_end = matchend(reltimestr(reltime()), '\d\+\.')
+            let l:match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
             let s:prev_cached_count = reltimestr(reltime())[l:match_end : ] % 3
         else
             let s:prev_cached_count = 2
