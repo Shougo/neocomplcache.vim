@@ -668,7 +668,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     while l:line_num < l:max_lines
         " Percentage check.
         if l:line_cnt == 0
-            if g:NeoComplCache_CachingPercentInStatus
+            if g:NeoComplCache_CachingPercentInStatusline
                 let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
                 redrawstatus
             else
@@ -705,7 +705,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     endwhile
 
     if l:max_lines > 200
-        if g:NeoComplCache_CachingPercentInStatus
+        if g:NeoComplCache_CachingPercentInStatusline
             let &l:statusline = l:statusline_save
             redrawstatus
         else
