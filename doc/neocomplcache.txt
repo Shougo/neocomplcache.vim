@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.77
+Version: 2.78
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -493,6 +493,12 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 2.51-: {{{
+   2.78:
+    - Supported abbr in omni completion.
+    - Clear quickmatch cache when auto complete is skipped.
+    - Fixed escape bug.
+    - Implemented fast filter.
+
    2.77:
     - Improved caching message.
     - Implemented completion undo.

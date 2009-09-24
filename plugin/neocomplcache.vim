@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2009
+" Last Modified: 22 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,12 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.77, for Vim 7.0
+" Version: 2.78, for Vim 7.0
 "=============================================================================
 
 if exists('g:loaded_neocomplcache') || v:version < 700
   finish
 endif
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
 command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
@@ -138,6 +141,9 @@ if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
     " Enable startup.
     call neocomplcache#enable()
 endif"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 let g:loaded_neocomplcache = 1
 

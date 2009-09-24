@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2009
+" Last Modified: 22 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.77, for Vim 7.0
+" Version: 2.78, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -150,7 +150,7 @@ function! neocomplcache#enable() "{{{
         let g:NeoComplCache_OmniPatterns = {}
     endif
     if has('ruby')
-        call s:set_omni_pattern('ruby', '\v[^. \t]%(\.|::)')
+        call s:set_omni_pattern('ruby', '\v[^. *\t]%(\.|::)')
     endif
     if has('python')
         call s:set_omni_pattern('python', '\v[^. \t]\.')
@@ -283,20 +283,31 @@ endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
-    " Keyword filter."{{{
-    let l:cur_len = len(a:cur_keyword_str)
-    if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
-        " Partial match.
-        " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string(l:keyword_escape))
+    if l:keyword_escape !~ '[^\\]*'
+        " Use fast filter.
+        if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
+            " Partial match.
+            return s:fast_partial_filter(a:list, a:cur_keyword_str)
+        else
+            " Head match.
+            return s:fast_match_filter(a:list, a:cur_keyword_str)
+        endif
     else
-        " Head match.
-        " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string('^' . l:keyword_escape))
-    endif"}}}
-    "echomsg l:pattern
+        " Keyword filter."{{{
+        let l:cur_len = len(a:cur_keyword_str)
+        if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
+            " Partial match.
+            " Filtering len(a:cur_keyword_str).
+            let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string(l:keyword_escape))
+        else
+            " Head match.
+            " Filtering len(a:cur_keyword_str).
+            let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string('^' . l:keyword_escape))
+        endif"}}}
+        "echomsg l:pattern
 
-    return filter(a:list, l:pattern)
+        return filter(a:list, l:pattern)
+    endif
 endfunction"}}}
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     " Escape."{{{
@@ -409,6 +420,8 @@ endfunction"}}}
 " Complete internal functions."{{{
 function! s:complete()"{{{
     if !neocomplcache#keyword_complete#exists_current_source()
+        let s:prev_numbered_list = []
+        let s:prepre_numbered_list = []
         return
     endif
 
@@ -428,6 +441,9 @@ function! s:complete()"{{{
             let s:skipped = 1
 
             let s:prev_input_time = reltime()
+
+            let s:prev_numbered_list = []
+            let s:prepre_numbered_list = []
             return
         endif
 
@@ -438,21 +454,30 @@ function! s:complete()"{{{
 
     if s:skip_next_complete
         let s:skip_next_complete = 0
+
+        let s:prev_numbered_list = []
+        let s:prepre_numbered_list = []
         return
     endif
 
     if pumvisible() || &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
                 \||(&l:completefunc != 'neocomplcache#manual_complete'
                     \&& &l:completefunc != 'neocomplcache#auto_complete')
+        let s:prev_numbered_list = []
+        let s:prepre_numbered_list = []
         return
     endif
 
     " Get cursor word.
     let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
     " Prevent infinity loop.
-    if l:cur_text == s:old_text || l:cur_text == ''
+    " Not complete multi byte character for ATOK X3.
+    if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1]) >= 0x80
+        let s:prev_numbered_list = []
+        let s:prepre_numbered_list = []
         return
     endif
+
     let s:old_text = l:cur_text
 
     " Reset quick match flag.
@@ -463,7 +488,7 @@ function! s:complete()"{{{
         let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
         let l:pattern = printf('[/~]\?\%%(\\.\|\f\)\+[%s]\%%(\\.\|\f\)*$', l:PATH_SEPARATOR)
         let l:cur_keyword_pos = match(l:cur_text, l:pattern)
-        let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
+        let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
 
         " Save options.
         let s:ignorecase_save = &ignorecase
@@ -495,6 +520,8 @@ function! s:complete()"{{{
         let &l:completefunc = 'neocomplcache#manual_complete'
 
         if s:skipped
+            let s:prev_numbered_list = []
+            let s:prepre_numbered_list = []
             return
         endif
     endif"}}}
@@ -539,6 +566,8 @@ function! s:complete()"{{{
         let &l:completefunc = 'neocomplcache#manual_complete'
 
         if s:skipped
+            let s:prev_numbered_list = []
+            let s:prepre_numbered_list = []
             return
         endif
     endif
@@ -556,11 +585,6 @@ function! s:complete()"{{{
     if g:NeoComplCache_EnableWildCard
         " Check wildcard.
         let [l:cur_keyword_pos, l:cur_keyword_str] = s:check_wildcard(l:cur_text, l:pattern, l:cur_keyword_pos, l:cur_keyword_str)
-    endif
-
-    " Not complete multi byte character for ATOK X3.
-    if char2nr(l:cur_text[-1]) >= 0x80
-        return
     endif
 
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
@@ -844,6 +868,7 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
     let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
     let l:cur_keyword_str = substitute(substitute(a:cur_keyword_str, '\\ ', ' ', 'g'),
                 \printf('\w\+\ze[%s]', l:PATH_SEPARATOR), '\0*', 'g')
+    let l:cur_keyword_str = escape(l:cur_keyword_str, '~" .^$*[]')
     " Substitute ... -> ../..
     while l:cur_keyword_str =~ '\.\.\.'
         let l:cur_keyword_str = substitute(l:cur_keyword_str, '\.\.\zs\.', '/\.\.', 'g')
@@ -868,7 +893,7 @@ function! s:get_complete_files(cur_keyword_pos, cur_keyword_str)"{{{
         echo 'Skipped auto completion'
         let s:skipped = 1
         return []
-    endif"}}}
+    endif
 
     let l:list = []
     let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
@@ -1029,6 +1054,9 @@ function! s:get_complete_omni(cur_keyword_pos, cur_keyword_str)"{{{
                     \'word' : l:omni.word, 'menu' : '[O]', 
                     \'icase' : 1, 'rank' : 5
                     \}
+        if has_key(l:omni, 'abbr')
+            let l:dict.abbr = l:omni.abbr
+        endif
         if has_key(l:omni, 'kind')
             let l:dict.menu = ' ' . l:omni.kind
         endif
@@ -1210,6 +1238,52 @@ function! s:get_quickmatch_list(cur_keyword_pos, cur_keyword_str, type)"{{{
     return l:list
 endfunction"}}}
 
+" Fast filters.
+function! s:fast_partial_filter(list, cur_keyword_str)"{{{
+    let l:cur_keyword = a:cur_keyword_str
+
+    let l:cur_len = len(l:cur_keyword)
+    let l:ret = []
+    if &ignorecase
+        let l:cur_keyword = tolower(l:cur_keyword)
+        for keyword in a:list
+            if len(keyword.word) > l:cur_len && stridx(tolower(keyword.word), l:cur_keyword) != -1
+                call add(l:ret, keyword)
+            endif
+        endfor
+    else
+        for keyword in a:list
+            if len(keyword.word) > l:cur_len && stridx(keyword.word, l:cur_keyword) != -1
+                call add(l:ret, keyword)
+            endif
+        endfor
+    endif
+
+    return ret
+endfunction"}}}
+function! s:fast_match_filter(list, cur_keyword_str)"{{{
+    let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
+
+    let l:cur_len = len(l:cur_keyword)
+    let l:cur_max = l:cur_len - 1
+    let l:ret = []
+    if &ignorecase
+        let l:cur_keyword = tolower(l:cur_keyword)
+        for keyword in a:list
+            if len(keyword.word) > l:cur_len && l:cur_keyword == tolower(keyword.word[: l:cur_max])
+                call add(l:ret, keyword)
+            endif
+        endfor
+    else
+        for keyword in a:list
+            if len(keyword.word) > l:cur_len && l:cur_keyword == keyword.word[: l:cur_max] 
+                call add(l:ret, keyword)
+            endif
+        endfor
+    endif
+
+    return ret
+endfunction"}}}
 "}}}
 
 " Set pattern helper."{{{
