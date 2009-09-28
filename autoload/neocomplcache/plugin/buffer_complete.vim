@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2009
+" Last Modified: 28 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -866,7 +866,7 @@ function! s:split_keyword(keyword_pattern)"{{{
     while l:i < l:max
         if l:keyword_pattern[l:i : ] =~ '^[^\\]%\?('
             " Grouping.
-            let l:i = match(l:keyword_pattern, '[^\\])', l:i)
+            let l:i = s:matchend_pair(l:keyword_pattern, '^[^\\]%\?(', '[^\\])', l:i)
             if l:i < 0
                 echoerr 'Unmatched (.'
                 return []
@@ -884,6 +884,32 @@ function! s:split_keyword(keyword_pattern)"{{{
 
     call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i])
     return l:keyword_patterns
+endfunction"}}}
+
+function! s:matchend_pair(string, start_pattern, end_pattern, start_cnt)"{{{
+    let l:start = matchend(a:string, a:start_pattern, a:start_cnt)
+    if l:start < 0
+        return -1
+    endif
+
+    let l:end = matchend(a:string, a:end_pattern, l:start)
+    if l:end < 0
+        return -1
+    endif
+
+    let l:start = matchend(a:string, a:start_pattern, l:start)
+    let l:cnt = 0
+    while l:start >= 0 && l:start < l:end
+        let l:start = matchend(a:string, a:start_pattern, l:start)
+        let l:cnt += 1
+    endwhile
+
+    while l:cnt > 0 && l:end >= 0
+        let l:end = matchend(a:string, a:end_pattern, l:end)
+        let l:cnt -= 1
+    endwhile
+
+    return l:end
 endfunction"}}}
 
 function! s:garbage_collect_candidate(start_line, end_line)"{{{

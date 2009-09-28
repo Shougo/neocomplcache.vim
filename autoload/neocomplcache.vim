@@ -414,7 +414,12 @@ endfunction"}}}
 
 function! neocomplcache#get_quickmatch_list(list, cur_keyword_pos, cur_keyword_str, type)"{{{
     if !g:NeoComplCache_EnableQuickMatch
-        return map(a:list, 'substitute(v:val.abbr, "^\\s*\\d*: \\|^    ", "", "")')
+        let l:list = []
+        for keyword in a:list
+            let keyword.abbr = substitute(keyword.abbr, '^\s*\d*: \|^    ', '', '')
+            call add(l:list, keyword)
+        endfor
+        return l:list
     endif
 
     let l:list = a:list
