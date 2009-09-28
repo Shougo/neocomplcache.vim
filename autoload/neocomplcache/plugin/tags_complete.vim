@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 May 2009
+" Last Modified: 27 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,29 +23,40 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.08, for Vim 7.0
+" Version: 1.09, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.09:
+"    - Supported neocomplcache 3.0.
+"
 "   1.08:
 "    - Improved popup menu.
 "    - Ignore case.
+"
 "   1.07:
 "    - Fixed for neocomplcache 2.43.
+"
 "   1.06:
 "    - Improved abbr.
 "    - Refactoring.
+"
 "   1.05:
 "    - Improved filtering.
+"
 "   1.04:
 "    - Don't return static member.
+"
 "   1.03:
 "    - Optimized memory.
+"
 "   1.02:
 "    - Escape input keyword.
 "    - Supported camel case completion.
 "    - Fixed echo.
+"
 "   1.01:
 "    - Not caching.
+"
 "   1.00:
 "    - Initial version.
 " }}}
@@ -58,14 +69,14 @@
 ""}}}
 "=============================================================================
 
-function! neocomplcache#tags_complete#initialize()"{{{
+function! neocomplcache#plugin#tags_complete#initialize()"{{{
     " Initialize
 endfunction"}}}
 
-function! neocomplcache#tags_complete#finalize()"{{{
+function! neocomplcache#plugin#tags_complete#finalize()"{{{
 endfunction"}}}
 
-function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
+function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{{{
     if &l:completefunc == 'neocomplcache#auto_complete' ||
                 \len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
         return []
@@ -81,11 +92,11 @@ function! neocomplcache#tags_complete#get_keyword_list(cur_keyword_str)"{{{
 endfunction"}}}
 
 " Dummy function.
-function! neocomplcache#tags_complete#calc_rank(cache_keyword_buffer_list)"{{{
+function! neocomplcache#plugin#tags_complete#calc_rank(cache_keyword_buffer_list)"{{{
 endfunction"}}}
 
 " Dummy function.
-function! neocomplcache#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
+function! neocomplcache#plugin#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
 endfunction"}}}
 
 function! s:initialize_tags(cur_keyword_str)"{{{

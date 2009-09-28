@@ -27,6 +27,8 @@ http://www.vim.org/scripts/script.php?script_id=2620
 Windowsの場合は$VIM/vimfiles/、MacやLinuxの場合は$HOME/.vim/が一般的です。
 http://github.com/Shougo/neocomplcache/tarball/master
 最近はファイルが増えてきたため、フォルダごとコピーした方がよいでしょう。
+Ver.3.00より、ディレクトリ構造が大きく変化しました。
+昔のバージョンのファイルは削除してください。
 
 そして、.vimrcで
 let g:NeoComplCache_EnableAtStartup = 1
@@ -469,17 +471,31 @@ let g:NeoComplCache_EnableUnderbarCompletion = 1
 Ver.2.10にて、複雑だったソースコードを分割し、ついに補完をプラグインで拡張できるようになりました。
 他のプラグインを読み込む部分も実装したので、夢が広がります。
 プラグインの作り方については、今後ドキュメントを用意する予定ですが、
-やる気があるならばautoload/neocomplcache/syntax_complete.vimなどを読んでみてください。
-autoload/neocomplcacheディレクトリにプラグインファイルをおいておけば、補完時に自動で読み込まれます。
+やる気があるならばautoload/neocomplcache/plugin/syntax_complete.vimなどを読んでみてください。
+autoload/neocomplcache/pluginディレクトリにプラグインファイルをおいておけば、補完時に自動で読み込まれます。
+
+Ver.3.00より、プラグインを配置するディレクトリが変更されたので注意してください。
+
+--------------------------------
+補完関数
+
+Ver.3.00にて、オムニ補完とファイル名補完を分離しました。
+やる気があるならばautoload/neocomplcache/complfunc/filename_complete.vimなどを読んでみてください。
+autoload/neocomplcache/complfuncディレクトリにファイルをおいておけば、自動で読み込まれます。
+
+プラグインと補完関数の違いは、プラグインはカーソル前のキーワードに反応しますが、
+補完関数は独自に補完位置を決められるということです。
+Vim標準の補完でいうと、プラグインによる補完はキーワード補完に対応し、
+補完関数による補完は、オムニ補完やユーザ定義補完に対応します。
 
 --------------------------------
 ステータスラインにキャッシュ率を表示
 
-Ver.2.27より、keyword_completeにneocomplcache#keyword_complete#caching_percent()という関数が追加され、
+Ver.2.27より、neocomplcache#caching_percent()という関数が追加され、
 簡単にキャッシュ率を得ることが可能になりました。
 例えばステータスラインに表示すると、次のようになります。
 
-let &statusline = '%=%m%y%{"[".(&fenc!=""?&fenc:&enc).",".&ff."]"}%{"[".neocomplcache#keyword_complete#caching_percent("")."%]"} %3l,%3c %3p%%'
+let &statusline = '%=%m%y%{"[".(&fenc!=""?&fenc:&enc).",".&ff."]"}%{"[".neocomplcache#caching_percent("")."%]"} %3l,%3c %3p%%'
 
 だんだん数字が増えていくのを楽しむのも、なかなか良いものですね。
 ちなみに、このキャッシュ率は詳細キャッシュ率を表しています。
@@ -487,6 +503,9 @@ let &statusline = '%=%m%y%{"[".(&fenc!=""?&fenc:&enc).",".&ff."]"}%{"[".neocompl
 neocomplcache Ver.2.50より、ファイルを開くときにすべてのキーワードをキャッシュするようになっているので、
 キャッシュ率が0%であっても、キーワード補完は動作するので注意してください。
 このキャッシュ率が上昇するにつれて、補完候補が表示される順番が変化します。
+
+Ver.3.00より、neocomplcache#caching_percent()で呼び出せるようになりました。
+以前のneocomplcache#keyword_complete#caching_percent()は動作しないので注意してください。
 
 --------------------------------
 スニペット補完
@@ -648,7 +667,7 @@ if !exists('g:NeoComplCache_PluginCompletionLength')
     let g:NeoComplCache_PluginCompletionLength = {}
 endif
 let g:NeoComplCache_PluginCompletionLength['snippets_complete'] = 1
-let g:NeoComplCache_PluginCompletionLength['keyword_complete'] = 2
+let g:NeoComplCache_PluginCompletionLength['buffer_complete'] = 2
 let g:NeoComplCache_PluginCompletionLength['syntax_complete'] = 2
 let g:NeoComplCache_PluginCompletionLength['tags_complete'] = 3
 
@@ -823,6 +842,7 @@ Twitterはneocomplcache開発日記と化しているので、こまめにチェ
 --------------------------------
 更新履歴
 
+2009/09/27     neocomplcache Ver.3.00に対応。
 2009/09/22     neocomplcache Ver.2.78に対応。
 2009/09/17     neocomplcache Ver.2.77に対応。
 2009/09/12     neocomplcache Ver.2.76に対応。

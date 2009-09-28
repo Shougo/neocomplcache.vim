@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Sep 2009
+" Last Modified: 27 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.21, for Vim 7.0
+" Version: 1.22, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.22:
 "    - Fixed non-initialize error.
+"    - Fixed error.
+"    - Fixed expand cursor bug.
+"    - Supported neocomplcache 3.0.
 "
 "   1.21:
 "    - Added NeoComplCachePrintSnippets command.
@@ -94,7 +97,7 @@
 "
 "   1.09:
 "    - Added syntax highlight.
-"    - Implemented neocomplcache#snippets_complete#expandable().
+"    - Implemented neocomplcache#plugin#snippets_complete#expandable().
 "    - Change menu when expandable snippet.
 "    - Implemented g:NeoComplCache_SnippetsDir.
 "
@@ -142,7 +145,7 @@ if !exists('s:snippets')
     let s:snippets = {}
 endif
 
-function! neocomplcache#snippets_complete#initialize()"{{{
+function! neocomplcache#plugin#snippets_complete#initialize()"{{{
     " Initialize.
     let s:snippets = {}
     let s:begin_snippet = 0
@@ -150,7 +153,7 @@ function! neocomplcache#snippets_complete#initialize()"{{{
     let s:snippet_holder_cnt = 1
 
     " Set snippets dir.
-    let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/snippets_complete'), '\n')
+    let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete'), '\n')
     if exists('g:NeoComplCache_SnippetsDir')
         for dir in split(g:NeoComplCache_SnippetsDir, ',')
             if !isdirectory(dir)
@@ -180,12 +183,12 @@ function! neocomplcache#snippets_complete#initialize()"{{{
     call s:caching_snippets('_')
 endfunction"}}}
 
-function! neocomplcache#snippets_complete#finalize()"{{{
+function! neocomplcache#plugin#snippets_complete#finalize()"{{{
     delcommand NeoComplCacheEditSnippets
     hi clear NeoComplCacheExpandSnippets
 endfunction"}}}
 
-function! neocomplcache#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
+function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
     if &filetype == '' || !has_key(s:snippets, &filetype)
         return s:keyword_filter(values(s:snippets['_']), a:cur_keyword_str)
     endif
@@ -212,11 +215,11 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
 endfunction"}}}
 
 " Dummy function.
-function! neocomplcache#snippets_complete#calc_rank(cache_keyword_buffer_list)"{{{
+function! neocomplcache#plugin#snippets_complete#calc_rank(cache_keyword_buffer_list)"{{{
     return
 endfunction"}}}
 
-function! neocomplcache#snippets_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
+function! neocomplcache#plugin#snippets_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
     " Calc previous rank.
     for keyword in a:cache_keyword_buffer_list
         " Set prev rank.
@@ -224,16 +227,17 @@ function! neocomplcache#snippets_complete#calc_prev_rank(cache_keyword_buffer_li
     endfor
 endfunction"}}}
 
-function! neocomplcache#snippets_complete#expandable()"{{{
+function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     if &filetype == '' || !has_key(s:snippets, &filetype)
         let l:snippets = s:snippets['_']
     else
         let l:snippets = extend(copy(s:snippets['_']), s:snippets[&filetype])
     endif
 
-    let l:cur_text = strpart(getline('.'), 0, col('.'))
-    let l:cur_word = matchstr(l:cur_text, '\h\w*$')
-    return has_key(l:snippets, l:cur_word) || search('\${\d\+\%(:[^}]*\)\?}', 'w') > 0
+    let s:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+    let s:cur_word = matchstr(s:cur_text, '\h\w*$')
+    let s:col = col('.')
+    return has_key(l:snippets, s:cur_word) || search('\${\d\+\%(:[^}]*\)\?}', 'w') > 0
 endfunction"}}}
 
 function! s:caching()"{{{
@@ -400,11 +404,9 @@ function! s:snippets_expand()"{{{
         let l:snippets = extend(copy(s:snippets['_']), s:snippets[&filetype])
     endif
 
-    let l:cur_text = strpart(getline('.'), 0, col('.'))
-    let l:cur_word = matchstr(l:cur_text, '\h\w*$')
-    if has_key(l:snippets, l:cur_word)
-        let l:snippet = l:snippets[l:cur_word]
-        let l:cur_text = l:cur_text[: -1-len(l:cur_word)]
+    if has_key(l:snippets, s:cur_word)
+        let l:snippet = l:snippets[s:cur_word]
+        let l:cur_text = s:cur_text[: -1-len(s:cur_word)]
 
         let l:snip_word = l:snippet.snip
         if l:snip_word =~ '`[^`]*`'
@@ -416,14 +418,14 @@ function! s:snippets_expand()"{{{
         let l:snippet.rank += 1
 
         " Insert snippets.
-        let l:next_line = getline('.')[col('.') :]
+        let l:next_line = getline('.')[s:col-1 :]
         call setline(line('.'), l:cur_text . l:snip_word . l:next_line)
         call setpos('.', [0, line('.'), len(l:cur_text)+len(l:snip_word)+1, 0])
         let l:old_col = len(l:cur_text)+len(l:snip_word)+1
 
         if l:snip_word =~ '<expand>$'
             call s:expand_newline()
-        elseif getline('.')[col('.') :] != ''
+        elseif getline('.')[col('.')-1 :] != ''
             startinsert
         else
             startinsert!
@@ -526,11 +528,7 @@ function! s:search_snippet_range(start, end)"{{{
                     let l:len += 1
                 endif
 
-                if l:len == 0
-                    execute "normal! v\<C-g>"
-                else
-                    execute 'normal! v'.l:len."l\<C-g>"
-                endif
+                execute 'normal! v'. repeat('l', l:len) . "\<C-g>"
             elseif l:col < col('$')
                 startinsert
             else
@@ -615,16 +613,12 @@ function! s:search_outof_range()"{{{
                 let l:len += 1
             endif
 
-            if l:len == 0
-                execute "normal! v\<C-g>"
-            else
-                execute "normal! v".l:len."l\<C-g>"
-            endif
+            execute 'normal! v'. repeat('l', l:len) . "\<C-g>"
 
             return
         endif
 
-        if l:col < col('$')
+        if l:pos < col('$')
             startinsert
         else
             startinsert!
@@ -632,8 +626,14 @@ function! s:search_outof_range()"{{{
     endif
 endfunction"}}}
 
+function! s:SID_PREFIX()
+    return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
 " Plugin key-mappings.
-inoremap <silent> <Plug>(neocomplcache_snippets_expand)  <ESC>:<C-u>call <SID>snippets_expand()<CR>
-snoremap <silent> <Plug>(neocomplcache_snippets_expand)  <C-g>:<C-u>call <SID>snippets_expand()<CR>
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand)  
+            \ neocomplcache#plugin#snippets_complete#expandable()? "\<C-o>:\<C-u>call ".<SID>SID_PREFIX()."snippets_expand()\<CR>" : ""
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand)
+            \ neocomplcache#plugin#snippets_complete#expandable()? "\<ESC>:\<C-u>call ".<SID>SID_PREFIX()."snippets_expand()\<CR>" : ""
 
 " vim: foldmethod=marker

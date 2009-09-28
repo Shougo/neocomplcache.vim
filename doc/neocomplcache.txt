@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 2.78
+Version: 3.00
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -77,39 +77,39 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCachePartialCompletionLength			*:NeoComplCachePartialCompletionLength*
 		Change start length of partial completion.
 
-:NeoComplCacheCachingBuffer [bufnr]			*:NeoComplCacheCachingBuffer*
-		Caching [bufnr] buffer.
+:NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
+		Caching [bufname] buffer.
 		Warning: considerably take time, for the big buffer.
-		Select current buffer when [bufnr] omitted.
-		When [bufnr] buffer is not cashed, perform only simple cashing.
+		Select current buffer when [bufname] omitted.
+		When [bufname] buffer is not cashed, perform only simple cashing.
 
 :NeoComplCacheCachingSyntax [filetype]			*:NeoComplCacheCachingSyntax*
 		Caching [filetype] syntax file.
 		Select current buffer filetype when [filetype] omitted.
 
-:NeoComplCacheCachingDisable [bufnr]			*:NeoComplCacheCachingDisable*
-		Disable [bufnr] buffer's cache.
+:NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
+		Disable [bufname] buffer's cache.
 		The cache will be deleted.
-		Select current buffer when [bufnr] omitted.
+		Select current buffer when [bufname] omitted.
 
-:NeoComplCacheCachingEnable [bufnr]			*:NeoComplCacheCachingEnable*
-		Enable [bufnr] buffer's cache.
-		Select current buffer when [bufnr] omitted.
+:NeoComplCacheCachingEnable [bufname]			*:NeoComplCacheCachingEnable*
+		Enable [bufname] buffer's cache.
+		Select current buffer when [bufname] omitted.
 
-:NeoComplCachePrintSource [bufnr]			*:NeoComplCachePrintSource*
-		Output [bufnr] buffer's cache in current buffer.
+:NeoComplCachePrintSource [bufname]			*:NeoComplCachePrintSource*
+		Output [bufname] buffer's cache in current buffer.
 		This command is for debug.
-		Select current buffer when [bufnr] omitted.
+		Select current buffer when [bufname] omitted.
 		For a command for debugging, a user will not need to use it mainly.
 
-:NeoComplCacheOutputKeyword [bufnr]			*:NeoComplCacheOutputKeyword*
-		Write the keyword which cashed [bufnr] buffer in current buffer.
-		Select current buffer when [bufnr] omitted.
+:NeoComplCacheOutputKeyword [bufname]			*:NeoComplCacheOutputKeyword*
+		Write the keyword which cashed [bufname] buffer in current buffer.
+		Select current buffer when [bufname] omitted.
 		When you make a dictionary file by yourself, it may be convenient.
 
-:NeoComplCacheCreateTags [bufnr]			*:NeoComplCacheCreateTags*
-		Create tags from [bufnr] buffer.
-		Select current buffer when [bufnr] omitted.
+:NeoComplCacheCreateTags [bufname]			*:NeoComplCacheCreateTags*
+		Create tags from [bufname] buffer.
+		Select current buffer when [bufname] omitted.
 
 :NeoComplCacheEditSnippets [filetype]			*:NeoComplCacheEditSnippets*
 		Edit [filetype] snippets.
@@ -451,9 +451,9 @@ EXAMPLES					*neocomplcache-examples*
 PLUGINS					*neocomplcache-plugins*
 
 In this clause, I comment on plug in attached to neocomplcache.
-Neocomplcache reads automatically the plugin saved in an autoload/neocomplcache directory.
+Neocomplcache reads automatically the plugin saved in an autoload/neocomplcache/plugin directory.
 
-keyword_complete.vim					*keyword_complete*
+buffer_complete.vim					*buffer_complete*
 		This plugin will collect keywords from buffers and dictionaries, and to use for completion.
 		Because the plugin offer the basic function of neocomplcache,
 		neocomplcache does not work normally when you delete this plugin.
@@ -492,7 +492,24 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+ChangeLog NeoComplCache 3.00-: {{{
+   3.00:
+    - Implemented multiple keyword.
+    - Improved html keyword completion.
+    - Improved command's completion.
+    - Fixed error in snippets_complete.
+    - Fixed expand cursor bug in snippets_complete.
+    - Improved skip completion.
+    - Splitted filename completion and omni completion and keyword completion.
+    - Improved remove next keyword.
+    - Renamed keyword_complete.vim as buffer_complete.vim.
+     }}}
 ChangeLog NeoComplCache 2.51-: {{{
+   3.00:
+    - Implemented multiple keyword.
+    - Improved html keyword completion.
+    - Improved command's completion.
+
    2.78:
     - Supported abbr in omni completion.
     - Clear quickmatch cache when auto complete is skipped.

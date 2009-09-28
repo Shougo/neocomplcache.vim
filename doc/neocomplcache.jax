@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 2.77
+Version: 3.00
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -75,38 +75,38 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCachePartialCompletionLength			*:NeoComplCachePartialCompletionLength*
 		部分マッチ補完する文字数を一時的に変更する。
 
-:NeoComplCacheCachingBuffer [bufnr]			*:NeoComplCacheCachingBuffer*
-		[bufnr]で示されるバッファを完全にキャッシュする。
+:NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
+		[bufname]で示されるバッファを完全にキャッシュする。
 		大きなバッファに対しては、かなり時間がかかるので注意。
-		[bufnr]を省略すると、カレントバッファを指定したことになる。
-		[bufnr]のバッファがまだキャッシュされていない場合、簡易キャッシュのみを行う。
+		[bufname]を省略すると、カレントバッファを指定したことになる。
+		[bufname]のバッファがまだキャッシュされていない場合、簡易キャッシュのみを行う。
 
 :NeoComplCacheCachingSyntax [filetype]			*:NeoComplCacheCachingSyntax*
 		[filetype]のシンタックスをもう一度キャッシュする。
 		[filetype]を省略すると、カレントバッファのファイルタイプを指定したことになる。
 
-:NeoComplCacheCachingDisable [bufnr]			*:NeoComplCacheCachingDisable*
-		[bufnr]で示されるバッファをキャッシュしないようにする。
+:NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
+		[bufname]で示されるバッファをキャッシュしないようにする。
 		バッファのキャッシュは削除されるので注意。
-		[bufnr]を省略すると、カレントバッファを指定したことになる。
+		[bufname]を省略すると、カレントバッファを指定したことになる。
 
-:NeoComplCacheCachingEnable [bufnr]			*:NeoComplCacheCachingEnable*
-		[bufnr]で示されるバッファをキャッシュできるようにする。
-		[bufnr]を省略すると、カレントバッファを指定したことになる。
+:NeoComplCacheCachingEnable [bufname]			*:NeoComplCacheCachingEnable*
+		[bufname]で示されるバッファをキャッシュできるようにする。
+		[bufname]を省略すると、カレントバッファを指定したことになる。
 
-:NeoComplCachePrintSource [bufnr]			*:NeoComplCachePrintSource*
-		[bufnr]で示されるバッファのキャッシュ情報をカレントバッファに書き出す。
-		[bufnr]を省略すると、カレントバッファを指定したことになる。
+:NeoComplCachePrintSource [bufname]			*:NeoComplCachePrintSource*
+		[bufname]で示されるバッファのキャッシュ情報をカレントバッファに書き出す。
+		[bufname]を省略すると、カレントバッファを指定したことになる。
 		主にデバッグ用の機能のため、ユーザーが使うことはないだろう。
 
-:NeoComplCacheOutputKeyword [bufnr]			*:NeoComplCacheOutputKeyword*
-		[bufnr]で示されるバッファのキャッシュしたキーワードをカレントバッファに書き出す。
-		[bufnr]を省略すると、カレントバッファを指定したことになる。
+:NeoComplCacheOutputKeyword [bufname]			*:NeoComplCacheOutputKeyword*
+		[bufname]で示されるバッファのキャッシュしたキーワードをカレントバッファに書き出す。
+		[bufname]を省略すると、カレントバッファを指定したことになる。
 		辞書ファイルを自分で作成するときに便利かもしれない。
 
-:NeoComplCacheCreateTags [bufnr]			*:NeoComplCacheCreateTags*
-		[bufnr]で示されるバッファから、タグ情報を生成する。
-		[bufnr]を省略すると、カレントバッファを指定したことになる。
+:NeoComplCacheCreateTags [bufname]			*:NeoComplCacheCreateTags*
+		[bufname]で示されるバッファから、タグ情報を生成する。
+		[bufname]を省略すると、カレントバッファを指定したことになる。
 
 :NeoComplCacheEditSnippets [filetype]			*:NeoComplCacheEditSnippets*
 		[filetype]のスニペット補完ファイルを編集する。
