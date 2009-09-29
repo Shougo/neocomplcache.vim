@@ -187,7 +187,7 @@ function! neocomplcache#disable()"{{{
     delcommand NeoComplCachePartialCompletionLength
 
     for l:complfunc in s:complfuncs_func_table
-        call call(l:plugin . 'finalize', [])
+        call call(l:complfunc . 'finalize', [])
     endfor
 
     let s:prev_numbered_list = []

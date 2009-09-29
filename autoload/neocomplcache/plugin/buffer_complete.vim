@@ -677,7 +677,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
         if l:line_cnt == 0
             if g:NeoComplCache_CachingPercentInStatusline
                 let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
-                redrawstatus
+                redrawstatus!
             else
                 redraw
                 echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
@@ -864,17 +864,21 @@ function! s:split_keyword(keyword_pattern)"{{{
     let l:i = 0
     let l:max = len(l:keyword_pattern)
     while l:i < l:max
-        if l:keyword_pattern[l:i : ] =~ '^[^\\]%\?('
+        if l:keyword_pattern[l:i] == '\'
+            let l:i += 2
+        elseif match(l:keyword_pattern, '^%\?(', l:i) >= 0
             " Grouping.
-            let l:i = s:matchend_pair(l:keyword_pattern, '^[^\\]%\?(', '[^\\])', l:i)
+            let l:i = s:match_pair(l:keyword_pattern, '\\\@!%\?(', '\\\@!)', l:i)
             if l:i < 0
                 echoerr 'Unmatched (.'
                 return []
             endif
-        elseif l:keyword_pattern[l:i : ] =~ '^[^\\]|'
+
+            let l:i += 1
+        elseif  match(l:keyword_pattern, '^|', l:i) >= 0
             " Select.
-            call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i])
-            let l:keyword_pattern = l:keyword_pattern[l:i+2 :]
+            call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i-1])
+            let l:keyword_pattern = l:keyword_pattern[l:i+1 :]
             let l:max = len(l:keyword_pattern)
             let l:i = 0
         else
@@ -886,30 +890,37 @@ function! s:split_keyword(keyword_pattern)"{{{
     return l:keyword_patterns
 endfunction"}}}
 
-function! s:matchend_pair(string, start_pattern, end_pattern, start_cnt)"{{{
-    let l:start = matchend(a:string, a:start_pattern, a:start_cnt)
-    if l:start < 0
-        return -1
-    endif
+function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
+    let l:end = -1
+    let l:start_pattern = '^\%(' . a:start_pattern . '\)'
+    let l:end_pattern = '^\%(' . a:end_pattern . '\)'
 
-    let l:end = matchend(a:string, a:end_pattern, l:start)
-    if l:end < 0
-        return -1
-    endif
+    let l:i = a:start_cnt
+    let l:max = len(a:string)
+    let l:nest_level = 0
+    while l:i < l:max
+        if match(a:string, l:start_pattern, l:i) >= 0
+            let l:i = matchend(a:string, l:start_pattern, l:i)
+            let l:nest_level += 1
+        elseif match(a:string, l:end_pattern, l:i) >= 0
+            let l:end = l:i
+            let l:nest_level -= 1
 
-    let l:start = matchend(a:string, a:start_pattern, l:start)
-    let l:cnt = 0
-    while l:start >= 0 && l:start < l:end
-        let l:start = matchend(a:string, a:start_pattern, l:start)
-        let l:cnt += 1
+            if l:nest_level == 0
+                return l:end
+            endif
+
+            let l:i = matchend(a:string, l:end_pattern, l:i)
+        else
+            let l:i += 1
+        endif
     endwhile
 
-    while l:cnt > 0 && l:end >= 0
-        let l:end = matchend(a:string, a:end_pattern, l:end)
-        let l:cnt -= 1
-    endwhile
-
-    return l:end
+    if l:nest_level != 0
+        return -1
+    else
+        return l:end
+    endif
 endfunction"}}}
 
 function! s:garbage_collect_candidate(start_line, end_line)"{{{
