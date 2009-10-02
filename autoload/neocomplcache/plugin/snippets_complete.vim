@@ -231,7 +231,9 @@ function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_st
     " Set same filetype.
     if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
         for l:same_ft in split(g:NeoComplCache_SameFileTypeLists[l:ft], ',')
-            let l:snippets += values(s:snippets[l:same_ft])
+            if has_key(s:snippets, l:same_ft)
+                let l:snippets += values(s:snippets[l:same_ft])
+            endif
         endfor
     endif
 
@@ -301,7 +303,9 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     " Set same filetype.
     if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
         for l:same_ft in split(g:NeoComplCache_SameFileTypeLists[l:ft], ',')
-            call extend(l:snippets, s:snippets[l:same_ft], 'keep')
+            if has_key(s:snippets, l:same_ft)
+                call extend(l:snippets, s:snippets[l:same_ft], 'keep')
+            endif
         endfor
     endif
 
