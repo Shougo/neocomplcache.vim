@@ -614,6 +614,18 @@ ${3}
 で表される、snipMateのmulti snippetにも対応。
 ただし英数字でないスニペット名は、_に変換されます。
 
+スニペット補完はVer.3.01にて、さらにパワーアップしました。
+Same filetypeや、最後に記号を含むスニペットにも対応。
+
+condition neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*if$'
+conditionのあとにVimScriptを書くことで、その条件に合うときだけ補完や展開が行われるようになります。
+neocomplcache#plugin#snippets_complete#get_cur_text()はカーソル前の文字列を取得する関数です。
+
+snippet div
+<div ${1:id="${2:someid\}"}>${3}</div>${4}
+プレースホルダの中にプレースホルダを書くことができます。ただし、}はエスケープしてください。
+\がエスケープ文字になっているので、\を初期値に入れるときは\\とする必要があります。
+
 --------------------------------
 自動補完のスキップ
 
@@ -754,9 +766,9 @@ C-hは一度ポップアップを消去し、ちらついたり、重くなら�
 --------------------------------
 知名度
 
-autocomplpop: 14,700件
-auto-complete.el: 14,300件
-neocomplcache: 5790件
+autocomplpop: 17,800件
+auto-complete.el: 160,000件
+neocomplcache: 26,500件
 
                   Google調べ
 
@@ -835,6 +847,9 @@ http://twitter.com/ShougoMatsu
 更新情報は主にブログに、重要な情報はTwitterでもアナウンスする予定です。
 Twitterはneocomplcache開発日記と化しているので、こまめにチェックするとおもしろいかもしれません。
 
+最近はLingr内の補完部屋にも常駐しています。
+http://lingr.com/room/completion
+
 実装してみて分かりましたが、補完にはまだまだ無限の可能性があります。
 みんなの力で、どんどんneocomplcacheを良くしていきましょう。
 夢はVimのキラープラグインとなることです。
@@ -842,6 +857,7 @@ Twitterはneocomplcache開発日記と化しているので、こまめにチェ
 --------------------------------
 更新履歴
 
+2009/10/02     neocomplcache Ver.3.01に対応。
 2009/09/27     neocomplcache Ver.3.00に対応。
 2009/09/22     neocomplcache Ver.2.78に対応。
 2009/09/17     neocomplcache Ver.2.77に対応。

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2009
+" Last Modified: 01 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.00, for Vim 7.0
+" Version: 3.01, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -132,12 +132,17 @@ function! neocomplcache#enable() "{{{
                 \'\v[[:alpha:]_.-][[:alnum:]_.-]*')
     "}}}
 
-    " Initialize assume file type lists."{{{
-    if !exists('g:NeoComplCache_NonBufferFileTypeDetect')
-        let g:NeoComplCache_NonBufferFileTypeDetect = {}
+    " Initialize same file type lists."{{{
+    if !exists('g:NeoComplCache_SameFileTypeLists')
+        let g:NeoComplCache_SameFileTypeLists = {}
     endif
-    " For test.
-    "let g:NeoComplCache_NonBufferFileTypeDetect['rb'] = 'ruby'"}}}
+    call s:set_same_filetype('c', 'cpp')
+    call s:set_same_filetype('cpp', 'c')
+    call s:set_same_filetype('erb', 'ruby,html,xhtml')
+    call s:set_same_filetype('html', 'xhtml')
+    call s:set_same_filetype('xml', 'xhtml')
+    call s:set_same_filetype('xhtml', 'html,xml')
+    "}}}
 
     " Add commands."{{{
     command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
@@ -692,6 +697,9 @@ function! s:complete()"{{{
         endif
     endfor
     "}}}
+
+    let s:prev_numbered_list = []
+    let s:prepre_numbered_list = []
 endfunction"}}}
 
 " Fast filters.
@@ -750,7 +758,11 @@ function! s:set_keyword_pattern(filetype, pattern)"{{{
         endif
     endfor
 endfunction"}}}
-
+function! s:set_same_filetype(filetype, pattern)"{{{
+    if !has_key(g:NeoComplCache_SameFileTypeLists, a:filetype) 
+        let g:NeoComplCache_SameFileTypeLists[a:filetype] = a:pattern
+    endif
+endfunction"}}}
 "}}}
 
 " Command functions."{{{

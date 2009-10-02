@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Sep 2009
+" Last Modified: 01 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.00, for Vim 7.0
+" Version: 3.01, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -49,14 +49,12 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
         augroup END
     endif
 
-    " Initialize same file type lists."{{{
-    if !exists('g:NeoComplCache_SameFileTypeLists')
-        let g:NeoComplCache_SameFileTypeLists = {}
+    " Initialize assume file type lists."{{{
+    if !exists('g:NeoComplCache_NonBufferFileTypeDetect')
+        let g:NeoComplCache_NonBufferFileTypeDetect = {}
     endif
-    call s:set_same_filetype('c', 'cpp')
-    call s:set_same_filetype('cpp', 'c')
-    call s:set_same_filetype('erb', 'ruby')
-    "}}}
+    " For test.
+    "let g:NeoComplCache_NonBufferFileTypeDetect['rb'] = 'ruby'"}}}
 
     " Initialize script variables."{{{
     let s:sources = {}
@@ -67,8 +65,8 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     "}}}
 
     " Create cache directory.
-    if !isdirectory(g:NeoComplCache_TemporaryDir . '/keyword_cache')
-        call mkdir(g:NeoComplCache_TemporaryDir . '/keyword_cache')
+    if !isdirectory(g:NeoComplCache_TemporaryDir . '/buffer_cache')
+        call mkdir(g:NeoComplCache_TemporaryDir . '/buffer_cache', 'p')
     endif
 
     " Initialize dictionary and tags."{{{
@@ -127,7 +125,7 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
     let l:keyword_list = []
     let s:cur_keyword_len = len(a:cur_keyword_str)
     for src in s:get_sources_list()
-        call extend(l:keyword_list, neocomplcache#keyword_filter(values(s:sources[src].keyword_cache), a:cur_keyword_str))
+        let l:keyword_list += neocomplcache#keyword_filter(values(s:sources[src].keyword_cache), a:cur_keyword_str)
     endfor
     return l:keyword_list
 endfunction"}}}
@@ -363,12 +361,12 @@ function! s:get_sources_list()"{{{
     let l:ft_list = []
     " Set same filetype.
     if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-        call extend(l:ft_list, split(g:NeoComplCache_SameFileTypeLists[&filetype], ','))
+        let l:ft_list += split(g:NeoComplCache_SameFileTypeLists[&filetype], ',')
     endif
 
     " Set compound filetype.
     if l:ft =~ '\.'
-        call extend(l:ft_list, split(l:ft, '\.'))
+        let l:ft_list += split(l:ft, '\.')
     endif
 
     for l:t in l:ft_list
@@ -868,25 +866,32 @@ function! s:split_keyword(keyword_pattern)"{{{
             let l:i += 2
         elseif match(l:keyword_pattern, '^%\?(', l:i) >= 0
             " Grouping.
-            let l:i = s:match_pair(l:keyword_pattern, '\\\@!%\?(', '\\\@!)', l:i)
+            let l:i = s:match_pair(l:keyword_pattern, '\\\@<!%\?(', '\\\@<!)', l:i)
             if l:i < 0
                 echoerr 'Unmatched (.'
                 return []
             endif
 
             let l:i += 1
-        elseif  match(l:keyword_pattern, '^|', l:i) >= 0
+        elseif l:keyword_pattern[l:i] == '|'
             " Select.
             call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i-1])
             let l:keyword_pattern = l:keyword_pattern[l:i+1 :]
             let l:max = len(l:keyword_pattern)
             let l:i = 0
+        elseif l:keyword_pattern[l:i] == '['
+            " Collection.
+            let l:i = matchend(l:keyword_pattern, '\\\@<!]', l:i)
+            if l:i < 0
+                echoerr 'Unmatched [.'
+                return []
+            endif
         else
             let l:i += 1
         endif
     endwhile
 
-    call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i])
+    call add(l:keyword_patterns, '\v'.l:keyword_pattern)
     return l:keyword_patterns
 endfunction"}}}
 
@@ -1088,7 +1093,7 @@ function! s:save_cache(srcname)"{{{
         " Dictionary.
         let l:srcname = split(a:srcname, ',')[1]
     endif
-    let l:cache_name = g:NeoComplCache_TemporaryDir . '/keyword_cache/' .
+    let l:cache_name = g:NeoComplCache_TemporaryDir . '/buffer_cache/' .
                 \substitute(substitute(l:srcname, ':', '=-', 'g'), '[/\\]', '=+', 'g') . '='
     if getftime(l:cache_name) >= getftime(l:srcname)
         return -1
@@ -1273,12 +1278,6 @@ function! s:garbage_collect_keyword()"{{{
             endif
         endif
     endfor
-endfunction"}}}
-
-function! s:set_same_filetype(filetype, pattern)"{{{
-    if !has_key(g:NeoComplCache_SameFileTypeLists, a:filetype) 
-        let g:NeoComplCache_SameFileTypeLists[a:filetype] = a:pattern
-    endif
 endfunction"}}}
 
 " vim: foldmethod=marker

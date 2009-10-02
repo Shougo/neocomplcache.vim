@@ -168,8 +168,9 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
             endif"}}}
 
             " Sort.
-            call extend(l:cache_keyword_filtered, sort(
-            \filter(copy(l:cache_keyword_list), 'v:val.prev_rank > 0 || v:val.prepre_rank > 0'), 'neocomplcache#compare_prev_rank'))
+            let l:cache_keyword_filtered += sort(
+                \filter(copy(l:cache_keyword_list), 'v:val.prev_rank > 0 || v:val.prepre_rank > 0'), 'neocomplcache#compare_prev_rank')
+
             call filter(l:cache_keyword_lists[l:plugin], 'v:val.prev_rank == 0 && v:val.prepre_rank == 0')
         endfor
     endif"}}}
@@ -177,7 +178,7 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
     " Extend list.
     let l:cache_keyword_list = []
     for l:plugin in keys(l:loaded_plugins)
-        call extend(l:cache_keyword_list, l:cache_keyword_lists[l:plugin])
+        let l:cache_keyword_list += l:cache_keyword_lists[l:plugin]
     endfor
 
     " Add rank if match next keyword."{{{
@@ -195,7 +196,7 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
     endif"}}}
 
     " Sort.
-    call extend(l:cache_keyword_filtered, sort(l:cache_keyword_list, l:order_func))
+    let l:cache_keyword_filtered = sort(l:cache_keyword_list, l:order_func)
 
     " Trunk too many item.
     let l:cache_keyword_filtered = l:cache_keyword_filtered[:g:NeoComplCache_MaxList-1]

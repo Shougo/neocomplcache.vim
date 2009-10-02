@@ -371,6 +371,12 @@ g:NeoComplCache_PluginCompletionLength			*g:NeoComplCache_PluginCompletionLength
 
 		Default value is {}.
 
+g:NeoComplCache_DisableSelectModeMappings		*g:NeoComplCache_DisableSelectModeMappings*
+		This variable control whether you invalidate Key-mappings of Select-mode which snippets_complete performs.
+		You had better usually validate it.
+		
+		Default value is 1.
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
@@ -493,6 +499,19 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.01:
+    - Added select mode mappings in snippets_complete.
+    - Supported same filetype lists in snippets_complete.
+    - Expandable a snippet including sign.
+    - Added registers snippet.
+    - Changed buffer_complete cache directory.
+    - Sort alphabetical order in snippets_complete.
+    - Improved get cur_text in snippets_complete.
+    - Implemented condition in snippets_complete.
+    - Added xhtml snippet(Thanks just!).
+    - Fixed css error.
+    - Implemented optional placeholder.
+   
    3.00:
     - Implemented multiple keyword.
     - Improved html keyword completion.

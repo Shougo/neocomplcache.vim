@@ -1,5 +1,6 @@
 snippet     if
 abbr        if endif
+condition   neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*if$'
 prev_word   '^'
     if ${1:condition}
         ${0}
@@ -7,6 +8,7 @@ prev_word   '^'
 
 snippet     ifelse
 abbr        if else endif
+condition   neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*if\%[else]$'
 rank        4
 prev_word   '^'
     if ${1:condition}
@@ -17,6 +19,7 @@ prev_word   '^'
 
 snippet     for
 abbr        for in endfor
+condition   neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*f\%[or]$'
 prev_word   '^'
     for ${1:var} in ${2:list}
         ${0}
@@ -24,6 +27,7 @@ prev_word   '^'
 
 snippet     while
 abbr        while endwhile
+condition   neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*wh\%[ile]$'
 prev_word   '^'
     while ${1:condition}
         ${0}
@@ -31,6 +35,7 @@ prev_word   '^'
 
 snippet     function
 abbr        func endfunc
+condition   neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*fu\%[nction]$'
 alias       func
 prev_word   '^'
     function! ${1:func_name}(${2})
