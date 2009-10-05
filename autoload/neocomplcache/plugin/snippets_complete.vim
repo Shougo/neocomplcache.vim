@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2009
+" Last Modified: 05 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.24, for Vim 7.0
+" Version: 1.25, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.25:
+"    - Substitute tilde.
+"
 "   1.24:
 "    - Fixed fatal bug when snippet expand.
 "    - Fixed marker substitute bug.
@@ -171,11 +174,12 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
     " Set snippets dir.
     let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete'), '\n')
     if exists('g:NeoComplCache_SnippetsDir')
-        for dir in split(g:NeoComplCache_SnippetsDir, ',')
-            if !isdirectory(dir)
-                call mkdir(dir, 'p')
+        for l:dir in split(g:NeoComplCache_SnippetsDir, ',')
+            let l:dir = substitute(l:dir, '^\~', $HOME, '')
+            if !isdirectory(l:dir)
+                call mkdir(l:dir, 'p')
             endif
-            call add(s:snippets_dir, dir)
+            call add(s:snippets_dir, l:dir)
         endfor
     endif
 

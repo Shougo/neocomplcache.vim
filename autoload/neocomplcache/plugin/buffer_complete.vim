@@ -875,6 +875,7 @@ function! s:split_keyword(keyword_pattern)"{{{
     endwhile
 
     call add(l:keyword_patterns, '\v'.l:keyword_pattern)
+    echomsg string(l:keyword_patterns)
     return l:keyword_patterns
 endfunction"}}}
 
@@ -886,11 +887,12 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
     let l:i = a:start_cnt
     let l:max = len(a:string)
     let l:nest_level = 0
-    while l:i < l:max
+    while l:i >= 0 && l:i < l:max
         if match(a:string, l:start_pattern, l:i) >= 0
             let l:i = matchend(a:string, l:start_pattern, l:i)
             let l:nest_level += 1
-        elseif match(a:string, l:end_pattern, l:i) >= 0
+        endif
+        if match(a:string, l:end_pattern, l:i) >= 0
             let l:end = match(a:string, l:end_pattern, l:i)
             let l:nest_level -= 1
 
@@ -899,8 +901,6 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
             endif
 
             let l:i = matchend(a:string, l:end_pattern, l:i)
-        else
-            break
         endif
     endwhile
 
