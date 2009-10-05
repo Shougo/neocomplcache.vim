@@ -83,7 +83,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call s:set_keyword_pattern('sh,zsh',
-                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*[[(])?')
+                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\[|\s*\(?)?')
     call s:set_keyword_pattern('vimshell',
                 \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
     call s:set_keyword_pattern('ps1',
@@ -115,7 +115,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call s:set_keyword_pattern('html,xhtml,xml',
-                \'\v[[:alnum:]_-]*\>|\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_-]*%(\=")?|\<[^>]+\>')
+                \'\v[[:alnum:]_:-]*\>|\</?%([[:alnum:]_:-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_:-]*%(\=")?|\<[^>]+\>')
     call s:set_keyword_pattern('css',
                 \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
     call s:set_keyword_pattern('tags',

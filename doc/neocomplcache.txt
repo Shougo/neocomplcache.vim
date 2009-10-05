@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.00
+Version: 3.02
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -116,6 +116,13 @@ COMMANDS 					*neocomplcache-commands*
 		Edit current buffer's filetype snippets when [filetype] omitted.
 		When there is not [filetype] snippet file, it is generated newly.
 		This command edits a snippet file in g:NeoComplCache_SnippetsDir with precedence.
+		It is done re-cash automatically when you store a snippet file.
+
+:NeoComplCacheEditRuntimeSnippets [filetype]			*:NeoComplCacheEditRuntimeSnippets*
+		Edit [filetype] snippets.
+		Edit current buffer's filetype snippets when [filetype] omitted.
+		When there is not [filetype] snippet file, it is generated newly.
+		This command edits a runtime snippet file with snippets_complete.
 		It is done re-cash automatically when you store a snippet file.
 
 :NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*
@@ -499,6 +506,17 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.02:
+    - Fixed escape bug in filename_complete.
+    - Deleted cdpath completion.
+    - Improved filename completion.
+    - Fixed fatal bug when snippet expand.
+    - Fixed marker substitute bug.
+    - Fixed fatal caching bug.
+    - Fixed error when sh/zsh file opened.
+    - Implemented filetype completion.
+    - Improved html/xhtml keyword pattern.
+
    3.01:
     - Added select mode mappings in snippets_complete.
     - Supported same filetype lists in snippets_complete.

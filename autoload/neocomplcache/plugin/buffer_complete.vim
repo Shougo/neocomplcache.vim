@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Oct 2009
+" Last Modified: 05 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.01, for Vim 7.0
+" Version: 3.02, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -194,9 +194,6 @@ function! neocomplcache#plugin#buffer_complete#calc_prev_rank(cache_keyword_buff
         endif
         if a:prepre_word != '' && has_key(s:sources[src].next_next_word_list, a:prepre_word)
             let l:source_next_next[src] = s:sources[src].next_next_word_list[a:prepre_word]
-        endif
-        if l:operator != '' && has_key(s:sources[src].operator_word_list, l:operator)
-            let l:operator_list[src] = s:sources[src].operator_word_list[l:operator]
         endif
     endfor
 
@@ -434,16 +431,11 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
         let [l:line, l:rank_cache_line] = [buflines[l:line_num], l:source.rank_cache_lines[l:cache_line]]
         for l:pattern in l:keyword_pattern
-            let [l:match_num, l:prev_word, l:prepre_word, l:line_max] =
-                    \[0, '^', '', len(l:line) - g:NeoComplCache_MinKeywordLength]
+            let [l:match_num, l:prev_word, l:prepre_word, l:match] =
+                    \[0, '^', '', match(l:line, l:pattern)]
 
-            while 1
-                let l:match = match(l:line, l:pattern, l:match_num)
-                if l:match < 0
-                    break
-                endif
+            while l:match >= 0"{{{
                 let l:match_str = matchstr(l:line, l:pattern, l:match)
-                let l:match_num += len(l:match_str)
 
                 " Ignore too short keyword.
                 if len(l:match_str) >= g:NeoComplCache_MinKeywordLength"{{{
@@ -497,24 +489,13 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
                     else
                         let l:match_cache_line.prev_rank[l:prev_word] = 1
                     endif
-
-                    " Check operator.
-                    let l:operator = matchstr(l:line[: l:match-1], '[!@#$%^&*=+|~:/.><-]\{1,2}\ze\s*$')
-                    if l:operator != ''
-                        if !has_key(l:source.operator_word_list, l:operator)
-                            let l:source.operator_word_list[l:operator] = {}
-                        endif
-                        let l:source.operator_word_list[l:operator][l:match_str] = 1
-                    endif
                 endif"}}}
 
-                if l:match_num > l:line_max
-                    break
-                endif
+                let l:match_num = l:match + len(l:match_str)
 
                 " Next match.
-                let [l:prev_word, l:prepre_word] = [l:match_str, l:prev_word]
-            endwhile
+                let [l:prev_word, l:prepre_word, l:match] = [l:match_str, l:prev_word, match(l:line, l:pattern, l:match_num)]
+            endwhile"}}}
         endfor
 
         let l:line_num += 1
@@ -595,7 +576,7 @@ function! s:initialize_source(srcname)"{{{
 
     let s:sources[a:srcname] = {
                 \'keyword_cache' : {}, 'rank_cache_lines' : {},
-                \'next_word_list' : {}, 'next_next_word_list' : {}, 'operator_word_list' : {},
+                \'next_word_list' : {}, 'next_next_word_list' : {},
                 \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
                 \'end_line' : l:end_line , 'cached_last_line' : 1, 'cache_line_cnt' : l:cache_line_cnt
                 \}
@@ -686,9 +667,11 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
 
         let l:line = buflines[l:line_num]
         for l:pattern in l:keyword_pattern
-            let [l:match_num, l:match_str] = [0, matchstr(l:line, l:pattern)]
+            let [l:match_num, l:match] = [0, match(l:line, l:pattern)]
 
-            while l:match_str != ''"{{{
+            while l:match >= 0"{{{
+                let l:match_str = matchstr(l:line, l:pattern, l:match)
+
                 " Ignore too short keyword.
                 if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
                 \&& !has_key(l:source.keyword_cache, l:match_str)
@@ -704,8 +687,8 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
                     \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
                 endif
 
-                let l:match_num += len(l:match_str)
-                let l:match_str = matchstr(l:line, l:pattern, l:match_num)
+                let l:match_num = l:match + len(l:match_str)
+                let l:match = match(l:line, l:pattern, l:match_num)
             endwhile"}}}
         endfor
 
@@ -724,7 +707,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     endif
 endfunction"}}}
 
-function! neocomplcache#plugin#buffer_complete#word_caching_current_line()"{{{
+function! s:word_caching_current_line()"{{{
     let l:source = s:sources[bufnr('%')]
 
     " Buffer.
@@ -759,7 +742,7 @@ function! neocomplcache#plugin#buffer_complete#word_caching_current_line()"{{{
                 \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
             endif
 
-            let l:match_num += len(l:match_str)
+            let l:match_num = l:match + len(l:match_str)
             let l:match = match(l:buflines, l:pattern, l:match_num)
         endwhile
     endfor
@@ -777,7 +760,7 @@ function! s:caching_from_cache(srcname)"{{{
         " Dictionary.
         let l:srcname = split(a:srcname, ',')[1]
     endif
-    let l:cache_name = g:NeoComplCache_TemporaryDir . '/keyword_cache/' .
+    let l:cache_name = g:NeoComplCache_TemporaryDir . '/buffer_cache/' .
                 \substitute(substitute(l:srcname, ':', '=-', 'g'), '[/\\]', '=+', 'g') . '='
     if getftime(l:cache_name) == -1 || getftime(l:cache_name) <= getftime(l:srcname)
         return -1
@@ -897,8 +880,8 @@ endfunction"}}}
 
 function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
     let l:end = -1
-    let l:start_pattern = '^\%(' . a:start_pattern . '\)'
-    let l:end_pattern = '^\%(' . a:end_pattern . '\)'
+    let l:start_pattern = '\%(' . a:start_pattern . '\)'
+    let l:end_pattern = '\%(' . a:end_pattern . '\)'
 
     let l:i = a:start_cnt
     let l:max = len(a:string)
@@ -908,7 +891,7 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
             let l:i = matchend(a:string, l:start_pattern, l:i)
             let l:nest_level += 1
         elseif match(a:string, l:end_pattern, l:i) >= 0
-            let l:end = l:i
+            let l:end = match(a:string, l:end_pattern, l:i)
             let l:nest_level -= 1
 
             if l:nest_level == 0
@@ -917,7 +900,7 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
 
             let l:i = matchend(a:string, l:end_pattern, l:i)
         else
-            let l:i += 1
+            break
         endif
     endwhile
 
@@ -932,24 +915,25 @@ function! s:garbage_collect_candidate(start_line, end_line)"{{{
     let l:source = s:sources[bufnr('%')]
 
     let l:buflines = join(getbufline(bufnr('%'), a:start_line, a:end_line), "\<CR>")
-    let l:keyword_pattern = l:source.keyword_pattern
+    let l:keyword_patterns = s:split_keyword(l:source.keyword_pattern)
 
-    let l:match = match(l:buflines, l:keyword_pattern)
-    let l:match_num = 0
-    while l:match >= 0
-        let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match_num)
-        if has_key(s:candidates, l:match_str)
-            " Remove from candidate.
-            call remove(s:candidates, l:match_str)
+    for l:keyword_pattern in l:keyword_patterns
+        let [l:match, l:match_num] = [match(l:buflines, l:keyword_pattern), 0]
+        while l:match >= 0
+            let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match_num)
+            if has_key(s:candidates, l:match_str)
+                " Remove from candidate.
+                call remove(s:candidates, l:match_str)
 
-            if empty(s:candidates)
-                return
+                if empty(s:candidates)
+                    return
+                endif
             endif
-        endif
 
-        let l:match_num += len(l:match_str)
-        let l:match = match(l:buflines, l:keyword_pattern, l:match_num)
-    endwhile
+            let l:match_num += len(l:match_str)
+            let l:match = match(l:buflines, l:keyword_pattern, l:match_num)
+        endwhile
+    endfor
 
     for l:candidate in keys(s:candidates)
         if has_key(l:source.keyword_cache, l:candidate)
@@ -1066,7 +1050,7 @@ function! s:caching_insert_enter()"{{{
         endif
     else
         " Word caching.
-        call neocomplcache#plugin#buffer_complete#word_caching_current_line()
+        call s:word_caching_current_line()
 
         let s:prev_cached_count -= 1
     endif
@@ -1115,7 +1099,7 @@ endfunction"}}}
 
 " Command functions."{{{
 function! s:caching_buffer(name)"{{{
-    if a:number == ''
+    if a:name == ''
         let l:number = bufnr('%')
     else
         let l:number = bufnr(a:name)
@@ -1134,6 +1118,8 @@ function! s:caching_buffer(name)"{{{
 
         return
     elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
+        " Word recaching.
+        call s:word_caching(l:number, 1, '$')
         return
     endif
 

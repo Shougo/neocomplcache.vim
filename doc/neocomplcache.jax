@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.00
+Version: 3.02
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -113,6 +113,13 @@ COMMANDS 					*neocomplcache-commands*
 		[filetype]を省略すると、カレントバッファのファイルタイプを編集する。
 		[filetype]のスニペット補完ファイルが存在しない場合、新しく生成される。
 		このコマンドでは、|g:NeoComplCache_SnippetsDir|にあるスニペット補完ファイルを優先的に編集する。
+		スニペット補完ファイルを保存すると、自動的に再キャッシュされる。
+
+:NeoComplCacheEditRuntimeSnippets [filetype]		*:NeoComplCacheEditRuntimeSnippets*
+		[filetype]のスニペット補完ファイルを編集する。
+		[filetype]を省略すると、カレントバッファのファイルタイプを編集する。
+		[filetype]のスニペット補完ファイルが存在しない場合、新しく生成される。
+		このコマンドでは、neocomplcacheに付属するスニペット補完ファイルを編集する。
 		スニペット補完ファイルを保存すると、自動的に再キャッシュされる。
 
 :NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*

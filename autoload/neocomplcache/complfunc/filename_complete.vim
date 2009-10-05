@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2009
+" Last Modified: 04 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.00, for Vim 7.0
+" Version: 1.01, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.01:
+"    - Improved completion.
+"    - Deleted cdpath completion.
+"    - Fixed escape bug.
+"
 "   1.00:
 "    - Initial version.
 " }}}
@@ -66,10 +71,11 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+    let l:cur_keyword_str = escape(a:cur_keyword_str, '*?[]')
+
     let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
-    let l:cur_keyword_str = substitute(substitute(a:cur_keyword_str, '\\ ', ' ', 'g'),
-                \printf('\w\+\ze[%s]', l:PATH_SEPARATOR), '\0*', 'g')
-    let l:cur_keyword_str = escape(l:cur_keyword_str, '*?[]')
+    let l:cur_keyword_str = substitute(substitute(l:cur_keyword_str, '\\ ', ' ', 'g'),
+                \printf('\w\{1,2}\ze[%s]', l:PATH_SEPARATOR), '\0*', 'g')
     " Substitute ... -> ../..
     while l:cur_keyword_str =~ '\.\.\.'
         let l:cur_keyword_str = substitute(l:cur_keyword_str, '\.\.\zs\.', '/\.\.', 'g')
@@ -83,11 +89,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 
     try
         let l:files = split(substitute(glob(l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
-        if l:cur_keyword_str =~ printf('^\.\+[%s]', l:PATH_SEPARATOR)
-            let l:cdfiles = []
-        else
-            let l:cdfiles = split(substitute(globpath(&cdpath, l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
-        endif
     catch /.*/
         return []
     endtry
@@ -103,12 +104,8 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     for word in l:files
         let l:dict = {
                     \'word' : substitute(word, l:home_pattern, '\~/', ''), 'menu' : '[F]', 
-                    \'icase' : 1, 'rank' : 6 + isdirectory(word)
+                    \'icase' : 1, 'rank' : 6
                     \}
-        if !filewritable(word)
-            let l:dict.menu .= ' [-]'
-        endif
-
         " Skip completion if takes too much time."{{{
         if neocomplcache#check_skip_time(l:start_time)
             echo 'Skipped auto completion'
@@ -116,16 +113,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
             return []
         endif"}}}
 
-        call add(l:list, l:dict)
-    endfor
-    for word in l:cdfiles
-        let l:dict = {
-                    \'word' : substitute(word, l:home_pattern, '\~/', ''), 'menu' : '[CD]', 
-                    \'icase' : 1, 'rank' : 5 + isdirectory(word)
-                    \}
-        if !filewritable(word)
-            let l:dict.menu .= ' [-]'
-        endif
         call add(l:list, l:dict)
     endfor
 
@@ -138,19 +125,20 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
             let l:abbr = printf('%s~%s', l:abbr[:9], l:abbr[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth-10:])
         endif
+
         if isdirectory(keyword.word)
             let l:abbr .= '/'
-        else
-            if has('win32') || has('win64')
-                if fnamemodify(keyword.word, ':e') =~ 'exe\|com\|bat\|cmd'
-                    let l:abbr .= '*'
-                endif
-            elseif executable(keyword.word)
-                let l:abbr .= '*'
-            endif
+            let keyword.rank += 1
+        elseif (has('win32') || has('win64') && fnamemodify(keyword.word, ':e') =~ 'exe\|com\|bat\|cmd')
+                    \|| executable(keyword.word)
+            let l:abbr .= '*'
         endif
 
         let keyword.abbr = l:abbr
+
+        if !filewritable(keyword.word)
+            let keyword.menu .= ' [-]'
+        endif
     endfor
 
     echo ''
@@ -158,7 +146,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 
     " Escape word.
     for keyword in l:list
-        let keyword.word = escape(keyword.word, ' *?[]"')
+        let keyword.word = escape(keyword.word, ' *?[]"={}')
     endfor
 
     return l:list
