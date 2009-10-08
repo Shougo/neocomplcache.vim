@@ -506,6 +506,11 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.03:
+    - Substitute tilde.
+    - Added scala support.
+    - Added ActionScript support in omni_complete.
+
    3.02:
     - Fixed escape bug in filename_complete.
     - Deleted cdpath completion.

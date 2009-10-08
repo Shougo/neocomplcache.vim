@@ -83,7 +83,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call s:set_keyword_pattern('sh,zsh',
-                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\[|\s*\(?)?')
+                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\[|\s*\(\)?)?')
     call s:set_keyword_pattern('vimshell',
                 \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
     call s:set_keyword_pattern('ps1',
@@ -130,6 +130,8 @@ function! neocomplcache#enable() "{{{
                 \'\v[%$.]?\h\w*%(\$\h\w*)?')
     call s:set_keyword_pattern('make',
                 \'\v[[:alpha:]_.-][[:alnum:]_.-]*')
+    call s:set_keyword_pattern('scala',
+                \'\v[.]?\h\w*%(\s*\(\)?|\[)?')
     "}}}
 
     " Initialize same file type lists."{{{
@@ -203,7 +205,7 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
-        let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+        let l:cur_text = neocomplcache#get_cur_text()
 
         if !neocomplcache#plugin#buffer_complete#exists_current_source()
             let s:complete_words = []
@@ -437,7 +439,7 @@ function! neocomplcache#get_quickmatch_list(list, cur_keyword_pos, cur_keyword_s
             " Set prefix.
             let l:prefix = ''
             if a:type != 'keyword_complete' && a:type != s:prev_quickmatch_type
-                let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+                let l:cur_text = neocomplcache#get_cur_text()
                 let l:quick_keyword_pos = call(a:type . 'get_keyword_pos', [l:cur_text])
 
                 if l:quick_keyword_pos > a:cur_keyword_pos
@@ -466,7 +468,7 @@ function! neocomplcache#get_quickmatch_list(list, cur_keyword_pos, cur_keyword_s
                 " Set prefix.
                 let l:prefix = ''
                 if a:type != 'keyword_complete' && a:type != s:prev_quickmatch_type
-                    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+                    let l:cur_text = neocomplcache#get_cur_text()
                     let l:quick_keyword_pos = call(a:type . 'get_keyword_pos', [l:cur_text])
 
                     if l:quick_keyword_pos > a:cur_keyword_pos
@@ -574,6 +576,12 @@ endfunction"}}}
 function! neocomplcache#caching_percent()"{{{
     return neocomplcache#plugin#buffer_complete#caching_percent("")
 endfunction"}}}
+
+function! neocomplcache#get_cur_text()"{{{
+    let l:pos = mode() ==# 'i' ? 2 : 1
+
+    return col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+endfunction"}}}
 "}}}
 
 " Complete internal functions."{{{
@@ -586,7 +594,7 @@ function! s:complete()"{{{
 
     if g:NeoComplCache_EnableSkipCompletion"{{{
         if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
-            let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+            let l:cur_text = neocomplcache#get_cur_text()
             let l:pattern = '\v%(' .  neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')$'
             let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
 
@@ -628,7 +636,7 @@ function! s:complete()"{{{
     endif
 
     " Get cursor word.
-    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+    let l:cur_text = neocomplcache#get_cur_text()
     " Prevent infinity loop.
     " Not complete multi byte character for ATOK X3.
     if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1]) >= 0x80
@@ -829,7 +837,7 @@ function! neocomplcache#undo_completion()"{{{
     endif
 
     " Get cursor word.
-    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+    let l:cur_text = neocomplcache#get_cur_text()
 
     if !neocomplcache#plugin#buffer_complete#exists_current_source()
         return ''
