@@ -650,64 +650,68 @@ function! s:complete()"{{{
     " Reset quick match flag.
     let s:quickmatched = 0
 
+    " Set function.
+    let &l:completefunc = 'neocomplcache#auto_complete'
     " Try complfuncs completion."{{{
+    let l:cur_keyword_pos = -1
+    let l:complete_words = []
+    let s:skipped = 0
     for l:complfunc in s:complfuncs_func_table
-        let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
+        let l:keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
 
-        if l:cur_keyword_pos >= 0
-            let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+        if l:keyword_pos >= 0 &&
+                    \(l:cur_keyword_pos == -1 || l:cur_keyword_pos == l:keyword_pos)
+            let l:keyword_str = l:cur_text[l:keyword_pos :]
 
             " Save options.
             let l:ignorecase_save = &ignorecase
 
-            if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+            if g:NeoComplCache_SmartCase && l:keyword_str =~ '\u'
                 let &ignorecase = 0
             else
                 let &ignorecase = g:NeoComplCache_IgnoreCase
             endif
 
-            " Set function.
-            let &l:completefunc = 'neocomplcache#auto_complete'
+            let l:words = neocomplcache#get_quickmatch_list(call(l:complfunc . 'get_complete_words', [l:keyword_pos, l:keyword_str]),
+                    \ l:keyword_pos, l:keyword_str, l:complfunc)
 
-            let s:complete_words = neocomplcache#get_quickmatch_list(call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str]),
-                    \ l:cur_keyword_pos, l:cur_keyword_str, l:complfunc)
-            let s:complete_words = neocomplcache#remove_next_keyword(s:complete_words)
-
-            " Restore option.
             let &ignorecase = l:ignorecase_save
 
-            if !empty(s:complete_words)
-                " Start auto complete.
-                let s:cur_keyword_pos = l:cur_keyword_pos
-                let s:cur_keyword_str = l:cur_keyword_str
-                let s:skipped = 0
-
-                if s:quickmatched && len(s:complete_words) == 1
-                    call feedkeys("\<C-x>\<C-u>", 'n')
-                else
-                    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-                endif
+            if !empty(l:words)
+                let l:complete_words += neocomplcache#remove_next_keyword(l:words)
+                let l:cur_keyword_pos = l:keyword_pos
+                let l:cur_keyword_str = l:keyword_str
 
                 let s:prepre_quickmatch_type = s:prev_quickmatch_type
                 let s:prev_quickmatch_type = l:complfunc
-
-                return
             endif
-
-            let &l:completefunc = 'neocomplcache#manual_complete'
 
             if s:skipped
                 let s:prev_numbered_list = []
                 let s:prepre_numbered_list = []
+                return
             endif
-
-            return
         endif
     endfor
     "}}}
 
-    let s:prev_numbered_list = []
-    let s:prepre_numbered_list = []
+    if empty(l:complete_words)
+        let s:prev_numbered_list = []
+        let s:prepre_numbered_list = []
+        return
+    endif
+
+    " Start auto complete.
+    let s:cur_keyword_pos = l:cur_keyword_pos
+    let s:cur_keyword_str = l:cur_keyword_str
+    let s:skipped = 0
+    let s:complete_words = l:complete_words
+
+    if s:quickmatched && len(s:complete_words) == 1
+        call feedkeys("\<C-x>\<C-u>", 'n')
+    else
+        call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    endif
 endfunction"}}}
 
 " Fast filters.

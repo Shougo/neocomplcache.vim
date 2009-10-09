@@ -510,6 +510,10 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Substitute tilde.
     - Added scala support.
     - Added ActionScript support in omni_complete.
+    - Fixed neocomplcache#plugin#snippets_complete#expandable()'s error.
+    - Call multiple complefunc if cur_keyword_pos is equal.
+    - Improved snippet menu.
+    - Improved keymapping in snippets_complete.
 
    3.02:
     - Fixed escape bug in filename_complete.

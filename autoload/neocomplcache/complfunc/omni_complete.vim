@@ -55,7 +55,7 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     call s:set_omni_pattern('html,xhtml,xml', '\v\</?|\<[^>]+\s')
     call s:set_omni_pattern('css', '\v^\s+\w+|\w+[):;]?\s+|[@!]')
     call s:set_omni_pattern('javascript', '\v[^. \t]\.')
-    call s:set_omni_pattern('actionscript', '\v[^. \t]\.')
+    call s:set_omni_pattern('actionscript', '\v[^. \t][.:]')
     call s:set_omni_pattern('c', '\v[^. \t]%(\.|-\>)')
     call s:set_omni_pattern('cpp', '\v[^. \t]%(\.|-\>|::)')
     call s:set_omni_pattern('php', '\v[^. \t]%(-\>|::)')

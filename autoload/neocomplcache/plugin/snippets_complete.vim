@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Oct 2009
+" Last Modified: 09 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,8 @@
 "   1.25:
 "    - Substitute tilde.
 "    - Fixed neocomplcache#plugin#snippets_complete#expandable()'s error.
+"    - Improved snippet menu.
+"    - Improved keymapping.
 "
 "   1.24:
 "    - Fixed fatal bug when snippet expand.
@@ -332,7 +334,11 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
                 \|| search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
-    return matchstr(s:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
+    if mode() ==# 'i'
+        return matchstr(neocomplcache#get_cur_text(), '\h\w*[^[:alnum:][:space:]]*$')
+    else
+        return matchstr(s:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
+    endif
 endfunction"}}}
 
 function! s:caching()"{{{
@@ -361,10 +367,13 @@ function! s:set_snippet_pattern(dict)"{{{
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
 
     let l:word = a:dict.word
-    if match(a:dict.word, '\${\d\+\%(:.\{-}\)\?\\\@<!}\|<\\n>') >= 0
+    if a:dict.word =~ '\${\d\+\%(:.\{-}\)\?\\\@<!}'
         let l:word .= '<expand>'
         let l:menu_pattern = '<Snip> %.'.g:NeoComplCache_MaxFilenameWidth.'s'
     else
+        if a:dict.word =~ '<\\n>'
+            let l:word .= '<expand>'
+        endif
         let l:menu_pattern = '[Snip] %.'.g:NeoComplCache_MaxFilenameWidth.'s'
     endif
     let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : 
@@ -520,7 +529,7 @@ function! s:load_snippets(snippets_file)"{{{
     return l:snippet
 endfunction"}}}
 
-function! s:snippets_expand()"{{{
+function! s:snippets_expand(cur_text, col)"{{{
     " Set buffer filetype.
     if &filetype == ''
         let l:ft = 'nothing'
@@ -542,9 +551,8 @@ function! s:snippets_expand()"{{{
         endfor
     endif
 
-    let l:cur_text = s:cur_text
+    let l:cur_text = a:cur_text
     let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
-    echomsg s:col
     if has_key(l:snippets, l:cur_word)
                 \&& (l:snippets[l:cur_word].condition == 1 || eval(l:snippets[l:cur_word].condition))
         let l:snippet = l:snippets[l:cur_word]
@@ -563,7 +571,7 @@ function! s:snippets_expand()"{{{
         let l:snippet.rank += 1
 
         " Insert snippets.
-        let l:next_line = getline('.')[s:col-1 :]
+        let l:next_line = getline('.')[a:col-1 :]
         call setline(line('.'), l:cur_text . l:snip_word . l:next_line)
         call setpos('.', [0, line('.'), len(l:cur_text)+len(l:snip_word)+1, 0])
         let l:old_col = len(l:cur_text)+len(l:snip_word)+1
@@ -597,7 +605,7 @@ function! s:snippets_expand()"{{{
         let s:end_snippet = 0
         let s:snippet_holder_cnt = 1
 
-        call s:search_outof_range()
+        call s:search_outof_range(a:col)
     endif
 
     let &iminsert = 0
@@ -692,7 +700,7 @@ function! s:search_snippet_range(start, end)"{{{
 
     return 0
 endfunction"}}}
-function! s:search_outof_range()"{{{
+function! s:search_outof_range(col)"{{{
     call s:substitute_marker(1, 0)
     
     let l:pattern = '\${\d\+\%(:.\{-}\)\?\\\@<!}'
@@ -734,6 +742,14 @@ function! s:search_outof_range()"{{{
         else
             startinsert!
         endif
+    elseif a:col == 1
+        call setpos('.', [0, line('.'), 1, 0])
+        startinsert
+    elseif a:col == col('$')
+        startinsert!
+    else
+        call setpos('.', [0, line('.'), a:col+1, 0])
+        startinsert
     endif
 endfunction"}}}
 function! s:search_sync_placeholder(start, end, number)"{{{
@@ -774,10 +790,10 @@ function! s:substitute_marker(start, end)"{{{
         silent! execute '%s/'.'\$<'.l:cnt.'\%(:.\{-}\)\?\\\@<!>'.'/'.l:sub.'/'
     endif
 endfunction"}}}
-function! s:get_insert_text()"{{{
-    let s:cur_text = getline('.')[: col('.') - 2]
-    let s:col = col('.')
-    return ''
+function! s:expand_trigger(function)"{{{
+    let l:cur_text = neocomplcache#get_cur_text()
+    let s:cur_text = l:cur_text
+    return printf("\<ESC>:call %s(%s,%d)\<CR>", a:function, string(l:cur_text), col('.'))
 endfunction"}}}
 
 function! s:SID_PREFIX()
@@ -785,7 +801,7 @@ function! s:SID_PREFIX()
 endfunction
 
 " Plugin key-mappings.
-execute 'inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand)  ' . s:SID_PREFIX() . 'get_insert_text()."\<C-o>:\<C-u>call ".<SID>SID_PREFIX()."snippets_expand()\<CR>"'
-execute 'snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand)  ' .  s:SID_PREFIX() . 'get_insert_text()."\<ESC>:\<C-u>call ".<SID>SID_PREFIX()."snippets_expand()\<CR>"'
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>expand_trigger(<SID>SID_PREFIX().'snippets_expand')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>expand_trigger(<SID>SID_PREFIX().'snippets_expand')
 
 " vim: foldmethod=marker
