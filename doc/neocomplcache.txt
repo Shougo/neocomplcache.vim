@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.02
+Version: 3.04
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -506,8 +506,16 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.04:
+    - Expand tilde.
+    - Use complete_check().
+    - Add '*' to a delimiter in filename_complete.
+    - Improved ps1 keyword.
+    - Echo error when you use old Vim.
+    - set completeopt=menuone.
+    - Deleted cpp omni support.
+
    3.03:
-    - Substitute tilde.
     - Added scala support.
     - Added ActionScript support in omni_complete.
     - Fixed neocomplcache#plugin#snippets_complete#expandable()'s error.
@@ -551,11 +559,6 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Renamed keyword_complete.vim as buffer_complete.vim.
      }}}
 ChangeLog NeoComplCache 2.51-: {{{
-   3.00:
-    - Implemented multiple keyword.
-    - Improved html keyword completion.
-    - Improved command's completion.
-
    2.78:
     - Supported abbr in omni completion.
     - Clear quickmatch cache when auto complete is skipped.

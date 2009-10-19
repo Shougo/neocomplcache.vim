@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Oct 2009
+" Last Modified: 12 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -178,7 +178,7 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
     let s:snippets_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete'), '\n')
     if exists('g:NeoComplCache_SnippetsDir')
         for l:dir in split(g:NeoComplCache_SnippetsDir, ',')
-            let l:dir = substitute(l:dir, '^\~', $HOME, '')
+            let l:dir = expand(l:dir)
             if !isdirectory(l:dir)
                 call mkdir(l:dir, 'p')
             endif

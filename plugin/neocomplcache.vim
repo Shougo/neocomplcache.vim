@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Oct 2009
+" Last Modified: 12 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.03, for Vim 7.0
+" Version: 3.04, for Vim 7.0
 "=============================================================================
 
-if exists('g:loaded_neocomplcache') || v:version < 700
-  finish
+if v:version < 700
+    echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
+    finish
+elseif exists('g:loaded_neocomplcache')
+    finish
 endif
 
 let s:save_cpo = &cpo
@@ -131,11 +134,11 @@ if !exists('g:NeoComplCache_CachingPercentInStatusline')
     let g:NeoComplCache_CachingPercentInStatusline = 0
 endif
 if !exists('g:NeoComplCache_TemporaryDir')
-    let g:NeoComplCache_TemporaryDir = $HOME . '/.neocon'
-
-    if !isdirectory(g:NeoComplCache_TemporaryDir)
-         call mkdir(g:NeoComplCache_TemporaryDir, 'p')
-    endif
+    let g:NeoComplCache_TemporaryDir = '~/.neocon'
+endif
+let g:NeoComplCache_TemporaryDir = expand(g:NeoComplCache_TemporaryDir)
+if !isdirectory(g:NeoComplCache_TemporaryDir)
+    call mkdir(g:NeoComplCache_TemporaryDir, 'p')
 endif
 if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
     " Enable startup.

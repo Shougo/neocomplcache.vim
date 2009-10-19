@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2009
+" Last Modified: 19 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.00, for Vim 7.0
+" Version: 1.02, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.02:
+"    - Deleted C++ support.
+"
 "   1.01:
 "    - Added ActionScript support.
 "
@@ -57,7 +60,6 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     call s:set_omni_pattern('javascript', '\v[^. \t]\.')
     call s:set_omni_pattern('actionscript', '\v[^. \t][.:]')
     call s:set_omni_pattern('c', '\v[^. \t]%(\.|-\>)')
-    call s:set_omni_pattern('cpp', '\v[^. \t]%(\.|-\>|::)')
     call s:set_omni_pattern('php', '\v[^. \t]%(-\>|::)')
     call s:set_omni_pattern('java', '\v[^. \t]\.')
     call s:set_omni_pattern('vim', '\v%(^\s*:).*')

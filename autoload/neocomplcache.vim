@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Oct 2009
+" Last Modified: 19 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.01, for Vim 7.0
+" Version: 3.04, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -87,7 +87,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('vimshell',
                 \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
     call s:set_keyword_pattern('ps1',
-                \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\(\)?)?')
+                \'\v\[\h%([[:alnum:]_.]*\]::)?|[$%@.]?[[:alpha:]_.:-][[:alnum:]_.:-]*%(\s*\(\)?)?')
     call s:set_keyword_pattern('c',
                 \'\v^\s*#\s*\h\w*|\h\w*%(\s*\(\)?)?')
     call s:set_keyword_pattern('cpp',
@@ -167,9 +167,14 @@ function! neocomplcache#enable() "{{{
 
     " Save options.
     let s:completefunc_save = &completefunc
+    let s:completeopt_save = &completeopt
 
     " Set completefunc.
     let &completefunc = 'neocomplcache#manual_complete'
+
+    " Set options.
+    set completeopt-=menu
+    set completeopt+=menuone
 
     " Initialize.
     for l:complfunc in s:complfuncs_func_table
@@ -180,6 +185,7 @@ endfunction"}}}
 function! neocomplcache#disable()"{{{
     " Restore options.
     let &completefunc = s:completefunc_save
+    let &completeopt = s:completeopt_save
     
     augroup neocomplcache
         autocmd!
@@ -406,6 +412,10 @@ function! neocomplcache#assume_pattern(bufname)"{{{
 endfunction "}}}
 
 function! neocomplcache#check_skip_time(start_time)"{{{
+    if complete_check()
+        return 1
+    endif
+    
     if !g:NeoComplCache_EnableSkipCompletion || &l:completefunc != 'neocomplcache#auto_complete'
         return 0
     endif
