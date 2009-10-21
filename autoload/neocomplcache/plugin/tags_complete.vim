@@ -80,8 +80,7 @@ function! neocomplcache#plugin#tags_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{{{
-    if &l:completefunc == 'neocomplcache#auto_complete' ||
-                \len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
+    if len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
         return []
     endif
 
