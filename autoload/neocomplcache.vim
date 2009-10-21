@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Oct 2009
+" Last Modified: 21 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.04, for Vim 7.0
+" Version: 3.05, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -173,7 +173,7 @@ function! neocomplcache#enable() "{{{
     let &completefunc = 'neocomplcache#manual_complete'
 
     " Set options.
-    set completeopt-=menu
+    set completeopt-=menu,longest
     set completeopt+=menuone
 
     " Initialize.

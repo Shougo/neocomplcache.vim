@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.04
+Version: 3.05
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -506,13 +506,18 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.05:
+    - Set completeopt-=longest.
+    - Caching buffer when CursorHold.
+    - Enable auto-complete in tags_complete.
+    
    3.04:
     - Expand tilde.
     - Use complete_check().
     - Add '*' to a delimiter in filename_complete.
     - Improved ps1 keyword.
     - Echo error when you use old Vim.
-    - set completeopt=menuone.
+    - set completeopt-=menuone.
     - Deleted cpp omni support.
 
    3.03:
