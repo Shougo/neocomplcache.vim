@@ -34,6 +34,7 @@ endif
 function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     augroup neocomplcache"{{{
         " Caching events
+        autocmd FileType * call s:caching_source()
         autocmd BufWritePost,CursorHold * call s:update_source()
         " Caching current buffer events
         autocmd InsertEnter * call s:caching_insert_enter()

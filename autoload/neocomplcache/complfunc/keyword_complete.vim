@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2009
+" Last Modified: 22 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.00, for Vim 7.0
+" Version: 3.05, for Vim 7.0
 "-----------------------------------------------------------------------------
 " TODO: "{{{
 "     - Nothing.
@@ -221,10 +221,7 @@ function! neocomplcache#complfunc#keyword_complete#manual_complete()"{{{
     endif
 
     " Get cursor word.
-    let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
-    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
-    let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-
+    let l:cur_text = neocomplcache#get_cur_text()
     let l:pattern = '\v%(' .  neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')$'
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
@@ -250,13 +247,9 @@ function! neocomplcache#complfunc#keyword_complete#manual_complete()"{{{
     " Set function.
     let &l:completefunc = 'neocomplcache#manual_complete'
 
-    if &l:omnifunc == ''
-        let l:complete_words = []
-    else
-        let l:complete_words = neocomplcache#get_quickmatch_list(neocomplcache#complfunc#keyword_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str),
+    let l:complete_words = neocomplcache#get_quickmatch_list(neocomplcache#complfunc#keyword_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str),
                 \ l:cur_keyword_pos, l:cur_keyword_str, 'keyword_complete')
-        let l:complete_words = neocomplcache#remove_next_keyword(l:complete_words)
-    endif
+    let l:complete_words = neocomplcache#remove_next_keyword(l:complete_words)
 
     " Restore option.
     let &ignorecase = l:ignorecase_save

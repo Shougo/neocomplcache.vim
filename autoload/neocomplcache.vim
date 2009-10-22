@@ -46,6 +46,8 @@ function! neocomplcache#enable() "{{{
     let s:quickmatched = 0
     let s:prev_quickmatch_type = 'keyword_complete'
     let s:prepre_quickmatch_type = 'keyword_complete'
+    let s:complete_words = []
+    let s:cur_keyword_pos = -1
 
     let s:prev_input_time = reltime()
     "}}}
@@ -210,14 +212,13 @@ endfunction"}}}
 " Complete functions."{{{
 function! neocomplcache#manual_complete(findstart, base)"{{{
     if a:findstart
-        " Get cursor word.
-        let l:cur_text = neocomplcache#get_cur_text()
-
         if !neocomplcache#plugin#buffer_complete#exists_current_source()
             let s:complete_words = []
             return -1
         endif
 
+        " Get cursor word.
+        let l:cur_text = neocomplcache#get_cur_text()
         let l:pattern = '\v%(' .  neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')$'
         let l:cur_keyword_pos = match(l:cur_text, l:pattern)
         let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
@@ -242,7 +243,9 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             let &ignorecase = g:NeoComplCache_IgnoreCase
         endif
 
-        let s:complete_words = neocomplcache#complfunc#keyword_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
+        let s:complete_words = neocomplcache#get_quickmatch_list(neocomplcache#complfunc#keyword_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str),
+                \ l:cur_keyword_pos, l:cur_keyword_str, 'keyword_complete')
+        let s:complete_words = neocomplcache#remove_next_keyword(s:complete_words)
 
         " Restore option.
         let &ignorecase = l:ignorecase_save
