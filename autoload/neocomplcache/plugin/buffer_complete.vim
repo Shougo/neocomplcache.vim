@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2009
+" Last Modified: 22 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -34,7 +34,7 @@ endif
 function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     augroup neocomplcache"{{{
         " Caching events
-        autocmd FileType * call s:caching_source()
+        autocmd FileType * call s:check_source()
         autocmd BufWritePost,CursorHold * call s:update_source()
         " Caching current buffer events
         autocmd InsertEnter * call s:caching_insert_enter()

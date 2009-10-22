@@ -511,6 +511,7 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Caching buffer when CursorHold.
     - Enable auto-complete in tags_complete.
     - Fixed manual completion bug.
+    - Fixed error when omnifunc is empty.
     
    3.04:
     - Expand tilde.
