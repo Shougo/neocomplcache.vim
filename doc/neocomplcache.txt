@@ -242,7 +242,7 @@ g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 	
 		Default value is has ('reltime').
 
-g:NeoComplCache_QuickMatchMaxLists			*g:NeoComplCache_QuickMatchMaxLists*
+g:NeoComplCache_QuickMatchMaxList			*g:NeoComplCache_QuickMatchMaxList*
 		At the time of|g:NeoComplCache_EnableQuickMatch|, this variable controls
 		the number of numbers to display beside a candidate.
 		Max value is 100.
@@ -512,6 +512,10 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Enable auto-complete in tags_complete.
     - Fixed manual completion bug.
     - Fixed error when omnifunc is empty.
+    - Improved quickmatch.
+    - Changed g:NeoComplCache_MaxList and g:NeoComplCache_QuickMatchMaxList default value.
+    - Fixed skip error.
+    - Implemented completion skip if previous completion is empty.
     
    3.04:
     - Expand tilde.

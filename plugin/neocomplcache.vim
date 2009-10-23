@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Oct 2009
+" Last Modified: 23 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.04, for Vim 7.0
+" Version: 3.05, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -41,7 +41,7 @@ command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
 " Global options definition."{{{
 if !exists('g:NeoComplCache_MaxList')
-    let g:NeoComplCache_MaxList = 100
+    let g:NeoComplCache_MaxList = 120
 endif
 if !exists('g:NeoComplCache_MaxKeywordWidth')
     let g:NeoComplCache_MaxKeywordWidth = 50
@@ -88,8 +88,8 @@ endif
 if !exists('g:NeoComplCache_CalcRankRandomize')
     let g:NeoComplCache_CalcRankRandomize = has('reltime')
 endif
-if !exists('g:NeoComplCache_QuickMatchMaxLists')
-    let g:NeoComplCache_QuickMatchMaxLists = 100
+if !exists('g:NeoComplCache_QuickMatchMaxList')
+    let g:NeoComplCache_QuickMatchMaxList = 120
 endif
 if !exists('g:NeoComplCache_EnableSkipCompletion')
     let g:NeoComplCache_EnableSkipCompletion = has('reltime')

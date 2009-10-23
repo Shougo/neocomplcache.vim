@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Oct 2009
+" Last Modified: 23 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -73,7 +73,7 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
         if g:NeoComplCache_EnableQuickMatch
             " Search quick match.
-            let l:pattern = '\v\d{1,2}$'
+            let l:pattern = '\v\C\d{1,2}$|[ASDFGHJKLQWERTYUIOP]$'
             let l:cur_keyword_pos = match(a:cur_text, l:pattern)
             let l:cur_keyword_str = matchstr(a:cur_text, l:pattern)
 
