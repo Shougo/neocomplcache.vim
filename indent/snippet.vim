@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2009
+" Last Modified: 26 Oct 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,14 +30,29 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
-setlocal smartindent
 setlocal expandtab
 setlocal shiftwidth=4
 setlocal softtabstop=4
-if has('b:undo_indent')
+if !exists('b:undo_indent')
     let b:undo_indent = ''
 endif
 
+setlocal indentexpr=SnippetsIndent()
+
+function! SnippetsIndent()"{{{
+    let l:line = getline('.')
+    let l:prev_line = (line('.') == 1)? '' : getline(line('.')-1)
+
+    if l:prev_line =~ '^\s*$'
+        return 0
+    elseif l:prev_line =~ '^\%(include\|snippet\|abbr\|prev_word\|rank\|delete\|alias\|condition\)'
+                \&& l:line !~ '^\s*\%(include\|snippet\|abbr\|prev_word\|rank\|delete\|alias\|condition\)'
+        return &shiftwidth
+    else
+        return match(l:line, '\S')
+    endif
+endfunction"}}}
+
 let b:undo_indent .= '
-    \ | setlocal smartindent< expandtab< shiftwidth< softtabstop<
+    \ | setlocal expandtab< shiftwidth< softtabstop<
     \'

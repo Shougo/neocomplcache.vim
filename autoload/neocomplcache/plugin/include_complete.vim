@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.00, for Vim 7.0
+" Version: 1.01, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.01:
+"    - Fixed filter bug.
+"    - Fixed matchstr timing.
+"
 "   1.00:
 "    - Initial version.
 " }}}
@@ -64,10 +68,10 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
 
     let l:keyword_list = []
     for l:include in s:include_list[bufnr('%')]
-        let l:keyword_list += neocomplcache#keyword_filter(s:include_cache[l:include], a:cur_keyword_str)
+        let l:keyword_list += s:include_cache[l:include]
     endfor
 
-    return l:keyword_list
+    return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 " Dummy function.
@@ -103,8 +107,8 @@ function! s:check_include(bufnumber)"{{{
     for l:line in l:buflines"{{{
         if l:line =~ l:pattern
             let l:match_end = matchend(l:line, l:pattern)
-            let l:eval = substitute(l:expr, 'v:fname', string(l:line[l:match_end :]), 'g')
-            let l:filename = fnamemodify(findfile(matchstr(eval(l:eval), '\f\+'), l:path), ':p')
+            let l:eval = substitute(l:expr, 'v:fname', string(matchstr(l:line[l:match_end :], '\f\+')), 'g')
+            let l:filename = fnamemodify(findfile(eval(l:eval), l:path), ':p')
             if filereadable(l:filename)
                 call add(l:include_files, l:filename)
 

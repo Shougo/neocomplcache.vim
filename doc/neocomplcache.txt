@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.06
+Version: 3.07
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -499,6 +499,11 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.07:
+    - Added snippet indent file.
+    - Fixed filter bug in include_complete.
+    - Fixed matchstr timing in include_complete.
+
    3.06:
     - Fixed disable completion bug.
     - Optimized tags_complete.
