@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2009
+" Last Modified: 24 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.05, for Vim 7.0
+" Version: 3.06, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -299,7 +299,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
 
     if l:keyword_escape !~ '[^\\]*'
         " Use fast filter.
-        if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
+        if g:NeoComplCache_EnablePartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
             " Partial match.
             return s:fast_partial_filter(a:list, a:cur_keyword_str)
         else
@@ -309,7 +309,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     else
         " Keyword filter."{{{
         let l:cur_len = len(a:cur_keyword_str)
-        if g:NeoComplCache_PartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
+        if g:NeoComplCache_EnablePartialMatch && !s:skipped && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
             " Partial match.
             " Filtering len(a:cur_keyword_str).
             let l:pattern = printf("len(v:val.word) > l:cur_len && v:val.word =~ %s", string(l:keyword_escape))
@@ -417,10 +417,6 @@ function! neocomplcache#assume_pattern(bufname)"{{{
 endfunction "}}}
 
 function! neocomplcache#check_skip_time(start_time)"{{{
-    if complete_check()
-        return 1
-    endif
-    
     if !g:NeoComplCache_EnableSkipCompletion || &l:completefunc != 'neocomplcache#auto_complete'
         return 0
     endif
@@ -470,8 +466,9 @@ function! neocomplcache#get_quickmatch_list(list, cur_keyword_pos, cur_keyword_s
             let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*[ASDFGHJKLQWERTYUIOP0-9]*: \|^    ', '', '')
             call insert(l:list, l:numbered)
 
-            if a:cur_keyword_str !~# '^[ASDFGHJKLQWERTYUIOP0-9]\+$' && len(a:cur_keyword_str) <= g:NeoComplCache_KeywordCompletionStartLength + 2
-            \&& (l:quick_key =~# '[ASDFGHJKLQWERTYUIOP0]' || len(s:prev_numbered_list) < (l:num-18)*10)
+            if g:NeoComplCache_EnableAutoSelect &&
+                        \ a:cur_keyword_str !~# '^[ASDFGHJKLQWERTYUIOP0-9]\+$' && len(a:cur_keyword_str) <= g:NeoComplCache_KeywordCompletionStartLength + 2
+                        \&& (l:quick_key =~# '[ASDFGHJKLQWERTYUIOP0]' || len(s:prev_numbered_list) < (l:num-18)*10)
                 let s:quickmatched = 1
             endif
         endif"}}}
@@ -499,7 +496,8 @@ function! neocomplcache#get_quickmatch_list(list, cur_keyword_pos, cur_keyword_s
                 let l:numbered.abbr = l:prefix . substitute(l:numbered.abbr, '^\s*[ASDFGHJKLQWERTYUIOP0-9]*: \|^    ', '', '')
                 call insert(l:list, l:numbered)
 
-                if a:cur_keyword_str !~ '^\d\+$'  && len(a:cur_keyword_str) <= g:NeoComplCache_KeywordCompletionStartLength + 3
+                if g:NeoComplCache_EnableAutoSelect &&
+                            \a:cur_keyword_str !~ '^\d\+$'  && len(a:cur_keyword_str) <= g:NeoComplCache_KeywordCompletionStartLength + 3
                     let s:quickmatched = 1
                 endif
             endif

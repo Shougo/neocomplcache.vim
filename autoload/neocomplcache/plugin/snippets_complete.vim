@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Oct 2009
+" Last Modified: 25 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.25, for Vim 7.0
+" Version: 1.26, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.26:
+"    - Fixed regex escape bug.
+"
 "   1.25:
 "    - Substitute tilde.
 "    - Fixed neocomplcache#plugin#snippets_complete#expandable()'s error.
@@ -263,7 +266,7 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
 
     " Keyword filter."{{{
     let l:cur_len = len(a:cur_keyword_str)
-    if g:NeoComplCache_PartialMatch && neocomplcache#skipped() && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
+    if g:NeoComplCache_EnablePartialMatch && neocomplcache#skipped() && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
         " Partial match.
         " Filtering len(a:cur_keyword_str).
         let l:pattern = printf("v:val.word =~ %s && (v:val.condition == 1 || eval(v:val.condition))", string(l:keyword_escape))
@@ -279,8 +282,9 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     for snippet in l:list
         if snippet.snip =~ '`[^`]*`'
-            let snippet.abbr = substitute(snippet.snip, '`[^`]*`', 
-                    \eval(matchstr(snippet.snip, '`\zs[^`]*\ze`')), '')
+            let l:eval = escape(eval(matchstr(snippet.snip, '`\zs[^`]*\ze`')), '~\.^$')
+            let snippet.abbr = substitute(snippet.snip, '`[^`]*`', l:eval, '')
+
             if len(snippet.abbr) > g:NeoComplCache_MaxKeywordWidth 
                 let snippet.abbr = printf(l:abbr_pattern, snippet.abbr, snippet.abbr[-8:])
             endif
@@ -560,8 +564,8 @@ function! s:snippets_expand(cur_text, col)"{{{
 
         let l:snip_word = l:snippet.snip
         if l:snip_word =~ '`[^`]*`'
-            let snip_word = substitute(l:snip_word, '`[^`]*`', 
-                        \eval(matchstr(l:snip_word, '`\zs[^`]*\ze`')), '')
+            let l:eval = escape(eval(matchstr(l:snip_word, '`\zs[^`]*\ze`')), '~\.^$')
+            let l:snip_word = substitute(l:snip_word, '`[^`]*`', l:eval, '')
             if l:snip_word =~ '\n'
                 let snip_word = substitute(l:snip_word, '\n', '<\\n>', 'g') . '<expand>'
             endif

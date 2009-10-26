@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Oct 2009
+" Last Modified: 26 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.05, for Vim 7.0
+" Version: 3.06, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -42,12 +42,6 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
         autocmd BufWritePost * call s:garbage_collect_keyword()
         autocmd VimLeavePre * call s:save_all_cache()
     augroup END"}}}
-
-    if g:NeoComplCache_TagsAutoUpdate
-        augroup neocomplcache
-            autocmd BufWritePost * call s:update_tags()
-        augroup END
-    endif
 
     " Initialize assume file type lists."{{{
     if !exists('g:NeoComplCache_NonBufferFileTypeDetect')
@@ -84,7 +78,6 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     command! -nargs=? -complete=buffer NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCachePrintSource call s:print_source(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
-    command! -nargs=0 NeoComplCacheCreateTags call s:create_tags()
     command! -nargs=? -complete=buffer NeoComplCacheCachingDisable call s:caching_disable(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheCachingEnable call s:caching_enable(<q-args>)
     "}}}
@@ -1173,22 +1166,6 @@ function! s:output_keyword(name)"{{{
         silent put=l:word
     endfor
 endfunction "}}}
-function! s:create_tags()"{{{
-    if &buftype =~ 'nofile' || !neocomplcache#plugin#buffer_complete#exists_current_source()
-        return
-    endif
-
-    " Create tags.
-    if has_key(g:NeoComplCache_CtagsArgumentsList, &filetype)
-        let l:args = g:NeoComplCache_CtagsArgumentsList[&filetype]
-    else
-        let l:args = g:NeoComplCache_CtagsArgumentsList['default']
-    endif
-
-    let l:ltags = expand('%:p:h') . '/tags'
-    call system(printf('ctags -f %s %s -a %s', expand('%:h') . '/tags', l:args, expand('%')))
-    let s:sources[bufnr('%')].ctagsed_lines = line('$')
-endfunction"}}}
 function! s:caching_disable(name)"{{{
     if a:number == ''
         let l:number = bufnr('%')
@@ -1225,24 +1202,6 @@ function! s:caching_enable(name)"{{{
     endif
 endfunction"}}}
 "}}}
-
-function! s:update_tags()"{{{
-    " Check tags are exists.
-    if !has_key(s:sources, bufnr('%')) || !has_key(s:sources[bufnr('%')], 'ctagsed_lines')
-        return
-    endif
-
-    let l:max_line = line('$')
-    if abs(l:max_line - s:sources[bufnr('%')].ctagsed_lines) > l:max_line / 20
-        if has_key(g:NeoComplCache_CtagsArgumentsList, &filetype)
-            let l:args = g:NeoComplCache_CtagsArgumentsList[&filetype]
-        else
-            let l:args = g:NeoComplCache_CtagsArgumentsList['default']
-        endif
-        call system(printf('ctags -f %s %s -a %s', expand('%:p:h') . '/tags', l:args, expand('%')))
-        let s:sources[bufnr('%')].ctagsed_lines = l:max_line
-    endif
-endfunction"}}}
 
 function! s:garbage_collect_keyword()"{{{
     if !neocomplcache#plugin#buffer_complete#exists_current_source()

@@ -151,22 +151,6 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
             let l:cache_keyword_list = l:cache_keyword_lists[l:plugin]
             call call(l:loaded_plugins[l:plugin] . 'calc_prev_rank', [l:cache_keyword_list, l:prev_word, l:prepre_word])
 
-            " Add rank if match next keyword."{{{
-            if l:next_keyword_str != ''
-                " No ignorecase.
-                let l:save_ignorecase = &ignorecase
-                let &ignorecase = 0
-
-                let l:pattern = l:next_keyword_str . '$'
-                for l:keyword in filter(copy(l:cache_keyword_list), 'v:val.word =~ l:pattern')
-                    let l:keyword.rank = l:keyword.rank * 10
-                    let l:keyword.prev_rank = l:keyword.prev_rank * 10
-                    let l:keyword.prepre_rank = l:keyword.prepre_rank * 10
-                endfor
-
-                let &ignorecase = l:save_ignorecase
-            endif"}}}
-
             " Sort.
             let l:cache_keyword_filtered += sort(
                 \filter(copy(l:cache_keyword_list), 'v:val.prev_rank > 0 || v:val.prepre_rank > 0'), 'neocomplcache#compare_prev_rank')
@@ -180,20 +164,6 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
     for l:plugin in keys(l:loaded_plugins)
         let l:cache_keyword_list += l:cache_keyword_lists[l:plugin]
     endfor
-
-    " Add rank if match next keyword."{{{
-    if l:next_keyword_str != ''
-        " No ignorecase.
-        let l:save_ignorecase = &ignorecase
-        let &ignorecase = 0
-
-        let l:pattern = l:next_keyword_str . '$'
-        for l:keyword in filter(copy(l:cache_keyword_list), 'v:val.word =~ l:pattern')
-            let l:keyword.rank = l:keyword.rank * 10
-        endfor
-
-        let &ignorecase = l:save_ignorecase
-    endif"}}}
 
     " Sort.
     let l:cache_keyword_filtered = sort(l:cache_keyword_list, l:order_func)

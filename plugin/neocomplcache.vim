@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2009
+" Last Modified: 26 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.05, for Vim 7.0
+" Version: 3.06, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -49,8 +49,8 @@ endif
 if !exists('g:NeoComplCache_MaxFilenameWidth')
     let g:NeoComplCache_MaxFilenameWidth = 15
 endif
-if !exists('g:NeoComplCache_PartialMatch')
-    let g:NeoComplCache_PartialMatch = 1
+if !exists('g:NeoComplCache_EnablePartialMatch')
+    let g:NeoComplCache_EnablePartialMatch = 1
 endif
 if !exists('g:NeoComplCache_KeywordCompletionStartLength')
     let g:NeoComplCache_KeywordCompletionStartLength = 2
@@ -85,6 +85,9 @@ endif
 if !exists('g:NeoComplCache_EnableQuickMatch')
     let g:NeoComplCache_EnableQuickMatch = 1
 endif
+if !exists('g:NeoComplCache_EnableAutoSelect')
+    let g:NeoComplCache_EnableAutoSelect = 1
+endif
 if !exists('g:NeoComplCache_CalcRankRandomize')
     let g:NeoComplCache_CalcRankRandomize = has('reltime')
 endif
@@ -102,9 +105,6 @@ if !exists('g:NeoComplCache_SkipInputTime')
 endif
 if !exists('g:NeoComplCache_PreviousKeywordCompletion')
     let g:NeoComplCache_PreviousKeywordCompletion = 1
-endif
-if !exists('g:NeoComplCache_TagsAutoUpdate')
-    let g:NeoComplCache_TagsAutoUpdate = 0
 endif
 if !exists('g:NeoComplCache_TryFilenameCompletion')
     let g:NeoComplCache_TryFilenameCompletion = 1

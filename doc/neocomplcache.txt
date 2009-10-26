@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.05
+Version: 3.06
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -156,7 +156,7 @@ g:NeoComplCache_MaxFilenameWidth			*g:NeoComplCache_MaxFilenameWidth*
 	
 		Default value is 15.
 
-g:NeoComplCache_PartialMatch				*g:NeoComplCache_PartialMatch*
+g:NeoComplCache_EnablePartialMatch				*g:NeoComplCache_EnablePartialMatch*
 		This variable controls whether neocomplcache uses a partial match at the time of completion.
 		If it is 1, neocomplcache uses a partial match.
 	
@@ -272,13 +272,6 @@ g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompl
 		but also the connection with the word of before and perform the equal thing substitute of the candidate.
 	
 		Default value is 1.
-
-g:NeoComplCache_TagsAutoUpdate				*g:NeoComplCache_TagsAutoUpdate*
-		At the time of the save of the buffer, this variable controls
-		whether neocomplcache updates it automatically if there is a tag file.
-		It is convenient for tag completion and Omni completion to use a tag file for inside.
-	
-		Default value is 0.
 
 g:NeoComplCache_TryFilenameCompletion			*g:NeoComplCache_TryFilenameCompletion*
 		When you input character string to become the file path,
@@ -506,6 +499,15 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
 ChangeLog NeoComplCache 3.00-: {{{
+   3.06:
+    - Fixed disable completion bug.
+    - Optimized tags_complete.
+    - Implemented cache in tags_complete.
+    - Implemented include_complete.
+    - Fixed regex escape bug in snippets_complete.
+    - Added g:NeoComplCache_EnableAutoSelect option.
+    - Deleted g:NeoComplCache_TagsAutoUpdate option.
+
    3.05:
     - Set completeopt-=longest.
     - Caching buffer when CursorHold.
