@@ -30,6 +30,7 @@
 "    - Fixed filter bug.
 "    - Fixed matchstr timing.
 "    - Fixed error when includeexpr is empty.
+"    - Don't caching readonly buffer.
 "
 "   1.00:
 "    - Initial version.
@@ -87,8 +88,12 @@ function! s:check_buffer()"{{{
     " Check buffer.
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber)
-            " Check include.
-            call s:check_include(l:bufnumber)
+            let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
+            if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
+                    \&& getbufvar(l:bufnumber, '&readonly') == 0
+                " Check include.
+                call s:check_include(l:bufnumber)
+            endif
         endif
 
         let l:bufnumber += 1
@@ -96,12 +101,15 @@ function! s:check_buffer()"{{{
 endfunction"}}}
 function! s:check_include(bufnumber)"{{{
     let l:filetype = getbufvar(a:bufnumber, '&filetype')
+    let l:pattern = has_key(g:NeoComplCache_IncludePattern, l:filetype) ? 
+                \g:NeoComplCache_IncludePattern[l:filetype] : getbufvar(a:bufnumber, '&include')
+    if l:pattern == ''
+        return
+    endif
     let l:path = has_key(g:NeoComplCache_IncludePath, l:filetype) ? 
                 \g:NeoComplCache_IncludePath[l:filetype] : getbufvar(a:bufnumber, '&path')
     let l:expr = has_key(g:NeoComplCache_IncludeExpr, l:filetype) ? 
                 \g:NeoComplCache_IncludeExpr[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
-    let l:pattern = has_key(g:NeoComplCache_IncludePattern, l:filetype) ? 
-                \g:NeoComplCache_IncludePattern[l:filetype] : getbufvar(a:bufnumber, '&include')
 
     let l:buflines = getbufline(a:bufnumber, 1, 100)
     let l:include_files = []
