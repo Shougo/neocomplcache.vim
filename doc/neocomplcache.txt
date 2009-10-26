@@ -503,6 +503,7 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Added snippet indent file.
     - Fixed filter bug in include_complete.
     - Fixed matchstr timing in include_complete.
+    - Fixed error when includeexpr is empty.
 
    3.06:
     - Fixed disable completion bug.

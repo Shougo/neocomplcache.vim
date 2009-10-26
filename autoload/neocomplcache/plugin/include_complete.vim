@@ -29,6 +29,7 @@
 "   1.01:
 "    - Fixed filter bug.
 "    - Fixed matchstr timing.
+"    - Fixed error when includeexpr is empty.
 "
 "   1.00:
 "    - Initial version.
@@ -107,8 +108,12 @@ function! s:check_include(bufnumber)"{{{
     for l:line in l:buflines"{{{
         if l:line =~ l:pattern
             let l:match_end = matchend(l:line, l:pattern)
-            let l:eval = substitute(l:expr, 'v:fname', string(matchstr(l:line[l:match_end :], '\f\+')), 'g')
-            let l:filename = fnamemodify(findfile(eval(l:eval), l:path), ':p')
+            if l:expr != ''
+                let l:eval = substitute(l:expr, 'v:fname', string(matchstr(l:line[l:match_end :], '\f\+')), 'g')
+                let l:filename = fnamemodify(findfile(eval(l:eval), l:path), ':p')
+            else
+                let l:filename = fnamemodify(findfile(matchstr(l:line[l:match_end :], '\f\+'), l:path), ':p')
+            endif
             if filereadable(l:filename)
                 call add(l:include_files, l:filename)
 
