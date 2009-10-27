@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.26:
 "    - Fixed regex escape bug.
+"    - Fixed import error bug.
 "
 "   1.25:
 "    - Substitute tilde.
@@ -472,7 +473,7 @@ function! s:load_snippets(snippets_file)"{{{
     for line in readfile(a:snippets_file)
         if line =~ '^include'
             " Include snippets.
-            let l:filetype = matchstr(line, '^\s*include\s\+\zs\h\w*')
+            let l:filetype = matchstr(line, '^include\s\+\zs.*$')
             let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
             for snippets_file in l:snippets_files
                 call extend(l:snippet, s:load_snippets(snippets_file))

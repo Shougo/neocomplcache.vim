@@ -71,18 +71,7 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
     endif
 
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
-        if g:NeoComplCache_EnableQuickMatch
-            " Search quick match.
-            let l:pattern = '\v\C\d{1,2}$|[ASDFGHJKLQWERTYUIOP]$'
-            let l:cur_keyword_pos = match(a:cur_text, l:pattern)
-            let l:cur_keyword_str = matchstr(a:cur_text, l:pattern)
-
-            if l:cur_keyword_str == ''
-                return -1
-            endif
-        else
-            return -1
-        endif
+        return -1
     endif
 
     return l:cur_keyword_pos
@@ -165,20 +154,7 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
         let l:cache_keyword_list += l:cache_keyword_lists[l:plugin]
     endfor
 
-    " Sort.
-    let l:cache_keyword_filtered = sort(l:cache_keyword_list, l:order_func)
-
-    " Trunk too many item.
-    let l:cache_keyword_filtered = l:cache_keyword_filtered[:g:NeoComplCache_MaxList-1]
-
-    " Quick match.
-    let l:cache_keyword_filtered = neocomplcache#get_quickmatch_list(l:cache_keyword_filtered, a:cur_keyword_pos,
-                    \a:cur_keyword_str, 'keyword_complete')
-
-    " Remove next keyword.
-    let l:cache_keyword_filtered = neocomplcache#remove_next_keyword(l:cache_keyword_filtered)
-
-    return l:cache_keyword_filtered
+    return sort(l:cache_keyword_list, l:order_func)
 endfunction"}}}
 
 function! neocomplcache#complfunc#keyword_complete#manual_complete()"{{{

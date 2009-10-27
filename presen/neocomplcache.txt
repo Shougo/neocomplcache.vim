@@ -230,9 +230,6 @@ fuzzyfinderにインスパイア。
 自動補完の設定が有効になっていないと、非常に使いにくいです。
 最近のバージョンで改善していますが、入力によっては誤爆もあり得ます。
 
-Ver.3.05より、大文字入力によるクイックマッチに対応しました。
-入力しやすいので便利ですが、誤爆する可能性が高くなるかもしれません。
-
 --------------------------------
 ディクショナリ補完、タグ補完
 
@@ -281,12 +278,6 @@ Ver.2.38より、手動補完では、記号入力時にワイルドカードを
 
 キャッシュラインを固定値にすると、一行が多いHTMLやTeXで重いため、
 キャッシュラインはg:NeoComplCache_CacheLineCountの値を元に、バッファの行数により決定します。
-
-現在のキャッシュラインをキャッシュするkey-mappingsが追加されました。
-nmap <silent><C-e>     <Plug>(neocomplcache_keyword_caching)
-imap <expr><silent><C-e>     pumvisible() ? "\<C-e>" : "\<Plug>(neocomplcache_keyword_caching)"
-私は上記のように設定しています。
-自分の打ち込んだ単語をすぐにキャッシュしたい場合に便利です。
 
 Ver.2.58より、キャッシュタイミングを改善し、入力した候補がすぐキャッシュされるようになりました。
 これでかなり使いやすくなったはずです。
@@ -386,17 +377,6 @@ let g:NeoComplCache_OmniPatterns['無効にしたいファイルタイプ'] = ''
 
 Ver.2.68より、Omni補完呼び出しはneocomplcacheと統合されました。
 Omni補完でもクイックマッチや補完のスキップが動作します。
-
---------------------------------
-自動タグファイルアップデート
-
-Omni補完を使用するにあたって、こまめなタグファイルのアップデートは必要不可欠です。
-そこでファイル保存時にtagsが存在したら、自動的にアップデートするようになりました。
-少しの変更でアップデートすると、パフォーマンス的に問題があるので、ある程度大きな変更があるときのみ更新します。
-
-この機能を使用するには、
-let g:NeoComplCache_TagsAutoUpdate = 1
-とする必要があります。
 
 --------------------------------
 Same filetype completion
@@ -636,7 +616,6 @@ snippet div
 入力が高速だったり、補完に時間がかかるときは自動補完をスキップするようになりました。
 スキップする時間は
 let g:NeoComplCache_SkipCompletionTime = '0.3'
-let g:NeoComplCache_SkipInputTime = '0.1'
 のようにすることで調整ができます。
 値は文字列にしないと動作しないので注意。
 
@@ -703,8 +682,6 @@ let g:NeoComplCache_EnableAtStartup = 1
 let g:NeoComplCache_SmartCase = 1
 " Use previous keyword completion.
 let g:NeoComplCache_PreviousKeywordCompletion = 1
-" Use tags auto update.
-"let g:NeoComplCache_TagsAutoUpdate = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
 " Use camel case completion.
@@ -713,8 +690,6 @@ let g:NeoComplCache_EnableCamelCaseCompletion = 1
 let g:NeoComplCache_EnableUnderbarCompletion = 1
 " Set minimum syntax keyword length.
 let g:NeoComplCache_MinSyntaxLength = 3
-" Set skip input time.
-let g:NeoComplCache_SkipInputTime = '0.2'
 " Set manual completion length.
 let g:NeoComplCache_ManualCompletionStartLength = 0
 

@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.06
+Version: 3.07
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -140,7 +140,7 @@ g:NeoComplCache_MaxList					*g:NeoComplCache_MaxList*
 		ポップアップメニューで表示される候補の数を制御する。
 		候補がこれを超えた場合は切り詰められる。
 		
-		初期値は100である。
+		初期値は120である。
 
 g:NeoComplCache_MaxKeywordWidth				*g:NeoComplCache_MaxKeywordWidth*
 		ポップアップメニューで表示される候補の表示幅を制御する。
@@ -243,12 +243,6 @@ g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 		1ならば有効になる。
 		
 		初期値は+reltimeの時に1となる。
-
-g:NeoComplCache_QuickMatchMaxList			*g:NeoComplCache_QuickMatchMaxList*
-		|g:NeoComplCache_EnableQuickMatch|の時に、候補の横に表示する数字の数を制御する。
-		最高が100で、それを超えると無視される。
-		
-		初期値は100である。
 
 g:NeoComplCache_EnableSkipCompletion			*g:NeoComplCache_EnableSkipCompletion*
 		候補の計算に時間がかかりすぎると自動補完を中止するかどうか制御する。

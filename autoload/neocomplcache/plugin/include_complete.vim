@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.01, for Vim 7.0
+" Version: 1.02, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.02:
+"    - Fixed keyword pattern error.
+"
 "   1.01:
 "    - Fixed filter bug.
 "    - Fixed matchstr timing.
@@ -90,7 +93,7 @@ function! s:check_buffer()"{{{
         if buflisted(l:bufnumber)
             let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
             if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
-                    \&& getbufvar(l:bufnumber, '&readonly') == 0
+                    \&& getbufvar(l:bufnumber, '&readonly') == 0 && getbufvar(l:bufnumber, '&filetype') != ''
                 " Check include.
                 call s:check_include(l:bufnumber)
             endif
@@ -290,7 +293,8 @@ function! s:load_from_file(filename)"{{{
     let l:line_cnt = l:print_cache_percent
     
     let l:line_num = 1
-    let l:pattern = neocomplcache#plugin#buffer_complete#current_keyword_pattern()
+    let l:filetype = getbufvar(bufnr(a:filename), '&filetype')
+    let l:pattern = g:NeoComplCache_KeywordPatterns[l:filetype]
     let l:menu = printf('[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's', fnamemodify(a:filename, ':t'))
     let l:keyword_list = {}
 

@@ -142,7 +142,7 @@ g:NeoComplCache_MaxList					*g:NeoComplCache_MaxList*
 		This variable controls the number of candidates displayed in a pop-up menu.
 		The case beyond this value is cut down a candidate.
 	
-		Default value is 100.
+		Default value is 120.
 
 g:NeoComplCache_MaxKeywordWidth				*g:NeoComplCache_MaxKeywordWidth*
 		This variable controls the indication width of a candidate displayed in a pop-up menu.
@@ -242,13 +242,6 @@ g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 	
 		Default value is has ('reltime').
 
-g:NeoComplCache_QuickMatchMaxList			*g:NeoComplCache_QuickMatchMaxList*
-		At the time of|g:NeoComplCache_EnableQuickMatch|, this variable controls
-		the number of numbers to display beside a candidate.
-		Max value is 100.
-	
-		Default value is 100.
-
 g:NeoComplCache_EnableSkipCompletion			*g:NeoComplCache_EnableSkipCompletion*
 		This variable controls whether neocomplcache cancels automatic completion
 		when the calculation of the candidate takes too much time.
@@ -260,12 +253,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		This optional value must be character string.
 	
 		Default value is '0.2'.
-
-g:NeoComplCache_SkipInputTime				*g:NeoComplCache_SkipInputTime*
-		This variable defines continuation input time to cancel automatic completion by a second unit.
-		This optional value must be character string.
-	
-		Because the default value is '0.0', neocomplcache doesn't cancel completion by the consecutive input.
 
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		This variable controls whether neocomplcache considers not only the appearance frequency of the word
@@ -431,8 +418,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableUnderbarCompletion = 1
 	" Set minimum syntax keyword length.
 	let g:NeoComplCache_MinSyntaxLength = 3
-	" Set skip input time.
-	let g:NeoComplCache_SkipInputTime = '0.1'
 
 	" Define dictionary.
 	let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -482,9 +467,6 @@ syntax_complete.vim					*syntax_complete*
 
 ==============================================================================
 TODO						*neocomplcache-todo*
-- Implement include completion.
-
-- Nested default value in snippet completion.
 
 ==============================================================================
 BUGS						*neocomplcache-bugs*
@@ -504,8 +486,12 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Fixed filter bug in include_complete.
     - Fixed matchstr timing in include_complete.
     - Fixed error when includeexpr is empty in include_complete.
-    - Fixed error when includeexpr is empty in include_complete.
     - Don't caching readonly buffer in include_complete.
+    - Implemented CursorHoldI completion.
+    - Deleted g:NeoComplCache_SkipInputTime and g:NeoComplCache_QuickMatchMaxList option.
+    - Fixed keyword pattern error in include_complete.
+    - Fixed quickmatch.
+    - Improved caching timing.
 
    3.06:
     - Fixed disable completion bug.
