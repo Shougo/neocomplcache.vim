@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2009
+" Last Modified: 28 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -184,9 +184,8 @@ function! neocomplcache#complfunc#filename_complete#manual_complete()"{{{
         let &ignorecase = g:NeoComplCache_IgnoreCase
     endif
 
-    let l:complete_words = neocomplcache#get_quickmatch_list(neocomplcache#complfunc#filename_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str),
-            \ l:cur_keyword_pos, l:cur_keyword_str, 'filename_complete')
-    let l:complete_words = neocomplcache#remove_next_keyword(l:complete_words)
+    let l:complete_words = neocomplcache#remove_next_keyword(
+                \neocomplcache#complfunc#filename_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str))
 
     " Restore option.
     let &ignorecase = l:ignorecase_save

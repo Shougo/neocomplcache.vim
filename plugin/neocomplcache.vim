@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.07, for Vim 7.0
+" Version: 3.08, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -81,12 +81,6 @@ if !exists('g:NeoComplCache_DisableAutoComplete')
 endif
 if !exists('g:NeoComplCache_EnableWildCard')
     let g:NeoComplCache_EnableWildCard = 1
-endif
-if !exists('g:NeoComplCache_EnableQuickMatch')
-    let g:NeoComplCache_EnableQuickMatch = 1
-endif
-if !exists('g:NeoComplCache_EnableAutoSelect')
-    let g:NeoComplCache_EnableAutoSelect = 1
 endif
 if !exists('g:NeoComplCache_CalcRankRandomize')
     let g:NeoComplCache_CalcRankRandomize = has('reltime')

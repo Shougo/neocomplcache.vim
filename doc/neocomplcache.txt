@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.07
+Version: 3.08
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -228,13 +228,6 @@ g:NeoComplCache_EnableWildCard				*g:NeoComplCache_EnableWildCard*
 		such as '*' and '-' for input-saving.
 	
 		Default value is 1.
-
-g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
-		For input-saving, this variable controls whether you can choose a candidate
-		with a number displayed beside a candidate.
-	
-		Default value is 1.
-		It is necessary for menuone to be included in 'completeopt' to use this function.
 
 g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 		When neocomplcache calculate frequency again,
@@ -480,6 +473,14 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.08:
+    - Fixed completion bug when using ku.
+    - Implemented NeoComplCacheCachingTags command.
+    - Disable auto caching in tags_complete.
+    - Echo filename when caching.
+    - Disabled quick match.
+    - Fixed wildcard bug when auto completion.
+    
 ChangeLog NeoComplCache 3.00-: {{{
    3.07:
     - Added snippet indent file.

@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.07
+Version: 3.08
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -84,6 +84,11 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCacheCachingSyntax [filetype]			*:NeoComplCacheCachingSyntax*
 		[filetype]のシンタックスをもう一度キャッシュする。
 		[filetype]を省略すると、カレントバッファのファイルタイプを指定したことになる。
+
+:NeoComplCacheCachingTags [bufname]			*:NeoComplCacheCachingTags*
+		[bufname]のタグをキャッシュする。
+		[bufname]を省略すると、カレントバッファのファイルタイプを指定したことになる。
+		これを実行しなければ、tags_completeは動作しない。
 
 :NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
 		[bufname]で示されるバッファをキャッシュしないようにする。
@@ -223,20 +228,6 @@ g:NeoComplCache_EnableWildCard				*g:NeoComplCache_EnableWildCard*
 		1ならばワイルドカードが使用できる。
 		
 		初期値は1なので、ワイルドカードが有効になっている。
-
-g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
-		省入力のために、候補の横に表示されている数字で候補を選択できるようにするか制御する。
-		1ならば有効になる。
-		
-		初期値は1なので、有効になっている。
-		この機能を使用するためには、'completeopt'にmenuoneが含まれている必要がある。
-
-g:NeoComplCache_EnableAutoSelect			*g:NeoComplCache_EnableAutoSelect*
-		クイックマッチ時に、自動で候補を選択するかどうかを制御する。
-		1ならば有効になる。
-		
-		初期値は1なので、有効になっている。
-		この機能を使用するためには、'completeopt'にmenuoneが含まれている必要がある。
 
 g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 		頻度を再計算するときに、乱数を使用するかを制御する。
@@ -496,7 +487,9 @@ snippets_complete.vim					*snippets_complete*
 tags_complete.vim					*tags_complete*
 		'tags'で定義されているタグファイルを読み込み、補完候補に加えるプラグイン。
 		g:NeoComplCache_TagsCompletionStartLength文字以上入力しなければ候補は現れない。
+		大きなタグを読み込ませると重いため、NeoComplCacheCachingTagsを実行しなければ動作しない。
 		パフォーマンスの最適化のため、部分マッチは動作しない。
+		より便利なインクルード補完を使用するべきである。
 
 syntax_complete.vim					*syntax_complete*
 		標準で提供されているautoload/syntaxcomplete.vimのように、

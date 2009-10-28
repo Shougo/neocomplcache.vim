@@ -29,6 +29,8 @@
 "   1.02:
 "    - Fixed keyword pattern error.
 "    - Added g:NeoComplCache_IncludeSuffixes option. 
+"    - Fixed empty filetype error.
+"    - Echo filename when caching.
 "
 "   1.01:
 "    - Fixed filter bug.
@@ -118,13 +120,16 @@ endfunction"}}}
 function! s:check_buffer(bufnumber)"{{{
     let l:bufname = fnamemodify(bufname(a:bufnumber), ':p')
     if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
-                \&& getbufvar(a:bufnumber, '&readonly') == 0 && getbufvar(a:bufnumber, '&filetype') != ''
+                \&& getbufvar(a:bufnumber, '&readonly') == 0
         " Check include.
         call s:check_include(a:bufnumber)
     endif
 endfunction"}}}
 function! s:check_include(bufnumber)"{{{
     let l:filetype = getbufvar(a:bufnumber, '&filetype')
+    if l:filetype == ''
+        return
+    endif
     let l:pattern = has_key(g:NeoComplCache_IncludePattern, l:filetype) ? 
                 \g:NeoComplCache_IncludePattern[l:filetype] : getbufvar(a:bufnumber, '&include')
     if l:pattern == ''
@@ -192,7 +197,7 @@ function! s:load_from_tags(filename)"{{{
     
     if l:max_lines > 1000
         redraw
-        echo 'Caching include files... please wait.'
+        echo 'Caching include files "' . a:filename . '"... please wait.'
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 9
@@ -216,11 +221,11 @@ function! s:load_from_tags(filename)"{{{
         " Percentage check."{{{
         if l:line_cnt == 0
             if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
                 redrawstatus!
             else
                 redraw
-                echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
             endif
             let l:line_cnt = l:print_cache_percent
         endif
@@ -302,7 +307,7 @@ function! s:load_from_file(filename)"{{{
     
     if l:max_lines > 1000
         redraw
-        echo 'Caching include files... please wait.'
+        echo 'Caching include files "' . a:filename . '"... please wait.'
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 9
@@ -323,6 +328,9 @@ function! s:load_from_file(filename)"{{{
     
     let l:line_num = 1
     let l:filetype = getbufvar(bufnr(a:filename), '&filetype')
+    if l:filetype == ''
+        return []
+    endif
     let l:pattern = g:NeoComplCache_KeywordPatterns[l:filetype]
     let l:menu = printf('[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's', fnamemodify(a:filename, ':t'))
     let l:keyword_list = {}
@@ -331,11 +339,11 @@ function! s:load_from_file(filename)"{{{
         " Percentage check."{{{
         if l:line_cnt == 0
             if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
                 redrawstatus!
             else
                 redraw
-                echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
             endif
             let l:line_cnt = l:print_cache_percent
         endif
@@ -397,7 +405,7 @@ function! s:load_from_cache(filename)"{{{
     
     if l:max_lines > 3000
         redraw
-        echo 'Caching include files... please wait.'
+        echo 'Caching include files "' . a:filename . '"... please wait.'
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 5
@@ -415,11 +423,11 @@ function! s:load_from_cache(filename)"{{{
         " Percentage check."{{{
         if l:line_cnt == 0
             if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
                 redrawstatus!
             else
                 redraw
-                echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
             endif
             let l:line_cnt = l:print_cache_percent
         endif

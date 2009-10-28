@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2009
+" Last Modified: 28 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.10, for Vim 7.0
+" Version: 1.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.11:
+"    - Disable auto caching in tags_complete.
+"
 "   1.10:
 "    - Enable auto-complete.
 "    - Optimized.
@@ -81,6 +84,8 @@ function! neocomplcache#plugin#tags_complete#initialize()"{{{
     if !isdirectory(g:NeoComplCache_TemporaryDir . '/tags_cache')
         call mkdir(g:NeoComplCache_TemporaryDir . '/tags_cache', 'p')
     endif
+    
+    command! -nargs=? -complete=buffer NeoComplCacheCachingTags call s:caching_tags(<q-args>)
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#finalize()"{{{
@@ -88,6 +93,7 @@ endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{{{
     if len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
+                \|| empty(s:tags_list)
         return []
     endif
 
@@ -95,14 +101,11 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
     let l:key = tolower(a:cur_keyword_str[: g:NeoComplCache_TagsCompletionStartLength-1])
     for tags in split(&l:tags, ',')
         let l:filename = fnamemodify(tags, ':p')
-        if filereadable(l:filename)
-            if !has_key(s:tags_list, l:filename)
-                let s:tags_list[l:filename] = s:initialize_tags(l:filename)
-            endif
+        if filereadable(l:filename) && has_key(s:tags_list, l:filename)
             if !has_key(s:tags_list[l:filename], l:key)
                 let s:tags_list[l:filename][l:key] = []
             endif
-            
+
             let l:list += s:tags_list[l:filename][l:key]
         endif
     endfor
@@ -118,6 +121,20 @@ endfunction"}}}
 function! neocomplcache#plugin#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
 endfunction"}}}
 
+function! s:caching_tags(bufname)"{{{
+    let l:bufname = (a:bufname == '') ? bufname('%') : a:bufname
+    for tags in split(getbufvar(bufnr(l:bufname), '&tags'), ',')
+        let l:filename = fnamemodify(tags, ':p')
+        if filereadable(l:filename) && has_key(s:tags_list, l:filename)
+            if !has_key(s:tags_list[l:filename], l:key)
+                let s:tags_list[l:filename][l:key] = []
+            endif
+
+            let l:list += s:tags_list[l:filename][l:key]
+        endif
+    endfor
+    let s:tags_list[l:filename] = s:initialize_tags(l:filename)
+endfunction"}}}
 function! s:initialize_tags(filename)"{{{
     " Initialize tags list.
 
