@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2009
+" Last Modified: 28 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.02:
 "    - Fixed keyword pattern error.
+"    - Added g:NeoComplCache_IncludeSuffixes option. 
 "
 "   1.01:
 "    - Fixed filter bug.
@@ -54,8 +55,25 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
     
     augroup neocomplcache
         " Caching events
-        autocmd FileType,BufWritePost * call s:check_buffer()
+        autocmd FileType * call s:check_buffer_all()
+        autocmd BufWritePost * call s:check_buffer(bufnr('%'))
     augroup END
+    
+    " Initialize include pattern."{{{
+    call s:set_include_pattern('java,haskell', '^import')
+    "}}}
+    " Initialize expr pattern."{{{
+    call s:set_expr_pattern('haskell', 'substitute(v:fname,''\\.'',''/'',''g'')')
+    "}}}
+    " Initialize path pattern."{{{
+    if executable('python')
+        call s:set_path_pattern('python',
+                    \system('python -', 'import sys;sys.stdout.write(",".join(sys.path))'))
+    endif
+    "}}}
+    " Initialize suffixes pattern."{{{
+    call s:set_suffixes_pattern('haskell', '.hs')
+    "}}}
     
     " Create cache directory.
     if !isdirectory(g:NeoComplCache_TemporaryDir . '/include_cache')
@@ -85,22 +103,25 @@ endfunction"}}}
 function! neocomplcache#plugin#include_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
 endfunction"}}}
 
-function! s:check_buffer()"{{{
+function! s:check_buffer_all()"{{{
     let l:bufnumber = 1
 
     " Check buffer.
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber)
-            let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
-            if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
-                    \&& getbufvar(l:bufnumber, '&readonly') == 0 && getbufvar(l:bufnumber, '&filetype') != ''
-                " Check include.
-                call s:check_include(l:bufnumber)
-            endif
+            call s:check_buffer(l:bufnumber)
         endif
 
         let l:bufnumber += 1
     endwhile
+endfunction"}}}
+function! s:check_buffer(bufnumber)"{{{
+    let l:bufname = fnamemodify(bufname(a:bufnumber), ':p')
+    if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
+                \&& getbufvar(a:bufnumber, '&readonly') == 0 && getbufvar(a:bufnumber, '&filetype') != ''
+        " Check include.
+        call s:check_include(a:bufnumber)
+    endif
 endfunction"}}}
 function! s:check_include(bufnumber)"{{{
     let l:filetype = getbufvar(a:bufnumber, '&filetype')
@@ -113,6 +134,9 @@ function! s:check_include(bufnumber)"{{{
                 \g:NeoComplCache_IncludePath[l:filetype] : getbufvar(a:bufnumber, '&path')
     let l:expr = has_key(g:NeoComplCache_IncludeExpr, l:filetype) ? 
                 \g:NeoComplCache_IncludeExpr[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
+    if has_key(g:NeoComplCache_IncludeSuffixes, l:filetype)
+        let l:suffixes = &l:suffixesadd
+    endif
 
     let l:buflines = getbufline(a:bufnumber, 1, 100)
     let l:include_files = []
@@ -135,6 +159,11 @@ function! s:check_include(bufnumber)"{{{
             endif
         endif
     endfor"}}}
+    
+    " Restore option.
+    if has_key(g:NeoComplCache_IncludeSuffixes, l:filetype)
+        let &l:suffixesadd = l:suffixes
+    endif
     
     let s:include_list[a:bufnumber] = l:include_files
 endfunction"}}}
@@ -429,15 +458,49 @@ function! s:save_cache(filename, keyword_list)"{{{
     call writefile(l:word_list, l:cache_name)
 endfunction"}}}
 
+" Set pattern helper."{{{
+function! s:set_include_pattern(filetype, pattern)"{{{
+    for ft in split(a:filetype, ',')
+        if !has_key(g:NeoComplCache_IncludePattern, ft) 
+            let g:NeoComplCache_IncludePattern[ft] = a:pattern
+        endif
+    endfor
+endfunction"}}}
+function! s:set_expr_pattern(filetype, pattern)"{{{
+    for ft in split(a:filetype, ',')
+        if !has_key(g:NeoComplCache_IncludeExpr, ft) 
+            let g:NeoComplCache_IncludeExpr[ft] = a:pattern
+        endif
+    endfor
+endfunction"}}}
+function! s:set_path_pattern(filetype, pattern)"{{{
+    for ft in split(a:filetype, ',')
+        if !has_key(g:NeoComplCache_IncludePath, ft) 
+            let g:NeoComplCache_IncludePath[ft] = a:pattern
+        endif
+    endfor
+endfunction"}}}
+function! s:set_suffixes_pattern(filetype, pattern)"{{{
+    for ft in split(a:filetype, ',')
+        if !has_key(g:NeoComplCache_IncludeSuffixes, ft) 
+            let g:NeoComplCache_IncludeSuffixes[ft] = a:pattern
+        endif
+    endfor
+endfunction"}}}
+"}}}
+
 " Global options definition."{{{
-if !exists('g:NeoComplCache_IncludePath')
-    let g:NeoComplCache_IncludePath = {}
+if !exists('g:NeoComplCache_IncludePattern')
+    let g:NeoComplCache_IncludePattern = {}
 endif
 if !exists('g:NeoComplCache_IncludeExpr')
     let g:NeoComplCache_IncludeExpr = {}
 endif
-if !exists('g:NeoComplCache_IncludePattern')
-    let g:NeoComplCache_IncludePattern = {}
+if !exists('g:NeoComplCache_IncludePath')
+    let g:NeoComplCache_IncludePath = {}
+endif
+if !exists('g:NeoComplCache_IncludeSuffixes')
+    let g:NeoComplCache_IncludeSuffixes = {}
 endif
 "}}}
 

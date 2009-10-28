@@ -142,7 +142,7 @@ g:NeoComplCache_MaxList					*g:NeoComplCache_MaxList*
 		This variable controls the number of candidates displayed in a pop-up menu.
 		The case beyond this value is cut down a candidate.
 	
-		Default value is 120.
+		Default value is 100.
 
 g:NeoComplCache_MaxKeywordWidth				*g:NeoComplCache_MaxKeywordWidth*
 		This variable controls the indication width of a candidate displayed in a pop-up menu.
@@ -492,6 +492,7 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Fixed keyword pattern error in include_complete.
     - Fixed quickmatch.
     - Improved caching timing.
+    - Added g:NeoComplCache_IncludeSuffixes option. 
 
    3.06:
     - Fixed disable completion bug.

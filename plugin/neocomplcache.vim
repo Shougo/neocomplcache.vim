@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2009
+" Last Modified: 28 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -41,7 +41,7 @@ command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
 " Global options definition."{{{
 if !exists('g:NeoComplCache_MaxList')
-    let g:NeoComplCache_MaxList = 120
+    let g:NeoComplCache_MaxList = 100
 endif
 if !exists('g:NeoComplCache_MaxKeywordWidth')
     let g:NeoComplCache_MaxKeywordWidth = 50

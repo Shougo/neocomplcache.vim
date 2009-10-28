@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Oct 2009
+" Last Modified: 27 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.26, for Vim 7.0
+" Version: 1.27, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.27:
+"    - Fixed empty snippet edit error.
+"    - Improved snippet alias syntax.
+"
 "   1.26:
 "    - Fixed regex escape bug.
 "    - Fixed import error bug.
@@ -427,9 +431,16 @@ function! s:edit_snippets(filetype, isruntime)"{{{
     if !empty(s:snippets_dir)
         " Edit snippet file.
         if a:isruntime
-            edit `=s:snippets_dir[0].'/'.l:filetype.'.snip'`
+            let l:filename = s:snippets_dir[0].'/'.l:filetype.'.snip'
         else
-            edit `=s:snippets_dir[-1].'/'.l:filetype.'.snip'`
+            let l:filename = s:snippets_dir[-1].'/'.l:filetype.'.snip'
+        endif
+        if filereadable(l:filename)
+            edit `=l:filename`
+        else
+            enew
+            setfiletype snippet
+            write `=l:filename`
         endif
     endif
 endfunction"}}}
@@ -502,7 +513,7 @@ function! s:load_snippets(snippets_file)"{{{
                 call add(l:snippet_pattern.prev_word, matchstr(word, "'\\zs[^']*\\ze'"))
             endfor
         elseif line =~ '^alias\s'
-            let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*$'))
+            let l:snippet_pattern.alias = split(substitute(matchstr(line, '^alias\s\+\zs.*$'), '\s', '', 'g'), ',')
         elseif line =~ '^\s'
             if l:snippet_pattern['word'] == ''
                 let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
