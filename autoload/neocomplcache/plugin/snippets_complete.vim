@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2009
+" Last Modified: 29 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.27, for Vim 7.0
+" Version: 1.28, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.28:
+"    - Split nicely when edit snippets_file.
+"
 "   1.27:
 "    - Fixed empty snippet edit error.
 "    - Improved snippet alias syntax.
@@ -435,12 +438,20 @@ function! s:edit_snippets(filetype, isruntime)"{{{
         else
             let l:filename = s:snippets_dir[-1].'/'.l:filetype.'.snip'
         endif
+        
+        " Split nicely.
+        if winheight(0) > &winheight
+            split
+        else
+            vsplit
+        endif
+        
         if filereadable(l:filename)
             edit `=l:filename`
         else
             enew
             setfiletype snippet
-            write `=l:filename`
+            saveas `=l:filename`
         endif
     endif
 endfunction"}}}

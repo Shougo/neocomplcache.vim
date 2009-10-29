@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2009
+" Last Modified: 29 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.02, for Vim 7.0
+" Version: 1.03, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.03:
+"    - Improved caching.
+"
 "   1.02:
 "    - Fixed keyword pattern error.
 "    - Added g:NeoComplCache_IncludeSuffixes option. 
@@ -193,7 +196,7 @@ function! s:load_from_tags(filename)"{{{
     let l:max_lines = len(l:lines)
     
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:menu_pattern = '[I] %.'. g:NeoComplCache_MaxFilenameWidth . 's'
+    let l:menu_pattern = '[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's %.'. g:NeoComplCache_MaxFilenameWidth . 's'
     
     if l:max_lines > 1000
         redraw
@@ -231,21 +234,19 @@ function! s:load_from_tags(filename)"{{{
         endif
         let l:line_cnt -= 1"}}}
         
-        let l:tag = split(l:line, "\<Tab>")
+        let l:tag = split(l:line, '\t')
         " Add keywords.
         if l:line !~ '^!' && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
                     \&& !has_key(l:keyword_list, l:tag[0])
-            let l:option = {}
-            let l:match = matchlist(l:line, '.*\t.*\t/^\(.*\)/;"\t\(\a\)\(.*\)')
-            if empty(l:match)
-                let l:match = split(l:line, '\t')
-                let [l:option['cmd'], l:option['kind'], l:opt] = [l:match[2], l:match[3], join(l:match[4:], '\t')]
-            else
-                let [l:option['cmd'], l:option['kind'], l:opt] = [l:match[1], l:match[2], l:match[3]]
-            endif
-            for op in split(l:opt, '\t')
-                let l:key = matchstr(op, '^\h\w*\ze:')
-                let l:option[l:key] = matchstr(op, '^\h\w*:\zs.*')
+            let l:option = { 'cmd' : 
+                        \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
+            for l:opt in l:tag[3:]
+                let l:key = matchstr(l:opt, '^\h\w*\ze:')
+                if l:key == ''
+                    let l:option['kind'] = l:opt
+                else
+                    let l:option[l:key] = matchstr(l:opt, '^\h\w*:\zs.*')
+                endif
             endfor
             
             if has_key(l:option, 'file') || (has_key(l:option, 'access') && l:option.access != 'public')
@@ -253,9 +254,7 @@ function! s:load_from_tags(filename)"{{{
                 continue
             endif
             
-            let l:abbr = (l:tag[3] == 'd')? l:tag[0] :
-                        \ substitute(substitute(substitute(l:tag[2], '^/\^\=\s*\|\$\=/;"$', '', 'g'),
-                        \           '\s\+', ' ', 'g'), '\\/', '/', 'g')
+            let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
             let l:keyword = {
                         \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
                         \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
@@ -263,13 +262,13 @@ function! s:load_from_tags(filename)"{{{
                         \ 'kind' : l:option['kind']
                         \}
             if has_key(l:option, 'struct')
-                let keyword.menu = printf(l:menu_pattern, l:option.struct)
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
             elseif has_key(l:option, 'class')
-                let keyword.menu = printf(l:menu_pattern, l:option.class)
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
             elseif has_key(l:option, 'enum')
-                let keyword.menu = printf(l:menu_pattern, l:option.enum)
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
             else
-                let keyword.menu = '[I]'
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
             endif
 
             let l:keyword_list[l:tag[0]] = l:keyword
@@ -329,7 +328,7 @@ function! s:load_from_file(filename)"{{{
     let l:line_num = 1
     let l:filetype = getbufvar(bufnr(a:filename), '&filetype')
     if l:filetype == ''
-        return []
+        return {}
     endif
     let l:pattern = g:NeoComplCache_KeywordPatterns[l:filetype]
     let l:menu = printf('[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's', fnamemodify(a:filename, ':t'))

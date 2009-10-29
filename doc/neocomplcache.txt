@@ -474,12 +474,13 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG					*neocomplcache-changelog*
 
    3.08:
-    - Fixed completion bug when using ku.
     - Implemented NeoComplCacheCachingTags command.
     - Disable auto caching in tags_complete.
     - Echo filename when caching.
     - Disabled quick match.
     - Fixed wildcard bug when auto completion.
+    - Improved caching in tags_complete and include_complete.
+    - Split nicely when edit snippets_file.
     
 ChangeLog NeoComplCache 3.00-: {{{
    3.07:

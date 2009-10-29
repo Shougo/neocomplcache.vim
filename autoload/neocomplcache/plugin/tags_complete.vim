@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2009
+" Last Modified: 29 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.11:
 "    - Disable auto caching in tags_complete.
+"    - Improved caching.
 "
 "   1.10:
 "    - Enable auto-complete.
@@ -144,7 +145,7 @@ function! s:initialize_tags(filename)"{{{
     endif
     
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:menu_pattern = '[T] %.'. g:NeoComplCache_MaxFilenameWidth . 's'
+    let l:menu_pattern = '[T] %.' . g:NeoComplCache_MaxFilenameWidth . 's %.'. g:NeoComplCache_MaxFilenameWidth . 's'
     let l:dup_check = {}
     let l:lines = readfile(a:filename)
     let l:max_lines = len(l:lines)
@@ -185,46 +186,41 @@ function! s:initialize_tags(filename)"{{{
         endif
         let l:line_cnt -= 1"}}}
         
-        let l:tag = split(l:line, "\<Tab>")
+        let l:tag = split(l:line, '\t')
         " Add keywords.
         if l:line !~ '^!' && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
-            let l:option = {}
-            let l:match = matchlist(l:line, '.*\t.*\t/^\(.*\)/;"\t\(\a\)\(.*\)')
-            if empty(l:match)
-                let l:match = split(l:line, '\t')
-                let [l:option['cmd'], l:option['kind'], l:opt] = [l:match[2], l:match[3], join(l:match[4:], '\t')]
-            else
-                let [l:option['cmd'], l:option['kind'], l:opt] = [l:match[1], l:match[2], l:match[3]]
-            endif
-            for op in split(l:opt, '\t')
-                let l:key = matchstr(op, '^\h\w*\ze:')
-                let l:option[l:key] = matchstr(op, '^\h\w*:\zs.*')
+                    \&& !has_key(l:keyword_lists, l:tag[0])
+            let l:option = { 'cmd' : 
+                        \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
+            for l:opt in l:tag[3:]
+                let l:key = matchstr(l:opt, '^\h\w*\ze:')
+                if l:key == ''
+                    let l:option['kind'] = l:opt
+                else
+                    let l:option[l:key] = matchstr(l:opt, '^\h\w*:\zs.*')
+                endif
             endfor
             
             if has_key(l:option, 'file') || (has_key(l:option, 'access') && l:option.access != 'public')
-                        \|| has_key(l:dup_check, l:tag[0])
                 let l:line_num += 1
                 continue
             endif
-            let l:dup_check[l:tag[0]] = 1
             
-            let l:abbr = (l:tag[3] == 'd')? l:tag[0] :
-                        \ substitute(substitute(substitute(l:tag[2], '^/\^\=\s*\|\$\=/;"$', '', 'g'),
-                        \           '\s\+', ' ', 'g'), '\\/', '/', 'g')
+            let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
             let l:keyword = {
                         \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
                         \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
-                        \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr, 
+                        \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
                         \ 'kind' : l:option['kind']
                         \}
             if has_key(l:option, 'struct')
-                let keyword.menu = printf(l:menu_pattern, l:option.struct)
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
             elseif has_key(l:option, 'class')
-                let keyword.menu = printf(l:menu_pattern, l:option.class)
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
             elseif has_key(l:option, 'enum')
-                let keyword.menu = printf(l:menu_pattern, l:option.enum)
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
             else
-                let keyword.menu = '[T]'
+                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
             endif
 
             let l:key = tolower(l:keyword.word[: g:NeoComplCache_TagsCompletionStartLength-1])
