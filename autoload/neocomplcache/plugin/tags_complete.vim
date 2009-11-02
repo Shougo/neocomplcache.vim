@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Oct 2009
+" Last Modified: 01 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
+" Version: 1.12, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.12:
+"    - Implemented fast search.
+"    - Print filename when caching.
+"
 "   1.11:
 "    - Disable auto caching in tags_complete.
 "    - Improved caching.
@@ -80,6 +84,7 @@
 function! neocomplcache#plugin#tags_complete#initialize()"{{{
     " Initialize
     let s:tags_list = {}
+    let s:completion_length = neocomplcache#get_completion_length('tags_complete')
     
     " Create cache directory.
     if !isdirectory(g:NeoComplCache_TemporaryDir . '/tags_cache')
@@ -93,23 +98,28 @@ function! neocomplcache#plugin#tags_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{{{
-    if len(a:cur_keyword_str) < g:NeoComplCache_TagsCompletionStartLength
-                \|| empty(s:tags_list)
+    if empty(s:tags_list)
         return []
     endif
 
     let l:list = []
-    let l:key = tolower(a:cur_keyword_str[: g:NeoComplCache_TagsCompletionStartLength-1])
-    for tags in split(&l:tags, ',')
-        let l:filename = fnamemodify(tags, ':p')
-        if filereadable(l:filename) && has_key(s:tags_list, l:filename)
-            if !has_key(s:tags_list[l:filename], l:key)
-                let s:tags_list[l:filename][l:key] = []
+    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
+    if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+        for tags in split(&l:tags, ',')
+            let l:filename = fnamemodify(tags, ':p')
+            if filereadable(l:filename) && has_key(s:tags_list, l:filename)
+                let l:list += neocomplcache#unpack_list(values(s:tags_list[l:filename]))
             endif
-
-            let l:list += s:tags_list[l:filename][l:key]
-        endif
-    endfor
+        endfor
+    else
+        for tags in split(&l:tags, ',')
+            let l:filename = fnamemodify(tags, ':p')
+            if filereadable(l:filename) && has_key(s:tags_list, l:filename) 
+                        \&& has_key(s:tags_list[l:filename], l:key)
+                let l:list += s:tags_list[l:filename][l:key]
+            endif
+        endfor
+    endif
     
     return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
@@ -152,7 +162,7 @@ function! s:initialize_tags(filename)"{{{
     
     if l:max_lines > 1000
         redraw
-        echo 'Caching tags... please wait.'
+        echo 'Caching tags "' . a:filename . '"... please wait.'
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 9
@@ -176,11 +186,11 @@ function! s:initialize_tags(filename)"{{{
         " Percentage check."{{{
         if l:line_cnt == 0
             if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
                 redrawstatus!
             else
                 redraw
-                echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
             endif
             let l:line_cnt = l:print_cache_percent
         endif
@@ -223,7 +233,7 @@ function! s:initialize_tags(filename)"{{{
                 let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
             endif
 
-            let l:key = tolower(l:keyword.word[: g:NeoComplCache_TagsCompletionStartLength-1])
+            let l:key = tolower(l:keyword.word[: s:completion_length-1])
             if !has_key(l:keyword_lists, l:key)
                 let l:keyword_lists[l:key] = []
             endif
@@ -263,7 +273,7 @@ function! s:load_from_cache(filename)"{{{
     
     if l:max_lines > 3000
         redraw
-        echo 'Caching tags... please wait.'
+        echo 'Caching tags "' . a:filename . '"... please wait.'
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 5
@@ -281,11 +291,11 @@ function! s:load_from_cache(filename)"{{{
         " Percentage check."{{{
         if l:line_cnt == 0
             if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
                 redrawstatus!
             else
                 redraw
-                echo printf('Caching: %d%%', l:line_num*100 / l:max_lines)
+                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
             endif
             let l:line_cnt = l:print_cache_percent
         endif
@@ -297,7 +307,7 @@ function! s:load_from_cache(filename)"{{{
                     \ 'abbr' : l:cache[1], 'menu' : l:cache[2], 'kind' : l:cache[3]
                     \}
 
-        let l:key = tolower(l:keyword.word[: g:NeoComplCache_TagsCompletionStartLength-1])
+        let l:key = tolower(l:keyword.word[: s:completion_length-1])
         if !has_key(l:keyword_lists, l:key)
             let l:keyword_lists[l:key] = []
         endif
@@ -332,11 +342,5 @@ function! s:save_cache(filename, keyword_lists)"{{{
     endfor
     call writefile(l:word_list, l:cache_name)
 endfunction"}}}
-
-" Global options definition."{{{
-if !exists('g:NeoComplCache_TagsCompletionStartLength')
-    let g:NeoComplCache_TagsCompletionStartLength = 2
-endif
-"}}}
 
 " vim: foldmethod=marker

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2009
+" Last Modified: 01 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.24, for Vim 7.0
+" Version: 1.25, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.25:
+"    - Implemented fast search.
+"    - Print filename when caching.
+"
 "   1.24:
 "    - Supported neocomplcache 3.0.
 "
@@ -105,6 +109,7 @@
 function! neocomplcache#plugin#syntax_complete#initialize()"{{{
     " Initialize.
     let s:syntax_list = {}
+    let s:completion_length = neocomplcache#get_completion_length('syntax_complete')
 
     " Set caching event.
     autocmd neocomplcache FileType * call s:caching()
@@ -127,7 +132,14 @@ function! neocomplcache#plugin#syntax_complete#get_keyword_list(cur_keyword_str)
         return []
     endif
 
-    return neocomplcache#keyword_filter(copy(s:syntax_list[&filetype]), a:cur_keyword_str)
+    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
+    if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+        return neocomplcache#keyword_filter(neocomplcache#unpack_list(values(s:syntax_list[&filetype])), a:cur_keyword_str)
+    elseif !has_key(s:syntax_list[&filetype], l:key)
+        return []
+    else
+        return neocomplcache#keyword_filter(s:syntax_list[&filetype][l:key], a:cur_keyword_str)
+    endif
 endfunction"}}}
 
 " Dummy function.
@@ -143,7 +155,7 @@ function! s:caching()"{{{
     if &filetype != '' && buflisted(bufnr('%')) && !has_key(s:syntax_list, &filetype)
         if g:NeoComplCache_CachingPercentInStatusline
             let l:statusline_save = &l:statusline
-            let &l:statusline = 'Caching syntax... please wait.'
+            let &l:statusline = 'Caching syntax "' . &filetype . '"... please wait.'
             redrawstatus
 
             let s:syntax_list[&filetype] = s:initialize_syntax()
@@ -152,7 +164,7 @@ function! s:caching()"{{{
             redrawstatus
         else
             redraw
-            echo 'Caching syntax... please wait.'
+            echo 'Caching syntax "' . &filetype . '"... please wait.'
 
             let s:syntax_list[&filetype] = s:initialize_syntax()
 
@@ -181,10 +193,10 @@ function! s:recaching(filetype)"{{{
 endfunction"}}}
 
 function! s:initialize_syntax()"{{{
-    let l:keyword_list = s:caching_from_cache()
-    if !empty(l:keyword_list)
+    let l:keyword_lists = s:caching_from_cache()
+    if !empty(l:keyword_lists)
         " Caching from cache.
-        return l:keyword_list
+        return l:keyword_lists
     endif
 
     return s:caching_from_syn()
@@ -210,7 +222,7 @@ function! s:caching_from_syn()"{{{
     let l:dup_check = {}
     let l:menu = '[S] '
 
-    let l:keyword_list = []
+    let l:keyword_lists = {}
     for l:line in split(l:syntax_list, '\n')
         if l:line =~ '^\h\w\+'
             " Change syntax group name.
@@ -255,7 +267,12 @@ function! s:caching_from_syn()"{{{
                 let l:keyword.abbr = 
                             \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
                             \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
-                call add(l:keyword_list, l:keyword)
+
+                let l:key = tolower(l:keyword.word[: s:completion_length-1])
+                if !has_key(l:keyword_lists, l:key)
+                    let l:keyword_lists[l:key] = []
+                endif
+                call add(l:keyword_lists[l:key], l:keyword)
             endif
 
             let l:match_num += len(l:match_str)
@@ -265,42 +282,17 @@ function! s:caching_from_syn()"{{{
         endwhile
     endfor
 
-    if &filetype == 'vim'
-        " Delete vim command abbreviation."{{{
-        let l:command_list = filter(copy(l:keyword_list),
-                    \'v:val.menu =~ "\\[S\\] vim\\%(Command\\|UserCommand\\|UserAttrbKey\\|FuncKey\\)"')
-        call filter(l:keyword_list,
-                    \'v:val.menu !~ "\\[S\\] vim\\%(Command\\|UserCommand\\|UserAttrbKey\\|FuncKey\\)"')
-        let l:groups = {}
-        for command in l:command_list
-            let l:name = command.word[: g:NeoComplCache_MinSyntaxLength-1]
-            if !has_key(l:groups, l:name)
-                let l:groups[l:name] = {}
-            endif
-            let l:groups[l:name][command.word] = command
-        endfor
-
-        for group in values(l:groups)
-            for word in keys(group)
-                for another_word in keys(group)
-                    if word != another_word && word =~ '^' . another_word
-                        call remove(group, another_word)
-                    endif
-                endfor
-            endfor
-            call extend(l:keyword_list, values(group))
-        endfor"}}}
-    endif
-
     " Save syntax cache.
     let l:save_list = []
-    for keyword in l:keyword_list
-        call add(l:save_list, keyword.word .','. keyword.menu)
+    for keyword_list in values(l:keyword_lists)
+        for keyword in keyword_list
+            call add(l:save_list, keyword.word .','. keyword.menu)
+        endfor
     endfor
     let l:cache_name = printf('%s/syntax_cache/%s=', g:NeoComplCache_TemporaryDir, &filetype)
     call writefile(l:save_list, l:cache_name)
 
-    return l:keyword_list
+    return l:keyword_lists
 endfunction"}}}
 
 function! s:caching_from_cache()"{{{
@@ -312,7 +304,7 @@ function! s:caching_from_cache()"{{{
 
     let l:syntax_lines = readfile(l:cache_name)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:keyword_list = []
+    let l:keyword_lists = {}
     for syntax in l:syntax_lines
         let l:splited = split(syntax, ',')
         let l:keyword =  {
@@ -322,10 +314,15 @@ function! s:caching_from_cache()"{{{
         let l:keyword.abbr = 
                     \ (len(l:splited[0]) > g:NeoComplCache_MaxKeywordWidth)? 
                     \ printf(l:abbr_pattern, l:splited[0], l:splited[0][-8:]) : l:splited[0]
-        call add(l:keyword_list, l:keyword)
+
+        let l:key = tolower(l:keyword.word[: s:completion_length-1])
+        if !has_key(l:keyword_lists, l:key)
+            let l:keyword_lists[l:key] = []
+        endif
+        call add(l:keyword_lists[l:key], l:keyword)
     endfor
 
-    return l:keyword_list
+    return l:keyword_lists
 endfunction"}}}
 
 " LengthOrder."{{{

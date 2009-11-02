@@ -71,6 +71,8 @@ autocomplpop.vimの悪いところ
 ・ATOK X3で暴走する
 ・日本語入力中も補完候補が出る
 ・補完機能が統合されていない
+・プラグインによっては相性問題が発生する
+・Vim 7.2以降にのみ対応
 
 一年ほど更新が途絶えていましたが、最近になって頻繁に更新されるようになってきました。
 ただし基本的にVim標準の補完を呼び出すので、大幅な機能追加は望めません。
@@ -93,6 +95,7 @@ auto-complete.elの悪いところ
 ・標準では候補の絞り込みができない（別途プラグインをインストールすれば可）
 ・標準では部分マッチが使えない（別途プラグインをインストールすれば可）
 ・補完候補の情報が表示されない
+・マニュアルがない
 
 提供する機能はシンプルですが、カスタマイズしやすいのはよいですね。
 ただしプラグインを作成するためには、ソースコードを解析しないといけません。
@@ -101,7 +104,6 @@ auto-complete.elの悪いところ
 --------------------------------
 neocomplcacheの良いところ
 ・候補の絞り込みができる
-・標準で部分マッチもできる
 ・単語の出現頻度によってソートができる
 ・補完機能のカスタマイズがしやすい
 ・補完機能はほとんど自前実装
@@ -121,9 +123,10 @@ neocomplcacheの悪いところ
 ・メモリを大量に使う
 ・まだ発展途上なので、仕様変更が頻繁にある
 ・バグが多い
+・設定可能項目が多いので、初心者には敷居が高い
 
 高機能なのが最大の魅力です。ただし良くも悪くも発展途上です。
-仕様は予告無く変更される場合があります。
+作者の独断と偏見により、仕様は予告無く変更される場合があります。
 autocomplpopに満足できない、アルファギーク向け。
 
 安定した物が良ければ、vim.orgに置いてある物を使ってください。
@@ -135,10 +138,6 @@ neocomplcacheの歴史
 
 これまで愛用していたautocomplpop.vimが
 Linux GVim上のATOK X3でおかしくなる
-　　　　　　↓
-それなら自分で作ってしまえ！
-　　　　　　↓
-部分マッチも欲しいなぁとか思い始める
 　　　　　　↓
 それなら自分で作ってしまえ！
 　　　　　　↓
@@ -161,7 +160,6 @@ neocomplcacheの代表的機能
 
 ・キーワードの使用頻度によるランク付け
 ・シンタックスごとのキーワード補完
-・部分マッチ
 ・ディクショナリ補完、タグ補完
 ・インクルード補完
 ・ワイルドカードによる検索結果の絞り込み
@@ -173,7 +171,6 @@ neocomplcacheの代表的機能
 ・文脈依存補完（3-gram completion）
 ・Omni補完
 ・ローカルタグ補完
-・自動タグファイルアップデート
 ・キーワード補完を試す
 ・Same filetype completion
 ・preview windowに対応
@@ -206,12 +203,6 @@ Ver.2.23より、正規表現には\vを使わなければいけなくなりま�
 
 最近のバージョンでは対応言語も増えて、かなりパワーアップしています。
 例えばRubyではブロック付きメソッドが補完できます。
-
---------------------------------
-部分マッチ
-
-Vim標準のキーワード補完では先頭マッチのみですが、neocomplcacheでは標準で部分マッチが有効です。
-ただし、部分マッチによる候補は入力文字数が多くないと表示されません。
 
 --------------------------------
 ディクショナリ補完、タグ補完
@@ -641,16 +632,28 @@ Ver.2.71より、プラグインごとに補完開始文字数を設定できる
 例：
 let g:NeoComplCache_KeywordCompletionStartLength = 1
 if !exists('g:NeoComplCache_PluginCompletionLength')
-    let g:NeoComplCache_PluginCompletionLength = {}
 endif
-let g:NeoComplCache_PluginCompletionLength['snippets_complete'] = 1
-let g:NeoComplCache_PluginCompletionLength['buffer_complete'] = 2
-let g:NeoComplCache_PluginCompletionLength['syntax_complete'] = 2
-let g:NeoComplCache_PluginCompletionLength['tags_complete'] = 3
+let g:NeoComplCache_PluginCompletionLength = {
+    \'snippets_complete' : 1, 
+    \'buffer_complete' : 2, 
+    \'syntax_complete' : 2, 
+    \'tags_complete' : 3, 
+\}
 
 この例ではsnippets_completeのみ1文字で補完、tags_completeは3文字、他は2文字で補完するようにしています。
 g:NeoComplCache_KeywordCompletionStartLengthを変更しないと、
 入力文字数がg:NeoComplCache_KeywordCompletionStartLengthを超えるまで自動補完が呼び出されないので注意してください。
+
+--------------------------------
+プラグインごとに補完開始文字数を設定
+
+Ver.3.09より、プラグインや補完関数を無効化できるようになりました。
+ 
+let g:NeoComplCache_DisablePluginList = {
+    \'tags_complete' : 1
+\}
+プラグインや補完関数名をキーにして、その値を1にすることで無効になります。
+.vimrcに書いておかないと有効にならないので注意してください。
 
 --------------------------------
 私の設定
@@ -662,8 +665,6 @@ neocomplcacheのオプションはdoc/neocomplcache.jaxに詳しい解説があ�
 let g:NeoComplCache_EnableAtStartup = 1
 " Use smartcase.
 let g:NeoComplCache_SmartCase = 1
-" Use previous keyword completion.
-let g:NeoComplCache_PreviousKeywordCompletion = 1
 " Use preview window.
 let g:NeoComplCache_EnableInfo = 1
 " Use camel case completion.
@@ -822,6 +823,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/10/31     neocomplcache Ver.3.09に対応。
 2009/10/28     neocomplcache Ver.3.08に対応。
 2009/10/23     neocomplcache Ver.3.05に対応。
 2009/10/02     neocomplcache Ver.3.01に対応。

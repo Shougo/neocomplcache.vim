@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2009
+" Last Modified: 31 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.08, for Vim 7.0
+" Version: 3.09, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -49,17 +49,11 @@ endif
 if !exists('g:NeoComplCache_MaxFilenameWidth')
     let g:NeoComplCache_MaxFilenameWidth = 15
 endif
-if !exists('g:NeoComplCache_EnablePartialMatch')
-    let g:NeoComplCache_EnablePartialMatch = 1
-endif
 if !exists('g:NeoComplCache_KeywordCompletionStartLength')
     let g:NeoComplCache_KeywordCompletionStartLength = 2
 endif
 if !exists('g:NeoComplCache_ManualCompletionStartLength')
     let g:NeoComplCache_ManualCompletionStartLength = 2
-endif
-if !exists('g:NeoComplCache_PartialCompletionStartLength')
-    let g:NeoComplCache_PartialCompletionStartLength = 4
 endif
 if !exists('g:NeoComplCache_MinKeywordLength')
     let g:NeoComplCache_MinKeywordLength = 4
@@ -120,6 +114,9 @@ if !exists('g:NeoComplCache_PluginCompletionLength')
 endif
 if !exists('g:NeoComplCache_CachingPercentInStatusline')
     let g:NeoComplCache_CachingPercentInStatusline = 0
+endif
+if !exists('g:NeoComplCache_DisablePluginList')
+    let g:NeoComplCache_DisablePluginList = {}
 endif
 if !exists('g:NeoComplCache_TemporaryDir')
     let g:NeoComplCache_TemporaryDir = '~/.neocon'

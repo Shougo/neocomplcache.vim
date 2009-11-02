@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.08
+Version: 3.09
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -71,9 +71,6 @@ COMMANDS 					*neocomplcache-commands*
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		自動補完する文字数を一時的に変更する。
-
-:NeoComplCachePartialCompletionLength			*:NeoComplCachePartialCompletionLength*
-		部分マッチ補完する文字数を一時的に変更する。
 
 :NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
 		[bufname]で示されるバッファを完全にキャッシュする。
@@ -159,12 +156,6 @@ g:NeoComplCache_MaxFilenameWidth			*g:NeoComplCache_MaxFilenameWidth*
 		
 		初期値は15である。
 
-g:NeoComplCache_EnablePartialMatch				*g:NeoComplCache_EnablePartialMatch*
-		補完時に部分マッチを使用するかを制御する。
-		1なら部分マッチを使用する。
-		
-		初期値は1である。
-
 g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletionStartLength*
 		キー入力時に自動補完を行う入力数を制御する。
 		
@@ -175,11 +166,6 @@ g:NeoComplCache_ManualCompletionStartLength		*g:NeoComplCache_ManualCompletionSt
 		この値を減らすと便利だが、ポップアップ表示時 <C-h> や <BS> などで文字を削除したときに重くなる可能性がある。
 		
 		初期値は2である。
-
-g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletionStartLength*
-		補完時に部分マッチを行う入力数を制御する。
-		
-		初期値は4である。
 
 g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
 		バッファや辞書ファイル中で、補完の対象となるキーワードの最小長さを制御する。
@@ -205,8 +191,8 @@ g:NeoComplCache_SmartCase				*g:NeoComplCache_SmartCase*
 
 g:NeoComplCache_AlphabeticalOrder			*g:NeoComplCache_AlphabeticalOrder*
 		候補をアルファベット順で並び替えるかを制御する。
-		このオプションを設定すると、neocomplcacheの機能がかなり制限されるが、
-		補完処理は高速化する。1ならば有効。
+		このオプションを設定すると、neocomplcacheの機能がかなり制限されるが、補完処理は高速化する。
+		1ならば有効。
 		
 		初期値は0なので、頻度順に並び替える。
 
@@ -246,12 +232,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		このオプションの値は文字列でなければならない。
 		
 		初期値は'0.2'である。
-
-g:NeoComplCache_SkipInputTime				*g:NeoComplCache_SkipInputTime*
-		自動補完を中止するための連続入力時間を定義する。
-		このオプションの値は文字列でなければならない。
-		
-		初期値は'0.0'なので、連続入力により補完を中止することはない。
 
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		単語の出現頻度だけではなく、前の単語とのつながりも考慮して候補の並び替えを行うかどうかを制御する。
@@ -389,6 +369,13 @@ g:NeoComplCache_IncludePattern				*g:NeoComplCache_IncludePattern*
 		
 		初期値は空である。
                 
+g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
+		補完関数やプラグインを無効にするかどうかを指定するディクショナリ。
+		補完関数やプラグイン名をキーにして、値を1にすることで無効になる。
+		neocomplcacheを初期化するときに参照するので、初期化前に指定する必要がある。
+		
+		初期値は空である。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
@@ -406,10 +393,21 @@ neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complet
 >
 		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 <
+neocomplcache#manual_omni_complete				*neocomplcache#manual_omni_complete*
+		inoremap <expr>上で使用する。neocomplcacheのオムニ補完を手動で呼び出す。
+		Vim標準のオムニ補完を置き換えるときに使う。
+>
+		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
+<
+neocomplcache#manual_keyword_complete				*neocomplcache#manual_keyword_complete*
+		inoremap <expr>上で使用する。neocomplcacheのキーワード補完を手動で呼び出す。
+		Vim標準のキーワード補完を置き換えるときに使う。
+>
+		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
+<
 neocomplcache#close_popup				*neocomplcache#close_popup*
 		inoremap <expr>上で使用する。neocomplcacheのポップアップを閉じ、補完を終了する。
 		Vim標準の<C-y>よりも確実にポップアップを閉じることができる。
-		この関数を使ってポップアップを閉じると、選択した候補のランクが上昇する。
 >
 		inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-y>"
 <
@@ -432,8 +430,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
 	let g:NeoComplCache_SmartCase = 1
-	" Use previous keyword completion.
-	let g:NeoComplCache_PreviousKeywordCompletion = 1
 	" Use preview window.
 	let g:NeoComplCache_EnableInfo = 1
 	" Use camel case completion.

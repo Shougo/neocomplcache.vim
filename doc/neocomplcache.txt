@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.08
+Version: 3.09
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -73,9 +73,6 @@ COMMANDS 					*neocomplcache-commands*
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		Change start length of automatic completion.
-
-:NeoComplCachePartialCompletionLength			*:NeoComplCachePartialCompletionLength*
-		Change start length of partial completion.
 
 :NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
 		Caching [bufname] buffer.
@@ -156,12 +153,6 @@ g:NeoComplCache_MaxFilenameWidth			*g:NeoComplCache_MaxFilenameWidth*
 	
 		Default value is 15.
 
-g:NeoComplCache_EnablePartialMatch				*g:NeoComplCache_EnablePartialMatch*
-		This variable controls whether neocomplcache uses a partial match at the time of completion.
-		If it is 1, neocomplcache uses a partial match.
-	
-		Default value is 1.
-
 g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletionStartLength*
 		This variable controls the number of the input completioning at the time of key input automatically.
 	
@@ -173,11 +164,6 @@ g:NeoComplCache_ManualCompletionStartLength		*g:NeoComplCache_ManualCompletionSt
 		when you deleted a letter in <C-h> or <BS> at popup indication time.
 	
 		Default value is 2.
-
-g:NeoComplCache_PartialCompletionStartLength		*g:NeoComplCache_PartialCompletionStartLength*
-		This variable controls the number of the partial input matching at the time of completion.
-	
-		Default value is 4.
 
 g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
 		In a buffer or dictionary files, this variable controls length of keyword becoming
@@ -369,16 +355,29 @@ KEY MAPPINGS 					*neocomplcache-key-mappings*
 
 neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complete*
 		Use this function on inoremap <expr>.
-		The keymapping call file name completion of neocomplcache.
+		The keymapping call the file name completion of neocomplcache.
 		When you rearrange the file name completion of the Vim standard, you use it.
 >
 		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 <
+neocomplcache#manual_omni_complete				*neocomplcache#manual_omni_complete*
+		Use this function on inoremap <expr>.
+		The keymapping call the omni completion of neocomplcache.
+		When you rearrange the omni completion of the Vim standard, you use it.
+>
+		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
+<
+neocomplcache#manual_keyword_complete				*neocomplcache#manual_keyword_complete*
+		Use this function on inoremap <expr>.
+		The keymapping call keyword completion of neocomplcache.
+		When you rearrange the keyword completion of the Vim standard, you use it.
+>
+		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
+
 neocomplcache#close_popup				*neocomplcache#close_popup*
 		Use this function on inoremap <expr>.
 		Close popup of neocomplcache and finish completion.
 		You can close popup more surely than <C-y> of the Vim standard.
-		The rank of the candidate whom you chose rises when you close popup with this function.
 >
 		inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-y>"
 <
@@ -401,8 +400,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
 	let g:NeoComplCache_SmartCase = 1
-	" Use previous keyword completion.
-	let g:NeoComplCache_PreviousKeywordCompletion = 1
 	" Use preview window.
 	let g:NeoComplCache_EnableInfo = 1
 	" Use camel case completion.
@@ -473,6 +470,18 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.09:
+    - Improved wildcard behaivior.
+    - Disabled partial match.
+    - Added g:NeoComplCache_DisablePluginList option.
+    - Fixed wildcard bug.
+    - Implemented fast search.
+    - Fixed manual omni_complete error.
+    - Improved manual completion.
+    - Fixed filtering bug.
+    - Print filename when caching.
+    
+ChangeLog NeoComplCache 3.00-: {{{
    3.08:
     - Implemented NeoComplCacheCachingTags command.
     - Disable auto caching in tags_complete.
@@ -481,8 +490,7 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed wildcard bug when auto completion.
     - Improved caching in tags_complete and include_complete.
     - Split nicely when edit snippets_file.
-    
-ChangeLog NeoComplCache 3.00-: {{{
+
    3.07:
     - Added snippet indent file.
     - Fixed filter bug in include_complete.

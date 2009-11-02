@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Oct 2009
+" Last Modified: 01 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.28:
 "    - Split nicely when edit snippets_file.
+"    - Fixed snippets escape bug.
 "
 "   1.27:
 "    - Fixed empty snippet edit error.
@@ -273,16 +274,8 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
     " Keyword filter."{{{
-    let l:cur_len = len(a:cur_keyword_str)
-    if g:NeoComplCache_EnablePartialMatch && neocomplcache#skipped() && len(a:cur_keyword_str) >= g:NeoComplCache_PartialCompletionStartLength
-        " Partial match.
-        " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("v:val.word =~ %s && (v:val.condition == 1 || eval(v:val.condition))", string(l:keyword_escape))
-    else
-        " Head match.
-        " Filtering len(a:cur_keyword_str).
-        let l:pattern = printf("v:val.word =~ %s && (v:val.condition == 1 || eval(v:val.condition))", string('^' . l:keyword_escape))
-    endif"}}}
+    " Head match.
+    let l:pattern = printf("v:val.word =~ %s && (v:val.condition == 1 || eval(v:val.condition))", string('^' . l:keyword_escape))
 
     let l:list = filter(a:list, l:pattern)
 
@@ -587,7 +580,7 @@ function! s:snippets_expand(cur_text, col)"{{{
 
         let l:snip_word = l:snippet.snip
         if l:snip_word =~ '`[^`]*`'
-            let l:eval = escape(eval(matchstr(l:snip_word, '`\zs[^`]*\ze`')), '~\.^$')
+            let l:eval = escape(eval(matchstr(l:snip_word, '`\zs[^`]*\ze`')), '~\.^$&')
             let l:snip_word = substitute(l:snip_word, '`[^`]*`', l:eval, '')
             if l:snip_word =~ '\n'
                 let snip_word = substitute(l:snip_word, '\n', '<\\n>', 'g') . '<expand>'

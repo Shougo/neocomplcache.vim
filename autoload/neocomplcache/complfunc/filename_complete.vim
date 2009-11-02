@@ -159,39 +159,4 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     return l:list
 endfunction"}}}
 
-function! neocomplcache#complfunc#filename_complete#manual_complete()"{{{
-    if !exists(':NeoComplCacheDisable')
-        return ''
-    endif
-
-    " Get cursor word.
-    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
-
-    let l:pattern = '[/~]\?\%(\\.\|\f\)\+$'
-    let l:cur_keyword_pos = match(l:cur_text, l:pattern)
-    let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
-
-    if len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
-        return ''
-    endif
-
-    " Save options.
-    let l:ignorecase_save = &ignorecase
-
-    if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
-        let &ignorecase = 0
-    else
-        let &ignorecase = g:NeoComplCache_IgnoreCase
-    endif
-
-    let l:complete_words = neocomplcache#remove_next_keyword(
-                \neocomplcache#complfunc#filename_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str))
-
-    " Restore option.
-    let &ignorecase = l:ignorecase_save
-
-    " Start complete.
-    return neocomplcache#start_manual_complete(l:complete_words, l:cur_keyword_pos, l:cur_keyword_str)
-endfunction"}}}
-
 " vim: foldmethod=marker
