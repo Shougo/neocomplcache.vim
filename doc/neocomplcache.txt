@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.09
+Version: 3.10
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -470,6 +470,13 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.10:
+    - Optimized keyword_complete.
+    - Integrated complfuncs.
+    - Complfunc supported g:NeoComplCache_PluginCompletionLength option.
+    - Improved html's omni completion pattern.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.09:
     - Improved wildcard behaivior.
     - Disabled partial match.
@@ -481,7 +488,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed filtering bug.
     - Print filename when caching.
     
-ChangeLog NeoComplCache 3.00-: {{{
    3.08:
     - Implemented NeoComplCacheCachingTags command.
     - Disable auto caching in tags_complete.

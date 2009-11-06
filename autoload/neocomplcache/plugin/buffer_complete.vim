@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Nov 2009
+" Last Modified: 06 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.09, for Vim 7.0
+" Version: 3.10, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -121,14 +121,20 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
         for src in s:get_sources_list()
             let l:keyword_list += neocomplcache#unpack_list(values(s:sources[src].keyword_cache))
         endfor
+        return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
     else
         for src in s:get_sources_list()
             if has_key(s:sources[src].keyword_cache, l:key)
                 let l:keyword_list += s:sources[src].keyword_cache[l:key]
             endif
         endfor
+
+        if len(a:cur_keyword_str) == s:completion_length
+            return l:keyword_list
+        else
+            return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
+        endif
     endif
-    return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#calc_rank(cache_keyword_buffer_list)"{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Nov 2009
+" Last Modified: 06 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -137,6 +137,8 @@ function! neocomplcache#plugin#syntax_complete#get_keyword_list(cur_keyword_str)
         return neocomplcache#keyword_filter(neocomplcache#unpack_list(values(s:syntax_list[&filetype])), a:cur_keyword_str)
     elseif !has_key(s:syntax_list[&filetype], l:key)
         return []
+    elseif len(a:cur_keyword_str) == s:completion_length
+        return s:syntax_list[&filetype][l:key]
     else
         return neocomplcache#keyword_filter(s:syntax_list[&filetype][l:key], a:cur_keyword_str)
     endif

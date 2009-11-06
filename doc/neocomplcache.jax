@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.09
+Version: 3.10
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -157,7 +157,7 @@ g:NeoComplCache_MaxFilenameWidth			*g:NeoComplCache_MaxFilenameWidth*
 		初期値は15である。
 
 g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletionStartLength*
-		キー入力時に自動補完を行う入力数を制御する。
+		キー入力時にキーワード補完を行う入力数を制御する。
 		
 		初期値は2である。
 

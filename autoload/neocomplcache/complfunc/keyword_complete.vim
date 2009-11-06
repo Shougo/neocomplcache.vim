@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Nov 2009
+" Last Modified: 06 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.09, for Vim 7.0
+" Version: 3.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " TODO: "{{{
 "     - Nothing.
@@ -99,7 +99,7 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
             call remove(l:loaded_plugins, l:plugin)
             let l:cache_keyword_lists[l:plugin] = []
         else
-            let l:cache_keyword_lists[l:plugin] = deepcopy(call(l:loaded_plugins[l:plugin] . 'get_keyword_list', [a:cur_keyword_str]))
+            let l:cache_keyword_lists[l:plugin] = call(l:loaded_plugins[l:plugin] . 'get_keyword_list', [a:cur_keyword_str])
         endif
 
         if !empty(l:cache_keyword_lists[l:plugin])
@@ -130,11 +130,6 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
     endif
 
     let l:cache_keyword_filtered = []
-
-    " Get next keyword.
-    let l:next_keyword_str = matchstr('a'.getline('.')[col('.')-1 :],
-        \'\v^%(' . neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')')[1:]
-    let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g')
 
     " Previous keyword completion.
     if g:NeoComplCache_PreviousKeywordCompletion && !g:NeoComplCache_AlphabeticalOrder "{{{

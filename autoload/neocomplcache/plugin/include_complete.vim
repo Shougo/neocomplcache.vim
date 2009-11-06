@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Nov 2009
+" Last Modified: 06 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -104,15 +104,20 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
         for l:include in s:include_list[bufnr('%')]
             let l:keyword_list += neocomplcache#unpack_list(values(s:include_cache[l:include]))
         endfor
+        return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
     else
         for l:include in s:include_list[bufnr('%')]
             if has_key(s:include_cache[l:include], l:key)
                 let l:keyword_list += s:include_cache[l:include][l:key]
             endif
         endfor
+        
+        if len(a:cur_keyword_str) == s:completion_length
+            return l:keyword_list
+        else
+            return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
+        endif
     endif
-
-    return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 " Dummy function.

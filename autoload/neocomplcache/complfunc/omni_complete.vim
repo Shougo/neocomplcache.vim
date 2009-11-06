@@ -58,7 +58,8 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     if has('python')
         call s:set_omni_pattern('python', '\v[^. \t]\.')
     endif
-    call s:set_omni_pattern('html,xhtml,xml', '\v\</?|\<[^>]+\s')
+    "call s:set_omni_pattern('html,xhtml,xml', '\v\</?|\<[^>]+\s')
+    call s:set_omni_pattern('html,xhtml,xml', '\v\<[^>]*')
     call s:set_omni_pattern('css', '\v^\s+\w+|\w+[):;]?\s+|[@!]')
     call s:set_omni_pattern('javascript', '\v[^. \t]\.')
     call s:set_omni_pattern('actionscript', '\v[^. \t][.:]')

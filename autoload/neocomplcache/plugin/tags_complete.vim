@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Nov 2009
+" Last Modified: 06 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -102,26 +102,31 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
         return []
     endif
 
-    let l:list = []
+    let l:keyword_list = []
     let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
     if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
         for tags in split(&l:tags, ',')
             let l:filename = fnamemodify(tags, ':p')
             if filereadable(l:filename) && has_key(s:tags_list, l:filename)
-                let l:list += neocomplcache#unpack_list(values(s:tags_list[l:filename]))
+                let l:keyword_list += neocomplcache#unpack_list(values(s:tags_list[l:filename]))
             endif
         endfor
+        return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
     else
         for tags in split(&l:tags, ',')
             let l:filename = fnamemodify(tags, ':p')
             if filereadable(l:filename) && has_key(s:tags_list, l:filename) 
                         \&& has_key(s:tags_list[l:filename], l:key)
-                let l:list += s:tags_list[l:filename][l:key]
+                let l:keyword_list += s:tags_list[l:filename][l:key]
             endif
         endfor
+        
+        if len(a:cur_keyword_str) == s:completion_length
+            return l:keyword_list
+        else
+            return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
+        endif
     endif
-    
-    return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
 
 " Dummy function.
