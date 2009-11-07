@@ -254,8 +254,10 @@ function! s:initialize_tags(filename)"{{{
         endfor"}}}
     catch /^E684:/
         echoerr 'Error occured while analyzing tags!'
-        call writefile(g:NeoComplCache_TemporaryDir . '/tags_cache/error_log', l:lines)
-        return
+        let l:log_file = g:NeoComplCache_TemporaryDir . '/tags_cache/error_log'
+        echoerr 'Please look tags file: ' . l:log_file
+        call writefile(l:log_file, l:lines)
+        return {}
     endtry
 
     if l:max_lines > 200
