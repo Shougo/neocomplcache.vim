@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2009
+" Last Modified: 07 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -153,6 +153,10 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
     endfor
 
     return l:cache_keyword_filtered + sort(l:cache_keyword_list, l:order_func)
+endfunction"}}}
+
+function! neocomplcache#complfunc#keyword_complete#get_rank()"{{{
+    return 5
 endfunction"}}}
 
 function! neocomplcache#complfunc#keyword_complete#check_wildcard(cur_text, pattern, cur_keyword_pos)"{{{

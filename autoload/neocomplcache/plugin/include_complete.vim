@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2009
+" Last Modified: 07 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.04, for Vim 7.0
+" Version: 1.05, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.05:
+"    - Save error log.
+"
 "   1.04:
 "    - Implemented fast search.
 "
@@ -237,70 +240,76 @@ function! s:load_from_tags(filename, filetype)"{{{
     endif
     let l:line_cnt = l:print_cache_percent
     
-    let l:dup_check = {}
-    let l:line_num = 1
-    for l:line in l:lines"{{{
-        " Percentage check."{{{
-        if l:line_cnt == 0
-            if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-                redrawstatus!
-            else
-                redraw
-                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-            endif
-            let l:line_cnt = l:print_cache_percent
-        endif
-        let l:line_cnt -= 1"}}}
-        
-        let l:tag = split(l:line, '\t')
-        " Add keywords.
-        if l:line !~ '^!' && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
-                    \&& !has_key(l:dup_check, l:tag[0])
-            let l:option = { 'cmd' : 
-                        \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
-            for l:opt in l:tag[3:]
-                let l:key = matchstr(l:opt, '^\h\w*\ze:')
-                if l:key == ''
-                    let l:option['kind'] = l:opt
+    try
+        let l:dup_check = {}
+        let l:line_num = 1
+        for l:line in l:lines"{{{
+            " Percentage check."{{{
+            if l:line_cnt == 0
+                if g:NeoComplCache_CachingPercentInStatusline
+                    let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
+                    redrawstatus!
                 else
-                    let l:option[l:key] = matchstr(l:opt, '^\h\w*:\zs.*')
+                    redraw
+                    echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
                 endif
-            endfor
-            
-            if has_key(l:option, 'file') || (has_key(l:option, 'access') && l:option.access != 'public')
-                let l:line_num += 1
-                continue
+                let l:line_cnt = l:print_cache_percent
             endif
-            
-            let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
-            let l:keyword = {
-                        \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
-                        \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
-                        \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
-                        \ 'kind' : l:option['kind']
-                        \}
-            if has_key(l:option, 'struct')
-                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
-            elseif has_key(l:option, 'class')
-                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
-            elseif has_key(l:option, 'enum')
-                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
-            else
-                let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
+            let l:line_cnt -= 1"}}}
+
+            let l:tag = split(l:line, '\t')
+            " Add keywords.
+            if l:line !~ '^!' && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
+                        \&& !has_key(l:dup_check, l:tag[0])
+                let l:option = { 'cmd' : 
+                            \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
+                for l:opt in l:tag[3:]
+                    let l:key = matchstr(l:opt, '^\h\w*\ze:')
+                    if l:key == ''
+                        let l:option['kind'] = l:opt
+                    else
+                        let l:option[l:key] = matchstr(l:opt, '^\h\w*:\zs.*')
+                    endif
+                endfor
+
+                if has_key(l:option, 'file') || (has_key(l:option, 'access') && l:option.access != 'public')
+                    let l:line_num += 1
+                    continue
+                endif
+
+                let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
+                let l:keyword = {
+                            \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
+                            \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
+                            \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
+                            \ 'kind' : l:option['kind']
+                            \}
+                if has_key(l:option, 'struct')
+                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
+                elseif has_key(l:option, 'class')
+                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
+                elseif has_key(l:option, 'enum')
+                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
+                else
+                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
+                endif
+
+                let l:key = tolower(l:tag[0][: s:completion_length-1])
+                if !has_key(l:keyword_lists, l:key)
+                    let l:keyword_lists[l:key] = []
+                endif
+                call add(l:keyword_lists[l:key], l:keyword)
+
+                let l:dup_check[l:tag[0]] = 1
             endif
 
-            let l:key = tolower(l:tag[0][: s:completion_length-1])
-            if !has_key(l:keyword_lists, l:key)
-                let l:keyword_lists[l:key] = []
-            endif
-            call add(l:keyword_lists[l:key], l:keyword)
-            
-            let l:dup_check[l:tag[0]] = 1
-        endif
-
-        let l:line_num += 1
-    endfor"}}}
+            let l:line_num += 1
+        endfor"}}}
+    catch /^E684:/
+        echoerr 'Error occured while analyzing tags!'
+        call writefile(g:NeoComplCache_TemporaryDir . '/include_cache/error_log', l:lines)
+        return
+    endtry
 
     if l:max_lines > 1000
         if g:NeoComplCache_CachingPercentInStatusline

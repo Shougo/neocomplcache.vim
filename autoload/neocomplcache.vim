@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2009
+" Last Modified: 07 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,7 +117,7 @@ function! neocomplcache#enable() "{{{
     call s:set_keyword_pattern('erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call s:set_keyword_pattern('html,xhtml,xml',
-                \'\v[[:alnum:]_:-]*\>|\</?%([[:alnum:]_:-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_:-]*%(\=")?|\<[^>]+\>')
+                \'\v[[:alnum:]_:-]*\>|\</?%([[:alnum:]_:-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_:-]*%(\=")?|\<[^>]*>?')
     call s:set_keyword_pattern('css',
                 \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
     call s:set_keyword_pattern('tags',
@@ -212,6 +212,9 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             let s:complete_words = []
             return -1
         endif
+        
+        " Get cursor word.
+        let l:cur_text = neocomplcache#get_cur_text()
 
         " Try complfuncs completion."{{{
         let l:complete_result = {}
@@ -240,9 +243,10 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
                 if !empty(l:words)
                     let l:complete_result[l:complfunc] = {
-                                \'complete_words' : neocomplcache#remove_next_keyword(l:words), 
+                                \'complete_words' : l:words, 
                                 \'cur_keyword_pos' : l:cur_keyword_pos, 
-                                \'cur_keyword_str' : l:cur_keyword_str
+                                \'cur_keyword_str' : l:cur_keyword_str, 
+                                \'rank' : call(l:complfunc . 'get_rank', [])
                                 \}
                 endif
 
@@ -459,24 +463,14 @@ function! neocomplcache#remove_next_keyword(list)"{{{
         " No ignorecase.
         let l:save_ignorecase = &ignorecase
         let &ignorecase = 0
-        let l:found = 0
+
         for r in l:list
             if r.word =~ l:next_keyword_str
-                break
+                let r.word = r.word[: match(r.word, l:next_keyword_str)-1]
+                let r.dup = 1
             endif
-
-            let l:found += 1
         endfor
 
-        if l:found < len(a:list)
-            let l:list = deepcopy(a:list)
-            for r in l:list[l:found :]
-                if r.word =~ l:next_keyword_str
-                    let r.word = r.word[: match(r.word, l:next_keyword_str)-1]
-                    let r.dup = 1
-                endif
-            endfor
-        endif
         let &ignorecase = l:save_ignorecase
     endif"}}}
 
@@ -594,8 +588,8 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
         let &ignorecase = g:NeoComplCache_IgnoreCase
     endif
 
-    let l:complete_words = neocomplcache#remove_next_keyword(
-                \call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])[: g:NeoComplCache_MaxList])
+    let l:complete_words = neocomplcache#remove_next_keyword(deepcopy(
+                \call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])[: g:NeoComplCache_MaxList]))
 
     let s:skipped = 0
     let s:cur_keyword_pos = l:cur_keyword_pos
@@ -696,9 +690,10 @@ function! s:complete()"{{{
 
             if !empty(l:words)
                 let l:complete_result[l:complfunc] = {
-                            \'complete_words' : neocomplcache#remove_next_keyword(l:words), 
+                            \'complete_words' : l:words, 
                             \'cur_keyword_pos' : l:cur_keyword_pos, 
-                            \'cur_keyword_str' : l:cur_keyword_str
+                            \'cur_keyword_str' : l:cur_keyword_str, 
+                            \'rank' : call(l:complfunc . 'get_rank', [])
                             \}
             endif
 
@@ -730,11 +725,11 @@ function! s:integrate_completion(complete_result)"{{{
 
     " Append prefix.
     let l:complete_words = []
-    for l:result in values(a:complete_result)
+    for l:result in sort(values(a:complete_result), 'neocomplcache#compare_rank')
+        let l:result.complete_words = neocomplcache#remove_next_keyword(deepcopy(l:result.complete_words))
         if l:result.cur_keyword_pos > l:cur_keyword_pos
             let l:prefix = l:cur_keyword_str[: l:result.cur_keyword_pos - l:cur_keyword_pos]
             
-            let l:result.complete_words = deepcopy(l:result.complete_words)
             for keyword in l:result.complete_words
                 let keyword.word = l:prefix . keyword.word
             endfor

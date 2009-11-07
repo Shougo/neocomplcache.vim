@@ -62,7 +62,7 @@ autocomplpop.vimの良いところ
 ・一部の言語はオムニ補完にも対応
 ・情報が多い
 ・completefuncを登録して呼び出せる
-・snipMateと連携できる（実験的機能）
+・snipMateと連携できる
 ・更新が盛ん
 
 autocomplpop.vimの悪いところ
@@ -351,6 +351,9 @@ let g:NeoComplCache_OmniPatterns['無効にしたいファイルタイプ'] = ''
 
 Ver.2.68より、Omni補完呼び出しはneocomplcacheと統合されました。
 Omni補完でも補完のスキップが動作します。
+
+さらに、Ver.3.10より、キーワード補完との統合が実現。
+より自然な補完が実装されました。
 
 --------------------------------
 Same filetype completion
@@ -650,7 +653,8 @@ g:NeoComplCache_KeywordCompletionStartLengthを変更しないと、
 Ver.3.09より、プラグインや補完関数を無効化できるようになりました。
  
 let g:NeoComplCache_DisablePluginList = {
-    \'tags_complete' : 1
+    \'tags_complete' : 1, 
+    \'omni_complete' : 1, 
 \}
 プラグインや補完関数名をキーにして、その値を1にすることで無効になります。
 .vimrcに書いておかないと有効にならないので注意してください。
@@ -797,8 +801,8 @@ Ver.3.04より、neocomplcacheは自動的にcompleteoptをセットするよう
 --------------------------------
 今後の予定
 
-現在考えているのはcomplfuncの統合や、next keyword completionの改良です。
-インクルード補完もまだキャッシュタイミングに問題があるので、どうにかしたいと思っています。
+インクルード補完がまだキャッシュタイミングに問題があるので、どうにかしたいと思っています。
+要望があったので、クイックマッチもパワーアップして復活予定です。
 
 --------------------------------
 まとめ
@@ -823,6 +827,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/11/07     neocomplcache Ver.3.10に対応。
 2009/10/31     neocomplcache Ver.3.09に対応。
 2009/10/28     neocomplcache Ver.3.08に対応。
 2009/10/23     neocomplcache Ver.3.05に対応。

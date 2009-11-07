@@ -474,7 +474,12 @@ CHANGELOG					*neocomplcache-changelog*
     - Optimized keyword_complete.
     - Integrated complfuncs.
     - Complfunc supported g:NeoComplCache_PluginCompletionLength option.
-    - Improved html's omni completion pattern.
+    - Improved omni completion pattern.
+    - Improved html's keyword pattern.
+    - Fixed manual completion error.
+    - Improved remove next keyword.
+    - Implemented complfunc rank.
+    - Save error log when analyzing tags.
 
 ChangeLog NeoComplCache 3.00-: {{{
    3.09:

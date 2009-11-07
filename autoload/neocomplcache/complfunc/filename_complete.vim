@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2009
+" Last Modified: 07 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.02, for Vim 7.0
+" Version: 1.03, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.03:
+"    - Added rank.
+"
 "   1.02:
 "    - Add '*' to a delimiter.
 "
@@ -159,4 +162,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     return l:list
 endfunction"}}}
 
+function! neocomplcache#complfunc#filename_complete#get_rank()"{{{
+    return 10
+endfunction"}}}
 " vim: foldmethod=marker
