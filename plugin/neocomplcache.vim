@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2009
+" Last Modified: 09 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.10, for Vim 7.0
+" Version: 3.11, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -76,6 +76,9 @@ endif
 if !exists('g:NeoComplCache_EnableWildCard')
     let g:NeoComplCache_EnableWildCard = 1
 endif
+if !exists('g:NeoComplCache_EnableQuickMatch')
+    let g:NeoComplCache_EnableQuickMatch = 1
+endif
 if !exists('g:NeoComplCache_CalcRankRandomize')
     let g:NeoComplCache_CalcRankRandomize = has('reltime')
 endif
@@ -87,9 +90,6 @@ if !exists('g:NeoComplCache_SkipCompletionTime')
 endif
 if !exists('g:NeoComplCache_PreviousKeywordCompletion')
     let g:NeoComplCache_PreviousKeywordCompletion = 1
-endif
-if !exists('g:NeoComplCache_TryFilenameCompletion')
-    let g:NeoComplCache_TryFilenameCompletion = 1
 endif
 if !exists('g:NeoComplCache_EnableInfo')
     let g:NeoComplCache_EnableInfo = 0

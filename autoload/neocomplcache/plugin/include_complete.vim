@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Nov 2009
+" Last Modified: 09 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.05:
 "    - Save error log.
+"    - Implemented member filter.
+"    - Allow dup.
 "
 "   1.04:
 "    - Implemented fast search.
@@ -100,14 +102,44 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
     if !has_key(s:include_list, bufnr('%'))
         return []
     endif
+    
+    let l:ft = &filetype
+    if l:ft == ''
+        let l:ft = 'nothing'
+    endif
+    
+    if has_key(g:NeoComplCache_MemberPrefixPatterns, l:ft) && a:cur_keyword_str =~ g:NeoComplCache_MemberPrefixPatterns[l:ft]
+        let l:use_member_filter = 1
+        
+        let l:prefix = matchstr(a:cur_keyword_str, g:NeoComplCache_MemberPrefixPatterns[l:ft])
+        let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
+        
+        if len(l:cur_keyword_str) >= s:completion_length
+            let l:use_member_filter = 0
+            for l:include in s:include_list[bufnr('%')]
+                if has_key(s:include_cache[l:include], l:key)
+                    let l:use_member_filter = 1
+                    break
+                endif
+            endfor
 
+            if !l:use_member_filter
+                let l:cur_keyword_str = a:cur_keyword_str
+            endif
+        endif
+    else
+        let l:use_member_filter = 0
+        let l:cur_keyword_str = a:cur_keyword_str
+    endif
+    
     let l:keyword_list = []
-    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
-    if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+    let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
+    if len(l:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
         for l:include in s:include_list[bufnr('%')]
             let l:keyword_list += neocomplcache#unpack_list(values(s:include_cache[l:include]))
         endfor
-        return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
+        
+        let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
     else
         for l:include in s:include_list[bufnr('%')]
             if has_key(s:include_cache[l:include], l:key)
@@ -115,12 +147,12 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
             endif
         endfor
         
-        if len(a:cur_keyword_str) == s:completion_length
-            return l:keyword_list
-        else
-            return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
+        if len(a:cur_keyword_str) != s:completion_length
+            let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
         endif
     endif
+
+    return l:keyword_list
 endfunction"}}}
 
 " Dummy function.
@@ -279,19 +311,23 @@ function! s:load_from_tags(filename, filetype)"{{{
 
                 let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
                 let l:keyword = {
-                            \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
+                            \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1,
                             \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
                             \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
                             \ 'kind' : l:option['kind']
                             \}
                 if has_key(l:option, 'struct')
                     let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
+                    let keyword.class = l:option.struct
                 elseif has_key(l:option, 'class')
                     let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
+                    let keyword.class = l:option.class
                 elseif has_key(l:option, 'enum')
                     let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
+                    let keyword.class = l:option.enum
                 else
                     let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
+                    let keyword.class = ''
                 endif
 
                 let l:key = tolower(l:tag[0][: s:completion_length-1])
@@ -305,10 +341,10 @@ function! s:load_from_tags(filename, filetype)"{{{
 
             let l:line_num += 1
         endfor"}}}
-    catch /^E684:/
-        echoerr 'Error occured while analyzing tags!'
-        let l:log_file = g:NeoComplCache_TemporaryDir . '/include_cache/error_log'
-        echoerr 'Please look tags file: ' . l:log_file
+    catch /E684:/
+        echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
+        let l:log_file = g:NeoComplCache_TemporaryDir . '/tags_cache/error_log'
+        echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
         call writefile(l:log_file, l:lines)
         return {}
     endtry
@@ -390,7 +426,7 @@ function! s:load_from_file(filename, filetype)"{{{
                         \&& !has_key(l:dup_check, l:match_str)
                 " Append list.
                 let l:keyword = {
-                            \'word' : l:match_str, 'menu' : l:menu, 'icase' : 1, 'kind' : '',
+                            \'word' : l:match_str, 'menu' : l:menu, 'icase' : 1, 'kind' : '', 'class' : '', 
                             \'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0,
                             \}
 
@@ -457,35 +493,42 @@ function! s:load_from_cache(filename)"{{{
     endif
     let l:line_cnt = l:print_cache_percent
     
-    let l:line_num = 1
-    for l:line in l:lines"{{{
-        " Percentage check."{{{
-        if l:line_cnt == 0
-            if g:NeoComplCache_CachingPercentInStatusline
-                let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-                redrawstatus!
-            else
-                redraw
-                echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
+    try
+        let l:line_num = 1
+        for l:line in l:lines"{{{
+            " Percentage check."{{{
+            if l:line_cnt == 0
+                if g:NeoComplCache_CachingPercentInStatusline
+                    let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
+                    redrawstatus!
+                else
+                    redraw
+                    echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
+                endif
+                let l:line_cnt = l:print_cache_percent
             endif
-            let l:line_cnt = l:print_cache_percent
-        endif
-        let l:line_cnt -= 1"}}}
-        
-        let l:cache = split(l:line, '!!!', 1)
-        let l:keyword = {
-                    \ 'word' : l:cache[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
-                    \ 'abbr' : l:cache[1], 'menu' : l:cache[2], 'kind' : l:cache[3]
-                    \}
+            let l:line_cnt -= 1"}}}
 
-        let l:key = tolower(l:cache[0][: s:completion_length-1])
-        if !has_key(l:keyword_lists, l:key)
-            let l:keyword_lists[l:key] = []
-        endif
-        call add(l:keyword_lists[l:key], l:keyword)
-        
-        let l:line_num += 1
-    endfor"}}}
+            let l:cache = split(l:line, '!!!', 1)
+            let l:keyword = {
+                        \ 'word' : l:cache[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1,
+                        \ 'abbr' : l:cache[1], 'menu' : l:cache[2], 'kind' : l:cache[3], 'class' :  l:cache[4]
+                        \}
+
+            let l:key = tolower(l:cache[0][: s:completion_length-1])
+            if !has_key(l:keyword_lists, l:key)
+                let l:keyword_lists[l:key] = []
+            endif
+            call add(l:keyword_lists[l:key], l:keyword)
+
+            let l:line_num += 1
+        endfor"}}}
+    catch /E684:/
+        echohl WarningMsg | echomsg 'Error occured while analyzing cache!' | echohl None
+        let l:cache_dir = g:NeoComplCache_TemporaryDir . '/include_cache'
+        echohl WarningMsg | echomsg 'Please delete cache directory: ' . l:cache_dir | echohl None
+        return {}
+    endtry
     
     if l:max_lines > 3000
         if g:NeoComplCache_CachingPercentInStatusline
@@ -507,7 +550,8 @@ function! s:save_cache(filename, keyword_list)"{{{
     " Output cache.
     let l:word_list = []
     for keyword in a:keyword_list
-        call add(l:word_list, printf('%s!!!%s!!!%s!!!%s', keyword.word, keyword.abbr, keyword.menu, keyword.kind))
+        call add(l:word_list, printf('%s!!!%s!!!%s!!!%s!!!%s', 
+                    \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
     endfor
     call writefile(l:word_list, l:cache_name)
 endfunction"}}}

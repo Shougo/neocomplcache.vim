@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Nov 2009
+" Last Modified: 09 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.10, for Vim 7.0
+" Version: 3.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " TODO: "{{{
 "     - Nothing.
@@ -162,7 +162,7 @@ endfunction"}}}
 function! neocomplcache#complfunc#keyword_complete#check_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
     let l:cur_keyword_pos = a:cur_keyword_pos
 
-    while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] =~ '[*-]'
+    while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] =~ '[*]'
         let l:left_text = a:cur_text[: l:cur_keyword_pos - 2]
         if l:left_text !~ a:pattern
             break

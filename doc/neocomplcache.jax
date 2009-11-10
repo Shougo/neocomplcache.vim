@@ -210,10 +210,16 @@ g:NeoComplCache_DisableAutoComplete			*g:NeoComplCache_DisableAutoComplete*
 		初期値は0なので、自動補完が有効になっている。
 
 g:NeoComplCache_EnableWildCard				*g:NeoComplCache_EnableWildCard*
-		省入力のための'*'や'-'といったワイルドカード文字を容認するかどうかを制御する。
+		省入力のために、ワイルドカード文字 '*' を容認するかどうかを制御する。
 		1ならばワイルドカードが使用できる。
 		
 		初期値は1なので、ワイルドカードが有効になっている。
+
+g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
+		省入力のために、-を入力すると候補の横に表示される英数字で候補を選択できるようにするかを制御する。
+		1ならば有効になる。
+		
+		初期値は1なので、有効になっている。
 
 g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
 		頻度を再計算するときに、乱数を使用するかを制御する。
@@ -235,13 +241,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		単語の出現頻度だけではなく、前の単語とのつながりも考慮して候補の並び替えを行うかどうかを制御する。
-		1ならば有効になる。
-		
-		初期値は1である。
-
-g:NeoComplCache_TryFilenameCompletion			*g:NeoComplCache_TryFilenameCompletion*
-		ファイルパスとなる文字列を入力したとき、自動でファイル名補完を行うかどうかを制御する。
-		シェル系のスクリプトや、ファイル名を入力するときに便利である。
 		1ならば有効になる。
 		
 		初期値は1である。
@@ -375,6 +374,12 @@ g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
 		neocomplcacheを初期化するときに参照するので、初期化前に指定する必要がある。
 		
 		初期値は空である。
+
+g:NeoComplCache_MemberPrefixPatterns				*g:NeoComplCache_MemberPrefixPatterns*
+		include_completeやtags_completeでメンバ補完するためのキーワードパターンを記録する。
+		これはファイルタイプ毎に正規表現で指定されている。
+		
+		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*

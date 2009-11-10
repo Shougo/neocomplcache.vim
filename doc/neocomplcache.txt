@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.10
+Version: 3.11
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -210,8 +210,14 @@ g:NeoComplCache_DisableAutoComplete			*g:NeoComplCache_DisableAutoComplete*
 		Default value is 0.
 
 g:NeoComplCache_EnableWildCard				*g:NeoComplCache_EnableWildCard*
-		This variable controls whether neocomplcache accept wild card character
-		such as '*' and '-' for input-saving.
+		This variable controls whether neocomplcache accept wild card character '*' for input-saving.
+	
+		Default value is 1.
+
+g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
+		For input-saving, this variable controls whether you can choose a candidate
+		with a alphabet or number displayed beside a candidate after '-'.
+		When you input 'ho-a', neocomplcache will select candidate 'a'.
 	
 		Default value is 1.
 
@@ -236,12 +242,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		This variable controls whether neocomplcache considers not only the appearance frequency of the word
 		but also the connection with the word of before and perform the equal thing substitute of the candidate.
-	
-		Default value is 1.
-
-g:NeoComplCache_TryFilenameCompletion			*g:NeoComplCache_TryFilenameCompletion*
-		When you input character string to become the file path,
-		this variable controls whether neocomplcache perform filename completion.
 	
 		Default value is 1.
 
@@ -470,6 +470,19 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.11:
+    - Filtering same word.
+    - Implemented member filter.
+    - Changed cache file syntax.
+    - Print error when cache file is wrong.
+    - Improved keyword patterns.
+    - Reimplemented quickmatch.
+    - Disabled '-' wildcard.
+    - Allow dup in include_complete and tags_complete.
+    - Improved filename completion.
+    - implemented filename wildcard.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.10:
     - Optimized keyword_complete.
     - Integrated complfuncs.
@@ -481,7 +494,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Implemented complfunc rank.
     - Save error log when analyzing tags.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.09:
     - Improved wildcard behaivior.
     - Disabled partial match.

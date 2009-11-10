@@ -55,18 +55,19 @@ function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{{
-    if !g:NeoComplCache_TryFilenameCompletion || ((has('win32') || has('win64')) && &filetype == 'tex')
+    if (has('win32') || has('win64')) && &filetype == 'tex'
         return -1
     endif
 
     " Not Filename pattern.
-    if a:cur_text =~ '[*/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$'
+    if a:cur_text =~ '[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$'
         return -1
     endif
 
     let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
     " Filename pattern.
-    let l:pattern = printf('[/~]\?\%%(\\.\|\f\)\+[%s]\%%(\\.\|\f\)*$', l:PATH_SEPARATOR)
+    "let l:pattern = printf('[/~]\?\%%(\\.\|\f\|\*\)\+[%s]\%%(\\.\|\f\)*$', l:PATH_SEPARATOR)
+    let l:pattern = '[/~]\?\%(\\.\|\f\|\*\)\+$'
 
     let l:cur_keyword_pos = match(a:cur_text, l:pattern)
     if len(matchstr(a:cur_text, l:pattern)) < g:NeoComplCache_KeywordCompletionStartLength
@@ -77,7 +78,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-    let l:cur_keyword_str = escape(a:cur_keyword_str, '*?[]')
+    let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
     let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
@@ -93,11 +94,13 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     endif
 
     try
-        let l:files = split(substitute(glob(l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
+        let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+        let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
         if empty(l:files)
             " Add '*' to a delimiter.
             let l:cur_keyword_str = substitute(l:cur_keyword_str, printf('\w\+\ze[%s._-]', l:PATH_SEPARATOR), '\0*', 'g')
-            let l:files = split(substitute(glob(l:cur_keyword_str . '*'), '\\', '/', 'g'), '\n')
+            let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+            let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
         endif
     catch /.*/
         return []
