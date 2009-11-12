@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Nov 2009
+" Last Modified: 10 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,16 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.11, for Vim 7.0
+" Version: 3.12, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
     augroup neocomplcache "{{{
         autocmd!
         " Auto complete events
-        autocmd CursorHoldI *  if !s:check_movedi() | call s:complete() | endif
-        autocmd CursorMovedI * if s:check_movedi() | call s:complete() | endif
-        autocmd InsertEnter * call s:insert_enter()
+        autocmd CursorMovedI * call s:complete()
         autocmd InsertLeave * call s:insert_leave()
     augroup END "}}}
 
@@ -48,6 +46,7 @@ function! neocomplcache#enable() "{{{
     let s:cur_keyword_pos = -1
     let s:update_time = &updatetime
     let s:prev_numbered_list = []
+    let s:prev_input_time = reltime()
     "}}}
     
     " Initialize complfuncs table."{{{
@@ -158,6 +157,15 @@ function! neocomplcache#enable() "{{{
     call s:set_member_prefix('java,javascript,d,vim,ruby', '^\.')
     "}}}
 
+    " Initialize ctags arguments."{{{
+    if !exists('g:NeoComplCache_CtagsArgumentsList')
+        let g:NeoComplCache_CtagsArgumentsList = {}
+    endif
+    let g:NeoComplCache_CtagsArgumentsList['default'] = ''
+    let g:NeoComplCache_CtagsArgumentsList['vim'] = "'--extra=fq --fields=afmiKlnsStz '--regex-vim=/function!? ([a-z#:_0-9A-Z]+)/\\1/function/''"
+    let g:NeoComplCache_CtagsArgumentsList['cpp'] = '--c++-kinds=+p --fields=+iaS --extra=+q'
+    "}}}
+    
     " Add commands."{{{
     command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
     command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
@@ -653,7 +661,7 @@ function! s:complete()"{{{
         return
     endif
 
-    if pumvisible() || &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
+    if &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
                 \||(&l:completefunc != 'neocomplcache#manual_complete'
                 \&& &l:completefunc != 'neocomplcache#auto_complete')
         return
@@ -693,6 +701,21 @@ function! s:complete()"{{{
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
     endif
+
+    if g:NeoComplCache_EnableSkipCompletion"{{{
+        if split(reltimestr(reltime(s:prev_input_time)))[0] < g:NeoComplCache_SkipInputTime
+            echo 'Skipped auto completion'
+
+            let s:skipped = 1
+
+            let s:prev_input_time = reltime()
+            return
+        endif
+
+        echo ''
+        redraw
+        let s:prev_input_time = reltime()
+    endif"}}}
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
@@ -783,19 +806,10 @@ function! s:integrate_completion(complete_result)"{{{
     return [l:cur_keyword_pos, l:cur_keyword_str, 
                 \filter(l:complete_words[: g:NeoComplCache_MaxList], 'v:val.word !=# ' . string(l:cur_keyword_str))]
 endfunction"}}}
-function! s:insert_enter()"{{{
-    let s:update_time = &updatetime
-    set updatetime=200
-endfunction"}}}
 function! s:insert_leave()"{{{
     let s:old_text = ''
     let s:skipped = 0
     let s:skip_next_complete = 0
-    let &updatetime = s:update_time
-endfunction"}}}
-function! s:check_movedi()"{{{
-    let l:cur_text = neocomplcache#get_cur_text()
-    return (g:NeoComplCache_EnableQuickMatch && l:cur_text =~ '-[a-z0-9]\?$') ||  l:cur_text =~ '\*'
 endfunction"}}}
 function! s:remove_next_keyword(list)"{{{
     let l:list = a:list

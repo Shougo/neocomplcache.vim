@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Nov 2009
+" Last Modified: 10 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.04, for Vim 7.0
+" Version: 1.05, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.05:
+"    - Allow dup.
+"    - Improved menu.
+"    - Deleted C support.
+"
 "   1.04:
 "    - Added rank.
 "    - Improved omni pattern.
@@ -66,7 +71,6 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     call s:set_omni_pattern('css', '\v^\s+\w+|\w+[):;]?\s+|[@!]')
     call s:set_omni_pattern('javascript', '\v[^. \t]\.%(\h\w*)?')
     call s:set_omni_pattern('actionscript', '\v[^. \t][.:]\h\w*')
-    call s:set_omni_pattern('c', '\v[^. \t]%(\.|-\>)\h\w*')
     call s:set_omni_pattern('php', '\v[^. \t]%(-\>|::)\h\w*')
     call s:set_omni_pattern('java', '\v[^. \t]\.\h\w*')
     "}}}
@@ -124,17 +128,17 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     let l:list = []
     for l:omni in l:omni_list
         let l:dict = {
-                    \'word' : l:omni.word, 'menu' : '[O]', 
-                    \'icase' : 1, 'rank' : 5
+                    \'word' : l:omni.word, 'menu' : '[O]',
+                    \'icase' : 1, 'rank' : 5, 'dup' : 1,
                     \}
         if has_key(l:omni, 'abbr')
             let l:dict.abbr = l:omni.abbr
         endif
         if has_key(l:omni, 'kind')
-            let l:dict.menu = ' ' . l:omni.kind
+            let l:dict.kind = l:omni.kind
         endif
         if has_key(l:omni, 'menu')
-            let l:dict.menu = ' ' . l:omni.menu
+            let l:dict.menu = '[O] ' . l:omni.menu
         endif
         call add(l:list, l:dict)
     endfor

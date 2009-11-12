@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2009
+" Last Modified: 12 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.25, for Vim 7.0
+" Version: 1.26, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.26:
+"    - Fixed dup check bug.
+"
 "   1.25:
 "    - Implemented fast search.
 "    - Print filename when caching.
@@ -140,7 +143,7 @@ function! neocomplcache#plugin#syntax_complete#get_keyword_list(cur_keyword_str)
     elseif len(a:cur_keyword_str) == s:completion_length
         return s:syntax_list[&filetype][l:key]
     else
-        return neocomplcache#keyword_filter(s:syntax_list[&filetype][l:key], a:cur_keyword_str)
+        return neocomplcache#keyword_filter(copy(s:syntax_list[&filetype][l:key]), a:cur_keyword_str)
     endif
 endfunction"}}}
 
@@ -275,6 +278,8 @@ function! s:caching_from_syn()"{{{
                     let l:keyword_lists[l:key] = []
                 endif
                 call add(l:keyword_lists[l:key], l:keyword)
+
+                let l:dup_check[l:match_str] = 1
             endif
 
             let l:match_num += len(l:match_str)

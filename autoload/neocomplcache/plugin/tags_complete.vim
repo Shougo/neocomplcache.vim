@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Nov 2009
+" Last Modified: 10 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -223,7 +223,7 @@ function! s:initialize_tags(filename)"{{{
 
             let l:tag = split(l:line, '\t')
             " Add keywords.
-            if l:line !~ '^!' && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
+            if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
                         \&& !has_key(l:keyword_lists, l:tag[0])
                 let l:option = { 'cmd' : 
                             \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
@@ -275,7 +275,7 @@ function! s:initialize_tags(filename)"{{{
         echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
         let l:log_file = g:NeoComplCache_TemporaryDir . '/tags_cache/error_log'
         echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
-        call writefile(l:log_file, l:lines)
+        call writefile(l:lines, l:log_file)
         return {}
     endtry
 

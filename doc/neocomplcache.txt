@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.11
+Version: 3.12
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -239,6 +239,12 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 	
 		Default value is '0.2'.
 
+g:NeoComplCache_SkipInputTime				*g:NeoComplCache_SkipInputTime*
+		This variable defines continuation input time to cancel automatic completion by a second unit.
+		This optional value must be character string.
+	
+		Because the default value is '0.0', neocomplcache doesn't cancel completion by the consecutive input.
+
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		This variable controls whether neocomplcache considers not only the appearance frequency of the word
 		but also the connection with the word of before and perform the equal thing substitute of the candidate.
@@ -408,6 +414,8 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableUnderbarCompletion = 1
 	" Set minimum syntax keyword length.
 	let g:NeoComplCache_MinSyntaxLength = 3
+	" Set skip input time.
+	let g:NeoComplCache_SkipInputTime = '0.1'
 
 	" Define dictionary.
 	let g:NeoComplCache_DictionaryFileTypeLists = {
@@ -470,6 +478,19 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.12:
+    - Improved ctags arguments patterns.
+    - Allow dup and improved menu in omni_complete.
+    - Recognized snippets directory of snipMate automatically.
+    - Fixed eval snippet bug.
+    - Fixed tags caching bug.
+    - Deleted C omni completion support.
+    - Fixed menu in buffer_complete.
+    - Auto complete when CursorMovedI not CursorHoldI.
+    - Reimplemented g:NeoComplCache_SkipInputTime option.
+    - Fixed dup check bug in syntax_complete.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.11:
     - Filtering same word.
     - Implemented member filter.
@@ -482,7 +503,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved filename completion.
     - implemented filename wildcard.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.10:
     - Optimized keyword_complete.
     - Integrated complfuncs.

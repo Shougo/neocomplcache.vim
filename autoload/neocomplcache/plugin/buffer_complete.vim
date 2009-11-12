@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2009
+" Last Modified: 11 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.10, for Vim 7.0
+" Version: 3.12, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -80,13 +80,6 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     command! -nargs=? -complete=buffer NeoComplCacheCachingDisable call s:caching_disable(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheCachingEnable call s:caching_enable(<q-args>)
     "}}}
-
-    " Initialize ctags arguments.
-    if !exists('g:NeoComplCache_CtagsArgumentsList')
-        let g:NeoComplCache_CtagsArgumentsList = {}
-    endif
-    let g:NeoComplCache_CtagsArgumentsList['default'] = ''
-    let g:NeoComplCache_CtagsArgumentsList['vim'] = "'--extra=fq --fields=afmiKlnsStz '--regex-vim=/function!? ([a-z#:_0-9A-Z]+)/\\1/function/''"
 
     " Initialize cache.
     call s:check_source()
@@ -275,9 +268,9 @@ function! neocomplcache#plugin#buffer_complete#check_candidate(keyword)"{{{
     " Check cache.
     if a:keyword != '' && !has_key(l:source.dup_check, a:keyword)
         " Append list.
-        let l:filename = '[B] ' . fnamemodify(bufname('%'), ':t')
+        let l:filename = fnamemodify(bufname('%'), ':t')
         let l:keyword = {
-                    \'word' : a:keyword, 'menu' : printf('%.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename),
+                    \'word' : a:keyword, 'menu' : printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename),
                     \'filename' : l:filename, 'srcname' : bufnr('%'), 'icase' : 1, 'rank' : 1
                     \}
 
@@ -707,9 +700,9 @@ function! s:word_caching_current_line()"{{{
     let l:source = s:sources[bufnr('%')]
 
     " Buffer.
-    let l:filename = '[B] ' . fnamemodify(l:source.name, ':t')
+    let l:filename = fnamemodify(l:source.name, ':t')
 
-    let l:menu = printf('%.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
+    let l:menu = printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     let l:keyword_pattern = s:split_keyword(l:source.keyword_pattern)
 
@@ -780,7 +773,6 @@ function! s:caching_from_cache(srcname)"{{{
         let l:menu = printf('[D] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     endif
 
-    let l:menu = printf('%.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
 
     let l:buflines = readfile(l:cache_name)

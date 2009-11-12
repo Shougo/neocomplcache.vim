@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Nov 2009
+" Last Modified: 10 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,7 +29,7 @@
 "   1.05:
 "    - Save error log.
 "    - Implemented member filter.
-"    - Allow dup.
+"    - Fixed error.
 "
 "   1.04:
 "    - Implemented fast search.
@@ -116,6 +116,7 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
         
         if len(l:cur_keyword_str) >= s:completion_length
             let l:use_member_filter = 0
+            let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
             for l:include in s:include_list[bufnr('%')]
                 if has_key(s:include_cache[l:include], l:key)
                     let l:use_member_filter = 1
@@ -291,7 +292,7 @@ function! s:load_from_tags(filename, filetype)"{{{
 
             let l:tag = split(l:line, '\t')
             " Add keywords.
-            if l:line !~ '^!' && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
+            if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
                         \&& !has_key(l:dup_check, l:tag[0])
                 let l:option = { 'cmd' : 
                             \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
@@ -311,7 +312,7 @@ function! s:load_from_tags(filename, filetype)"{{{
 
                 let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
                 let l:keyword = {
-                            \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1,
+                            \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1,
                             \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
                             \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
                             \ 'kind' : l:option['kind']
@@ -345,7 +346,7 @@ function! s:load_from_tags(filename, filetype)"{{{
         echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
         let l:log_file = g:NeoComplCache_TemporaryDir . '/tags_cache/error_log'
         echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
-        call writefile(l:log_file, l:lines)
+        call writefile(l:lines, l:log_file)
         return {}
     endtry
 
@@ -372,7 +373,6 @@ function! s:load_from_file(filename, filetype)"{{{
     " Initialize include list from file.
 
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:menu_pattern = '[I] %s %.'. g:NeoComplCache_MaxFilenameWidth . 's'
     let l:lines = readfile(a:filename)
     let l:max_lines = len(l:lines)
     

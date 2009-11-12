@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.10
+Version: 3.12
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -238,6 +238,12 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		このオプションの値は文字列でなければならない。
 		
 		初期値は'0.2'である。
+
+g:NeoComplCache_SkipInputTime				*g:NeoComplCache_SkipInputTime*
+		自動補完を中止するための連続入力時間を定義する。
+		このオプションの値は文字列でなければならない。
+		
+		初期値は'0.0'なので、連続入力により補完を中止することはない。
 
 g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
 		単語の出現頻度だけではなく、前の単語とのつながりも考慮して候補の並び替えを行うかどうかを制御する。

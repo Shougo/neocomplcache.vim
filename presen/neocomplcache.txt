@@ -586,6 +586,11 @@ let g:NeoComplCache_SkipCompletionTime = '0.3'
 のようにすることで調整ができます。
 値は文字列にしないと動作しないので注意。
 
+さらに、
+let g:NeoComplCache_SkipInputTime = '0.2'
+のようにすることで、素早く入力がされたときに自動補完をキャンセルできます。
+値は文字列にしないと動作しないので注意。
+
 --------------------------------
 ポップアップメニューを閉じる
 
@@ -825,6 +830,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/11/11     neocomplcache Ver.3.12に対応。
 2009/11/09     neocomplcache Ver.3.11に対応。
 2009/11/07     neocomplcache Ver.3.10に対応。
 2009/10/31     neocomplcache Ver.3.09に対応。
