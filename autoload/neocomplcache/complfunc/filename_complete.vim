@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2009
+" Last Modified: 13 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.03, for Vim 7.0
+" Version: 1.04, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.04:
+"    - Fixed auto completion bug.
+"    - Fixed executable bug.
+"
 "   1.03:
 "    - Added rank.
 "
@@ -55,22 +59,28 @@ function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{{
-    if (has('win32') || has('win64')) && &filetype == 'tex'
+    let l:is_win = has('win32') || has('win64')
+    if l:is_win && &filetype == 'tex'
         return -1
     endif
 
     " Not Filename pattern.
-    if a:cur_text =~ '[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$'
+    if a:cur_text =~ '[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|^\a:$'
         return -1
     endif
 
-    let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
+    let l:PATH_SEPARATOR = (l:is_win) ? '/\\' : '/'
     " Filename pattern.
-    "let l:pattern = printf('[/~]\?\%%(\\.\|\f\|\*\)\+[%s]\%%(\\.\|\f\)*$', l:PATH_SEPARATOR)
-    let l:pattern = '[/~]\?\%(\\.\|\f\|\*\)\+$'
+    let l:pattern = '[~]\?\%(\\.\|\f\|\*\)\+$'
 
     let l:cur_keyword_pos = match(a:cur_text, l:pattern)
-    if len(matchstr(a:cur_text, l:pattern)) < g:NeoComplCache_KeywordCompletionStartLength
+    let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
+    if len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
+        return -1
+    endif
+    
+    " Not Filename pattern.
+    if l:is_win && l:cur_keyword_str =~ '\\|\|^\a:[/\\]\@!'
         return -1
     endif
 
@@ -80,7 +90,8 @@ endfunction"}}}
 function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
-    let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
+    let l:is_win = has('win32') || has('win64')
+    let l:PATH_SEPARATOR = (l:is_win) ? '/\\' : '/'
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
     " Substitute ... -> ../..
     while l:cur_keyword_str =~ '\.\.\.'
@@ -133,6 +144,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     " Trunk many items.
     let l:list = l:list[: g:NeoComplCache_MaxList-1]
 
+    let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     for keyword in l:list
         let l:abbr = keyword.word
         if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
@@ -142,8 +154,11 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         if isdirectory(keyword.word)
             let l:abbr .= '/'
             let keyword.rank += 1
-        elseif (has('win32') || has('win64') && fnamemodify(keyword.word, ':e') =~ 'exe\|com\|bat\|cmd')
-                    \|| executable(keyword.word)
+        elseif l:is_win
+            if fnamemodify(keyword.word, ':e') =~ l:exts
+                let l:abbr .= '*'
+            endif
+        elseif executable(keyword.word)
             let l:abbr .= '*'
         endif
 

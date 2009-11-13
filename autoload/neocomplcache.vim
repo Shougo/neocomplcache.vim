@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2009
+" Last Modified: 12 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.12, for Vim 7.0
+" Version: 3.13, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -661,7 +661,7 @@ function! s:complete()"{{{
         return
     endif
 
-    if &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
+    if !&modified || &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
                 \||(&l:completefunc != 'neocomplcache#manual_complete'
                 \&& &l:completefunc != 'neocomplcache#auto_complete')
         return
@@ -779,6 +779,14 @@ function! s:integrate_completion(complete_result)"{{{
     if empty(a:complete_result)
         return [-1, '', []]
     endif
+    
+    if g:NeoComplCache_EnableSkipCompletion
+                \&& len(a:complete_result) > g:NeoComplCache_MaxList*2 
+                \&& &l:completefunc != 'neocomplcache#manual_complete'
+        echo 'Skipped auto completion'
+        return [-1, '', []]
+    endif
+    
     let l:cur_keyword_pos = col('.')
     for l:result in values(a:complete_result)
         if l:cur_keyword_pos > l:result.cur_keyword_pos
@@ -840,15 +848,15 @@ let s:quickmatch_table = {
             \'a' : 0, 's' : 1, 'd' : 2, 'f' : 3, 'g' : 4, 'h' : 5, 'j' : 6, 'k' : 7, 'l' : 8, 
             \'q' : 9, 'w' : 10, 'e' : 11, 'r' : 12, 't' : 13, 'y' : 14, 'u' : 15, 'i' : 16, 'o' : 17, 'p' : 18, 
             \'z' : 19, 'x' : 20, 'c' : 21, 'v' : 22, 'b' : 23, 'n' : 24, 'm' : 25,
-            \'0' : 26, '1' : 27, '2' : 28, '3' : 29, '4' : 30, '5' : 31, '6' : 32, '7' : 33, '8' : 34, '9' : 35
+            \'1' : 26, '2' : 27, '3' : 28, '4' : 29, '5' : 30, '6' : 31, '7' : 32, '8' : 33, '9' : 34, '0' : 35,
             \}
 function! s:make_quickmatch_list(list)"{{{
     " Check dup.
     let l:dup_check = {}
     let l:num = 0
     let l:qlist = []
-    let l:key = 'asdfghjklqwertyuiopzxcvbnm0123456789'
-    for keyword in deepcopy(a:list)
+    let l:key = 'asdfghjklqwertyuiopzxcvbnm1234567890'
+    for keyword in deepcopy(a:list[: len(s:quickmatch_table)])
         if keyword.word != '' && (
                     \!has_key(l:dup_check, keyword.word) ||
                     \(has_key(keyword, 'dup') && keyword.dup))
@@ -856,8 +864,8 @@ function! s:make_quickmatch_list(list)"{{{
             let keyword.abbr = printf('%s: %s', l:key[l:num], keyword.word)
 
             call add(l:qlist, keyword)
+            let l:num += 1
         endif
-        let l:num += 1
     endfor
 
     " Save numbered lists.

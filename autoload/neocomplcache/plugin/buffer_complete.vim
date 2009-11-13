@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Nov 2009
+" Last Modified: 12 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.12, for Vim 7.0
+" Version: 3.13, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -37,7 +37,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
         autocmd FileType,BufWritePost * call s:check_source()
         autocmd BufWritePost,CursorHold * call s:update_source()
         " Caching current buffer events
-        autocmd InsertEnter * call s:caching_insert_enter()
+        autocmd InsertLeave * call s:caching_insert_leave()
         autocmd VimLeavePre * call s:save_all_cache()
     augroup END"}}}
 
@@ -53,7 +53,6 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     let s:rank_cache_count = 1
     let s:prev_cached_count = 0
     let s:caching_disable_list = {}
-    let s:candidates = {}
     let s:completion_length = neocomplcache#get_completion_length('buffer_complete')
     "}}}
 
@@ -253,38 +252,6 @@ function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
         return 100
     else
         return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
-    endif
-endfunction"}}}
-
-function! neocomplcache#plugin#buffer_complete#check_candidate(keyword)"{{{
-    let l:source = s:sources[bufnr('%')]
-    if !empty(s:candidates)
-        " Garbage collect.
-        let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
-        let l:end_line = l:start_line + l:source.cache_line_cnt
-        call s:garbage_collect_candidate(l:start_line, l:end_line)
-    endif
-
-    " Check cache.
-    if a:keyword != '' && !has_key(l:source.dup_check, a:keyword)
-        " Append list.
-        let l:filename = fnamemodify(bufname('%'), ':t')
-        let l:keyword = {
-                    \'word' : a:keyword, 'menu' : printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename),
-                    \'filename' : l:filename, 'srcname' : bufnr('%'), 'icase' : 1, 'rank' : 1
-                    \}
-
-        let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-        let l:keyword.abbr = 
-                    \ (len(a:keyword) > g:NeoComplCache_MaxKeywordWidth)? 
-                    \ printf(l:abbr_pattern, a:keyword, a:keyword[-8:]) : a:keyword
-
-        let l:key = tolower(a:keyword[: s:completion_length-1])
-        if !has_key(l:source.keyword_cache, l:key)
-            let l:source.keyword_cache[l:key] = []
-        endif
-        call add(l:source.keyword_cache[l:key], l:keyword)
-        let l:source.dup_check[a:keyword] = 1
     endif
 endfunction"}}}
 
@@ -932,40 +899,6 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
     endif
 endfunction"}}}
 
-function! s:garbage_collect_candidate(start_line, end_line)"{{{
-    let l:source = s:sources[bufnr('%')]
-
-    let l:buflines = join(getbufline(bufnr('%'), a:start_line, a:end_line), "\<CR>")
-    let l:keyword_patterns = s:split_keyword(l:source.keyword_pattern)
-
-    for l:keyword_pattern in l:keyword_patterns
-        let [l:match, l:match_num] = [match(l:buflines, l:keyword_pattern), 0]
-        while l:match >= 0
-            let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match_num)
-            if has_key(s:candidates, l:match_str)
-                " Remove from candidate.
-                call remove(s:candidates, l:match_str)
-
-                if empty(s:candidates)
-                    return
-                endif
-            endif
-
-            let l:match_num += len(l:match_str)
-            let l:match = match(l:buflines, l:keyword_pattern, l:match_num)
-        endwhile
-    endfor
-
-    for l:candidate in keys(s:candidates)
-        if has_key(l:source.dup_check, l:candidate)
-            call remove(l:source.dup_check, l:candidate)
-        endif
-    endfor
-
-    " Clear candidates.
-    let s:candidates = {}
-endfunction"}}}
-
 function! s:check_changed_buffer(bufname)"{{{
     let l:ft = getbufvar(a:bufname, '&filetype')
     if l:ft == ''
@@ -1055,7 +988,7 @@ function! s:check_deleted_buffer()"{{{
     endfor
 endfunction"}}}
 
-function! s:caching_insert_enter()"{{{
+function! s:caching_insert_leave()"{{{
     if !has_key(s:sources, bufnr('%')) || has_key(s:caching_disable_list, bufnr('%')) || @. == ''
         return
     endif
@@ -1075,8 +1008,6 @@ function! s:caching_insert_enter()"{{{
 
         let s:prev_cached_count -= 1
     endif
-
-    let s:candidates = {}
 endfunction"}}}
 
 function! s:save_cache(srcname)"{{{

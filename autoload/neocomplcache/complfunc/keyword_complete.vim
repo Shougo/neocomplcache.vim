@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Nov 2009
+" Last Modified: 12 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,14 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.11, for Vim 7.0
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
+" Version: 3.13, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
@@ -70,10 +63,6 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
 
     if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
-        if len(l:cur_keyword_str) >= g:NeoComplCache_MinKeywordLength
-            " Check candidate.
-            call neocomplcache#plugin#buffer_complete#check_candidate(l:cur_keyword_str)
-        endif
         return -1
     endif
 
