@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2009
+" Last Modified: 15 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.05, for Vim 7.0
+" Version: 1.06, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.06:
+"    - Ignore no suffixes file.
+"
 "   1.05:
 "    - Save error log.
 "    - Implemented member filter.
@@ -211,7 +214,7 @@ function! s:check_include(bufnumber)"{{{
             else
                 let l:filename = fnamemodify(findfile(matchstr(l:line[l:match_end :], '\f\+'), l:path), ':p')
             endif
-            if filereadable(l:filename)
+            if filereadable(l:filename) && fnamemodify(l:filename, ':e') != ''
                 call add(l:include_files, l:filename)
 
                 if !has_key(s:include_cache, l:filename)

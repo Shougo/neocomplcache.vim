@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.13
+Version: 3.14
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -478,6 +478,13 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.14: *Fatal: Fixed fatal buffer and dictionary cache bug. *
+    - Fixed disable auto completion bug if bugtype contains 'nofile'.
+    - Ignore no suffixes file in include_complete.
+    - Fixed snippet merge bug in snippets_complete.
+    - Fixed break buffer and dictionary cache bug.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.13:
     - Open popup menu when modified.
     - Improved buffer caching timing.
@@ -486,7 +493,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed auto completion bug in filename_complete.
     - Fixed executable bug in filename_complete.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.12:
     - Improved ctags arguments patterns.
     - Allow dup and improved menu in omni_complete.
@@ -498,6 +504,7 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Auto complete when CursorMovedI not CursorHoldI.
     - Reimplemented g:NeoComplCache_SkipInputTime option.
     - Fixed dup check bug in syntax_complete.
+    
    3.11:
     - Filtering same word.
     - Implemented member filter.

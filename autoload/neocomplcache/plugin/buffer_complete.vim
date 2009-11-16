@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2009
+" Last Modified: 16 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.13, for Vim 7.0
+" Version: 3.14, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -1037,7 +1037,7 @@ function! s:save_cache(srcname)"{{{
 
     " Output buffer.
     let l:word_list = []
-    for keyword in values(s:sources[a:srcname].dup_check)
+    for keyword in keys(s:sources[a:srcname].dup_check)
         call add(l:word_list, keyword)
     endfor
     call writefile(l:word_list, l:cache_name)

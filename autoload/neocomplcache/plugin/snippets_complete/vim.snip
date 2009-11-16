@@ -6,6 +6,10 @@ prev_word   '^'
         ${0}
     endif
 
+snippet elseif
+    else if ${1:/* condition */}
+        ${0}
+
 snippet     ifelse
 abbr        if else endif
 condition   neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*if\%[else]$'

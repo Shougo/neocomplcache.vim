@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2009
+" Last Modified: 16 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.29, for Vim 7.0
+" Version: 1.30, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.30:
+"    - Fixed snippet merge bug.
+"
 "   1.29:
 "    - Recognized snippets directory of snipMate automatically.
 "    - Fixed eval snippet bug.
@@ -319,7 +322,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
         let l:ft = &filetype
     endif
 
-    let l:snippets = s:snippets['_']
+    let l:snippets = copy(s:snippets['_'])
     for l:t in split(l:ft, '\.')
         if has_key(s:snippets, l:t)
             call extend(l:snippets, s:snippets[l:t])
@@ -560,7 +563,7 @@ function! s:snippets_expand(cur_text, col)"{{{
         let l:ft = &filetype
     endif
 
-    let l:snippets = s:snippets['_']
+    let l:snippets = copy(s:snippets['_'])
     for l:t in split(l:ft, '\.')
         if has_key(s:snippets, l:t)
             call extend(l:snippets, s:snippets[l:t])
