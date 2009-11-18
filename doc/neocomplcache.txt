@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.15
+Version: 3.16
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -527,6 +527,12 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.16:
+    - Fixed executable bug in filename_complete.
+    - Fixed error; when open the file of the filetype that g:NeoComplCache_KeywordPatterns does not have in include_complete.
+    - Improved get keyword pattern.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.15:
     - Fixed ruby omni_complete bug.
     - Fixed prefix bug.
@@ -537,7 +543,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Added same filetype.
     - Revised English help.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.14: *Fatal: Fixed fatal buffer and dictionary cache bug. *
     - Fixed disable auto completion bug if bugtype contains 'nofile'.
     - Ignore no suffixes file in include_complete.

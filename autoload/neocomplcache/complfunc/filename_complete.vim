@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Nov 2009
+" Last Modified: 17 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -155,7 +155,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
             let l:abbr .= '/'
             let keyword.rank += 1
         elseif l:is_win
-            if fnamemodify(keyword.word, ':e') =~ l:exts
+            if '.'.fnamemodify(keyword.word, ':e') =~ l:exts
                 let l:abbr .= '*'
             endif
         elseif executable(keyword.word)

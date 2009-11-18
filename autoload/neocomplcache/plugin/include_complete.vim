@@ -29,6 +29,7 @@
 "   1.06:
 "    - Ignore no suffixes file.
 "    - Improved set patterns.
+"    - Fixed error; when open the file of the filetype that g:NeoComplCache_KeywordPatterns does not have.
 "
 "   1.05:
 "    - Save error log.
@@ -403,7 +404,7 @@ function! s:load_from_file(filename, filetype)"{{{
     let l:line_cnt = l:print_cache_percent
     
     let l:line_num = 1
-    let l:pattern = g:NeoComplCache_KeywordPatterns[a:filetype]
+    let l:pattern = neocomplcache#get_keyword_pattern()
     let l:menu = printf('[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's', fnamemodify(a:filename, ':t'))
     let l:keyword_lists = {}
     let l:dup_check = {}

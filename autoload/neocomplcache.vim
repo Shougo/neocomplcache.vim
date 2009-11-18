@@ -515,6 +515,12 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
         return g:NeoComplCache_KeywordCompletionStartLength
     endif
 endfunction"}}}
+function! neocomplcache#get_keyword_pattern()"{{{
+    let l:filetype = (&filetype == '')?  'nothing' : &filetype
+
+    return has_key(g:NeoComplCache_KeywordPatterns, l:filetype) ?
+                \ g:NeoComplCache_KeywordPatterns[l:filetype] : g:NeoComplCache_KeywordPatterns['default']
+endfunction"}}}
 
 " Set pattern helper.
 function! neocomplcache#set_variable_pattern(variable, filetype, pattern)"{{{
@@ -633,7 +639,7 @@ function! neocomplcache#undo_completion()"{{{
         return ''
     endif
 
-    let l:pattern = '\v%(' .  neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')$'
+    let l:pattern = '\v%(' .  neocomplcache#get_keyword_pattern() . ')$'
     let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
     let l:old_keyword_str = s:cur_keyword_str
     let s:cur_keyword_str = l:cur_keyword_str
@@ -820,7 +826,7 @@ function! s:remove_next_keyword(list)"{{{
     let l:list = a:list
     " Remove next keyword."{{{
     let l:next_keyword_str = matchstr('a'.getline('.')[col('.') - 1 :],
-                \'\v^%(' . neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')')[1:]
+                \'\v^%(' . neocomplcache#get_keyword_pattern() . ')')[1:]
     if l:next_keyword_str != ''
         let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 

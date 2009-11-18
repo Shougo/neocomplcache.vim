@@ -177,7 +177,7 @@ function! neocomplcache#plugin#buffer_complete#calc_prev_rank(cache_keyword_buff
     " Get next keyword list.
     let [l:source_next, l:source_next_next, l:operator_list] = [{}, {}, {}]
     " Get operator keyword list.
-    let l:pattern = '\v%(' .  neocomplcache#plugin#buffer_complete#current_keyword_pattern() . ')$'
+    let l:pattern = '\v%(' .  neocomplcache#get_keyword_pattern() . ')$'
     let l:cur_text = strpart(getline('.'), 0, col('.') - 1)
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     if l:cur_keyword_pos > 0
@@ -234,10 +234,6 @@ endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#exists_current_source()"{{{
     return has_key(s:sources, bufnr('%'))
-endfunction"}}}
-
-function! neocomplcache#plugin#buffer_complete#current_keyword_pattern()"{{{
-    return s:sources[bufnr('%')].keyword_pattern
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
