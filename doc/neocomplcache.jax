@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.14
+Version: 3.15
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -354,25 +354,25 @@ g:NeoComplCache_CtagsArgumentsList			*g:NeoComplCache_CtagsArgumentsList*
 		buffer_completeやinclude_completeがctagsコマンドを使用する際に、
 		コマンドの引数として与える値を設定するための、ファイルタイプをキーとした文字列の辞書である。
 		
-		初期値は空である。
+		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
 g:NeoComplCache_IncludePath				*g:NeoComplCache_IncludePath*
 		インクルードファイルのpathをファイルタイプごとに列挙する変数である。存在しない場合、&l:pathが使われる。
 		記述形式は'path'を参照せよ。ファイルタイプをキーとした文字列の辞書である。
 		
-		初期値は空である。
+		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimを参照せよ。
 
 g:NeoComplCache_IncludeExpr				*g:NeoComplCache_IncludeExpr*
 		インクルードファイル名を取得するために行う行解析の式である。存在しない場合、&l:includeexprが使われる。
 		記述形式は'includeexpr'を参照せよ。ファイルタイプをキーとした文字列の辞書である。
 		
-		初期値は空である。
+		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimを参照せよ。
 
 g:NeoComplCache_IncludePattern				*g:NeoComplCache_IncludePattern*
 		インクルード命令のパターンを指定する。存在しない場合、&l:includeが使われる。
 		記述形式は'include'を参照せよ。ファイルタイプをキーとした文字列の辞書である。
 		
-		初期値は空である。
+		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimを参照せよ。
                 
 g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
 		補完関数やプラグインを無効にするかどうかを指定するディクショナリ。
@@ -386,6 +386,13 @@ g:NeoComplCache_MemberPrefixPatterns				*g:NeoComplCache_MemberPrefixPatterns*
 		これはファイルタイプ毎に正規表現で指定されている。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
+
+g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
+		クイックマッチリストを表示する入力パターンを記録する。
+		これはファイルタイプ毎に入力文字列の末尾にマッチする正規表現で指定されている。
+		defaultを指定すると、通常時の入力パターンを設定できる。
+		
+		初期値は { 'default' : '-' } である。
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*

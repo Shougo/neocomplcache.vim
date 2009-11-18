@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.14
+Version: 3.15
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -334,13 +334,13 @@ g:NeoComplCache_NonBufferFileTypeDetect			*g:NeoComplCache_NonBufferFileTypeDete
 g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLists*
 		It is a dictionary to connect a dictionary file with file type.
 		The dictionary's key is filetype and value is a path to a dictionary file.
-	
+		
 		Default value is {}.
 
 g:NeoComplCache_PluginCompletionLength			*g:NeoComplCache_PluginCompletionLength*
 		It is a dictionary to control each plugin's completion length.
 		For example, you can prolong heavy plugin's completion length.
-
+		
 		Default value is {}.
 
 g:NeoComplCache_DisableSelectModeMappings		*g:NeoComplCache_DisableSelectModeMappings*
@@ -348,6 +348,55 @@ g:NeoComplCache_DisableSelectModeMappings		*g:NeoComplCache_DisableSelectModeMap
 		You had better usually validate it.
 		
 		Default value is 1.
+
+g:NeoComplCache_CtagsArgumentsList			*g:NeoComplCache_CtagsArgumentsList*
+		It is the dictionary of the character string to set a value to give as an argument
+		of the commands when buffer_complete and include_complete use a ctags command.
+		The dictionary's key is filetype.
+		
+		Because it is complicated, refer to autoload/neocomplcache.vim for the initial value.
+
+g:NeoComplCache_IncludePath				*g:NeoComplCache_IncludePath*
+		It is the variable to enumerate path of the include file every file type.
+		When there is not it, 'path' is used. 
+		Refer to 'path' for the description form. It is the dictionary of the character string that assumed file type a key.
+		
+		Because it is complicated, refer to autoload/neocomplcache/plugin/include_complete.vim for the initial value.
+
+g:NeoComplCache_IncludeExpr				*g:NeoComplCache_IncludeExpr*
+		It is the expression string of the line analysis to perform to acquire an include file name.
+		When there is not it, 'includeexpr' is used.
+		Refer to 'includeexpr' for the description form. It is the dictionary of the character string that assumed file type a key.
+		
+		Because it is complicated, refer to autoload/neocomplcache/plugin/include_complete.vim for the initial value.
+
+g:NeoComplCache_IncludePattern				*g:NeoComplCache_IncludePattern*
+		This variable appoints the pattern of the include command.
+		When there is not it, 'include' is used.
+		Refer to 'include' for the description form. It is the dictionary of the character string that assumed file type a key.
+		
+		Because it is complicated, refer to autoload/neocomplcache/plugin/include_complete.vim for the initial value.
+                
+g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
+		The dictionary which appoints whether you invalidate a complete function and plugin. 
+		With a complete function and plugin name as a key, it becomes invalid by making a value 1. 
+		Because neocomplcache refer this option when neocomplcache initialize,
+		it is necessary to appoint it before initialization.
+		
+		Default value is {}.
+
+g:NeoComplCache_MemberPrefixPatterns				*g:NeoComplCache_MemberPrefixPatterns*
+		This variable appoints a keyword pattern to complete a member in include_complete and tags_complete.
+		This is appointed in regular expression every file type.
+		
+		Because it is complicated, refer to autoload/neocomplcache.vim for the initial value.
+
+g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
+		This option records an input pattern to display a quick match list.
+		This is appointed in regular expression to match the end of the input character string every file type.
+		You can set default input patterns when you appoint 'default'.
+		
+		Default value is { 'default' : '-' }.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
@@ -478,13 +527,23 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.15:
+    - Fixed ruby omni_complete bug.
+    - Fixed prefix bug.
+    - Allow keyword trigger in snippets_complete.
+    - Fixed NeoComplCacheEditRuntimeSnippets bug.
+    - Refactoringed set pattern.
+    - Added g:NeoComplCache_QuickMatchPatterns option.
+    - Added same filetype.
+    - Revised English help.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.14: *Fatal: Fixed fatal buffer and dictionary cache bug. *
     - Fixed disable auto completion bug if bugtype contains 'nofile'.
     - Ignore no suffixes file in include_complete.
     - Fixed snippet merge bug in snippets_complete.
     - Fixed break buffer and dictionary cache bug.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.13:
     - Open popup menu when modified.
     - Improved buffer caching timing.

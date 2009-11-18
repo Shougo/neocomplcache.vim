@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Nov 2009
+" Last Modified: 16 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.14, for Vim 7.0
+" Version: 3.15, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -68,71 +68,71 @@ function! neocomplcache#enable() "{{{
     if !exists('g:NeoComplCache_KeywordPatterns')
         let g:NeoComplCache_KeywordPatterns = {}
     endif
-    call s:set_keyword_pattern('default',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'default',
                 \'\v\k+')
-    call s:set_keyword_pattern('lisp,scheme', 
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme', 
                 \'\v\(?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]?')
-    call s:set_keyword_pattern('ruby',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby',
                 \'\v^\=%(b%[egin]|e%[nd])|%(\@\@|[:$@])\h\w*|%(\.|%(\h\w*::)+)?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
-    call s:set_keyword_pattern('eruby',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'eruby',
                 \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|%(\@\@|[:$@])\h\w*|%(\.|%(\h\w*::)+)?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
-    call s:set_keyword_pattern('php',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'php',
                 \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\$\h\w*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('perl',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('vim,help',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
                 \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&.]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
-    call s:set_keyword_pattern('tex',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
-    call s:set_keyword_pattern('sh,zsh',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\[|\s*\(\)?)?')
-    call s:set_keyword_pattern('vimshell',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vimshell',
                 \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
-    call s:set_keyword_pattern('ps1',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ps1',
                 \'\v\[\h%([[:alnum:]_.]*\]::)?|[$%@.]?[[:alpha:]_.:-][[:alnum:]_.:-]*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('c',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'c',
                 \'\v^\s*#\s*\h\w*|%(\.|-\>)?\h\w*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('cpp',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'cpp',
                 \'\v^\s*#\s*\h\w*|%(\.|-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?|\<\>?)?')
-    call s:set_keyword_pattern('objc',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'objc',
                 \'\v^\s*#\s*\h\w*|%(\.|-\>)?\h\w*%(\s*\(\)?|\<\>?|:)?|\@\h\w*%(\s*\(\)?)?|\(\h\w*\s*\*?\)?')
-    call s:set_keyword_pattern('objcpp',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'objcpp',
                 \'\v^\s*#\s*\h\w*|%(\.|-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?|\<\>?|:)?|\@\h\w*%(\s*\(\)?)?|\(\s*\h\w*\s*\*?\s*\)?')
-    call s:set_keyword_pattern('d',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'd',
                 \'\v[.]?\h\w*%(!?\s*\(\)?)?')
-    call s:set_keyword_pattern('python',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'python',
                 \'\v[.]?\h\w*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('cs',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'cs',
                 \'\v[.]?\h\w*%(\s*%(\(\)?|\<))?')
-    call s:set_keyword_pattern('java',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'java',
                 \'\v[@.]?\h\w*%(\s*%(\(\)?|\<))?')
-    call s:set_keyword_pattern('javascript,actionscript',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'javascript,actionscript',
                 \'\v[.]?\h\w*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('awk',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'awk',
                 \'\v\h\w*%(\s*\(\)?)?')
-    call s:set_keyword_pattern('haskell',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell',
                 \'\v\h\w*['']?')
-    call s:set_keyword_pattern('ocaml',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml',
                 \'\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
-    call s:set_keyword_pattern('erlang',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
-    call s:set_keyword_pattern('html,xhtml,xml',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'html,xhtml,xml',
                 \'\v[[:alnum:]_:-]*\>|\</?%([[:alnum:]_:-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_:-]*%(\=")?|\<[^>]*>?')
-    call s:set_keyword_pattern('css',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'css',
                 \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
-    call s:set_keyword_pattern('tags',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tags',
                 \'\v^[^!][^/[:blank:]]*')
-    call s:set_keyword_pattern('pic',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'pic',
                 \'\v^\s*#\h\w*|\h\w*')
-    call s:set_keyword_pattern('masm',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'masm',
                 \'\v\.\h\w*|[[:alpha:]_@?$][[:alnum:]_@?$]*')
-    call s:set_keyword_pattern('nasm',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'nasm',
                 \'\v^\s*\[\h\w*|[%.]?\h\w*|%(\.\.\@?|\%[%$!])%(\h\w*)?')
-    call s:set_keyword_pattern('asm',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'asm',
                 \'\v[%$.]?\h\w*%(\$\h\w*)?')
-    call s:set_keyword_pattern('make',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'make',
                 \'\v[[:alpha:]_.-][[:alnum:]_.-]*')
-    call s:set_keyword_pattern('scala',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'scala',
                 \'\v[.]?\h\w*%(\s*\(\)?|\[)?')
     "}}}
 
@@ -140,30 +140,39 @@ function! neocomplcache#enable() "{{{
     if !exists('g:NeoComplCache_SameFileTypeLists')
         let g:NeoComplCache_SameFileTypeLists = {}
     endif
-    call s:set_same_filetype('c', 'cpp')
-    call s:set_same_filetype('cpp', 'c')
-    call s:set_same_filetype('erb', 'ruby,html,xhtml')
-    call s:set_same_filetype('html', 'xhtml')
-    call s:set_same_filetype('xml', 'xhtml')
-    call s:set_same_filetype('xhtml', 'html,xml')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'c', 'cpp')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'cpp', 'c')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'erb', 'ruby,html,xhtml')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'html,xml', 'xhtml')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'xhtml', 'html,xml')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'help', 'vim')
     "}}}
     
     " Initialize member prefix patterns."{{{
     if !exists('g:NeoComplCache_MemberPrefixPatterns')
         let g:NeoComplCache_MemberPrefixPatterns = {}
     endif
-    call s:set_member_prefix('c,cpp,objc,objcpp', '^\.\|^->')
-    call s:set_member_prefix('perl,php', '^->')
-    call s:set_member_prefix('java,javascript,d,vim,ruby', '^\.')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_MemberPrefixPatterns', 'c,cpp,objc,objcpp', '^\.\|^->')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_MemberPrefixPatterns', 'perl,php', '^->')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_MemberPrefixPatterns', 'java,javascript,d,vim,ruby', '^\.')
     "}}}
 
     " Initialize ctags arguments."{{{
     if !exists('g:NeoComplCache_CtagsArgumentsList')
         let g:NeoComplCache_CtagsArgumentsList = {}
     endif
-    let g:NeoComplCache_CtagsArgumentsList['default'] = ''
-    let g:NeoComplCache_CtagsArgumentsList['vim'] = "'--extra=fq --fields=afmiKlnsStz '--regex-vim=/function!? ([a-z#:_0-9A-Z]+)/\\1/function/''"
-    let g:NeoComplCache_CtagsArgumentsList['cpp'] = '--c++-kinds=+p --fields=+iaS --extra=+q'
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_CtagsArgumentsList', 'default', '')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_CtagsArgumentsList', 'vim',
+                \"'--extra=fq --fields=afmiKlnsStz '--regex-vim=/function!? ([a-z#:_0-9A-Z]+)/\\1/function/''")
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_CtagsArgumentsList', 'cpp',
+                \'--c++-kinds=+p --fields=+iaS --extra=+q')
+    "}}}
+    
+    " Initialize quick match patterns."{{{
+    if !exists('g:NeoComplCache_QuickMatchPatterns')
+        let g:NeoComplCache_QuickMatchPatterns = {}
+    endif
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_QuickMatchPatterns', 'default', '-')
     "}}}
     
     " Add commands."{{{
@@ -506,25 +515,12 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
         return g:NeoComplCache_KeywordCompletionStartLength
     endif
 endfunction"}}}
-"}}}
 
-" Set pattern helper."{{{
-function! s:set_keyword_pattern(filetype, pattern)"{{{
+" Set pattern helper.
+function! neocomplcache#set_variable_pattern(variable, filetype, pattern)"{{{
     for ft in split(a:filetype, ',')
-        if !has_key(g:NeoComplCache_KeywordPatterns, ft) 
-            let g:NeoComplCache_KeywordPatterns[ft] = a:pattern
-        endif
-    endfor
-endfunction"}}}
-function! s:set_same_filetype(filetype, pattern)"{{{
-    if !has_key(g:NeoComplCache_SameFileTypeLists, a:filetype) 
-        let g:NeoComplCache_SameFileTypeLists[a:filetype] = a:pattern
-    endif
-endfunction"}}}
-function! s:set_member_prefix(filetype, pattern)"{{{
-    for ft in split(a:filetype, ',')
-        if !has_key(g:NeoComplCache_MemberPrefixPatterns, ft) 
-            let g:NeoComplCache_MemberPrefixPatterns[ft] = a:pattern
+        if !has_key({a:variable}, ft) 
+            let {a:variable}[ft] = a:pattern
         endif
     endfor
 endfunction"}}}
@@ -677,7 +673,8 @@ function! s:complete()"{{{
 
     let s:old_text = l:cur_text
     
-    if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ '-[a-z0-9]$'
+    let l:quickmatch_pattern = s:get_quickmatch_pattern()
+    if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9]$'
         " Select quickmatch list.
         let l:complete_words = s:select_quickmatch_list(l:cur_text[-1:])
         
@@ -693,10 +690,10 @@ function! s:complete()"{{{
         
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
-    elseif g:NeoComplCache_EnableQuickMatch && l:cur_text[-1:] == '-'
+    elseif g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'$'
         " Quickmatch list.
         let l:is_quickmatch_list = 1
-        let l:cur_text = l:cur_text[: -2]
+        let l:cur_text = l:cur_text[: -len(matchstr(l:cur_text, l:quickmatch_pattern.'$'))-1]
     else
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
@@ -801,7 +798,7 @@ function! s:integrate_completion(complete_result)"{{{
     for l:result in sort(values(a:complete_result), 'neocomplcache#compare_rank')
         let l:result.complete_words = s:remove_next_keyword(deepcopy(l:result.complete_words))
         if l:result.cur_keyword_pos > l:cur_keyword_pos
-            let l:prefix = l:cur_keyword_str[: l:result.cur_keyword_pos - l:cur_keyword_pos]
+            let l:prefix = l:cur_keyword_str[: l:result.cur_keyword_pos - l:cur_keyword_pos - 1]
             
             for keyword in l:result.complete_words
                 let keyword.word = l:prefix . keyword.word
@@ -880,9 +877,17 @@ function! s:select_quickmatch_list(key)"{{{
     let l:numbered = get(s:prev_numbered_list, s:quickmatch_table[a:key])
     if type(l:numbered) == type({})
         return [l:numbered]
-    endif"}}}
+    endif
 
     return []
+endfunction"}}}
+function! s:get_quickmatch_pattern()"{{{
+    let l:filetype = (&filetype == '')?   'nothing' : &filetype
+
+    let l:pattern = has_key(g:NeoComplCache_QuickMatchPatterns, l:filetype)?  
+                \ g:NeoComplCache_QuickMatchPatterns[l:filetype] : g:NeoComplCache_QuickMatchPatterns['default']
+        
+    return l:pattern
 endfunction"}}}
 
 " vim: foldmethod=marker
