@@ -446,7 +446,7 @@ neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		Use this function on inoremap <expr>.  Undo inputed candidate.
 		Because there is not mechanism to cancel candidate in Vim, it will be convenient when it inflects.
 >
-		inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
+		inoremap <expr><C-g>     neocomplcache#undo_completion()
 <
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
@@ -480,10 +480,10 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 
 	" Plugin key-mappings.
-	imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
-	smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
+	imap <C-l>     <Plug>(neocomplcache_snippets_expand)
+	smap <C-l>     <Plug>(neocomplcache_snippets_expand)
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-	inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
+	inoremap <expr><C-g>     neocomplcache#undo_completion()
 <
 ==============================================================================
 PLUGINS					*neocomplcache-plugins*
@@ -504,14 +504,20 @@ snippets_complete.vim					*snippets_complete*
 
 tags_complete.vim					*tags_complete*
 		This plugin will use a tag file defined in 'tags' for completion.
-		Because the plugin is slow if a tag file is big, I work only by manual completion.
-		If NeoComplCache_EnableInfo is 1, the plugin will display the additional information.
+		neocomplcache do not work if you do not execute |:NeoComplCacheCachingTags| command.
+		Because tags_complete is too slow if tags_complete read a big tags file.
+		You should use more convenient include completion now.
 
 syntax_complete.vim					*syntax_complete*
 		This plugin will analyze a syntax file like autoload/syntaxcomplete.vim offered by default,
 		and to add to candidate completion.
 		The plugin can recognize candidates a lot more than autoload/syntaxcomplete.vim.
 
+include_complete.vim					*include_complete*
+		This plugin will add the file which an opening buffer refers to to candidate.
+		It is convenient, because you do not need to prepare a tags file and a dictionary file.
+		But it is necessary for 'path' and 'include', 'includeexpr' to be set adequately.
+                
 ==============================================================================
 TODO						*neocomplcache-todo*
 
