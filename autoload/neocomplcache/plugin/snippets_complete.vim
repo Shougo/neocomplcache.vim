@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2009
+" Last Modified: 19 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -345,7 +345,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     endif
 
     let l:cur_text = neocomplcache#get_cur_text()
-    let l:cur_word = matchstr(l:cur_text, neocomplcache#plugin#buffer_complete#current_keyword_pattern())
+    let l:cur_word = matchstr(l:cur_text, neocomplcache#get_keyword_pattern())
     if !has_key(l:snippets, l:cur_word)
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif
@@ -594,7 +594,7 @@ function! s:snippets_expand(cur_text, col)"{{{
     endif
 
     let l:cur_text = a:cur_text
-    let l:cur_word = matchstr(l:cur_text, neocomplcache#plugin#buffer_complete#current_keyword_pattern())
+    let l:cur_word = matchstr(l:cur_text, neocomplcache#get_keyword_pattern())
     if !has_key(l:snippets, l:cur_word)
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif

@@ -24,7 +24,7 @@ http://www.vim.org/scripts/script.php?script_id=2620
 使い方
 
 まず、githubにある配布ファイルをVimのユーザディレクトリにインストールします。
-Windowsの場合は$VIM/vimfiles/、MacやLinuxの場合は$HOME/.vim/が一般的です。
+Windowsの場合は$VIM/vimfiles/か$HOME/vimfiles、MacやLinuxの場合は$HOME/.vim/が一般的です。
 http://github.com/Shougo/neocomplcache/tarball/master
 最近はファイルが増えてきたため、フォルダごとコピーした方がよいでしょう。
 Ver.3.00より、ディレクトリ構造が大きく変化しました。
@@ -47,6 +47,12 @@ neocomplcacheは更新が頻繁にあるので、簡単にアップグレード�
 wget -qO - http://github.com/Shougo/neocomplcache/tarball/master | tar -xzC ~/.vim --strip-components=1 --exclude=presen
 
 Windowsでも使えるワンライナーを現在募集中です。
+
+参考：BSDでのアップグレード方法
+fetch -q -o - http://github.com/Shougo/neocomplcache/tarball/master | tar -f - -xzC ~/.vim --strip-components=1 --exclude=presen
+
+これはwillowletさんの記事を参考にしました。
+http://d.hatena.ne.jp/willowlet/20091118/1258521168
 
 --------------------------------
 似た機能を持ったスクリプト
@@ -810,6 +816,15 @@ Ver.2.64より、readonlyなファイルは自動的にキャッシュしませ�
 Ver.3.04より、neocomplcacheは自動的にcompleteoptをセットするようになりました。
 
 --------------------------------
+良くある質問
+
+Q: 自動補完してEnterを入力すると、インデントがおかしくなる。
+
+A: 特にRubyで問題が発生することが多いようです。
+インデントを保持しつつ、ポップアップを閉じるために、私はこのように設定しています。
+inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup()."\<CR>X\<BS>" : "\<CR>X\<BS>"
+
+--------------------------------
 今後の予定
 
 インクルード補完がまだキャッシュタイミングに問題があるので、どうにかしたいと思っています。
@@ -837,6 +852,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/11/17     FreeBSD上でのインストール方法を追加。
 2009/11/11     neocomplcache Ver.3.15に対応。
 2009/11/11     neocomplcache Ver.3.12に対応。
 2009/11/09     neocomplcache Ver.3.11に対応。
