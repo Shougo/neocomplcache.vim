@@ -1,0 +1,8 @@
+-nargs=[01*?+]
+-complete=complfunc
+-range
+-range=[%N]
+-bang
+-bar
+-register
+-buffer

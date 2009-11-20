@@ -109,7 +109,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
         if empty(l:files)
             " Add '*' to a delimiter.
-            let l:cur_keyword_str = substitute(l:cur_keyword_str, printf('\w\+\ze[%s._-]', l:PATH_SEPARATOR), '\0*', 'g')
+            let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
             let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
             let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
         endif

@@ -536,6 +536,10 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.17:
+    - Reinforced vim_complete.vim.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.16:
     - Fixed executable bug in filename_complete.
     - Fixed error; when open the file of the filetype that g:NeoComplCache_KeywordPatterns does not have in include_complete.
@@ -545,8 +549,8 @@ CHANGELOG					*neocomplcache-changelog*
     - Implemented vim_complete(testing).
     - Syntax_complete disabled in vim.
     - Fixed quickmatch list bug.
+    - Fixed expand snippets bug.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.15:
     - Fixed ruby omni_complete bug.
     - Fixed prefix bug.
