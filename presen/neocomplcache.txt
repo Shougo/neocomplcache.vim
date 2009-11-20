@@ -505,8 +505,8 @@ prev_word   '^'
 このコマンドを用いると、filetypeのスニペット補完ファイルを簡単に編集することができます。
 filetypeを省略すると、&filetypeとなります。保存すると自動的に再キャッシュされるので、さらに便利です。
 
-imap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
-smap <silent> <C-l>    <Plug>(neocomplcache_snippets_expand)
+imap <C-l>    <Plug>(neocomplcache_snippets_expand)
+smap <C-l>    <Plug>(neocomplcache_snippets_expand)
 のようにplugin keymappingを定義しておけば、<C-l>でスニペットを展開できます。
 展開時にインデントもきちんとなされるので便利です。これでスニペットの自由度が増しますね。
 
@@ -540,7 +540,7 @@ let g:NeoComplCache_SnippetsDir = $HOME.'/snippets'
 
 展開可能かどうかを判断する関数として、neocomplcache#snippets_complete#expandable()を追加しました。
 これを使えば、
-imap <expr><silent><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
+imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 のように設定でき、展開可能でない場合は他の機能にキーバインドを割り当てることが出来ます。
 
 複数回展開が必要ななスニペットは表示が変わり、[Snippet]が<Snippet>に変化します。
@@ -618,7 +618,7 @@ Ver.2.67より実装。キーマッピングを定義することで、確定し
 確定前の補完候補のキャンセルには使用できないので注意してください。
 
 例：
-inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
+inoremap <expr><C-g>     neocomplcache#undo_completion()
 
 --------------------------------
 自動キャッシュの制御
@@ -677,6 +677,11 @@ let g:NeoComplCache_QuickMatchPatterns['scheme'] = ';'
 初期値の'-'では入力時に不便な場合、変更してください。
 
 --------------------------------
+Vimオムニ補完
+
+実験的機能。VimScriptを解析し、その場に応じた候補を出す予定。
+
+--------------------------------
 私の設定
 
 参考までに、私が使用しているneocomplcacheの設定を紹介しておきます。
@@ -711,10 +716,10 @@ endif
 let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
 
 " Plugin key-mappings.
-imap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
-smap <silent><C-l>     <Plug>(neocomplcache_snippets_expand)
+imap <C-l>     <Plug>(neocomplcache_snippets_expand)
+smap <C-l>     <Plug>(neocomplcache_snippets_expand)
 inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-inoremap <expr><silent><C-g>     neocomplcache#undo_completion()
+inoremap <expr><C-g>     neocomplcache#undo_completion()
 
 neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
 むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
@@ -852,6 +857,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/11/20     neocomplcache Ver.3.16に対応。
 2009/11/17     FreeBSD上でのインストール方法を追加。
 2009/11/11     neocomplcache Ver.3.15に対応。
 2009/11/11     neocomplcache Ver.3.12に対応。

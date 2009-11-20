@@ -513,6 +513,12 @@ include_complete.vim					*include_complete*
 		いちいちタグファイルや辞書ファイルを用意しなくて良いので便利である。
 		ただし、'path'や'include', 'includeexpr'が適切に設定されている必要がある。
                 
+vim_complete.vim					*vim_complete*
+		実験的機能。VimScriptのオムニ補完を行う。
+		VimScriptの編集時以外では動作しない。
+		neocomplcacheからは|i_CTRL-X_CTRL-V|が呼び出せないため作られた。
+		標準で用意されている補完よりも、高機能なものにすることが目標である。
+
 ==============================================================================
 CREATE PLUGIN					*neocomplcache-create-plugin*
 

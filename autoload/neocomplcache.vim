@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Nov 2009
+" Last Modified: 20 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -81,7 +81,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
-                \'\v\$\h\w*|\[:%(\h\w*:\])?|\<\h[[:alnum:]_-]*\>?|[&.]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
+                \'\v\$\h\w*|\[:%(\h\w*:\])?|-\h\w*\=?|\<\h[[:alnum:]_-]*\>?|[&.]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh',
@@ -521,6 +521,9 @@ function! neocomplcache#get_keyword_pattern()"{{{
     return has_key(g:NeoComplCache_KeywordPatterns, l:filetype) ?
                 \ g:NeoComplCache_KeywordPatterns[l:filetype] : g:NeoComplCache_KeywordPatterns['default']
 endfunction"}}}
+function! neocomplcache#match_word(cur_text)"{{{
+    return matchstr(a:cur_text, '\v%('.neocomplcache#get_keyword_pattern().')$')
+endfunction"}}}
 
 " Set pattern helper.
 function! neocomplcache#set_variable_pattern(variable, filetype, pattern)"{{{
@@ -639,8 +642,7 @@ function! neocomplcache#undo_completion()"{{{
         return ''
     endif
 
-    let l:pattern = '\v%(' .  neocomplcache#get_keyword_pattern() . ')$'
-    let l:cur_keyword_str = matchstr(l:cur_text, l:pattern)
+    let l:cur_keyword_str = neocomplcache#match_word(l:cur_text)
     let l:old_keyword_str = s:cur_keyword_str
     let s:cur_keyword_str = l:cur_keyword_str
 
@@ -837,7 +839,6 @@ function! s:remove_next_keyword(list)"{{{
         for r in l:list
             if r.word =~ l:next_keyword_str
                 let r.word = r.word[: match(r.word, l:next_keyword_str)-1]
-                let r.dup = 1
             endif
         endfor
 
@@ -864,7 +865,7 @@ function! s:make_quickmatch_list(list)"{{{
                     \!has_key(l:dup_check, keyword.word) ||
                     \(has_key(keyword, 'dup') && keyword.dup))
             let l:dup_check[keyword.word] = 1
-            let keyword.abbr = printf('%s: %s', l:key[l:num], keyword.word)
+            let keyword.abbr = printf('%s: %s', l:key[l:num], keyword.abbr)
 
             call add(l:qlist, keyword)
             let l:num += 1

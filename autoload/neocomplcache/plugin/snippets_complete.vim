@@ -345,7 +345,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     endif
 
     let l:cur_text = neocomplcache#get_cur_text()
-    let l:cur_word = matchstr(l:cur_text, neocomplcache#get_keyword_pattern())
+    let l:cur_word = neocomplcache#match_word(l:cur_text)
     if !has_key(l:snippets, l:cur_word)
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif
@@ -594,7 +594,7 @@ function! s:snippets_expand(cur_text, col)"{{{
     endif
 
     let l:cur_text = a:cur_text
-    let l:cur_word = matchstr(l:cur_text, neocomplcache#get_keyword_pattern())
+    let l:cur_word = neocomplcache#match_word(l:cur_text)
     if !has_key(l:snippets, l:cur_word)
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif

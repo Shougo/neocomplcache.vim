@@ -517,7 +517,10 @@ include_complete.vim					*include_complete*
 		This plugin will add the file which an opening buffer refers to to candidate.
 		It is convenient, because you do not need to prepare a tags file and a dictionary file.
 		But it is necessary for 'path' and 'include', 'includeexpr' to be set adequately.
-                
+ 
+vim_complete.vim					*vim_complete*
+		Experimental.
+
 ==============================================================================
 TODO						*neocomplcache-todo*
 
@@ -537,6 +540,11 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed executable bug in filename_complete.
     - Fixed error; when open the file of the filetype that g:NeoComplCache_KeywordPatterns does not have in include_complete.
     - Improved get keyword pattern.
+    - Supported string and dictionary candidates in omni_complete.
+    - Don't set dup when match with next keyword.
+    - Implemented vim_complete(testing).
+    - Syntax_complete disabled in vim.
+    - Fixed quickmatch list bug.
 
 ChangeLog NeoComplCache 3.00-: {{{
    3.15:

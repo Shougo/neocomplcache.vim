@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2009
+" Last Modified: 19 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.06:
 "    - Fixed ruby omni_complete bug.
 "    - Refactoringed.
+"    - Supported string and dictionary candidates.
 "
 "   1.05:
 "    - Allow dup.
@@ -130,17 +131,14 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     echo ''
     redraw
 
-    if len(l:omni_list) >= 1 && type(l:omni_list[0]) == type('')
-        " Convert string list.
-        let l:list = []
-        for str in l:omni_list
-            call add(l:list, { 'word' : str })
-        endfor
-
-        let l:omni_list = l:list
-    endif
-
+    let l:omni_string_list = filter(copy(l:omni_list), 'type(v:val) == '.type(''))
     let l:list = []
+    " Convert string list.
+    for str in l:omni_string_list
+        call add(l:list, { 'word' : str })
+    endfor
+
+    let l:omni_list = filter(l:omni_list, 'type(v:val) != '.type(''))
     for l:omni in l:omni_list
         let l:dict = {
                     \'word' : l:omni.word, 'menu' : '[O]',
