@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Nov 2009
+" Last Modified: 21 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.16, for Vim 7.0
+" Version: 3.17, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
@@ -33,10 +33,11 @@ function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
     " Search autoload.
     let l:plugin_list = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/*.vim'), '\n')
     for list in l:plugin_list
-        let l:func_name = fnamemodify(list, ':t:r')
-        if !has_key(g:NeoComplCache_DisablePluginList, l:func_name) || 
-                    \ g:NeoComplCache_DisablePluginList[l:func_name] == 0
-            let s:plugins_func_table[l:func_name] = 'neocomplcache#plugin#' . l:func_name . '#'
+        let l:plugin_name = fnamemodify(list, ':t:r')
+        if !has_key(g:NeoComplCache_DisablePluginList, l:plugin_name) || 
+                    \ g:NeoComplCache_DisablePluginList[l:plugin_name] == 0
+            let l:func = 'neocomplcache#plugin#' . l:plugin_name . '#'
+            let s:plugins_func_table[l:plugin_name] = l:func
         endif
     endfor"}}}
 
@@ -58,11 +59,13 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
 
     if g:NeoComplCache_EnableWildCard
         " Check wildcard.
-        let l:cur_keyword_pos = neocomplcache#complfunc#keyword_complete#check_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
+        let l:cur_keyword_pos = s:check_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
     endif
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
 
-    if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
+    let l:start_length = (&l:completefunc == 'neocomplcache#manual_complete')?  
+                \g:NeoComplCache_ManualCompletionStartLength : g:NeoComplCache_KeywordCompletionStartLength
+    if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < l:start_length
         return -1
     endif
 
@@ -148,7 +151,41 @@ function! neocomplcache#complfunc#keyword_complete#get_rank()"{{{
     return 5
 endfunction"}}}
 
-function! neocomplcache#complfunc#keyword_complete#check_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
+function! neocomplcache#complfunc#keyword_complete#get_manual_complete_list(plugin_name)"{{{
+    if !has_key(s:plugins_func_table, a:plugin_name)
+        return []
+    endif
+
+    " Set function.
+    let &l:completefunc = 'neocomplcache#manual_complete'
+
+    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_keyword_pos = neocomplcache#complfunc#keyword_complete#get_keyword_pos(l:cur_text)
+    let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+    if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
+        return []
+    endif
+
+    " Save options.
+    let l:ignorecase_save = &ignorecase
+
+    if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+        let &ignorecase = 0
+    else
+        let &ignorecase = g:NeoComplCache_IgnoreCase
+    endif
+    
+    let l:plugins_func_save = s:plugins_func_table
+    let s:plugins_func_table = { a:plugin_name : 'neocomplcache#plugin#' . a:plugin_name . '#' }
+    let l:complete_words = neocomplcache#complfunc#keyword_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
+    let s:plugins_func_table = l:plugins_func_save
+    
+    let &ignorecase = l:ignorecase_save
+
+    return l:complete_words
+endfunction"}}}
+
+function! s:check_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
     let l:cur_keyword_pos = a:cur_keyword_pos
 
     while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] =~ '[*]'

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2009
+" Last Modified: 22 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.04, for Vim 7.0
+" Version: 1.05, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.05:
+"    - Fixed freeze bug.
+"
 "   1.04:
 "    - Fixed auto completion bug.
 "    - Fixed executable bug.
@@ -69,7 +72,6 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
         return -1
     endif
 
-    let l:PATH_SEPARATOR = (l:is_win) ? '/\\' : '/'
     " Filename pattern.
     let l:pattern = '[~]\?\%(\\.\|\f\|\*\)\+$'
 
@@ -80,7 +82,9 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     endif
     
     " Not Filename pattern.
-    if l:is_win && l:cur_keyword_str =~ '\\|\|^\a:[/\\]\@!'
+    if l:is_win && l:cur_keyword_str =~ '\\|\|^\a:[/\\]\@!\|\\'
+        return -1
+    elseif l:cur_keyword_str =~ '\*\*\|^{}'
         return -1
     endif
 

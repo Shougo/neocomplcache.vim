@@ -538,6 +538,12 @@ CHANGELOG					*neocomplcache-changelog*
 
    3.17:
     - Reinforced vim_complete.vim.
+    - Improved shortcut filename completion in filename_complete.
+    - Implemented pseudo animation.
+    - Supported backslash in vim_complete.
+    - Supported manual plugin complete.
+    - Improved caching speed when FileType in include_complete.
+    - Fixed freeze bug in filename_complete.
 
 ChangeLog NeoComplCache 3.00-: {{{
    3.16:

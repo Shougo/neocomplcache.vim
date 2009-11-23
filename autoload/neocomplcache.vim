@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Nov 2009
+" Last Modified: 21 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.16, for Vim 7.0
+" Version: 3.17, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -177,7 +177,7 @@ function! neocomplcache#enable() "{{{
     
     " Add commands."{{{
     command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
-    command! -nargs=0 Neco echo "   A A\n~(-'_'-)"
+    command! -nargs=0 Neco call s:display_neco()
     command! -nargs=0 NeoComplCacheLock call s:lock()
     command! -nargs=0 NeoComplCacheUnlock call s:unlock()
     command! -nargs=0 NeoComplCacheToggle call s:toggle()
@@ -543,13 +543,31 @@ function! s:toggle()"{{{
         call s:unlock()
     endif
 endfunction"}}}
-
 function! s:lock()"{{{
     let s:complete_lock = 1
 endfunction"}}}
-
 function! s:unlock()"{{{
     let s:complete_lock = 0
+endfunction"}}}
+function! s:display_neco()"{{{
+    let l:animation = [
+                \["   A A", 
+                \ "~(-'_'-)"], 
+                \["      A A", 
+                \ "   ~(-'_'-)"], 
+                \["        A A", 
+                \ "     ~(-'_'-)"], 
+                \["          A A  ", 
+                \ "       ~(-'_'-)"], 
+                \["             A A", 
+                \ "          ~(-^_^-)"],
+                \]
+    for l:anim in l:animation
+        echo ''
+        redraw
+        echo l:anim[0] . "\n" . l:anim[1]
+        sleep 150m
+    endfor
 endfunction"}}}
 "}}}
 
@@ -590,34 +608,43 @@ function! neocomplcache#manual_keyword_complete()"{{{
 endfunction"}}}
 
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
-    if !has_key(s:complfuncs_dict, a:complfunc_name)
-        return ''
-    endif
-
-    let l:complfunc = s:complfuncs_dict[a:complfunc_name]
+    let l:cur_text = neocomplcache#get_cur_text()
 
     " Set function.
     let &l:completefunc = 'neocomplcache#manual_complete'
-
-    let l:cur_text = neocomplcache#get_cur_text()
-    let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
-    let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-    if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
-        return ''
-    endif
-
-    " Save options.
-    let l:ignorecase_save = &ignorecase
-
-    if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
-        let &ignorecase = 0
+    
+    if !has_key(s:complfuncs_dict, a:complfunc_name)
+        let l:cur_keyword_pos = neocomplcache#complfunc#keyword_complete#get_keyword_pos(l:cur_text)
+        let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+        let l:complete_words = neocomplcache#complfunc#keyword_complete#get_manual_complete_list(a:complfunc_name)
+        
+        if empty(l:complete_words)
+            return ''
+        endif
     else
-        let &ignorecase = g:NeoComplCache_IgnoreCase
+        let l:complfunc = s:complfuncs_dict[a:complfunc_name]
+
+        let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
+        let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+        if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
+            return ''
+        endif
+
+        " Save options.
+        let l:ignorecase_save = &ignorecase
+
+        if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+            let &ignorecase = 0
+        else
+            let &ignorecase = g:NeoComplCache_IgnoreCase
+        endif
+
+        let l:complete_words = s:remove_next_keyword(deepcopy(
+                    \call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])[: g:NeoComplCache_MaxList]))
+
+        let &ignorecase = l:ignorecase_save
     endif
-
-    let l:complete_words = s:remove_next_keyword(deepcopy(
-                \call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])[: g:NeoComplCache_MaxList]))
-
+    
     let s:skipped = 0
     let s:cur_keyword_pos = l:cur_keyword_pos
     let s:cur_keyword_str = l:cur_keyword_str

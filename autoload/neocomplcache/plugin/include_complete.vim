@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Nov 2009
+" Last Modified: 22 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.06, for Vim 7.0
+" Version: 1.07, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.07:
+"    - Improved caching speed when FileType.
+"
 "   1.06:
 "    - Ignore no suffixes file.
 "    - Improved set patterns.
@@ -68,7 +71,7 @@
 
 function! neocomplcache#plugin#include_complete#initialize()"{{{
     " Initialize
-    let s:include_list = {}
+    let s:include_info = {}
     let s:include_cache = {}
     let s:completion_length = neocomplcache#get_completion_length('include_complete')
     
@@ -105,7 +108,7 @@ function! neocomplcache#plugin#include_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str)"{{{
-    if !has_key(s:include_list, bufnr('%'))
+    if !has_key(s:include_info, bufnr('%'))
         return []
     endif
     
@@ -123,7 +126,7 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
         if len(l:cur_keyword_str) >= s:completion_length
             let l:use_member_filter = 0
             let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
-            for l:include in s:include_list[bufnr('%')]
+            for l:include in s:include_info[bufnr('%')].include_files
                 if has_key(s:include_cache[l:include], l:key)
                     let l:use_member_filter = 1
                     break
@@ -142,13 +145,13 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
     let l:keyword_list = []
     let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
     if len(l:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
-        for l:include in s:include_list[bufnr('%')]
+        for l:include in s:include_info[bufnr('%')].include_files
             let l:keyword_list += neocomplcache#unpack_list(values(s:include_cache[l:include]))
         endfor
         
         let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
     else
-        for l:include in s:include_list[bufnr('%')]
+        for l:include in s:include_info[bufnr('%')].include_files
             if has_key(s:include_cache[l:include], l:key)
                 let l:keyword_list += s:include_cache[l:include][l:key]
             endif
@@ -173,7 +176,7 @@ function! s:check_buffer_all()"{{{
 
     " Check buffer.
     while l:bufnumber <= bufnr('$')
-        if buflisted(l:bufnumber)
+        if buflisted(l:bufnumber) && !has_key(s:include_info, l:bufnumber)
             call s:check_buffer(l:bufnumber)
         endif
 
@@ -182,21 +185,24 @@ function! s:check_buffer_all()"{{{
 endfunction"}}}
 function! s:check_buffer(bufnumber)"{{{
     let l:bufname = fnamemodify(bufname(a:bufnumber), ':p')
+    let s:include_info[a:bufnumber] = {}
     if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
                 \&& getbufvar(a:bufnumber, '&readonly') == 0
         " Check include.
-        call s:check_include(a:bufnumber)
+        let s:include_info[a:bufnumber].include_files = s:get_include_files(a:bufnumber)
+    else
+        let s:include_info[a:bufnumber].include_files = []
     endif
 endfunction"}}}
-function! s:check_include(bufnumber)"{{{
+function! s:get_include_files(bufnumber)"{{{
     let l:filetype = getbufvar(a:bufnumber, '&filetype')
     if l:filetype == ''
-        return
+        return []
     endif
     let l:pattern = has_key(g:NeoComplCache_IncludePattern, l:filetype) ? 
                 \g:NeoComplCache_IncludePattern[l:filetype] : getbufvar(a:bufnumber, '&include')
     if l:pattern == ''
-        return
+        return []
     endif
     let l:path = has_key(g:NeoComplCache_IncludePath, l:filetype) ? 
                 \g:NeoComplCache_IncludePath[l:filetype] : getbufvar(a:bufnumber, '&path')
@@ -233,7 +239,7 @@ function! s:check_include(bufnumber)"{{{
         let &l:suffixesadd = l:suffixes
     endif
     
-    let s:include_list[a:bufnumber] = l:include_files
+    return l:include_files
 endfunction"}}}
 
 function! s:load_from_tags(filename, filetype)"{{{
