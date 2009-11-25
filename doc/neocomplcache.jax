@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.16
+Version: 3.18
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -278,6 +278,12 @@ g:NeoComplCache_EnableUnderbarCompletion		*g:NeoComplCache_EnableUnderbarComplet
 		
 		副作用があるので、初期値は0となっている。
 
+g:NeoComplCache_EnableDispalyParameter			*g:NeoComplCache_EnableDispalyParameter*
+		入力中に、関数のプロトタイプをCommand-lineに表示するかを制御する。
+		現在はvim_completeのみ対応している。
+	
+		初期値は1である。
+
 g:NeoComplCache_CachingLimitFileSize			*g:NeoComplCache_CachingLimitFileSize*
 		ファイルをキャッシュするファイルサイズを設定する。
 		開いたファイルがこのサイズより大きいとキャッシュしない。
@@ -309,14 +315,12 @@ g:NeoComplCache_TemporaryDir				*g:NeoComplCache_TemporaryDir*
 g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
 		補完するためのキーワードパターンを記録する。
 		これはファイルタイプ毎に正規表現で指定されている。
-		カスタマイズする場合は、パターンの先頭に\vを使用しなければならない。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
 g:NeoComplCache_OmniPatterns				*g:NeoComplCache_OmniPatterns*
 		オムニ補完するためのキーワードパターンを記録する。
 		これはファイルタイプ毎に正規表現で指定されている。
-		カスタマイズする場合は、パターンの先頭に\vを使用しなければならない。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
@@ -397,10 +401,6 @@ g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
-<Plug>(neocomplcache_keyword_caching)				*<Plug>(neocomplcache_keyword_caching)*
-		現在のキャッシュラインをキャッシュする。
-		打ち込んだ単語をすぐにキャッシュしたい時に便利である。
-
 <Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
 		カーソル位置にあるスニペットを展開する。プレースホルダの処理も行う。
 		展開したスニペットはランクが上昇するため、上位に表示されやすくなる。
@@ -470,7 +470,7 @@ EXAMPLES					*neocomplcache-examples*
 	if !exists('g:NeoComplCache_KeywordPatterns')
 	    let g:NeoComplCache_KeywordPatterns = {}
 	endif
-	let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
+	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
 	
 	" Plugin key-mappings.
 	imap <C-l>     <Plug>(neocomplcache_snippets_expand)

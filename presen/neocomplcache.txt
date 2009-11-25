@@ -206,10 +206,6 @@ neocomplcacheではキーワード収集を自前で行っているため、
 標準でも様々な言語に対応していますが、
 「この言語に対応して欲しい」という要望があれば、可能な限り対応します。
 
-追記：
-Ver.2.23より、正規表現には\vを使わなければいけなくなりました。
-カスタマイズする場合には注意してください。
-
 最近のバージョンでは対応言語も増えて、かなりパワーアップしています。
 例えばRubyではブロック付きメソッドが補完できます。
 
@@ -718,7 +714,7 @@ let g:NeoComplCache_DictionaryFileTypeLists = {
 if !exists('g:NeoComplCache_KeywordPatterns')
     let g:NeoComplCache_KeywordPatterns = {}
 endif
-let g:NeoComplCache_KeywordPatterns['default'] = '\v\h\w*'
+let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
 
 " Plugin key-mappings.
 imap <C-l>     <Plug>(neocomplcache_snippets_expand)
@@ -862,6 +858,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/11/25     neocomplcache Ver.3.18に対応。
 2009/11/20     neocomplcache Ver.3.16に対応。
 2009/11/17     FreeBSD上でのインストール方法を追加。
 2009/11/11     neocomplcache Ver.3.15に対応。

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Nov 2009
+" Last Modified: 25 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.17, for Vim 7.0
+" Version: 3.18, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -69,11 +69,11 @@ function! neocomplcache#enable() "{{{
         let g:NeoComplCache_KeywordPatterns = {}
     endif
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'default',
-                \'\v\k+')
+                \'\k\+')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme', 
-                \'\v\(?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]?')
+                \'(\?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby',
-                \'\v^\=%(b%[egin]|e%[nd])|%(\@\@|[:$@])\h\w*|%(\.|%(\h\w*::)+)?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
+                \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\.\|\%(\h\w*::\)\+\)\?\h\w*[!?]\?\%(\s*\%(\%(()\)\?\s*\%(do\|{\)\%(\s*|\)\?\|()\?\)\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'eruby',
                 \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|%(\@\@|[:$@])\h\w*|%(\.|%(\h\w*::)+)?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'php',
@@ -81,7 +81,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
-                \'\v\$\h\w*|\[:%(\h\w*:\])?|-\h\w*\=?|\<\h[[:alnum:]_-]*\>?|[&.]?\h[[:alnum:]_:]*%(#\h\w*)*%([!>]|\(\)?)?')
+                \'\$\h\w*\|\[:\%(\h\w*:\]\)\?\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\(\h\w*\(()\?\)\?\)\?\|&\?\h[[:alnum:]_:]*\%(#\h\w*\)*\%([!>]\|()\?\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh',
@@ -352,7 +352,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     "}}}
     " Camel case completion."{{{
     if g:NeoComplCache_EnableCamelCaseCompletion && l:keyword_escape =~ '\u'
-        let l:keyword_escape = substitute(l:keyword_escape, '\v\u?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
+        let l:keyword_escape = substitute(l:keyword_escape, '\u\?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
     endif
     "}}}
 
@@ -515,14 +515,27 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
         return g:NeoComplCache_KeywordCompletionStartLength
     endif
 endfunction"}}}
-function! neocomplcache#get_keyword_pattern()"{{{
-    let l:filetype = (&filetype == '')?  'nothing' : &filetype
+function! neocomplcache#get_keyword_pattern(...)"{{{
+    if empty(a:000)
+        let l:filetype = (&filetype == '')?  'nothing' : &filetype
+    else
+        let l:filetype = a:000[0]
+    endif
 
     return has_key(g:NeoComplCache_KeywordPatterns, l:filetype) ?
                 \ g:NeoComplCache_KeywordPatterns[l:filetype] : g:NeoComplCache_KeywordPatterns['default']
 endfunction"}}}
+function! neocomplcache#get_keyword_pattern_end(...)"{{{
+    if empty(a:000)
+        let l:filetype = (&filetype == '')?  'nothing' : &filetype
+    else
+        let l:filetype = a:000[0]
+    endif
+    
+    return '\%('.neocomplcache#get_keyword_pattern(l:filetype).'\m\)$'
+endfunction"}}}
 function! neocomplcache#match_word(cur_text)"{{{
-    return matchstr(a:cur_text, '\v%('.neocomplcache#get_keyword_pattern().')$')
+    return matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
 endfunction"}}}
 
 " Set pattern helper.
@@ -855,7 +868,7 @@ function! s:remove_next_keyword(list)"{{{
     let l:list = a:list
     " Remove next keyword."{{{
     let l:next_keyword_str = matchstr('a'.getline('.')[col('.') - 1 :],
-                \'\v^%(' . neocomplcache#get_keyword_pattern() . ')')[1:]
+                \'^\%(' . neocomplcache#get_keyword_pattern() . '\m\)')[1:]
     if l:next_keyword_str != ''
         let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Nov 2009
+" Last Modified: 25 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.14, for Vim 7.0
+" Version: 3.18, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -93,7 +93,6 @@ function! neocomplcache#plugin#buffer_complete#finalize()"{{{
     delcommand NeoComplCacheCachingBuffer
     delcommand NeoComplCachePrintSource
     delcommand NeoComplCacheOutputKeyword
-    delcommand NeoComplCacheCreateTags
     delcommand NeoComplCacheCachingDisable
     delcommand NeoComplCacheCachingEnable
 
@@ -177,7 +176,7 @@ function! neocomplcache#plugin#buffer_complete#calc_prev_rank(cache_keyword_buff
     " Get next keyword list.
     let [l:source_next, l:source_next_next, l:operator_list] = [{}, {}, {}]
     " Get operator keyword list.
-    let l:pattern = '\v%(' .  neocomplcache#get_keyword_pattern() . ')$'
+    let l:pattern = neocomplcache#get_keyword_pattern_end()
     let l:cur_text = strpart(getline('.'), 0, col('.') - 1)
     let l:cur_keyword_pos = match(l:cur_text, l:pattern)
     if l:cur_keyword_pos > 0
@@ -826,10 +825,19 @@ function! s:split_keyword(keyword_pattern)"{{{
 
     let l:i = 0
     let l:max = len(l:keyword_pattern)
+    let l:is_very_magic = 0
     while l:i < l:max
-        if l:keyword_pattern[l:i] == '\'
+        if match(l:keyword_pattern, '^\\v', l:i) >= 0
+            " Very magic.
+            let l:is_very_magic = 1
+            
             let l:i += 2
-        elseif match(l:keyword_pattern, '^%\?(', l:i) >= 0
+        elseif match(l:keyword_pattern, '^\\m', l:i) >= 0
+            " Magic.
+            let l:is_very_magic = 0
+            
+            let l:i += 2
+        elseif l:is_very_magic && match(l:keyword_pattern, '^%\?(', l:i) >= 0
             " Grouping.
             let l:i = s:match_pair(l:keyword_pattern, '\\\@<!%\?(', '\\\@<!)', l:i)
             if l:i < 0
@@ -838,12 +846,32 @@ function! s:split_keyword(keyword_pattern)"{{{
             endif
 
             let l:i += 1
-        elseif l:keyword_pattern[l:i] == '|'
+        elseif !l:is_very_magic && match(l:keyword_pattern, '^\\%\?(', l:i) >= 0
+            " Grouping.
+            let l:i = s:match_pair(l:keyword_pattern, '\\%\?(', '\\)', l:i)
+            if l:i < 0
+                echoerr 'Unmatched (.'
+                return []
+            endif
+
+            let l:i += 1
+        elseif l:is_very_magic && l:keyword_pattern[l:i] == '|'
             " Select.
             call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i-1])
             let l:keyword_pattern = l:keyword_pattern[l:i+1 :]
             let l:max = len(l:keyword_pattern)
+            
             let l:i = 0
+        elseif !l:is_very_magic && match(l:keyword_pattern, '^\\|', l:i) >= 0
+            " Select.
+            call add(l:keyword_patterns, l:keyword_pattern[: l:i-1])
+            let l:keyword_pattern = l:keyword_pattern[l:i+2 :]
+            let l:max = len(l:keyword_pattern)
+            
+            let l:i = 0
+        elseif l:keyword_pattern[l:i] == '\'
+            " Escape.
+            let l:i += 2
         elseif l:keyword_pattern[l:i] == '['
             " Collection.
             let l:i = matchend(l:keyword_pattern, '\\\@<!]', l:i)
@@ -856,7 +884,7 @@ function! s:split_keyword(keyword_pattern)"{{{
         endif
     endwhile
 
-    call add(l:keyword_patterns, '\v'.l:keyword_pattern)
+    call add(l:keyword_patterns, (l:is_very_magic ? '\v' : '').l:keyword_pattern)
     return l:keyword_patterns
 endfunction"}}}
 

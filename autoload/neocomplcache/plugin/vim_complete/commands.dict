@@ -1,54 +1,55 @@
-Next :[count]N[ext] [count] [++opt] [+cmd]
-Print :[range]P[rint] [count] [flags]
-append :{range}a[ppend][!]
-abbreviate :ab[breviate]
-abclear :abc[lear]
-aboveleft :abo[veleft] {cmd}
-all
+Next [count] [++opt] [+cmd]
+Print [count] [flags]
+append[!]
+abbreviate
+abclear
+aboveleft {cmd}
+all[!] [N]
 amenu
 anoremenu
 args
-argadd
-argdelete
+argadd {name} ..
+argdelete{pattern} ..
 argedit
-argdo
+argdo[!] {cmd}
 argglobal
-arglocal
-argument
+arglocal[!] [++opt] [+cmd] {arglist}
+argument[count] [++opt] [+cmd]
 ascii
-autocmd
-augroup
+autocmd [group] {event} {pat} [nested] {cmd}
+augroup {name}
+augroup! {name}
 aunmenu
-buffer
-bNext
-ball
-badd
-bdelete
-behave
-belowright
+buffer[!] [N]
+bNext[!] [N]
+ball [N]
+badd [+lnum] {fname}
+bdelete[!] N1 N2 ...
+behave {model}
+belowright {cmd}
 bfirst
-blast
-bmodified
-bnext
-botright
-bprevious
-brewind
+blast[!]
+bmodified[!] [N]
+bnext[!] [N]
+botright {cmd}
+bprevious[!] [N]
+brewind[!]
 break
-breakadd
-breakdel
+breakadd func [lnum] {name}
+breakdel {nr}
 breaklist
-browse
-bufdo
-buffers
-bunload
-bwipeout
-change
-cNext
-cNfile
-cabbrev
+browse {command}
+bufdo[!] {cmd}
+buffers[!]
+bunload[!] N1 N2 ...
+bwipeout[!] N1 N2 ...
+change[!]
+cNext[!]
+cNfile[!]
+cabbrev [<expr>] [lhs] [rhs]
 cabclear
-caddbuffer
-caddexpr
+caddbuffer [bufnr]
+caddexpr {expr}
 caddfile
 call
 catch

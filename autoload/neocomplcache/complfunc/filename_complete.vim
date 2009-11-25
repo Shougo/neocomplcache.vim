@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Nov 2009
+" Last Modified: 24 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.05:
 "    - Fixed freeze bug.
+"    - Improved backslash.
 "
 "   1.04:
 "    - Fixed auto completion bug.
@@ -73,7 +74,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     endif
 
     " Filename pattern.
-    let l:pattern = '[~]\?\%(\\.\|\f\|\*\)\+$'
+    let l:pattern = '[~]\?\%(\\[^[:alnum:].-]\|\f\|\*\)\+$'
 
     let l:cur_keyword_pos = match(a:cur_text, l:pattern)
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
@@ -82,7 +83,8 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     endif
     
     " Not Filename pattern.
-    if l:is_win && l:cur_keyword_str =~ '\\|\|^\a:[/\\]\@!\|\\'
+    if l:is_win && l:cur_keyword_str =~ 
+                \'|\|^\a:[/\\]\@!\|\\[[:alnum:].-]'
         return -1
     elseif l:cur_keyword_str =~ '\*\*\|^{}'
         return -1
@@ -95,7 +97,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
     let l:is_win = has('win32') || has('win64')
-    let l:PATH_SEPARATOR = (l:is_win) ? '/\\' : '/'
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
     " Substitute ... -> ../..
     while l:cur_keyword_str =~ '\.\.\.'

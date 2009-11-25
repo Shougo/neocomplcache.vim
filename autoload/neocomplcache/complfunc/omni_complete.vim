@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Nov 2009
+" Last Modified: 25 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.06, for Vim 7.0
+" Version: 1.07, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.07:
+"    - Deleted \v pattern.
+"
 "   1.06:
 "    - Fixed ruby omni_complete bug.
 "    - Refactoringed.
@@ -68,26 +71,26 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     endif
     if has('ruby')
         call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'ruby',
-                    \'\v\h\w+|[^. *\t]%(\.|::)\h\w*')
+                    \'\h\w\+\|[^. *\t]%(\.\|::)\h\w*')
     endif
     if has('python')
         call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'python',
-                    \'\v[^. \t]\.\h\w*')
+                    \'[^. \t]\.\h\w*')
     endif
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'html,xhtml,xml',
-                \'\v\<[^>]*')
+                \'<[^>]*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'css',
-                \'\v^\s+\w+|\w+[):;]?\s+|[@!]')
+                \'^\s\+\w+\|\w+[):;]?\s\+\|[@!]')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'javascript',
-                \'\v[^. \t]\.%(\h\w*)?')
+                \'[^. \t]\.\%(\h\w*\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'actionscript',
-                \'\v[^. \t][.:]\h\w*')
+                \'[^. \t][.:]\h\w*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'php',
-                \'\v[^. \t]%(-\>|::)\h\w*')
+                \'[^. \t]%(->\|::)\h\w*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'java',
-                \'\v[^. \t]\.\h\w*')
+                \'[^. \t]\.\h\w*')
     "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'perl',
-                "\'\v\h\w*|[^. \t]%(-\>|::)\h\w*')
+                "\'\h\w*|[^. \t]%(->\|::)\h\w*')
     "}}}
 endfunction"}}}
 function! neocomplcache#complfunc#omni_complete#finalize()"{{{
@@ -101,7 +104,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     if &l:completefunc == 'neocomplcache#auto_complete' &&
                 \(!has_key(g:NeoComplCache_OmniPatterns, &filetype)
                 \|| g:NeoComplCache_OmniPatterns[&filetype] == ''
-                \|| a:cur_text !~ '\v%(' . g:NeoComplCache_OmniPatterns[&filetype] . ')$')
+                \|| a:cur_text !~ '\%(' . g:NeoComplCache_OmniPatterns[&filetype] . '\m\)$')
         return -1
     endif
 
