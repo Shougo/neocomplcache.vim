@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2009
+" Last Modified: 26 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.07:
 "    - Deleted \v pattern.
+"    - Restore cursor position.
 "
 "   1.06:
 "    - Fixed ruby omni_complete bug.
@@ -108,7 +109,10 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
         return -1
     endif
 
-    return call(&l:omnifunc, [1, ''])
+    let l:pos = getpos('.')
+    let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
+    call setpos('.', l:pos)
+    return l:cur_keyword_pos
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
@@ -119,7 +123,11 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     endif
 
     let l:cur_keyword_str = (&filetype == 'ruby')? '' : a:cur_keyword_str
+    
+    let l:pos = getpos('.')
     let l:omni_list = call(&l:omnifunc, [0, l:cur_keyword_str])
+    call setpos('.', l:pos)
+    
     if empty(l:omni_list)
         return []
     endif
@@ -138,7 +146,10 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     let l:list = []
     " Convert string list.
     for str in l:omni_string_list
-        call add(l:list, { 'word' : str })
+        call add(l:list, {
+                    \'word' : str 'menu' : '[O]',
+                    \'icase' : 1, 'rank' : 5, 'dup' : 1
+                    \})
     endfor
 
     let l:omni_list = filter(l:omni_list, 'type(v:val) != '.type(''))

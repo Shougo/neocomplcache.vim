@@ -522,6 +522,7 @@ vim_complete.vim					*vim_complete*
 		VimScriptの編集時以外では動作しない。
 		neocomplcacheからは|i_CTRL-X_CTRL-V|が呼び出せないため作られた。
 		標準で用意されている補完よりも、高機能なものにすることが目標である。
+		現在、ローカル変数やスクリプト変数、関数やコマンドの解析が実装されている。
 
 ==============================================================================
 CREATE PLUGIN					*neocomplcache-create-plugin*

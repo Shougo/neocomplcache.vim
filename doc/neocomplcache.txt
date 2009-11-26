@@ -524,7 +524,11 @@ include_complete.vim					*include_complete*
 		But it is necessary for 'path' and 'include', 'includeexpr' to be set adequately.
  
 vim_complete.vim					*vim_complete*
-		Experimental.
+		An experimental function. This plugin analyzes context and start Omni completion of VimScript. 
+		This plugin does not work other than editing time of VimScript. 
+		I made it because neocomplcache cannot call |i_CTRL-X_CTRL-V|. 
+		It is an aim to do to the thing which is higher-performance than the completion prepared for by default. 
+		Local variable and a script variable, a function and the analysis of the command are implemented now.
 
 ==============================================================================
 TODO						*neocomplcache-todo*
@@ -552,6 +556,7 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed disable expand when buftype is 'nofile' bug in snippets_complete.
     - Implemented <Plug>(neocomplcache_snippets_jump) in snippets_complete.
     - Implemented hard tab expand in vim_complete.
+    - Restore cursor position in omni_complete.
 
 ChangeLog NeoComplCache 3.00-: {{{
    3.17:
