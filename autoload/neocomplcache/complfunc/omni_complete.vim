@@ -147,7 +147,7 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     " Convert string list.
     for str in l:omni_string_list
         call add(l:list, {
-                    \'word' : str 'menu' : '[O]',
+                    \'word' : str, 'menu' : '[O]',
                     \'icase' : 1, 'rank' : 5, 'dup' : 1
                     \})
     endfor
