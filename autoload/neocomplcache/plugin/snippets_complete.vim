@@ -684,6 +684,7 @@ function! s:expand_tabline()"{{{
 
     let l:tablines = split(getline('.'), '<\\n>')
 
+    let l:indent = matchstr(l:tablines[0], '^\s\+')
     let l:line = line('.')
     call setline(line, l:tablines[0])
     for l:tabline in l:tablines[1:]
@@ -693,7 +694,7 @@ function! s:expand_tabline()"{{{
             let l:tabline = substitute(l:tabline, '<\\t>', '\t', 'g')
         endif
         
-        call append(l:line, l:tabline)
+        call append(l:line, l:indent . l:tabline)
         let l:line += 1
     endfor
 
