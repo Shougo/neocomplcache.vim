@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Nov 2009
+" Last Modified: 26 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.30, for Vim 7.0
+" Version: 1.31, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.31:
+"    - Fixed disable expand when buftype is 'nofile' bug.
+"    - Implemented <Plug>(neocomplcache_snippets_jump).
+"    - Implemented hard tab expand.
+"
 "   1.30:
 "    - Fixed snippet merge bug.
 "    - Allow keyword trigger.
@@ -317,10 +322,6 @@ function! neocomplcache#plugin#snippets_complete#calc_prev_rank(cache_keyword_bu
 endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#expandable()"{{{
-    if !neocomplcache#plugin#buffer_complete#exists_current_source()
-        return 0
-    endif
-    
     " Set buffer filetype.
     if &filetype == ''
         let l:ft = 'nothing'
@@ -541,8 +542,12 @@ function! s:load_snippets(snippets_file)"{{{
         elseif line =~ '^alias\s'
             let l:snippet_pattern.alias = split(substitute(matchstr(line, '^alias\s\+\zs.*$'), '\s', '', 'g'), ',')
         elseif line =~ '^\s'
-            if l:snippet_pattern['word'] == ''
+            if l:snippet_pattern.word == ''
                 let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
+            elseif line =~ '^\t'
+                let line = substitute(line, '^\s', '', '')
+                let l:snippet_pattern.word .= '<\n>' . 
+                            \substitute(line, '^\t\+', repeat('<\\t>', matchend(line, '^\t\+')), '')
             else
                 let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
             endif
@@ -604,7 +609,7 @@ function! s:snippets_expand(cur_text, col)"{{{
         let l:cur_text = l:cur_text[: -1-len(l:cur_word)]
 
         let l:snip_word = l:snippet.snip
-        if l:snip_word =~ '`[^`]*`'
+        if l:snip_word =~ '`.\{-}`'
             let l:snip_word = s:eval_snippet(l:snip_word)
         endif
         if l:snip_word =~ '\n'
@@ -621,7 +626,13 @@ function! s:snippets_expand(cur_text, col)"{{{
         let l:old_col = len(l:cur_text)+len(l:snip_word)+1
 
         if l:snip_word =~ '<expand>$'
-            call s:expand_newline()
+            if l:snip_word =~ '<\\t>'
+                call s:expand_tabline()
+            else
+                call s:expand_newline()
+            endif
+            
+            call s:snippets_jump(a:cur_text, a:col)
         elseif l:old_col < col('$')
             startinsert
         else
@@ -633,33 +644,14 @@ function! s:snippets_expand(cur_text, col)"{{{
         return
     endif
 
-    if !s:search_snippet_range(s:begin_snippet, s:end_snippet)
-        if s:snippet_holder_cnt != 0
-            " Search placeholder 0.
-            let s:snippet_holder_cnt = 0
-            if s:search_snippet_range(s:begin_snippet, s:end_snippet)
-                let &iminsert = 0
-                let &imsearch = 0
-                return
-            endif
-        endif
-
-        " Not found.
-        let s:begin_snippet = 1
-        let s:end_snippet = 0
-        let s:snippet_holder_cnt = 1
-
-        call s:search_outof_range(a:col)
-    endif
-
-    let &iminsert = 0
-    let &imsearch = 0
+    call s:snippets_jump(a:cur_text, a:col)
 endfunction"}}}
 function! s:expand_newline()"{{{
     " Substitute expand marker.
     silent! s/<expand>//
 
     let l:match = match(getline('.'), '<\\n>')
+    let s:snippet_holder_cnt = 1
     let s:begin_snippet = line('.')
     let s:end_snippet = line('.')
 
@@ -683,16 +675,55 @@ function! s:expand_newline()"{{{
         let l:match = match(getline('.'), '<\\n>')
         let s:end_snippet += 1
     endwhile
+    
     let &l:formatoptions = l:formatoptions
+endfunction"}}}
+function! s:expand_tabline()"{{{
+    " Substitute expand marker.
+    silent! s/<expand>//
+
+    let l:tablines = split(getline('.'), '<\\n>')
+
+    let l:line = line('.')
+    call setline(line, l:tablines[0])
+    for l:tabline in l:tablines[1:]
+        if &expandtab
+            let l:tabline = substitute(l:tabline, '<\\t>', repeat(' ', &softtabstop ? &softtabstop : &shiftwidth), 'g')
+        else
+            let l:tabline = substitute(l:tabline, '<\\t>', '\t', 'g')
+        endif
+        
+        call append(l:line, l:tabline)
+        let l:line += 1
+    endfor
 
     let s:snippet_holder_cnt = 1
+    let s:begin_snippet = line('.')
+    let s:end_snippet = line('.') + len(l:tablines) - 1
+    echomsg s:end_snippet
+endfunction"}}}
+function! s:snippets_jump(cur_text, col)"{{{
     if !s:search_snippet_range(s:begin_snippet, s:end_snippet)
-        if l:pos < col('$')
-            startinsert
-        else
-            startinsert!
+        if s:snippet_holder_cnt != 0
+            " Search placeholder 0.
+            let s:snippet_holder_cnt = 0
+            if s:search_snippet_range(s:begin_snippet, s:end_snippet)
+                let &iminsert = 0
+                let &imsearch = 0
+                return
+            endif
         endif
+
+        " Not found.
+        let s:begin_snippet = 1
+        let s:end_snippet = 0
+        let s:snippet_holder_cnt = 1
+
+        call s:search_outof_range(a:col)
     endif
+
+    let &iminsert = 0
+    let &imsearch = 0
 endfunction"}}}
 function! s:search_snippet_range(start, end)"{{{
     call s:substitute_marker(a:start, a:end)
@@ -834,7 +865,7 @@ function! s:substitute_marker(start, end)"{{{
         silent! execute '%s/'.'\$<'.l:cnt.'\%(:.\{-}\)\?\\\@<!>'.'/'.l:sub.'/'
     endif
 endfunction"}}}
-function! s:expand_trigger(function)"{{{
+function! s:trigger(function)"{{{
     let l:cur_text = neocomplcache#get_cur_text()
     let s:cur_text = l:cur_text
     return printf("\<ESC>:call %s(%s,%d)\<CR>", a:function, string(l:cur_text), col('.'))
@@ -842,15 +873,15 @@ endfunction"}}}
 function! s:eval_snippet(snippet_text)"{{{
     let l:snip_word = ''
     let l:prev_match = 0
-    let l:match = match(a:snippet_text, '`[^`]*`')
+    let l:match = match(a:snippet_text, '`.\{-}`')
     while l:match >= 0
         if l:match - l:prev_match > 0
             let l:snip_word .= a:snippet_text[l:prev_match : l:match - 1]
         endif
-        let l:prev_match = matchend(a:snippet_text, '`[^`]*`', l:match)
+        let l:prev_match = matchend(a:snippet_text, '`.\{-}`', l:match)
         let l:snip_word .= eval(a:snippet_text[l:match+1 : l:prev_match - 2])
 
-        let l:match = match(a:snippet_text, '`[^`]*`', l:prev_match)
+        let l:match = match(a:snippet_text, '`.\{-}`', l:prev_match)
     endwhile
     if l:prev_match >= 0
         let l:snip_word .= a:snippet_text[l:prev_match :]
@@ -864,7 +895,9 @@ function! s:SID_PREFIX()
 endfunction
 
 " Plugin key-mappings.
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>expand_trigger(<SID>SID_PREFIX().'snippets_expand')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>expand_trigger(<SID>SID_PREFIX().'snippets_expand')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump')
 
 " vim: foldmethod=marker

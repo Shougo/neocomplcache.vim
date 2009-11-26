@@ -402,9 +402,13 @@ g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
 <Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
-		カーソル位置にあるスニペットを展開する。プレースホルダの処理も行う。
+		カーソル位置にあるスニペットを展開する。スニペットが存在しないとき、次のプレースホルダにジャンプする。
 		展開したスニペットはランクが上昇するため、上位に表示されやすくなる。
 
+<Plug>(neocomplcache_snippets_jump)				*<Plug>(neocomplcache_snippets_jump)*
+		次のプレースホルダにジャンプする。スニペットの展開は行わない。
+		スニペット名を展開したくないときに使う。
+                
 neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complete*
 		inoremap <expr>上で使用する。neocomplcacheのファイル名補完を手動で呼び出す。
 		Vim標準のファイル名補完を置き換えるときに使う。

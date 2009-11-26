@@ -406,8 +406,12 @@ g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
 <Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
-		Expand a snippet of plural lines. Perform the disposal of place holders.
+		Expand a snippet of plural lines. When there is not snippet, jump to the next placeholder.
 		The snippet which unfolded is easy to become display by the high rank so that a rank rises.
+
+<Plug>(neocomplcache_snippets_jump)				*<Plug>(neocomplcache_snippets_jump)*
+		Jump to the next place holder. Do not expand snippet. 
+		When you do not want to expand a snippet name, use this keymapping.
 
 neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complete*
 		Use this function on inoremap <expr>.
@@ -545,6 +549,9 @@ CHANGELOG					*neocomplcache-changelog*
     - Implemented intellisense like prototype echo in vim_complete.
     - Added g:NeoComplCache_EnableDispalyParameter option.
     - Implemented the static model recognition in vim_complete.
+    - Fixed disable expand when buftype is 'nofile' bug in snippets_complete.
+    - Implemented <Plug>(neocomplcache_snippets_jump) in snippets_complete.
+    - Implemented hard tab expand in vim_complete.
 
 ChangeLog NeoComplCache 3.00-: {{{
    3.17:
