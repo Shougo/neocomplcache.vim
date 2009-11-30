@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Nov 2009
+" Last Modified: 28 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,10 @@
 "   1.07:
 "    - Deleted \v pattern.
 "    - Restore cursor position.
+"    - Refactoringed.
+"    - Added C/C++ support.
+"    - Fixed PHP pattern bug.
+"    - Improved omni patterns.
 "
 "   1.06:
 "    - Fixed ruby omni_complete bug.
@@ -72,7 +76,7 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     endif
     if has('ruby')
         call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'ruby',
-                    \'\h\w\+\|[^. *\t]%(\.\|::)\h\w*')
+                    \'[^. *\t]\.\h\w*\|\h\w*::')
     endif
     if has('python')
         call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'python',
@@ -87,11 +91,16 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'actionscript',
                 \'[^. \t][.:]\h\w*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'php',
-                \'[^. \t]%(->\|::)\h\w*')
+                \'[^. \t]->\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+\|\h\w*::')
+                "\'[^. \t]\%(->\|::\)\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'java',
-                \'[^. \t]\.\h\w*')
+                \'\%(\h\w*\|)\)\.')
     "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'perl',
-                "\'\h\w*|[^. \t]%(->\|::)\h\w*')
+                "\'\%(\h\w*\|)\)->\h\w*\|\h\w*::')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'c',
+                \'\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'cpp',
+                \'\%(\h\w*\|)\)\%(\.\|->\)\h\w*\|\h\w*::')
     "}}}
 endfunction"}}}
 function! neocomplcache#complfunc#omni_complete#finalize()"{{{
@@ -109,9 +118,17 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
         return -1
     endif
 
+    " Save pos.
     let l:pos = getpos('.')
+    let l:line = getline('.')
+    call setline('.', a:cur_text)
+    
     let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
+
+    " Restore pos.
+    call setline('.', l:line)
     call setpos('.', l:pos)
+    
     return l:cur_keyword_pos
 endfunction"}}}
 
@@ -122,10 +139,8 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
         let l:start_time = 0
     endif
 
-    let l:cur_keyword_str = (&filetype == 'ruby')? '' : a:cur_keyword_str
-    
     let l:pos = getpos('.')
-    let l:omni_list = call(&l:omnifunc, [0, l:cur_keyword_str])
+    let l:omni_list = call(&l:omnifunc, [0, (&filetype == 'ruby')? '' : a:cur_keyword_str])
     call setpos('.', l:pos)
     
     if empty(l:omni_list)
@@ -143,43 +158,42 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     redraw
 
     let l:omni_string_list = filter(copy(l:omni_list), 'type(v:val) == '.type(''))
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     let l:list = []
     " Convert string list.
     for str in l:omni_string_list
-        call add(l:list, {
+        let l:dict = {
                     \'word' : str, 'menu' : '[O]',
-                    \'icase' : 1, 'rank' : 5, 'dup' : 1
-                    \})
+                    \'icase' : 1, 'rank' : 5, 'dup' : 1,
+                    \}
+        if len(str) > g:NeoComplCache_MaxKeywordWidth
+            let str = printf(l:abbr_pattern, str, str[-8:])
+        endif
+        let dict.abbr = str
+        
+        call add(l:list, l:dict)
     endfor
 
     let l:omni_list = filter(l:omni_list, 'type(v:val) != '.type(''))
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     for l:omni in l:omni_list
         let l:dict = {
-                    \'word' : l:omni.word, 'menu' : '[O]',
+                    \'word' : l:omni.word,
+                    \'menu' : (has_key(l:omni, 'menu') ? '[O] '.l:omni.menu : '[O]'),
                     \'icase' : 1, 'rank' : 5, 'dup' : 1,
                     \}
-        if has_key(l:omni, 'abbr')
-            let l:dict.abbr = l:omni.abbr
-        endif
-        if has_key(l:omni, 'kind')
-            let l:dict.kind = l:omni.kind
-        endif
-        if has_key(l:omni, 'menu')
-            let l:dict.menu = '[O] ' . l:omni.menu
-        endif
-        call add(l:list, l:dict)
-    endfor
-    " Trunk many items.
-    let l:list = l:list[: g:NeoComplCache_MaxList-1]
-
-    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    for keyword in l:list
-        let l:abbr = has_key(keyword, 'abbr')? keyword.abbr : keyword.word
+        
+        let l:abbr = has_key(l:omni, 'abbr')? l:omni.abbr : l:omni.word
         if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
             let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
         endif
-
-        let keyword.abbr = l:abbr
+        let dict.abbr = l:abbr
+        
+        if has_key(l:omni, 'kind')
+            let l:dict.kind = l:omni.kind
+        endif
+        
+        call add(l:list, l:dict)
     endfor
 
     return l:list

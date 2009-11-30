@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.18
+Version: 3.19
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -67,6 +67,7 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCacheLock					*:NeoComplCacheLock*
 		Lock neocomplcache.
 		While locking neocomplcache, manual completion is possible.
+		The lock status is buffer local.
 
 :NeoComplCacheUnLock					*:NeoComplCacheUnLock*
 		Unlock neocomplcache.
@@ -545,6 +546,17 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.19:
+    - Added C/C++ support in omni_complete.
+    - Fixed PHP pattern bug in omni_complete.
+    - Fixed quickmatch bug in omni_complete.
+    - Don't complete within comment in vim_complete.
+    - Improved global caching in vim_complete.
+    - Improved omni patterns in omni_complete.
+    - Deleted caching when BufWritePost in include_complete.
+    - Implemented buffer local autocomplete lock.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.18:
     - Improved backslash escape in filename_complete.
     - Deleted \v pattern.
@@ -558,7 +570,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Implemented hard tab expand in vim_complete.
     - Restore cursor position in omni_complete.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.17:
     - Reinforced vim_complete.vim.
     - Improved shortcut filename completion in filename_complete.
@@ -1199,7 +1210,7 @@ ChangeLog NeoComplCache 2.00-2.50: {{{
      - Improved commands.
      - Deleted g:NeoComplCache_DrawWordsRank option.
      }}}
-ChangeLog NeoComplCache 1-1.60: {{{
+ChangeLog NeoComplCache 1.00-1.60: {{{
    1.60:
      - Improved calc similar algorithm.
    1.59:

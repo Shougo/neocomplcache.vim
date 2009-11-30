@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2009
+" Last Modified: 30 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.18, for Vim 7.0
+" Version: 3.19, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -35,7 +35,7 @@ function! neocomplcache#enable() "{{{
     augroup END "}}}
 
     " Initialize"{{{
-    let s:complete_lock = 0
+    let s:complete_lock = {}
     let s:old_text = ''
     let s:skipped = 0
     let s:complfuncs_func_table = []
@@ -47,6 +47,7 @@ function! neocomplcache#enable() "{{{
     let s:update_time = &updatetime
     let s:prev_numbered_list = []
     let s:prev_input_time = reltime()
+    let s:cur_text = ''
     "}}}
     
     " Initialize complfuncs table."{{{
@@ -77,7 +78,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'eruby',
                 \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|%(\@\@|[:$@])\h\w*|%(\.|%(\h\w*::)+)?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'php',
-                \'\v\</?%(\h[[:alnum:]_-]*\s*)?%(/?\>)?|\$\h\w*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
+                \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|->\(\h\w*\%(\s*()\?\)\?\)\?\|\%(\h\w*::\)*\h\w*\%(\s*()\?\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
@@ -241,7 +242,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
         endif
         
         " Get cursor word.
-        let l:cur_text = neocomplcache#get_cur_text()
+        let l:cur_text = s:get_cur_text()
 
         " Try complfuncs completion."{{{
         let l:complete_result = {}
@@ -312,8 +313,6 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 
     " Restore option.
     let &l:completefunc = 'neocomplcache#manual_complete'
-    " Unlock auto complete.
-    let s:complete_lock = 0
 
     if g:NeoComplCache_EnableInfo"{{{
         " Check preview window.
@@ -504,9 +503,9 @@ function! neocomplcache#caching_percent()"{{{
 endfunction"}}}
 
 function! neocomplcache#get_cur_text()"{{{
-    let l:pos = mode() ==# 'i' ? 2 : 1
+    " Return cached text.
 
-    return col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    return s:cur_text
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
     if has_key(g:NeoComplCache_PluginCompletionLength, a:plugin_name)
@@ -550,17 +549,17 @@ endfunction"}}}
 
 " Command functions."{{{
 function! s:toggle()"{{{
-    if &l:completefunc == 'neocomplcache#manual_complete'
+    if !has_key(s:complete_lock, bufnr('%')) || !s:complete_lock[bufnr('%')]
         call s:lock()
     else
         call s:unlock()
     endif
 endfunction"}}}
 function! s:lock()"{{{
-    let s:complete_lock = 1
+    let s:complete_lock[bufnr('%')] = 1
 endfunction"}}}
 function! s:unlock()"{{{
-    let s:complete_lock = 0
+    let s:complete_lock[bufnr('%')] = 0
 endfunction"}}}
 function! s:display_neco()"{{{
     let l:animation = [
@@ -621,7 +620,7 @@ function! neocomplcache#manual_keyword_complete()"{{{
 endfunction"}}}
 
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
-    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_text = s:get_cur_text()
 
     " Set function.
     let &l:completefunc = 'neocomplcache#manual_complete'
@@ -676,7 +675,7 @@ function! neocomplcache#undo_completion()"{{{
     endif
 
     " Get cursor word.
-    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_text = s:get_cur_text()
 
     if !neocomplcache#plugin#buffer_complete#exists_current_source()
         return ''
@@ -705,14 +704,15 @@ function! s:complete()"{{{
         return
     endif
 
-    if (&buftype !~ 'nofile\|nowrite' && !&modified) || &paste || s:complete_lock || g:NeoComplCache_DisableAutoComplete
-                \||(&l:completefunc != 'neocomplcache#manual_complete'
-                \&& &l:completefunc != 'neocomplcache#auto_complete')
+    if (&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
+                \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
+                \|| g:NeoComplCache_DisableAutoComplete
+                \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
         return
     endif
 
     " Get cursor word.
-    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_text = s:get_cur_text()
     " Prevent infinity loop.
     " Not complete multi byte character for ATOK X3.
     if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
@@ -742,6 +742,7 @@ function! s:complete()"{{{
         " Quickmatch list.
         let l:is_quickmatch_list = 1
         let l:cur_text = l:cur_text[: -len(matchstr(l:cur_text, l:quickmatch_pattern.'$'))-1]
+        let s:cur_text = l:cur_text
     else
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
@@ -935,6 +936,12 @@ function! s:get_quickmatch_pattern()"{{{
                 \ g:NeoComplCache_QuickMatchPatterns[l:filetype] : g:NeoComplCache_QuickMatchPatterns['default']
         
     return l:pattern
+endfunction"}}}
+function! s:get_cur_text()"{{{
+    let l:pos = mode() ==# 'i' ? 2 : 1
+
+    let s:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    return s:cur_text
 endfunction"}}}
 
 " vim: foldmethod=marker

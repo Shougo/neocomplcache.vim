@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Nov 2009
+" Last Modified: 28 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.03:
 "    - Become complfunc.
+"    - Don't complete within comment.
+"    - Improved global caching.
 "
 "   1.02:
 "    - Implemented intellisense like prototype echo.
@@ -57,9 +59,6 @@ function! neocomplcache#complfunc#vim_complete#initialize()"{{{
     let s:local_candidates_list = {}
     let s:completion_length = neocomplcache#get_completion_length('vim_complete')
 
-    " Global caching.
-    call s:global_caching()
-    
     " Set caching event.
     autocmd neocomplcache FileType vim call s:script_caching_check()
 
@@ -72,7 +71,7 @@ function! neocomplcache#complfunc#vim_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
-    if &filetype != 'vim'
+    if &filetype != 'vim' || empty(s:global_candidates_list)
         return -1
     endif
 
@@ -83,7 +82,7 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
         let l:line -= 1
     endwhile
 
-    if l:cur_text =~ '\<"'
+    if l:cur_text =~ '^\s*"'
         " Comment.
         return -1
     endif
@@ -247,6 +246,11 @@ function! s:global_caching()"{{{
     let s:internal_candidates_list.commands_prototype = l:commands_prototype
 endfunction"}}}
 function! s:script_caching_check()"{{{
+    if empty(s:global_candidates_list)
+        " Global caching.
+        call s:global_caching()
+    endif
+
     " Caching script candidates.
     
     let l:bufnumber = 1

@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 3.18
+Version: 3.19
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -65,6 +65,7 @@ COMMANDS 					*neocomplcache-commands*
 		自動補完にロックをかけ、自動補完しないようにする。
 		自動補完をロックしていたとしても、手動補完は使用できる。
 		自動補完を一時的に無効にしたい場合に有効。
+		ロック状態はバッファローカルである。
 
 :NeoComplCacheUnLock					*:NeoComplCacheUnLock*
 		自動補完にかけたロックを解除する。

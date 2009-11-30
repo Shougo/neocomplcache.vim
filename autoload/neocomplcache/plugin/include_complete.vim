@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Nov 2009
+" Last Modified: 28 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.07:
 "    - Improved caching speed when FileType.
+"    - Deleted caching when BufWritePost.
 "
 "   1.06:
 "    - Ignore no suffixes file.
@@ -78,7 +79,6 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
     augroup neocomplcache
         " Caching events
         autocmd FileType * call s:check_buffer_all()
-        autocmd BufWritePost * call s:check_buffer(bufnr('%'))
     augroup END
     
     " Initialize include pattern."{{{
@@ -102,9 +102,13 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
     if !isdirectory(g:NeoComplCache_TemporaryDir . '/include_cache')
         call mkdir(g:NeoComplCache_TemporaryDir . '/include_cache', 'p')
     endif
+    
+    " Add command.
+    command! -nargs=? -complete=buffer NeoComplCacheCachingInclude call s:check_buffer(<q-args>)
 endfunction"}}}
 
 function! neocomplcache#plugin#include_complete#finalize()"{{{
+    delcommand NeoComplCacheCachingInclude
 endfunction"}}}
 
 function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -177,21 +181,22 @@ function! s:check_buffer_all()"{{{
     " Check buffer.
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber) && !has_key(s:include_info, l:bufnumber)
-            call s:check_buffer(l:bufnumber)
+            call s:check_buffer(bufname(l:bufnumber))
         endif
 
         let l:bufnumber += 1
     endwhile
 endfunction"}}}
-function! s:check_buffer(bufnumber)"{{{
-    let l:bufname = fnamemodify(bufname(a:bufnumber), ':p')
-    let s:include_info[a:bufnumber] = {}
+function! s:check_buffer(bufname)"{{{
+    let l:bufname = fnamemodify((a:bufname == '')? a:bufname : bufname('%'), ':p')
+    let l:bufnumber = bufnr(l:bufname)
+    let s:include_info[l:bufnumber] = {}
     if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
-                \&& getbufvar(a:bufnumber, '&readonly') == 0
+                \&& getbufvar(l:bufnumber, '&readonly') == 0
         " Check include.
-        let s:include_info[a:bufnumber].include_files = s:get_include_files(a:bufnumber)
+        let s:include_info[l:bufnumber].include_files = s:get_include_files(l:bufnumber)
     else
-        let s:include_info[a:bufnumber].include_files = []
+        let s:include_info[l:bufnumber].include_files = []
     endif
 endfunction"}}}
 function! s:get_include_files(bufnumber)"{{{
