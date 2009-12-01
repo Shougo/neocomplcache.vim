@@ -118,7 +118,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'html,xhtml,xml',
-                \'[[:alnum:]_:-]*>\|</\?\%([[:alnum:]_:-]+\s*\)?\%(/\?\>\)?\|\&\h\%(\w*;\)\?\|\h[[:alnum:]_:-]*\%(="\%(.\{-}*"\?\)\?\)?')
+                \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|[[:alnum:]_:-]*>\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'css',
                 \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tags',
