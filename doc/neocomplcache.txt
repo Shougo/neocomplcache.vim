@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.19
+Version: 3.20
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -546,6 +546,16 @@ The ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.20:
+    - Improved html and vim keyword pattern.
+    - Improved buffer caching.
+    - Improved manual completion.
+    - Implemented Filename() and g:snips_author for snipMate.
+    - Fixed fatal manual completion bug.
+    - Don't expand environment variable in filename_complete.
+    - Implemented environment variable completion in vim_complete.
+
+ChangeLog NeoComplCache 3.00-: {{{
    3.19:
     - Added C/C++ support in omni_complete.
     - Fixed PHP pattern bug in omni_complete.
@@ -556,7 +566,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Deleted caching when BufWritePost in include_complete.
     - Implemented buffer local autocomplete lock.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.18:
     - Improved backslash escape in filename_complete.
     - Deleted \v pattern.

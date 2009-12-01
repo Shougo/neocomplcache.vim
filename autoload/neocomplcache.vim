@@ -82,7 +82,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
-                \'\$\h\w*\|\[:\%(\h\w*:\]\)\?\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\(()\?\)\?\|&\?\h[[:alnum:]_:]*\%(#\h\w*\)*\%([!>]\|()\?\)\?')
+                \'\[:\%(\h\w*:\]\)\?\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:]*\%(#\h\w*\)*\%([!>]\|()\?\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh',
@@ -112,13 +112,13 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'awk',
                 \'\v\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell',
-                \'\v\h\w*['']?')
+                \'\h\w*['']?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml',
                 \'\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'html,xhtml,xml',
-                \'\v[[:alnum:]_:-]*\>|\</?%([[:alnum:]_:-]+\s*)?%(/?\>)?|\&\h%(\w*;)?|\h[[:alnum:]_:-]*%(\=")?|\<[^>]*>?')
+                \'[[:alnum:]_:-]*>\|</\?\%([[:alnum:]_:-]+\s*\)?\%(/\?\>\)?\|\&\h\%(\w*;\)\?\|\h[[:alnum:]_:-]*\%(="\%(.\{-}*"\?\)\?\)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'css',
                 \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tags',
@@ -236,11 +236,6 @@ endfunction"}}}
 " Complete functions."{{{
 function! neocomplcache#manual_complete(findstart, base)"{{{
     if a:findstart
-        if !neocomplcache#plugin#buffer_complete#exists_current_source()
-            let s:complete_words = []
-            return -1
-        endif
-        
         " Get cursor word.
         let l:cur_text = s:get_cur_text()
 
@@ -249,6 +244,10 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
         let s:skipped = 0
         for l:complfunc in s:complfuncs_func_table
             let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
+            if l:cur_keyword_pos < 0
+                " Try append 'a'.
+                let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text.'a'])
+            endif
 
             if l:cur_keyword_pos >= 0
                 let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
@@ -277,10 +276,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
                                 \'rank' : call(l:complfunc . 'get_rank', [])
                                 \}
                 endif
-
-                if s:skipped
-                    return
-                endif
             endif
         endfor
         "}}}
@@ -290,42 +285,42 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
         endif
 
         return s:cur_keyword_pos
+    else
+        if g:NeoComplCache_EnableInfo"{{{
+            " Check preview window.
+            silent! wincmd P
+            if &previewwindow
+                wincmd p
+                setlocal completeopt+=preview
+            else
+                setlocal completeopt-=preview
+            endif
+        endif"}}}
+
+        return s:complete_words
     endif
-
-    if g:NeoComplCache_EnableInfo"{{{
-        " Check preview window.
-        silent! wincmd P
-        if &previewwindow
-            wincmd p
-            setlocal completeopt+=preview
-        else
-            setlocal completeopt-=preview
-        endif
-    endif"}}}
-
-    return s:complete_words
 endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{
     if a:findstart
         return s:cur_keyword_pos
+    else
+        " Restore option.
+        let &l:completefunc = 'neocomplcache#manual_complete'
+
+        if g:NeoComplCache_EnableInfo"{{{
+            " Check preview window.
+            silent! wincmd P
+            if &previewwindow
+                wincmd p
+                setlocal completeopt+=preview
+            else
+                setlocal completeopt-=preview
+            endif
+        endif"}}}
+
+        return s:complete_words
     endif
-
-    " Restore option.
-    let &l:completefunc = 'neocomplcache#manual_complete'
-
-    if g:NeoComplCache_EnableInfo"{{{
-        " Check preview window.
-        silent! wincmd P
-        if &previewwindow
-            wincmd p
-            setlocal completeopt+=preview
-        else
-            setlocal completeopt-=preview
-        endif
-    endif"}}}
-
-    return s:complete_words
 endfunction"}}}
 
 " Plugin helper."{{{
@@ -589,7 +584,7 @@ function! neocomplcache#close_popup()"{{{
         return ''
     endif
 
-    let s:old_text = getline('.')[: col('.')-2]
+    let s:old_text = neocomplcache#get_cur_text()
     let s:prev_numbered_list = []
 
     return "\<C-y>"
@@ -637,6 +632,11 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
         let l:complfunc = s:complfuncs_dict[a:complfunc_name]
 
         let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
+        if l:cur_keyword_pos < 0
+            " Try append 'a'.
+            let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text.'a'])
+        endif
+        
         let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
         if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
             return ''
@@ -675,13 +675,7 @@ function! neocomplcache#undo_completion()"{{{
     endif
 
     " Get cursor word.
-    let l:cur_text = s:get_cur_text()
-
-    if !neocomplcache#plugin#buffer_complete#exists_current_source()
-        return ''
-    endif
-
-    let l:cur_keyword_str = neocomplcache#match_word(l:cur_text)
+    let l:cur_keyword_str = neocomplcache#match_word(s:get_cur_text())
     let l:old_keyword_str = s:cur_keyword_str
     let s:cur_keyword_str = l:cur_keyword_str
 
@@ -694,10 +688,6 @@ endfunction"}}}
 
 " Event functions."{{{
 function! s:complete()"{{{
-    if !neocomplcache#plugin#buffer_complete#exists_current_source()
-        return
-    endif
-
     if s:skip_next_complete
         let s:skip_next_complete = 0
 
@@ -810,6 +800,7 @@ function! s:complete()"{{{
     let [s:cur_keyword_pos, s:cur_keyword_str, l:complete_words] = s:integrate_completion(l:complete_result)
 
     if empty(l:complete_words)
+        let &l:completefunc = 'neocomplcache#manual_complete'
         return
     endif
 

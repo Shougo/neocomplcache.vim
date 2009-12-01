@@ -176,14 +176,11 @@ function! neocomplcache#plugin#buffer_complete#calc_prev_rank(cache_keyword_buff
     " Get next keyword list.
     let [l:source_next, l:source_next_next, l:operator_list] = [{}, {}, {}]
     " Get operator keyword list.
-    let l:pattern = neocomplcache#get_keyword_pattern_end()
-    let l:cur_text = strpart(getline('.'), 0, col('.') - 1)
-    let l:cur_keyword_pos = match(l:cur_text, l:pattern)
+    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_keyword_pos = match(l:cur_text, neocomplcache#get_keyword_pattern_end())
     if l:cur_keyword_pos > 0
         let l:cur_text = l:cur_text[: l:cur_keyword_pos-1]
     endif
-    let l:operator = matchstr(l:cur_text,
-                \'[!@#$%^&*(=+\\|`~[{:/?.><-]\{1,2}\ze\s*$')
 
     for src in s:get_sources_list()
         if has_key(s:sources[src].next_word_list, a:prev_word)
@@ -358,7 +355,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
     let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
     let l:menu = printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:keyword_pattern = s:split_keyword(l:source.keyword_pattern)
+    let l:keyword_pattern = l:source.keyword_pattern
 
     let [l:line_cnt, l:max_lines, l:line_num] = [0, len(l:buflines), 0]
     while l:line_num < l:max_lines
@@ -369,79 +366,76 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
         endif
 
         let [l:line, l:rank_cache_line] = [buflines[l:line_num], l:source.rank_cache_lines[l:cache_line]]
-        for l:pattern in l:keyword_pattern
-            let [l:match_num, l:prev_word, l:prepre_word, l:match] =
-                    \[0, '^', '', match(l:line, l:pattern)]
+        let [l:match_num, l:prev_word, l:prepre_word, l:match] = [0, '^', '', match(l:line, l:keyword_pattern)]
 
-            while l:match >= 0"{{{
-                let l:match_str = matchstr(l:line, l:pattern, l:match)
+        while l:match >= 0"{{{
+            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match)
 
-                " Ignore too short keyword.
-                if len(l:match_str) >= g:NeoComplCache_MinKeywordLength"{{{
-                    if !has_key(l:rank_cache_line, l:match_str) 
-                        let l:rank_cache_line[l:match_str] = { 'rank' : 1, 'prev_rank' : {}, 'prepre_rank' : {} }
-                        let l:match_cache_line = l:rank_cache_line[l:match_str]
+            " Ignore too short keyword.
+            if len(l:match_str) >= g:NeoComplCache_MinKeywordLength"{{{
+                if !has_key(l:rank_cache_line, l:match_str) 
+                    let l:rank_cache_line[l:match_str] = { 'rank' : 1, 'prev_rank' : {}, 'prepre_rank' : {} }
+                    let l:match_cache_line = l:rank_cache_line[l:match_str]
 
-                        " Check dup.
-                        if !has_key(l:source.dup_check, l:match_str)
-                            " Append list.
-                            let l:keyword = {
-                            \'word' : l:match_str, 'menu' : l:menu,
-                            \'filename' : l:filename, 'srcname' : a:srcname, 'icase' : 1, 'rank' : 1
-                            \}
+                    " Check dup.
+                    if !has_key(l:source.dup_check, l:match_str)
+                        " Append list.
+                        let l:keyword = {
+                                    \'word' : l:match_str, 'menu' : l:menu,
+                                    \'filename' : l:filename, 'srcname' : a:srcname, 'icase' : 1, 'rank' : 1
+                                    \}
 
-                            let l:keyword.abbr = 
-                            \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
-                            \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
+                        let l:keyword.abbr = 
+                                    \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
+                                    \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
 
-                            let l:key = tolower(l:match_str[: s:completion_length-1])
-                            if !has_key(l:source.keyword_cache, l:key)
-                                let l:source.keyword_cache[l:key] = []
-                            endif
-                            call add(l:source.keyword_cache[l:key], l:keyword)
-                            let l:source.dup_check[l:match_str] = 1
+                        let l:key = tolower(l:match_str[: s:completion_length-1])
+                        if !has_key(l:source.keyword_cache, l:key)
+                            let l:source.keyword_cache[l:key] = []
                         endif
+                        call add(l:source.keyword_cache[l:key], l:keyword)
+                        let l:source.dup_check[l:match_str] = 1
+                    endif
+                else
+                    let l:match_cache_line = l:rank_cache_line[l:match_str]
+                    let l:match_cache_line.rank += 1
+                endif
+
+                " Calc previous keyword rank.
+                if l:prepre_word != ''
+                    if !has_key(l:source.next_next_word_list, l:prepre_word)
+                        let l:source.next_next_word_list[l:prepre_word] = {}
+                        let l:source.next_next_word_list[l:prepre_word][l:match_str] = 1
+                    elseif !has_key(l:source.next_next_word_list[l:prepre_word], l:match_str)
+                        let l:source.next_next_word_list[l:prepre_word][l:match_str] = 1
+                    endif
+
+                    if has_key(l:match_cache_line.prepre_rank, l:prepre_word)
+                        let l:match_cache_line.prepre_rank[l:prepre_word] += 1
                     else
-                        let l:match_cache_line = l:rank_cache_line[l:match_str]
-                        let l:match_cache_line.rank += 1
+                        let l:match_cache_line.prepre_rank[l:prepre_word] = 1
                     endif
+                endif
 
-                    " Calc previous keyword rank.
-                    if l:prepre_word != ''
-                        if !has_key(l:source.next_next_word_list, l:prepre_word)
-                            let l:source.next_next_word_list[l:prepre_word] = {}
-                            let l:source.next_next_word_list[l:prepre_word][l:match_str] = 1
-                        elseif !has_key(l:source.next_next_word_list[l:prepre_word], l:match_str)
-                            let l:source.next_next_word_list[l:prepre_word][l:match_str] = 1
-                        endif
+                if !has_key(l:source.next_word_list, l:prev_word)
+                    let l:source.next_word_list[l:prev_word] = {}
+                    let l:source.next_word_list[l:prev_word][l:match_str] = 1
+                elseif !has_key(l:source.next_word_list[l:prev_word], l:match_str)
+                    let l:source.next_word_list[l:prev_word][l:match_str] = 1
+                endif
 
-                        if has_key(l:match_cache_line.prepre_rank, l:prepre_word)
-                            let l:match_cache_line.prepre_rank[l:prepre_word] += 1
-                        else
-                            let l:match_cache_line.prepre_rank[l:prepre_word] = 1
-                        endif
-                    endif
+                if has_key(l:match_cache_line.prev_rank, l:prev_word)
+                    let l:match_cache_line.prev_rank[l:prev_word] += 1
+                else
+                    let l:match_cache_line.prev_rank[l:prev_word] = 1
+                endif
+            endif"}}}
 
-                    if !has_key(l:source.next_word_list, l:prev_word)
-                        let l:source.next_word_list[l:prev_word] = {}
-                        let l:source.next_word_list[l:prev_word][l:match_str] = 1
-                    elseif !has_key(l:source.next_word_list[l:prev_word], l:match_str)
-                        let l:source.next_word_list[l:prev_word][l:match_str] = 1
-                    endif
+            let l:match_num = l:match + len(l:match_str)
 
-                    if has_key(l:match_cache_line.prev_rank, l:prev_word)
-                        let l:match_cache_line.prev_rank[l:prev_word] += 1
-                    else
-                        let l:match_cache_line.prev_rank[l:prev_word] = 1
-                    endif
-                endif"}}}
-
-                let l:match_num = l:match + len(l:match_str)
-
-                " Next match.
-                let [l:prev_word, l:prepre_word, l:match] = [l:match_str, l:prev_word, match(l:line, l:pattern, l:match_num)]
-            endwhile"}}}
-        endfor
+            " Next match.
+            let [l:prev_word, l:prepre_word, l:match] = [l:match_str, l:prev_word, match(l:line, l:keyword_pattern, l:match_num)]
+        endwhile"}}}
 
         let l:line_num += 1
         let l:line_cnt += 1
@@ -548,7 +542,7 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
     endif
 
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:keyword_pattern = s:split_keyword(l:source.keyword_pattern)
+    let l:keyword_pattern = l:source.keyword_pattern
 
     if a:srcname =~ '^\d'
         " Buffer.
@@ -611,37 +605,35 @@ function! s:word_caching(srcname, start_line, end_line)"{{{
         let l:line_cnt -= 1
 
         let l:line = buflines[l:line_num]
-        for l:pattern in l:keyword_pattern
-            let [l:match_num, l:match] = [0, match(l:line, l:pattern)]
+        let [l:match_num, l:match] = [0, match(l:line, l:keyword_pattern)]
 
-            while l:match >= 0"{{{
-                let l:match_str = matchstr(l:line, l:pattern, l:match)
+        while l:match >= 0"{{{
+            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match)
 
-                " Ignore too short keyword.
-                if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
-                \&& !has_key(l:source.dup_check, l:match_str)
-                    " Append list.
-                    let l:keyword = {
-                                \'word' : l:match_str, 'menu' : l:menu,
-                                \'filename' : l:filename, 'srcname' : a:srcname, 'icase' : 1, 'rank' : 1
-                                \}
-                    let l:keyword.abbr = 
-                                \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
-                                \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
+            " Ignore too short keyword.
+            if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
+                        \&& !has_key(l:source.dup_check, l:match_str)
+                " Append list.
+                let l:keyword = {
+                            \'word' : l:match_str, 'menu' : l:menu,
+                            \'filename' : l:filename, 'srcname' : a:srcname, 'icase' : 1, 'rank' : 1
+                            \}
+                let l:keyword.abbr = 
+                            \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
+                            \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
 
-                    let l:key = tolower(l:match_str[: s:completion_length-1])
-                    if !has_key(l:source.keyword_cache, l:key)
-                        let l:source.keyword_cache[l:key] = []
-                    endif
-                    call add(l:source.keyword_cache[l:key], l:keyword)
-
-                    let l:source.dup_check[l:match_str] = 1
+                let l:key = tolower(l:match_str[: s:completion_length-1])
+                if !has_key(l:source.keyword_cache, l:key)
+                    let l:source.keyword_cache[l:key] = []
                 endif
+                call add(l:source.keyword_cache[l:key], l:keyword)
 
-                let l:match_num = l:match + len(l:match_str)
-                let l:match = match(l:line, l:pattern, l:match_num)
-            endwhile"}}}
-        endfor
+                let l:source.dup_check[l:match_str] = 1
+            endif
+
+            let l:match_num = l:match + len(l:match_str)
+            let l:match = match(l:line, l:keyword_pattern, l:match_num)
+        endwhile"}}}
 
         let l:line_num += 1
     endwhile
@@ -666,44 +658,42 @@ function! s:word_caching_current_line()"{{{
 
     let l:menu = printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:keyword_pattern = s:split_keyword(l:source.keyword_pattern)
+    let l:keyword_pattern = l:source.keyword_pattern
 
     " Buffer.
     let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
     let l:end_line = l:start_line + l:source.cache_line_cnt
     let l:buflines = join(getbufline(bufnr('%'), l:start_line, l:end_line), "\<CR>")
 
-    for l:pattern in l:keyword_pattern
-        let [l:match_num, l:match] = [0, match(l:buflines, l:pattern)]
-        while l:match >= 0
-            let l:match_str = matchstr(l:buflines, l:pattern, l:match)
+    let [l:match_num, l:match] = [0, match(l:buflines, l:keyword_pattern)]
+    while l:match >= 0
+        let l:match_str = matchstr(l:buflines, l:keyword_pattern, l:match)
 
-            " Ignore too short keyword.
-            if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
-                        \&& !has_key(l:source.dup_check, l:match_str)
-                " Append list.
-                let l:keyword = {
-                            \'word' : l:match_str, 'menu' : l:menu,
-                            \'filename' : l:filename, 'srcname' : bufnr('%'), 'icase' : 1, 'rank' : 1
-                            \}
+        " Ignore too short keyword.
+        if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
+                    \&& !has_key(l:source.dup_check, l:match_str)
+            " Append list.
+            let l:keyword = {
+                        \'word' : l:match_str, 'menu' : l:menu,
+                        \'filename' : l:filename, 'srcname' : bufnr('%'), 'icase' : 1, 'rank' : 1
+                        \}
 
-                let l:keyword.abbr = 
-                            \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
-                            \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
+            let l:keyword.abbr = 
+                        \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
+                        \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
 
-                let l:key = tolower(l:match_str[: s:completion_length-1])
-                if !has_key(l:source.keyword_cache, l:key)
-                    let l:source.keyword_cache[l:key] = []
-                endif
-                call add(l:source.keyword_cache[l:key], l:keyword)
-
-                let l:source.dup_check[l:match_str] = 1
+            let l:key = tolower(l:match_str[: s:completion_length-1])
+            if !has_key(l:source.keyword_cache, l:key)
+                let l:source.keyword_cache[l:key] = []
             endif
+            call add(l:source.keyword_cache[l:key], l:keyword)
 
-            let l:match_num = l:match + len(l:match_str)
-            let l:match = match(l:buflines, l:pattern, l:match_num)
-        endwhile
-    endfor
+            let l:source.dup_check[l:match_str] = 1
+        endif
+
+        let l:match_num = l:match + len(l:match_str)
+        let l:match = match(l:buflines, l:keyword_pattern, l:match_num)
+    endwhile
 endfunction"}}}
 
 function! s:caching_from_cache(srcname)"{{{
@@ -817,75 +807,6 @@ function! s:caching_from_cache(srcname)"{{{
     endif
 
     return 0
-endfunction"}}}
-
-function! s:split_keyword(keyword_pattern)"{{{
-    let l:keyword_patterns = []
-    let l:keyword_pattern = a:keyword_pattern
-
-    let l:i = 0
-    let l:max = len(l:keyword_pattern)
-    let l:is_very_magic = 0
-    while l:i < l:max
-        if match(l:keyword_pattern, '^\\v', l:i) >= 0
-            " Very magic.
-            let l:is_very_magic = 1
-            
-            let l:i += 2
-        elseif match(l:keyword_pattern, '^\\m', l:i) >= 0
-            " Magic.
-            let l:is_very_magic = 0
-            
-            let l:i += 2
-        elseif l:is_very_magic && match(l:keyword_pattern, '^%\?(', l:i) >= 0
-            " Grouping.
-            let l:i = s:match_pair(l:keyword_pattern, '\\\@<!%\?(', '\\\@<!)', l:i)
-            if l:i < 0
-                echoerr 'Unmatched (.'
-                return []
-            endif
-
-            let l:i += 1
-        elseif !l:is_very_magic && match(l:keyword_pattern, '^\\%\?(', l:i) >= 0
-            " Grouping.
-            let l:i = s:match_pair(l:keyword_pattern, '\\%\?(', '\\)', l:i)
-            if l:i < 0
-                echoerr 'Unmatched (.'
-                return []
-            endif
-
-            let l:i += 1
-        elseif l:is_very_magic && l:keyword_pattern[l:i] == '|'
-            " Select.
-            call add(l:keyword_patterns, '\v'.l:keyword_pattern[: l:i-1])
-            let l:keyword_pattern = l:keyword_pattern[l:i+1 :]
-            let l:max = len(l:keyword_pattern)
-            
-            let l:i = 0
-        elseif !l:is_very_magic && match(l:keyword_pattern, '^\\|', l:i) >= 0
-            " Select.
-            call add(l:keyword_patterns, l:keyword_pattern[: l:i-1])
-            let l:keyword_pattern = l:keyword_pattern[l:i+2 :]
-            let l:max = len(l:keyword_pattern)
-            
-            let l:i = 0
-        elseif l:keyword_pattern[l:i] == '\'
-            " Escape.
-            let l:i += 2
-        elseif l:keyword_pattern[l:i] == '['
-            " Collection.
-            let l:i = matchend(l:keyword_pattern, '\\\@<!]', l:i)
-            if l:i < 0
-                echoerr 'Unmatched [.'
-                return []
-            endif
-        else
-            let l:i += 1
-        endif
-    endwhile
-
-    call add(l:keyword_patterns, (l:is_very_magic ? '\v' : '').l:keyword_pattern)
-    return l:keyword_patterns
 endfunction"}}}
 
 function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Nov 2009
+" Last Modified: 01 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.31, for Vim 7.0
+" Version: 1.32, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.32:
+"    - Implemented Filename() and g:snips_author for snipMate.
+"
 "   1.31:
 "    - Fixed disable expand when buftype is 'nofile' bug.
 "    - Implemented <Plug>(neocomplcache_snippets_jump).
@@ -199,6 +202,11 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
     let s:begin_snippet = 0
     let s:end_snippet = 0
     let s:snippet_holder_cnt = 1
+    
+    " Set snips_author.
+    if !exists('snips_author')
+        let g:snips_author = 'Me'
+    endif
 
     " Set snippets dir.
     let s:runtime_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete'), '\n')
@@ -893,6 +901,17 @@ endfunction"}}}
 
 function! s:SID_PREFIX()
     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
+function! Filename(...)
+    let l:filename = expand('%:t:r')
+    if l:filename == ''
+        return a:0 == 2 ? a:2 : ''
+    elseif a:0 == 0 || a:1 == ''
+        return l:filename
+    else
+        return substitute(a:1, '$1', l:filename, 'g')
+    endif
 endfunction
 
 " Plugin key-mappings.

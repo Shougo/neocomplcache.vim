@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Nov 2009
+" Last Modified: 01 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.03, for Vim 7.0
+" Version: 1.04, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.04:
+"    - Implemented environment variable completion.
+"
 "   1.03:
 "    - Become complfunc.
 "    - Don't complete within comment.
@@ -112,7 +115,8 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
         endif
     endif"}}}
 
-    return match(a:cur_text, '\.$\|' . neocomplcache#get_keyword_pattern_end('vim'))
+                
+    return match(a:cur_text, '\.$\|&\h[[:alnum:]_:]*\|\$\h\w*\|' . neocomplcache#get_keyword_pattern_end('vim'))
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
@@ -151,25 +155,22 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
             let l:keyword.abbr = l:prefix . l:keyword.abbr
         endfor
         let l:list += l:options
-    endif
-    
-    if l:cur_text =~ '\<has(''\h\w*$'
+    elseif l:cur_text =~ '\<has(''\h\w*$'
         let l:list += s:internal_candidates_list.features
-    endif
-    if l:cur_text =~ '\<map\|cm\%[ap]\|cno\%[remap]\|im\%[ap]\|ino\%[remap]\|lm\%[ap]\|ln\%[oremap]\|nm\%[ap]\|nn\%[oremap]\|no\%[remap]\|om\%[ap]\|ono\%[remap]\|smap\|snor\%[emap]\|vm\%[ap]\|vn\%[oremap]\|xm\%[ap]\|xn\%[oremap]\>'
+    elseif l:cur_text =~ '\<map\|cm\%[ap]\|cno\%[remap]\|im\%[ap]\|ino\%[remap]\|lm\%[ap]\|ln\%[oremap]\|nm\%[ap]\|nn\%[oremap]\|no\%[remap]\|om\%[ap]\|ono\%[remap]\|smap\|snor\%[emap]\|vm\%[ap]\|vn\%[oremap]\|xm\%[ap]\|xn\%[oremap]\>'
         let l:list += s:internal_candidates_list.mappings
         let l:list += s:global_candidates_list.mappings
-    endif
-    if l:cur_text =~ '\<au\%[tocmd]!\?'
+    elseif l:cur_text =~ '\<au\%[tocmd]!\?'
         let l:list += s:internal_candidates_list.autocmds
-    endif
-    if l:cur_text =~ '\<au\%[tocmd]!\?\s*\h\w*$\|\<aug\%[roup]'
+    elseif l:cur_text =~ '\<au\%[tocmd]!\?\s*\h\w*$\|\<aug\%[roup]'
         let l:list += s:global_candidates_list.augroups
-    endif
-    if l:cur_text =~ '\<com\%[mand]!\?\>'
+    elseif l:cur_text =~ '\<com\%[mand]!\?\>'
         let l:list += s:internal_candidates_list.command_args
         let l:list += s:internal_candidates_list.command_replaces
+    elseif l:cur_text =~ '^\$'
+        let l:list += s:global_candidates_list.environments
     endif
+    
     if l:cur_text =~ '\%(^\||sil\%[ent]!\?\)\s*\h\w*$'
         let l:list += s:internal_candidates_list.commands
         let l:list += s:global_candidates_list.commands
@@ -223,6 +224,7 @@ function! s:global_caching()"{{{
     let s:global_candidates_list.functions = s:get_functionlist()
     let s:global_candidates_list.augroups = s:get_augrouplist()
     let s:global_candidates_list.mappings = s:get_mappinglist()
+    let s:global_candidates_list.environments = s:get_envlist()
 
     let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f', 5)
     let s:internal_candidates_list.options = s:caching_from_dict('options', 'o', 10)
@@ -469,6 +471,26 @@ function! s:get_cmdlist()"{{{
     endfor
     let s:global_candidates_list.commands_prototype = l:commands_prototype
     
+    return l:keyword_list
+endfunction"}}}
+function! s:get_envlist()"{{{
+    " Get environment variable list.
+    
+    let l:keyword_list = []
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+    let l:menu_pattern = '[V] environment'
+    for line in split(system('set'), '\n')
+        let l:word = '$' . toupper(matchstr(line, '^\h\w*'))
+        let l:keyword =  {
+                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+                    \ 'kind' : 'e', 
+                    \ 'rank' : 5
+                    \}
+        let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
+                    \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
+
+        call add(l:keyword_list, l:keyword)
+    endfor
     return l:keyword_list
 endfunction"}}}
 function! s:get_variablelist()"{{{

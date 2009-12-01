@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Nov 2009
+" Last Modified: 01 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.07, for Vim 7.0
+" Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.08:
+"    - Check Python and Ruby interface.
+"
 "   1.07:
 "    - Deleted \v pattern.
 "    - Restore cursor position.
@@ -75,12 +78,20 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
         let g:NeoComplCache_OmniPatterns = {}
     endif
     if has('ruby')
-        call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'ruby',
-                    \'[^. *\t]\.\h\w*\|\h\w*::')
+        try 
+            ruby 1
+            call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'ruby',
+                        \'[^. *\t]\.\h\w*\|\h\w*::')
+        catch
+        endtry
     endif
     if has('python')
-        call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'python',
-                    \'[^. \t]\.\h\w*')
+        try 
+            python 1
+            call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'python',
+                        \'[^. \t]\.\h\w*')
+        catch
+        endtry
     endif
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'html,xhtml,xml',
                 \'<[^>]*')
