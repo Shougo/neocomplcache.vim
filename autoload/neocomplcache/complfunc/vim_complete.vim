@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.04:
 "    - Implemented environment variable completion.
+"    - Supported wildcard.
 "
 "   1.03:
 "    - Become complfunc.
@@ -115,8 +116,15 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
         endif
     endif"}}}
 
-                
-    return match(a:cur_text, '\.$\|&\h[[:alnum:]_:]*\|\$\h\w*\|' . neocomplcache#get_keyword_pattern_end('vim'))
+    let l:pattern = '\.$\|&\h[[:alnum:]_:]*\|\$\h\w*\|' . neocomplcache#get_keyword_pattern_end('vim')
+    let l:cur_keyword_pos = match(a:cur_text, l:pattern)
+    
+    if g:NeoComplCache_EnableWildCard
+        " Check wildcard.
+        let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
+    endif
+    
+    return l:cur_keyword_pos
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{

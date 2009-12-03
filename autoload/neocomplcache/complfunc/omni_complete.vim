@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Dec 2009
+" Last Modified: 03 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.08:
 "    - Check Python and Ruby interface.
+"    - Supported wildcard.
+"    - Improved skip.
 "
 "   1.07:
 "    - Deleted \v pattern.
@@ -103,7 +105,6 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
                 \'[^. \t][.:]\h\w*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'php',
                 \'[^. \t]->\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+\|\h\w*::')
-                "\'[^. \t]\%(->\|::\)\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'java',
                 \'\%(\h\w*\|)\)\.')
     "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'perl',
@@ -123,18 +124,36 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     endif
 
     if &l:completefunc == 'neocomplcache#auto_complete' &&
-                \(!has_key(g:NeoComplCache_OmniPatterns, &filetype)
-                \|| g:NeoComplCache_OmniPatterns[&filetype] == ''
-                \|| a:cur_text !~ '\%(' . g:NeoComplCache_OmniPatterns[&filetype] . '\m\)$')
+                \(!has_key(g:NeoComplCache_OmniPatterns, &filetype) || g:NeoComplCache_OmniPatterns[&filetype] == '')
+        return -1
+    endif
+    
+    let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_text =~ '\*\w\+$'
+    
+    " Check wildcard.
+    if l:is_wildcard
+        " Check wildcard.
+        let l:cur_text = a:cur_text[: match(a:cur_text, '\%(\*\w\+\)\+$') - 1]
+    else
+        let l:cur_text = a:cur_text
+    endif
+
+    if l:cur_text !~ '\%(' . g:NeoComplCache_OmniPatterns[&filetype] . '\m\)$'
+        " Check pattern.
         return -1
     endif
 
     " Save pos.
     let l:pos = getpos('.')
     let l:line = getline('.')
-    call setline('.', a:cur_text)
     
-    let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
+    call setline('.', l:cur_text)
+    
+    try
+        let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
+    catch
+        return -1
+    endtry
 
     " Restore pos.
     call setline('.', l:line)
@@ -144,14 +163,31 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-    if g:NeoComplCache_EnableSkipCompletion && &l:completefunc == 'neocomplcache#auto_complete'
-        let l:start_time = reltime()
-    else
-        let l:start_time = 0
-    endif
+    let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_keyword_str =~ '\*\w\+$'
 
     let l:pos = getpos('.')
-    let l:omni_list = call(&l:omnifunc, [0, (&filetype == 'ruby')? '' : a:cur_keyword_str])
+    if l:is_wildcard
+        " Check wildcard.
+        let l:cur_keyword_str = a:cur_keyword_str[: match(a:cur_keyword_str, '\%(\*\w\+\)\+$') - 1]
+    else
+        let l:cur_keyword_str = a:cur_keyword_str
+    endif
+    
+    try
+        if &filetype == 'ruby' && l:is_wildcard
+            let l:line = getline('.')
+            let l:cur_text = neocomplcache#get_cur_text()
+            call setline('.', l:cur_text[: match(l:cur_text, '\%(\*\w\+\)\+$') - 1])
+        endif
+        
+        let l:omni_list = call(&l:omnifunc, [0, (&filetype == 'ruby')? '' : l:cur_keyword_str])
+        
+        if &filetype == 'ruby' && l:is_wildcard
+            call setline('.', l:line)
+        endif
+    catch
+        let l:omni_list = []
+    endtry
     call setpos('.', l:pos)
     
     if empty(l:omni_list)
@@ -159,14 +195,9 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     endif
 
     " Skip completion if takes too much time."{{{
-    if neocomplcache#check_skip_time(l:start_time)
-        echo 'Skipped auto completion'
-        let s:skipped = 1
+    if neocomplcache#check_skip_time()
         return []
     endif"}}}
-
-    echo ''
-    redraw
 
     let l:omni_string_list = filter(copy(l:omni_list), 'type(v:val) == '.type(''))
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
@@ -207,7 +238,11 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
         call add(l:list, l:dict)
     endfor
 
-    return l:list
+    if l:is_wildcard
+        return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
+    else
+        return l:list
+    endif
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_rank()"{{{

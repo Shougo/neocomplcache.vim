@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.32, for Vim 7.0
+" Version: 1.33, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.33:
+"    - Deleted Filename() and g:snips_author.
+"    - Catch eval error.
+"
 "   1.32:
 "    - Implemented Filename() and g:snips_author for snipMate.
 "
@@ -883,35 +887,29 @@ function! s:eval_snippet(snippet_text)"{{{
     let l:snip_word = ''
     let l:prev_match = 0
     let l:match = match(a:snippet_text, '`.\{-}`')
-    while l:match >= 0
-        if l:match - l:prev_match > 0
-            let l:snip_word .= a:snippet_text[l:prev_match : l:match - 1]
-        endif
-        let l:prev_match = matchend(a:snippet_text, '`.\{-}`', l:match)
-        let l:snip_word .= eval(a:snippet_text[l:match+1 : l:prev_match - 2])
+    
+    try
+        while l:match >= 0
+            if l:match - l:prev_match > 0
+                let l:snip_word .= a:snippet_text[l:prev_match : l:match - 1]
+            endif
+            let l:prev_match = matchend(a:snippet_text, '`.\{-}`', l:match)
+            let l:snip_word .= eval(a:snippet_text[l:match+1 : l:prev_match - 2])
 
-        let l:match = match(a:snippet_text, '`.\{-}`', l:prev_match)
-    endwhile
-    if l:prev_match >= 0
-        let l:snip_word .= a:snippet_text[l:prev_match :]
-    endif
+            let l:match = match(a:snippet_text, '`.\{-}`', l:prev_match)
+        endwhile
+        if l:prev_match >= 0
+            let l:snip_word .= a:snippet_text[l:prev_match :]
+        endif
+    catch
+        return ''
+    endtry
 
     return l:snip_word
 endfunction"}}}
 
 function! s:SID_PREFIX()
     return matchstr(expand('<sfile>'), '<SNR>\d\+_')
-endfunction
-
-function! Filename(...)
-    let l:filename = expand('%:t:r')
-    if l:filename == ''
-        return a:0 == 2 ? a:2 : ''
-    elseif a:0 == 0 || a:1 == ''
-        return l:filename
-    else
-        return substitute(a:1, '$1', l:filename, 'g')
-    endif
 endfunction
 
 " Plugin key-mappings.

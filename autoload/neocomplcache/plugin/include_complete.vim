@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Nov 2009
+" Last Modified: 02 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.07:
 "    - Improved caching speed when FileType.
 "    - Deleted caching when BufWritePost.
+"    - Fixed set path pattern in Python.
 "
 "   1.06:
 "    - Ignore no suffixes file.
@@ -74,6 +75,7 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
     " Initialize
     let s:include_info = {}
     let s:include_cache = {}
+    let s:cached_pattern = {}
     let s:completion_length = neocomplcache#get_completion_length('include_complete')
     
     augroup neocomplcache
@@ -89,10 +91,6 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
                 \'substitute(v:fname,''\\.'',''/'',''g'')')
     "}}}
     " Initialize path pattern."{{{
-    if executable('python')
-        call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludePath', 'python',
-                    \system('python -', 'import sys;sys.stdout.write(",".join(sys.path))'))
-    endif
     "}}}
     " Initialize suffixes pattern."{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludeSuffixes', 'haskell', '.hs')
@@ -204,6 +202,15 @@ function! s:get_include_files(bufnumber)"{{{
     if l:filetype == ''
         return []
     endif
+    
+    if l:filetype == 'python'
+                \&& !has_key(g:NeoComplCache_IncludePath, 'python')
+                \&& executable('python')
+        " Initialize python path pattern.
+        call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludePath', 'python',
+                    \system('python -', 'import sys;sys.stdout.write(",".join(sys.path))'))
+    endif
+    
     let l:pattern = has_key(g:NeoComplCache_IncludePattern, l:filetype) ? 
                 \g:NeoComplCache_IncludePattern[l:filetype] : getbufvar(a:bufnumber, '&include')
     if l:pattern == ''

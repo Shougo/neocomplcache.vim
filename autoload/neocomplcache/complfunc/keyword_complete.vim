@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2009
+" Last Modified: 03 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.18, for Vim 7.0
+" Version: 3.21, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
@@ -59,7 +59,7 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
 
     if g:NeoComplCache_EnableWildCard
         " Check wildcard.
-        let l:cur_keyword_pos = s:check_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
+        let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
     endif
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
 
@@ -73,12 +73,6 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-    if g:NeoComplCache_EnableSkipCompletion && &l:completefunc == 'neocomplcache#auto_complete'
-        let l:start_time = reltime()
-    else
-        let l:start_time = 0
-    endif
-
     " Load plugin.
     let l:loaded_plugins = copy(s:plugins_func_table)
 
@@ -111,9 +105,7 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
             call call(l:loaded_plugins[l:plugin] . 'calc_rank', [l:cache_keyword_lists[l:plugin]])
 
             " Skip completion if takes too much time."{{{
-            if neocomplcache#check_skip_time(l:start_time)
-                echo 'Skipped auto completion'
-                let s:skipped = 1
+            if neocomplcache#check_skip_time()
                 return []
             endif"}}}
         endfor
@@ -185,21 +177,6 @@ function! neocomplcache#complfunc#keyword_complete#get_manual_complete_list(plug
     return l:complete_words
 endfunction"}}}
 
-function! s:check_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
-    let l:cur_keyword_pos = a:cur_keyword_pos
-
-    while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] =~ '[*]'
-        let l:left_text = a:cur_text[: l:cur_keyword_pos - 2]
-        if l:left_text !~ a:pattern
-            break
-        endif
-
-        let l:cur_keyword_pos = match(l:left_text, a:pattern)
-    endwhile
-    
-    return l:cur_keyword_pos
-endfunction"}}}
-
 function! s:get_prev_word(cur_keyword_str)"{{{
     let l:keyword_pattern = neocomplcache#get_keyword_pattern()
     let l:line_part = getline('.')[: col('.')-1 - len(a:cur_keyword_str)]
@@ -225,6 +202,5 @@ function! s:get_prev_word(cur_keyword_str)"{{{
     return [l:prev_word, l:prepre_word]
     "echo printf('prepre = %s, pre = %s', l:prepre_word, l:prev_word)
 endfunction"}}}
-
 
 " vim: foldmethod=marker

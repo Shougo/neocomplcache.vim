@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Dec 2009
+" Last Modified: 03 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.20, for Vim 7.0
+" Version: 3.21, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -88,9 +88,6 @@ endif
 if !exists('g:NeoComplCache_SkipCompletionTime')
     let g:NeoComplCache_SkipCompletionTime = '0.2'
 endif
-if !exists('g:NeoComplCache_SkipInputTime')
-    let g:NeoComplCache_SkipInputTime = '0.0'
-endif
 if !exists('g:NeoComplCache_PreviousKeywordCompletion')
     let g:NeoComplCache_PreviousKeywordCompletion = 1
 endif
@@ -114,9 +111,6 @@ if !exists('g:NeoComplCache_CachingLimitFileSize')
 endif
 if !exists('g:NeoComplCache_CachingDisablePattern')
     let g:NeoComplCache_CachingDisablePattern = ''
-endif
-if !exists('g:NeoComplCache_PluginCompletionLength')
-    let g:NeoComplCache_PluginCompletionLength = {}
 endif
 if !exists('g:NeoComplCache_CachingPercentInStatusline')
     let g:NeoComplCache_CachingPercentInStatusline = 0

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Dec 2009
+" Last Modified: 03 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.06:
 "    - Don't expand environment variable.
+"    - Improved skip.
 "
 "   1.05:
 "    - Fixed freeze bug.
@@ -106,12 +107,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         let l:cur_keyword_str = substitute(l:cur_keyword_str, '\.\.\zs\.', '/\.\.', 'g')
     endwhile
 
-    if g:NeoComplCache_EnableSkipCompletion && &l:completefunc == 'neocomplcache#auto_complete'
-        let l:start_time = reltime()
-    else
-        let l:start_time = 0
-    endif
-
     if a:cur_keyword_str =~ '^\$\h\w*'
         let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
         let l:env_ev = eval(l:env)
@@ -139,9 +134,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         return []
     endif
 
-    if neocomplcache#check_skip_time(l:start_time)
-        echo 'Skipped auto completion'
-        let s:skipped = 1
+    if neocomplcache#check_skip_time()
         return []
     endif
 
@@ -167,9 +160,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     for keyword in l:list
         " Skip completion if takes too much time."{{{
-        if neocomplcache#check_skip_time(l:start_time)
-            echo 'Skipped auto completion'
-            let s:skipped = 1
+        if neocomplcache#check_skip_time()
             return []
         endif"}}}
         
@@ -195,9 +186,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
             let keyword.menu .= ' [-]'
         endif
     endfor
-
-    echo ''
-    redraw
 
     " Escape word.
     for keyword in l:list
