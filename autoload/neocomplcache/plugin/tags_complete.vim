@@ -166,8 +166,11 @@ function! s:caching_tags(bufname)"{{{
 
             let l:list += s:tags_list[l:filename][l:key]
         endif
+	if filereadable(l:filename)
+		let l:readable_filename = l:filename
+	endif
     endfor
-    let s:tags_list[l:filename] = s:initialize_tags(l:filename)
+    let s:tags_list[l:readable_filename] = s:initialize_tags(l:readable_filename)
 endfunction"}}}
 function! s:initialize_tags(filename)"{{{
     " Initialize tags list.
