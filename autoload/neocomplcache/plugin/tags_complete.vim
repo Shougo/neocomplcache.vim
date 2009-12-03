@@ -157,6 +157,7 @@ endfunction"}}}
 
 function! s:caching_tags(bufname)"{{{
     let l:bufname = (a:bufname == '') ? bufname('%') : a:bufname
+    let l:readable_filename = ''
     for tags in split(getbufvar(bufnr(l:bufname), '&tags'), ',')
         let l:filename = fnamemodify(tags, ':p')
         if filereadable(l:filename) && has_key(s:tags_list, l:filename)
@@ -166,11 +167,13 @@ function! s:caching_tags(bufname)"{{{
 
             let l:list += s:tags_list[l:filename][l:key]
         endif
-	if filereadable(l:filename)
-		let l:readable_filename = l:filename
-	endif
+        if filereadable(l:filename)
+            let l:readable_filename = l:filename
+        endif
     endfor
-    let s:tags_list[l:readable_filename] = s:initialize_tags(l:readable_filename)
+    if l:readable_filename != ''
+        let s:tags_list[l:readable_filename] = s:initialize_tags(l:readable_filename)
+    endif
 endfunction"}}}
 function! s:initialize_tags(filename)"{{{
     " Initialize tags list.
