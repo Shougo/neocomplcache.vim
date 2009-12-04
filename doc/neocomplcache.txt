@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.21
+Version: 3.22
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -611,6 +611,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   3.22:
+    - Fixed manual completion error.
+    - Fixed set completeopt bug.
+    - Fixed manual completion error in omni_complete.
+    
+ChangeLog NeoComplCache 3.00-: {{{
    3.21:
     - Catch error in omni_complete.
     - Deleted Filename() and g:snips_author in snippets_complete.
@@ -623,7 +629,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved skip completion.
     - Deleted g:NeoComplCache_SkipInputTime option.
 
-ChangeLog NeoComplCache 3.00-: {{{
    3.20:
     - Improved html and vim keyword pattern.
     - Improved buffer caching.

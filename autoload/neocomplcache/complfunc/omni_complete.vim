@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.08, for Vim 7.0
+" Version: 1.09, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.09:
+"    - Fixed manual completion error.
+"
 "   1.08:
 "    - Check Python and Ruby interface.
 "    - Supported wildcard.
@@ -129,6 +132,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     endif
     
     let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_text =~ '\*\w\+$'
+                \&& &l:completefunc == 'neocomplcache#auto_complete'
     
     " Check wildcard.
     if l:is_wildcard
@@ -138,7 +142,8 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
         let l:cur_text = a:cur_text
     endif
 
-    if l:cur_text !~ '\%(' . g:NeoComplCache_OmniPatterns[&filetype] . '\m\)$'
+    if &l:completefunc == 'neocomplcache#auto_complete' &&
+                \l:cur_text !~ '\%(' . g:NeoComplCache_OmniPatterns[&filetype] . '\m\)$'
         " Check pattern.
         return -1
     endif
@@ -147,7 +152,9 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     let l:pos = getpos('.')
     let l:line = getline('.')
     
-    call setline('.', l:cur_text)
+    if &l:completefunc == 'neocomplcache#auto_complete'
+        call setline('.', l:cur_text)
+    endif
     
     try
         let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
@@ -156,7 +163,9 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     endtry
 
     " Restore pos.
-    call setline('.', l:line)
+    if &l:completefunc == 'neocomplcache#auto_complete'
+        call setline('.', l:line)
+    endif
     call setpos('.', l:pos)
     
     return l:cur_keyword_pos
@@ -164,6 +173,7 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_keyword_str =~ '\*\w\+$'
+                \&& &l:completefunc == 'neocomplcache#auto_complete'
 
     let l:pos = getpos('.')
     if l:is_wildcard

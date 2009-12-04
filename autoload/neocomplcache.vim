@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.21, for Vim 7.0
+" Version: 3.22, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -207,7 +207,8 @@ function! neocomplcache#enable() "{{{
     let &l:completefunc = 'neocomplcache#manual_complete'
 
     " Set options.
-    set completeopt-=menu,longest
+    set completeopt-=menu
+    set completeopt-=longest
     set completeopt+=menuone
 
     " Initialize.

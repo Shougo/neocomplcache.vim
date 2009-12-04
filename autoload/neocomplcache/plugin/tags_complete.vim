@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2009
+" Last Modified: 04 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.13, for Vim 7.0
+" Version: 1.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.14:
+"    - Fixed caching error(Thanks tosik).
+"
 "   1.13:
 "    - Save error log.
 "    - Implemented member filter.
@@ -157,23 +160,12 @@ endfunction"}}}
 
 function! s:caching_tags(bufname)"{{{
     let l:bufname = (a:bufname == '') ? bufname('%') : a:bufname
-    let l:readable_filename = ''
     for tags in split(getbufvar(bufnr(l:bufname), '&tags'), ',')
         let l:filename = fnamemodify(tags, ':p')
-        if filereadable(l:filename) && has_key(s:tags_list, l:filename)
-            if !has_key(s:tags_list[l:filename], l:key)
-                let s:tags_list[l:filename][l:key] = []
-            endif
-
-            let l:list += s:tags_list[l:filename][l:key]
-        endif
         if filereadable(l:filename)
-            let l:readable_filename = l:filename
+            let s:tags_list[l:filename] = s:initialize_tags(l:filename)
         endif
     endfor
-    if l:readable_filename != ''
-        let s:tags_list[l:readable_filename] = s:initialize_tags(l:readable_filename)
-    endif
 endfunction"}}}
 function! s:initialize_tags(filename)"{{{
     " Initialize tags list.
