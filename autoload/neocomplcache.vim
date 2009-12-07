@@ -161,7 +161,7 @@ function! neocomplcache#enable() "{{{
     endif
     call neocomplcache#set_variable_pattern('g:NeoComplCache_CtagsArgumentsList', 'default', '')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_CtagsArgumentsList', 'vim',
-                \"'--extra=fq --fields=afmiKlnsStz '--regex-vim=/function!? ([a-z#:_0-9A-Z]+)/\\1/function/''")
+                \"--extra=fq --fields=afmiKlnsStz --regex-vim='/function!? ([a-z#:_0-9A-Z]+)/\\1/function/'")
     call neocomplcache#set_variable_pattern('g:NeoComplCache_CtagsArgumentsList', 'cpp',
                 \'--c++-kinds=+p --fields=+iaS --extra=+q')
     "}}}

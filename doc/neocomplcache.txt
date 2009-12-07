@@ -615,6 +615,14 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed manual completion error.
     - Fixed set completeopt bug.
     - Fixed manual completion error in omni_complete.
+    - Fixed caching error in tags_complete(Thanks tosik).
+    - Caching current buffer in include_complete.
+    - Use include_complete's cache in omni_complete.
+    - Fixed filetype bug in include_complete.
+    - Don't cache huge file in include_complete.
+    - Fixed snippet expand bug in snippets_complete.
+    - Implemented keyword cache in omni_complete.
+    - Implemented skip directory in filename_complete.
     
 ChangeLog NeoComplCache 3.00-: {{{
    3.21:

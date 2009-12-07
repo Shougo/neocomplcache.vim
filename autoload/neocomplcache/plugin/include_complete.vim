@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Dec 2009
+" Last Modified: 06 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.07, for Vim 7.0
+" Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.08:
+"    - Caching current buffer.
+"    - Fixed filetype bug.
+"    - Don't cache huge file.
+"
 "   1.07:
 "    - Improved caching speed when FileType.
 "    - Deleted caching when BufWritePost.
@@ -71,6 +76,7 @@
 ""}}}
 "=============================================================================
 
+let s:include_info = {}
 function! neocomplcache#plugin#include_complete#initialize()"{{{
     " Initialize
     let s:include_info = {}
@@ -173,6 +179,14 @@ endfunction"}}}
 function! neocomplcache#plugin#include_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
 endfunction"}}}
 
+function! neocomplcache#plugin#include_complete#get_include_files(bufnumber)"{{{
+    if has_key(s:include_info, a:bufnumber)
+        return s:include_info[a:bufnumber].include_files
+    else
+        return []
+    endif
+endfunction"}}}
+
 function! s:check_buffer_all()"{{{
     let l:bufnumber = 1
 
@@ -191,8 +205,25 @@ function! s:check_buffer(bufname)"{{{
     let s:include_info[l:bufnumber] = {}
     if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
                 \&& getbufvar(l:bufnumber, '&readonly') == 0
+        let l:filetype = getbufvar(l:bufnumber, '&filetype')
+        if l:filetype == ''
+            let l:filetype = 'nothing'
+        endif
+        
         " Check include.
-        let s:include_info[l:bufnumber].include_files = s:get_include_files(l:bufnumber)
+        let l:include_files = s:get_include_files(l:bufnumber)
+        if filereadable(l:bufname)
+            let s:include_cache[l:bufname] = s:load_from_tags(l:bufname, l:filetype, 0)
+        endif
+
+        for l:filename in l:include_files
+            if !has_key(s:include_cache, l:filename)
+                " Caching.
+                let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype, 1)
+            endif
+        endfor
+        
+        let s:include_info[l:bufnumber].include_files = l:include_files
     else
         let s:include_info[l:bufnumber].include_files = []
     endif
@@ -235,13 +266,8 @@ function! s:get_include_files(bufnumber)"{{{
             else
                 let l:filename = fnamemodify(findfile(matchstr(l:line[l:match_end :], '\f\+'), l:path), ':p')
             endif
-            if filereadable(l:filename) && fnamemodify(l:filename, ':e') != ''
+            if filereadable(l:filename) && getfsize(l:filename) < g:NeoComplCache_CachingLimitFileSize
                 call add(l:include_files, l:filename)
-
-                if !has_key(s:include_cache, l:filename)
-                    " Caching.
-                    let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype)
-                endif
             endif
         endif
     endfor"}}}
@@ -254,7 +280,7 @@ function! s:get_include_files(bufnumber)"{{{
     return l:include_files
 endfunction"}}}
 
-function! s:load_from_tags(filename, filetype)"{{{
+function! s:load_from_tags(filename, filetype, is_force)"{{{
     " Initialize include list from tags.
 
     let l:keyword_lists = s:load_from_cache(a:filename)
@@ -262,16 +288,17 @@ function! s:load_from_tags(filename, filetype)"{{{
         return l:keyword_lists
     endif
 
-    if !executable('ctags')
+    if !executable('ctags') && a:is_force
         return s:load_from_file(a:filename, a:filetype)
     endif
     
-    let l:filetype = getbufvar(bufnr(a:filename), '&filetype')
-
-    let l:args = has_key(g:NeoComplCache_CtagsArgumentsList, l:filetype) ? 
-                \g:NeoComplCache_CtagsArgumentsList[l:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
-    let l:lines = split(system(printf('ctags %s -f - %s', l:args, a:filename)), '\n')
+    let l:args = has_key(g:NeoComplCache_CtagsArgumentsList, a:filetype) ? 
+                \g:NeoComplCache_CtagsArgumentsList[a:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
+    let l:lines = split(system(printf('ctags -f - %s %s', l:args, fnamemodify(a:filename, ':p:.'))), '\n')
     let l:max_lines = len(l:lines)
+    call neocomplcache#cache#writefile('include_tags', a:filename, l:lines)
+
+    " Save ctags file.
     
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     let l:menu_pattern = '[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's %.'. g:NeoComplCache_MaxFilenameWidth . 's'
@@ -385,11 +412,13 @@ function! s:load_from_tags(filename, filetype)"{{{
         endif
     endif
 
-    if empty(l:keyword_lists)
+    if empty(l:keyword_lists) && a:is_force
         return s:load_from_file(a:filename, a:filetype)
     endif
     
-    call s:save_cache(a:filename, neocomplcache#unpack_list(values(l:keyword_lists)))
+    if !empty(l:keyword_lists)
+        call s:save_cache(a:filename, neocomplcache#unpack_list(values(l:keyword_lists)))
+    endif
     
     return l:keyword_lists
 endfunction"}}}

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Dec 2009
+" Last Modified: 06 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.33:
 "    - Deleted Filename() and g:snips_author.
 "    - Catch eval error.
+"    - Fixed snippet expand bug.
 "
 "   1.32:
 "    - Implemented Filename() and g:snips_author for snipMate.
@@ -357,7 +358,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
         endfor
     endif
 
-    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_text = s:get_cur_text()
     let l:cur_word = neocomplcache#match_word(l:cur_text)
     if !has_key(l:snippets, l:cur_word)
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
@@ -369,7 +370,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
     if mode() ==# 'i'
-        return matchstr(neocomplcache#get_cur_text(), '\h\w*[^[:alnum:][:space:]]*$')
+        return matchstr(s:get_cur_text(), '\h\w*[^[:alnum:][:space:]]*$')
     else
         return matchstr(s:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif
@@ -879,7 +880,7 @@ function! s:substitute_marker(start, end)"{{{
     endif
 endfunction"}}}
 function! s:trigger(function)"{{{
-    let l:cur_text = neocomplcache#get_cur_text()
+    let l:cur_text = s:get_cur_text()
     let s:cur_text = l:cur_text
     return printf("\<ESC>:call %s(%s,%d)\<CR>", a:function, string(l:cur_text), col('.'))
 endfunction"}}}
@@ -906,6 +907,12 @@ function! s:eval_snippet(snippet_text)"{{{
     endtry
 
     return l:snip_word
+endfunction"}}}
+function! s:get_cur_text()"{{{
+    let l:pos = mode() ==# 'i' ? 2 : 1
+
+    let s:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    return s:cur_text
 endfunction"}}}
 
 function! s:SID_PREFIX()

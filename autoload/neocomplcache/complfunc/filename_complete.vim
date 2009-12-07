@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Dec 2009
+" Last Modified: 06 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.06:
 "    - Don't expand environment variable.
 "    - Improved skip.
+"    - Implemented skip directory.
 "
 "   1.05:
 "    - Fixed freeze bug.
@@ -62,6 +63,7 @@
 "=============================================================================
 
 function! neocomplcache#complfunc#filename_complete#initialize()"{{{
+    let s:skip_dir = {}
 endfunction"}}}
 function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}
@@ -93,6 +95,20 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     elseif l:cur_keyword_str =~ '\*\*\|^{}'
         return -1
     endif
+    
+    " Skip directory.
+    echo s:skip_dir
+    if &l:completefunc == 'neocomplcache#auto_complete'
+        let l:dir = matchstr(l:cur_keyword_str, '^/\|^\a\+:')
+        if l:dir == ''
+            let l:dir = getcwd()
+        endif
+        
+        if has_key(s:skip_dir, getcwd())
+            return -1
+        endif
+    endif
+
 
     return l:cur_keyword_pos
 endfunction"}}}
@@ -135,6 +151,12 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     endif
 
     if neocomplcache#check_skip_time()
+        let l:dir = matchstr(l:cur_keyword_str, '^/\|^\a\+:')
+        if l:dir == ''
+            let l:dir = getcwd()
+        endif
+        let s:skip_dir[l:dir] = 1
+        
         return []
     endif
 
@@ -161,6 +183,12 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     for keyword in l:list
         " Skip completion if takes too much time."{{{
         if neocomplcache#check_skip_time()
+            let l:dir = matchstr(l:cur_keyword_str, '^/\|^\a\+:')
+            if l:dir == ''
+                let l:dir = getcwd()
+            endif
+            let s:skip_dir[l:dir] = 1
+            
             return []
         endif"}}}
         
