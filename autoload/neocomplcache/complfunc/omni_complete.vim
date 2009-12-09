@@ -139,13 +139,13 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
         return -1
     endif
 
-    if &l:completefunc == 'neocomplcache#auto_complete' &&
+    if neocomplcache#is_auto_complete() &&
                 \(!has_key(g:NeoComplCache_OmniPatterns, &filetype) || g:NeoComplCache_OmniPatterns[&filetype] == '')
         return -1
     endif
     
     let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_text =~ '\*\w\+$'
-                \&& &l:completefunc == 'neocomplcache#auto_complete'
+                \&& neocomplcache#is_auto_complete()
     
     " Check wildcard.
     if l:is_wildcard
@@ -157,7 +157,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     
     let s:iskeyword = 0
 
-    if &l:completefunc == 'neocomplcache#auto_complete' &&
+    if neocomplcache#is_auto_complete() &&
                 \l:cur_text !~ '\%(' . g:NeoComplCache_OmniPatterns[&filetype] . '\m\)$'
         " Check pattern.
         if has_key(s:keyword_cache, &filetype)
@@ -172,7 +172,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     let l:pos = getpos('.')
     let l:line = getline('.')
     
-    if &l:completefunc == 'neocomplcache#auto_complete'
+    if neocomplcache#is_auto_complete()
         call setline('.', l:cur_text)
     endif
     
@@ -183,7 +183,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     endtry
 
     " Restore pos.
-    if &l:completefunc == 'neocomplcache#auto_complete'
+    if neocomplcache#is_auto_complete()
         call setline('.', l:line)
     endif
     call setpos('.', l:pos)
@@ -193,7 +193,7 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_keyword_str =~ '\*\w\+$'
-                \&& &l:completefunc == 'neocomplcache#auto_complete'
+                \&& neocomplcache#is_auto_complete()
 
     if s:iskeyword
         return neocomplcache#keyword_filter(copy(s:keyword_cache[&filetype]), a:cur_keyword_str)
@@ -286,8 +286,7 @@ function! s:get_omni_list(list)"{{{
     " Convert string list.
     for str in filter(copy(a:list), 'type(v:val) == '.type(''))
         let l:dict = {
-                    \'word' : str, 'menu' : '[O]',
-                    \'icase' : 1, 'rank' : 5, 'dup' : 1,
+                    \'word' : str, 'menu' : '[O]', 'icase' : 1
                     \}
         if len(str) > g:NeoComplCache_MaxKeywordWidth
             let str = printf(l:abbr_pattern, str, str[-8:])
@@ -299,8 +298,7 @@ function! s:get_omni_list(list)"{{{
 
     for l:omni in filter(a:list, 'type(v:val) != '.type(''))
         let l:dict = {
-                    \'word' : l:omni.word, 'menu' : '[O] ',
-                    \'icase' : 1, 'rank' : 5, 'dup' : 1,
+                    \'word' : l:omni.word, 'menu' : '[O] ', 'icase' : 1
                     \}
 
         let l:abbr = has_key(l:omni, 'abbr')? l:omni.abbr : l:omni.word

@@ -2,19 +2,16 @@ include c
 
 snippet     template
 abbr        template <T>
-prev_word   '^'
     template<typename ${1:T}> 
 
 snippet     class
 abbr        class {}
-prev_word   '^'
     class ${1:name} {
         ${2}
     };
 
 snippet     try
 abbr        try catch
-prev_word   '^'
     try {
         ${1}
     } catch (${2:exception}) {

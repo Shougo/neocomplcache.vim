@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Dec 2009
+" Last Modified: 08 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.22, for Vim 7.0
+" Version: 4.00, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -87,9 +87,6 @@ if !exists('g:NeoComplCache_EnableSkipCompletion')
 endif
 if !exists('g:NeoComplCache_SkipCompletionTime')
     let g:NeoComplCache_SkipCompletionTime = '0.2'
-endif
-if !exists('g:NeoComplCache_PreviousKeywordCompletion')
-    let g:NeoComplCache_PreviousKeywordCompletion = 1
 endif
 if !exists('g:NeoComplCache_EnableInfo')
     let g:NeoComplCache_EnableInfo = 0

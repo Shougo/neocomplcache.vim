@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Dec 2009
+" Last Modified: 08 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.21, for Vim 7.0
+" Version: 4.00, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
@@ -96,47 +96,13 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
         return []
     endif
 
-    if g:NeoComplCache_AlphabeticalOrder
-        " Not calc rank.
-        let l:order_func = 'neocomplcache#compare_words'
-    else
-        " Calc rank."{{{
-        for l:plugin in keys(l:loaded_plugins)
-            call call(l:loaded_plugins[l:plugin] . 'calc_rank', [l:cache_keyword_lists[l:plugin]])
-
-            " Skip completion if takes too much time."{{{
-            if neocomplcache#check_skip_time()
-                return []
-            endif"}}}
-        endfor
-
-        let l:order_func = 'neocomplcache#compare_rank'"}}}
-    endif
-
-    let l:cache_keyword_filtered = []
-
-    " Previous keyword completion.
-    if g:NeoComplCache_PreviousKeywordCompletion && !g:NeoComplCache_AlphabeticalOrder "{{{
-        let [l:prev_word, l:prepre_word] = s:get_prev_word(a:cur_keyword_str)
-        for l:plugin in keys(l:loaded_plugins)
-            let l:cache_keyword_list = l:cache_keyword_lists[l:plugin]
-            call call(l:loaded_plugins[l:plugin] . 'calc_prev_rank', [l:cache_keyword_list, l:prev_word, l:prepre_word])
-
-            " Sort.
-            let l:cache_keyword_filtered += sort(
-                \filter(copy(l:cache_keyword_list), 'v:val.prev_rank > 0 || v:val.prepre_rank > 0'), 'neocomplcache#compare_prev_rank')
-
-            call filter(l:cache_keyword_lists[l:plugin], 'v:val.prev_rank == 0 && v:val.prepre_rank == 0')
-        endfor
-    endif"}}}
-
     " Extend list.
     let l:cache_keyword_list = []
     for l:plugin in keys(l:loaded_plugins)
         let l:cache_keyword_list += l:cache_keyword_lists[l:plugin]
     endfor
 
-    return l:cache_keyword_filtered + sort(l:cache_keyword_list, l:order_func)
+    return l:cache_keyword_list
 endfunction"}}}
 
 function! neocomplcache#complfunc#keyword_complete#get_rank()"{{{
@@ -177,30 +143,5 @@ function! neocomplcache#complfunc#keyword_complete#get_manual_complete_list(plug
     return l:complete_words
 endfunction"}}}
 
-function! s:get_prev_word(cur_keyword_str)"{{{
-    let l:keyword_pattern = neocomplcache#get_keyword_pattern()
-    let l:line_part = getline('.')[: col('.')-1 - len(a:cur_keyword_str)]
-    let l:prev_word_end = matchend(l:line_part, l:keyword_pattern)
-    if l:prev_word_end > 0
-        let l:word_end = matchend(l:line_part, l:keyword_pattern, l:prev_word_end)
-        if l:word_end >= 0
-            while l:word_end >= 0
-                let l:prepre_word_end = l:prev_word_end
-                let l:prev_word_end = l:word_end
-                let l:word_end = matchend(l:line_part, l:keyword_pattern, l:prev_word_end)
-            endwhile
-            let l:prepre_word = matchstr(l:line_part[: l:prepre_word_end-1], l:keyword_pattern . '$')
-        else
-            let l:prepre_word = '^'
-        endif
-
-        let l:prev_word = matchstr(l:line_part[: l:prev_word_end-1], l:keyword_pattern . '$')
-    else
-        let l:prepre_word = ''
-        let l:prev_word = '^'
-    endif
-    return [l:prev_word, l:prepre_word]
-    "echo printf('prepre = %s, pre = %s', l:prepre_word, l:prev_word)
-endfunction"}}}
 
 " vim: foldmethod=marker

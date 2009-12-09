@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 3.22
+Version: 4.00
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -259,14 +259,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		character string.
 	
 		Default value is '0.2'.
-
-g:NeoComplCache_PreviousKeywordCompletion		*g:NeoComplCache_PreviousKeywordCompletion*
-		This variable controls whether neocomplcache considers not
-		only the appearance frequency of the word but also the
-		connection with the word of before and perform the equal
-		thing substitute of the candidate.
-	
-		Default value is 1.
 
 g:NeoComplCache_EnableInfo				*g:NeoComplCache_EnableInfo*
 		When a preview window opens, this variable controls whether
@@ -611,6 +603,15 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   4.00:
+    - Fixed manual completion error.
+    - Deleted g:NeoComplCache_PreviousKeywordCompletion. It's default.
+    - Deleted calc_rank().
+    - Improved caching print.
+    - Improved calc frequency.
+    - Optimized speed.
+    
+ChangeLog NeoComplCache 3.00-: {{{
    3.22:
     - Fixed manual completion error.
     - Fixed set completeopt bug.
@@ -624,7 +625,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Implemented keyword cache in omni_complete.
     - Implemented skip directory in filename_complete.
     
-ChangeLog NeoComplCache 3.00-: {{{
    3.21:
     - Catch error in omni_complete.
     - Deleted Filename() and g:snips_author in snippets_complete.

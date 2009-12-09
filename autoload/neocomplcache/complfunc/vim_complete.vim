@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Dec 2009
+" Last Modified: 08 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.04, for Vim 7.0
+" Version: 1.05, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.05:
+"    - Changed for neocomplcache 4.0.
+"
 "   1.04:
 "    - Implemented environment variable completion.
 "    - Supported wildcard.
@@ -217,7 +220,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
         endif
     endif
 
-    return sort(neocomplcache#keyword_filter(l:list, a:cur_keyword_str), 'neocomplcache#compare_rank')
+    return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_rank()"{{{
@@ -234,14 +237,14 @@ function! s:global_caching()"{{{
     let s:global_candidates_list.mappings = s:get_mappinglist()
     let s:global_candidates_list.environments = s:get_envlist()
 
-    let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f', 5)
-    let s:internal_candidates_list.options = s:caching_from_dict('options', 'o', 10)
-    let s:internal_candidates_list.features = s:caching_from_dict('features', '', 10)
-    let s:internal_candidates_list.mappings = s:caching_from_dict('mappings', '', 10)
-    let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c', 10)
-    let s:internal_candidates_list.command_args = s:caching_from_dict('command_args', '', 10)
-    let s:internal_candidates_list.autocmds = s:caching_from_dict('autocmds', '', 10)
-    let s:internal_candidates_list.command_replaces = s:caching_from_dict('command_replaces', '', 10)
+    let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f')
+    let s:internal_candidates_list.options = s:caching_from_dict('options', 'o')
+    let s:internal_candidates_list.features = s:caching_from_dict('features', '')
+    let s:internal_candidates_list.mappings = s:caching_from_dict('mappings', '')
+    let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c')
+    let s:internal_candidates_list.command_args = s:caching_from_dict('command_args', '')
+    let s:internal_candidates_list.autocmds = s:caching_from_dict('autocmds', '')
+    let s:internal_candidates_list.command_replaces = s:caching_from_dict('command_replaces', '')
 
     let l:functions_prototype = {}
     for function in s:internal_candidates_list.functions
@@ -311,8 +314,7 @@ function! s:get_local_candidates()"{{{
             for l:arg in split(matchstr(l:line, '^[^(]*(\zs[^)]*'), '\s*,\s*')
                 let l:word = 'a:' . (l:arg == '...' ?  '000' : l:arg)
                 let l:keyword =  {
-                            \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                            \ 'kind' : '', 'rank' : 5
+                            \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : ''
                             \}
                 let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                             \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
@@ -337,7 +339,7 @@ function! s:get_local_candidates()"{{{
                                 \'\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
                     let l:keyword =  {
                                 \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                                \ 'kind' : s:get_variable_type(l:expression), 'rank' : 5
+                                \ 'kind' : s:get_variable_type(l:expression)
                                 \}
                     let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                                 \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
@@ -365,12 +367,8 @@ function! s:get_local_candidates()"{{{
 
         if g:NeoComplCache_CachingPercentInStatusline
             let l:statusline_save = &l:statusline
-            let &l:statusline = 'Caching vim from '. bufname(a:bufnumber) .' ... please wait.'
-            redrawstatus
-        else
-            redraw
-            echo 'Caching vim from '. bufname(a:bufnumber) .' ... please wait.'
         endif
+        call neocomplcache#print_caching('Caching vim from '. bufname(a:bufnumber) .' ... please wait.')
 
         for l:line in getbufline(a:bufnumber, 1, '$')
             if l:line =~ '\<fu\%[nction]!\?\s\+s:'
@@ -380,8 +378,7 @@ function! s:get_local_candidates()"{{{
                 let l:word = matchstr(l:line, l:keyword_pattern)
                 if !has_key(l:function_dict, l:word) 
                     let l:keyword =  {
-                                \ 'word' : l:word, 'menu' : l:menu_pattern_func, 'icase' : 1,
-                                \ 'kind' : 'f', 'rank' : 5
+                                \ 'word' : l:word, 'menu' : l:menu_pattern_func, 'icase' : 1, 'kind' : 'f'
                                 \}
                     if len(l:line) > g:NeoComplCache_MaxKeywordWidth
                         let l:line = substitute(l:line, '\(\h\)\w*#', '\1.\~', 'g')
@@ -406,7 +403,7 @@ function! s:get_local_candidates()"{{{
                     let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
                     let l:keyword =  {
                                 \ 'word' : l:word, 'menu' : l:menu_pattern_var, 'icase' : 1,
-                                \ 'kind' : s:get_variable_type(l:expression), 'rank' : 5
+                                \ 'kind' : s:get_variable_type(l:expression)
                                 \}
                     let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                                 \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
@@ -416,19 +413,15 @@ function! s:get_local_candidates()"{{{
             endif
         endfor
 
+        call neocomplcache#print_caching('Caching done.')
         if g:NeoComplCache_CachingPercentInStatusline
             let &l:statusline = l:statusline_save
-            redrawstatus
-        else
-            redraw
-            echo ''
-            redraw
         endif
 
         return { 'functions' : values(l:function_dict), 'variables' : values(l:variable_dict), 'functions_prototype' : l:functions_prototype }
     endfunction"}}}
 
-function! s:caching_from_dict(dict_name, kind, rank)"{{{
+function! s:caching_from_dict(dict_name, kind)"{{{
     let l:dict_files = split(globpath(&runtimepath, 'autoload/neocomplcache/complfunc/vim_complete/'.a:dict_name.'.dict'), '\n')
     if empty(l:dict_files)
         return []
@@ -442,8 +435,7 @@ function! s:caching_from_dict(dict_name, kind, rank)"{{{
         let l:word = matchstr(line, l:keyword_pattern)
         if len(l:word) > s:completion_length
             let l:keyword =  {
-                        \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                        \ 'kind' : a:kind, 'rank' : a:rank, 
+                        \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : a:kind
                         \}
             let l:keyword.abbr =  (len(line) > g:NeoComplCache_MaxKeywordWidth)? 
                         \ printf(l:abbr_pattern, line, line[-8:]) : line
@@ -469,7 +461,7 @@ function! s:get_cmdlist()"{{{
         let l:word = matchstr(line, '\a\w*')
         let l:keyword =  {
                     \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
-                    \ 'kind' : 'c', 'rank' : 10,
+                    \ 'kind' : 'c'
                     \}
         let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                     \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
@@ -490,9 +482,7 @@ function! s:get_envlist()"{{{
     for line in split(system('set'), '\n')
         let l:word = '$' . toupper(matchstr(line, '^\h\w*'))
         let l:keyword =  {
-                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                    \ 'kind' : 'e', 
-                    \ 'rank' : 5
+                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'e'
                     \}
         let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                     \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
@@ -520,8 +510,7 @@ function! s:get_variablelist()"{{{
         endif
         let l:keyword =  {
                     \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                    \ 'kind' : exists(l:word)? l:kind_dict[type(eval(l:word))] : '', 
-                    \ 'rank' : 5
+                    \ 'kind' : exists(l:word)? l:kind_dict[type(eval(l:word))] : ''
                     \}
         let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                     \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
@@ -545,12 +534,11 @@ function! s:get_functionlist()"{{{
         let l:line = l:line[9:]
         let l:orig_line = l:line
         let l:word = matchstr(l:line, l:keyword_pattern)
-        if l:word =~ '^<SNR>\d\+_'
+        if l:word =~ '^<SNR>'
             continue
         endif
         let l:keyword =  {
-                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                    \ 'rank' : 5
+                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1
                     \}
         if len(l:line) > g:NeoComplCache_MaxKeywordWidth
             let l:line = substitute(l:line, '\(\h\)\w*#', '\1.\~', 'g')
@@ -585,8 +573,7 @@ function! s:get_augrouplist()"{{{
     let l:menu_pattern = '[V] augroup'
     for l:group in split(l:redir, '\s')
         let l:keyword =  {
-                    \ 'word' : l:group, 'menu' : l:menu_pattern, 'icase' : 1,
-                    \ 'rank' : 10
+                    \ 'word' : l:group, 'menu' : l:menu_pattern, 'icase' : 1
                     \}
             let l:keyword.abbr =  (len(l:group) > g:NeoComplCache_MaxKeywordWidth)? 
                         \ printf(l:abbr_pattern, l:group, l:group[-8:]) : l:group
@@ -610,7 +597,7 @@ function! s:get_mappinglist()"{{{
             continue
         endif
         let l:keyword =  {
-                    \ 'word' : l:map, 'menu' : l:menu_pattern, 'icase' : 1, 'rank' : 10
+                    \ 'word' : l:map, 'menu' : l:menu_pattern, 'icase' : 1
                     \}
             let l:keyword.abbr =  (len(l:map) > g:NeoComplCache_MaxKeywordWidth)? 
                         \ printf(l:abbr_pattern, l:map, l:map[-8:]) : l:map
@@ -686,8 +673,7 @@ function! s:get_endlist()"{{{
         return []
     else
         let l:keyword =  {
-                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-                    \ 'kind' : 'c', 'rank' : 20
+                    \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'c'
                     \}
         let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
                     \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Dec 2009
+" Last Modified: 08 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.14, for Vim 7.0
+" Version: 1.15, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.15:
+"    - Improved caching.
+"
 "   1.14:
 "    - Fixed caching error(Thanks tosik).
 "
@@ -150,14 +153,6 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
     return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
-" Dummy function.
-function! neocomplcache#plugin#tags_complete#calc_rank(cache_keyword_buffer_list)"{{{
-endfunction"}}}
-
-" Dummy function.
-function! neocomplcache#plugin#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
-endfunction"}}}
-
 function! s:caching_tags(bufname)"{{{
     let l:bufname = (a:bufname == '') ? bufname('%') : a:bufname
     for tags in split(getbufvar(bufnr(l:bufname), '&tags'), ',')
@@ -182,8 +177,11 @@ function! s:initialize_tags(filename)"{{{
     let l:max_lines = len(l:lines)
     
     if l:max_lines > 1000
-        redraw
-        echo 'Caching tags "' . a:filename . '"... please wait.'
+        if g:NeoComplCache_CachingPercentInStatusline
+            let l:statusline_save = &l:statusline
+        endif
+
+        call neocomplcache#print_caching('Caching tags "' . a:filename . '"... please wait.')
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 9
@@ -208,13 +206,7 @@ function! s:initialize_tags(filename)"{{{
         for l:line in l:lines"{{{
             " Percentage check."{{{
             if l:line_cnt == 0
-                if g:NeoComplCache_CachingPercentInStatusline
-                    let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-                    redrawstatus!
-                else
-                    redraw
-                    echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-                endif
+                call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
                 let l:line_cnt = l:print_cache_percent
             endif
             let l:line_cnt -= 1"}}}
@@ -241,7 +233,7 @@ function! s:initialize_tags(filename)"{{{
 
                 let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
                 let l:keyword = {
-                            \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1,
+                            \ 'word' : l:tag[0], 'icase' : 1,
                             \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)?
                             \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
                             \ 'kind' : l:option['kind']
@@ -270,9 +262,9 @@ function! s:initialize_tags(filename)"{{{
             let l:line_num += 1
         endfor"}}}
     catch /E684:/
-        echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
+        call neocomplcache#print_error('Error occured while analyzing tags!')
         let l:log_file = g:NeoComplCache_TemporaryDir . '/tags_cache/error_log'
-        echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
+        call neocomplcache#print_error('Please look tags file: ' . l:log_file)
         call writefile(l:lines, l:log_file)
         return {}
     endtry
@@ -282,13 +274,10 @@ function! s:initialize_tags(filename)"{{{
     endif
     
     if l:max_lines > 1000
+        call neocomplcache#print_caching('Caching done.')
+
         if g:NeoComplCache_CachingPercentInStatusline
             let &l:statusline = l:statusline_save
-            redrawstatus
-        else
-            redraw
-            echo ''
-            redraw
         endif
     endif
     
@@ -306,8 +295,11 @@ function! s:load_from_cache(filename)"{{{
     let l:max_lines = len(l:lines)
     
     if l:max_lines > 3000
-        redraw
-        echo 'Caching tags "' . a:filename . '"... please wait.'
+        if g:NeoComplCache_CachingPercentInStatusline
+            let l:statusline_save = &l:statusline
+        endif
+
+        call neocomplcache#print_caching('Caching tags "' . a:filename . '"... please wait.')
     endif
     if l:max_lines > 10000
         let l:print_cache_percent = l:max_lines / 5
@@ -325,20 +317,14 @@ function! s:load_from_cache(filename)"{{{
         for l:line in l:lines"{{{
             " Percentage check."{{{
             if l:line_cnt == 0
-                if g:NeoComplCache_CachingPercentInStatusline
-                    let &l:statusline = printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-                    redrawstatus!
-                else
-                    redraw
-                    echo printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines)
-                endif
+                call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
                 let l:line_cnt = l:print_cache_percent
             endif
             let l:line_cnt -= 1"}}}
 
             let l:cache = split(l:line, '!!!', 1)
             let l:keyword = {
-                        \ 'word' : l:cache[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1, 
+                        \ 'word' : l:cache[0], 'icase' : 1,
                         \ 'abbr' : l:cache[1], 'menu' : l:cache[2], 'kind' : l:cache[3], 'class' :  l:cache[4]
                         \}
 
@@ -351,9 +337,9 @@ function! s:load_from_cache(filename)"{{{
             let l:line_num += 1
         endfor"}}}
     catch /E684:/
-        echohl WarningMsg | echomsg 'Error occured while analyzing cache!' | echohl None
+        call neocomplcache#print_error('Error occured while analyzing cache!')
         let l:cache_dir = g:NeoComplCache_TemporaryDir . '/tags_cache'
-        echohl WarningMsg | echomsg 'Please delete cache directory: ' . l:cache_dir | echohl None
+        call neocomplcache#print_error('Please delete cache directory: ' . l:cache_dir)
         return {}
     endtry
     
@@ -362,9 +348,11 @@ function! s:load_from_cache(filename)"{{{
             let &l:statusline = l:statusline_save
             redrawstatus
         else
-            redraw
-            echo ''
-            redraw
+            call neocomplcache#print_caching('Caching done.')
+
+            if g:NeoComplCache_CachingPercentInStatusline
+                let &l:statusline = l:statusline_save
+            endif
         endif
     endif
     

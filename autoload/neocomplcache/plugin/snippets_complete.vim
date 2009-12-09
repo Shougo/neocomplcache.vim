@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Dec 2009
+" Last Modified: 08 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.33, for Vim 7.0
+" Version: 1.34, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.34:
+"    - Deleted rank and condition.
+"
 "   1.33:
 "    - Deleted Filename() and g:snips_author.
 "    - Catch eval error.
@@ -301,9 +304,10 @@ endfunction
 function! s:keyword_filter(list, cur_keyword_str)"{{{
     let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
+    let l:prev_word = neocomplcache#get_prev_word(a:cur_keyword_str)[0]
     " Keyword filter.
-    " Head match.
-    let l:pattern = printf("v:val.word =~ %s && (v:val.condition == 1 || eval(v:val.condition))", string('^' . l:keyword_escape))
+    let l:pattern = printf('v:val.word =~ %s && (!has_key(v:val, "prev_word") || v:val.prev_word == %s)', 
+                \string('^' . l:keyword_escape), string(l:prev_word))
 
     let l:list = filter(a:list, l:pattern)
 
@@ -319,19 +323,6 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     endfor
 
     return l:list
-endfunction"}}}
-
-" Dummy function.
-function! neocomplcache#plugin#snippets_complete#calc_rank(cache_keyword_buffer_list)"{{{
-    return
-endfunction"}}}
-
-function! neocomplcache#plugin#snippets_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
-    " Calc previous rank.
-    for keyword in a:cache_keyword_buffer_list
-        " Set prev rank.
-        let keyword.prev_rank = has_key(keyword.prev_word, a:prev_word)? 10+keyword.rank/2 : 0
-    endfor
 endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#expandable()"{{{
@@ -364,9 +355,8 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif
     
-    return (has_key(l:snippets, l:cur_word) &&
-                \(l:snippets[l:cur_word].condition == 1 || eval(l:snippets[l:cur_word].condition)))
-                \|| search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
+    return has_key(l:snippets, l:cur_word) || 
+                \search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
     if mode() ==# 'i'
@@ -413,25 +403,18 @@ function! s:set_snippet_pattern(dict)"{{{
     endif
     let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : 
                 \substitute(a:dict.word, '<\\n>\|<expand>', '', 'g')
-    let l:rank = has_key(a:dict, 'rank')? a:dict.rank : 5
-    let l:condition = has_key(a:dict, 'condition')? a:dict.condition : 1
-    let l:prev_word = {}
-    if has_key(a:dict, 'prev_word')
-        for l:prev in a:dict.prev_word
-            let l:prev_word[l:prev] = 1
-        endfor
-    endif
 
     let l:dict = {
                 \'word' : a:dict.name, 'snip' : l:word,
                 \'menu' : printf(l:menu_pattern, a:dict.name), 
-                \'prev_word' : l:prev_word, 'icase' : 1, 'dup' : 1,
-                \'rank' : l:rank, 'prev_rank' : 0, 'prepre_rank' : 0, 
-                \'condition' : l:condition
+                \'icase' : 1, 'dup' : 1
                 \}
     let l:dict.abbr = 
                 \ (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
                 \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
+    if has_key(a:dict, 'prev_word')
+        let l:dict.prev_word = a:dict.prev_word
+    endif
     return l:dict
 endfunction"}}}
 
@@ -445,7 +428,7 @@ endfunction"}}}
 function! s:edit_snippets(filetype, isruntime)"{{{
     if a:filetype == ''
         if &filetype == ''
-            echo 'Filetype required'
+            call neocomplcache#print_error('Filetype required')
             return
         endif
         
@@ -545,15 +528,10 @@ function! s:load_snippets(snippets_file)"{{{
             let l:snippet_pattern.name = substitute(matchstr(line, '^snippet\s\+\zs.*$'), '\s', '_', 'g')
         elseif line =~ '^abbr\s'
             let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*$')
-        elseif line =~ '^rank\s'
-            let l:snippet_pattern.rank = matchstr(line, '^rank\s\+\zs\d\+\ze\s*$')
-        elseif line =~ '^prev_word\s'
-            let l:snippet_pattern.prev_word = []
-            for word in split(matchstr(line, '^prev_word\s\+\zs.*$'), ',')
-                call add(l:snippet_pattern.prev_word, matchstr(word, "'\\zs[^']*\\ze'"))
-            endfor
         elseif line =~ '^alias\s'
             let l:snippet_pattern.alias = split(substitute(matchstr(line, '^alias\s\+\zs.*$'), '\s', '', 'g'), ',')
+        elseif line =~ '^prev_word\s'
+            let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
         elseif line =~ '^\s'
             if l:snippet_pattern.word == ''
                 let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
@@ -569,8 +547,6 @@ function! s:load_snippets(snippets_file)"{{{
             if l:name != '' && has_key(l:snippet, l:name)
                 call remove(l:snippet, l:name)
             endif
-        elseif line =~ '^condition\s'
-            let l:snippet_pattern.condition = matchstr(line, '^condition\s\+\zs.*$')
         endif
     endfor
 
@@ -617,7 +593,6 @@ function! s:snippets_expand(cur_text, col)"{{{
         let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
     endif
     if has_key(l:snippets, l:cur_word)
-                \&& (l:snippets[l:cur_word].condition == 1 || eval(l:snippets[l:cur_word].condition))
         let l:snippet = l:snippets[l:cur_word]
         let l:cur_text = l:cur_text[: -1-len(l:cur_word)]
 
@@ -628,9 +603,6 @@ function! s:snippets_expand(cur_text, col)"{{{
         if l:snip_word =~ '\n'
             let snip_word = substitute(l:snip_word, '\n', '<\\n>', 'g') . '<expand>'
         endif
-
-        " Add rank.
-        let l:snippet.rank += 1
 
         " Insert snippets.
         let l:next_line = getline('.')[a:col-1 :]
@@ -714,7 +686,6 @@ function! s:expand_tabline()"{{{
     let s:snippet_holder_cnt = 1
     let s:begin_snippet = line('.')
     let s:end_snippet = line('.') + len(l:tablines) - 1
-    echomsg s:end_snippet
 endfunction"}}}
 function! s:snippets_jump(cur_text, col)"{{{
     if !s:search_snippet_range(s:begin_snippet, s:end_snippet)

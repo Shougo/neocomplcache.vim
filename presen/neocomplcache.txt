@@ -198,6 +198,9 @@ neocomplcacheではキーワード収集を自前で行っているため、
 使用頻度が高いものが上の方に来て、かなり便利です。
 ただし解析するには時間がかかるので、キャッシュ率が上昇しないと使用頻度は考慮されません。
 
+Ver.4.00より、すべてのプラグインの候補も使用頻度に基づいて並び替えるようになりました。
+ただし、頻度解析はbuffer_complete内で行われるので、これが無効になっていると動作しません。
+
 --------------------------------
 シンタックスごとのキーワード補完
 
@@ -573,10 +576,6 @@ ${3}
 スニペット補完はVer.3.01にて、さらにパワーアップしました。
 Same filetypeや、最後に記号を含むスニペットにも対応。
 
-condition neocomplcache#plugin#snippets_complete#get_cur_text() =~ '^\s*if$'
-conditionのあとにVimScriptを書くことで、その条件に合うときだけ補完や展開が行われるようになります。
-neocomplcache#plugin#snippets_complete#get_cur_text()はカーソル前の文字列を取得する関数です。
-
 snippet div
 <div ${1:id="${2:someid\}"}>${3}</div>${4}
 プレースホルダの中にプレースホルダを書くことができます。ただし、}はエスケープしてください。
@@ -759,9 +758,9 @@ C-hは一度ポップアップを消去し、ちらついたり、重くなら�
 --------------------------------
 知名度
 
-autocomplpop: 17,800件
-auto-complete.el: 160,000件
-neocomplcache: 26,500件
+autocomplpop: 79,600件
+auto-complete.el: 211,000件
+neocomplcache: 41,700件
 
                   Google調べ
 
@@ -862,6 +861,7 @@ http://lingr.com/room/completion
 --------------------------------
 更新履歴
 
+2009/12/08     neocomplcache Ver.4.00に対応。
 2009/11/25     neocomplcache Ver.3.18に対応。
 2009/11/20     neocomplcache Ver.3.16に対応。
 2009/11/17     FreeBSD上でのインストール方法を追加。
