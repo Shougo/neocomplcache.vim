@@ -79,7 +79,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl',
                 \'\v\<\h\w*\>?|[$@%&*]\h\w*%(::\h\w*)*|%(-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
-                \'\[:\%(\h\w*:\]\)\?\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:]*\%(#\h\w*\)*\%([!>]\|()\?\)\?')
+                \'\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_-]*>\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:]*\%(#\h\w*\)*\%(!\|()\?\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
                 \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh',
@@ -246,8 +246,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
         " Try complfuncs completion."{{{
         let l:complete_result = {}
-        for l:complfunc_name in keys(s:global_complfuncs)
-            let l:complfunc = s:global_complfuncs[l:complfunc_name]
+        for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
             
             let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
             if l:cur_keyword_pos < 0
@@ -415,6 +414,14 @@ function! neocomplcache#unpack_list(list)"{{{
     let l:ret = []
     for l in a:list
         let l:ret += l
+    endfor
+
+    return l:ret
+endfunction"}}}
+function! neocomplcache#unpack_list_dictionary(list)"{{{
+    let l:ret = []
+    for l in a:list
+        let l:ret += values(l)
     endfor
 
     return l:ret
@@ -624,6 +631,7 @@ function! s:display_neco()"{{{
                 \["             A A", 
                 \ "          ~(-^_^-)"],
                 \]
+    
     for l:anim in l:animation
         echo ''
         redraw
@@ -802,8 +810,7 @@ function! s:complete()"{{{
     let l:complete_result = {}
     let s:skipped = 0
     let s:start_time = reltime()
-    for l:complfunc_name in keys(s:global_complfuncs)
-        let l:complfunc = s:global_complfuncs[l:complfunc_name]
+    for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
         let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
 
         if l:cur_keyword_pos >= 0
@@ -886,9 +893,9 @@ function! s:integrate_completion(complete_result)"{{{
     let l:cur_text = neocomplcache#get_cur_text()
     let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
 
-    let l:frequency = neocomplcache#plugin#buffer_complete#get_frequency()
-    let l:prev_frequency = neocomplcache#plugin#buffer_complete#get_prev_frequency()
-    let l:prepre_frequency = neocomplcache#plugin#buffer_complete#get_prepre_frequency()
+    let l:frequencies = neocomplcache#plugin#buffer_complete#get_frequencies()
+    let l:prev_frequencies = neocomplcache#plugin#buffer_complete#get_prev_frequencies()
+    let l:prepre_frequencies = neocomplcache#plugin#buffer_complete#get_prepre_frequencies()
     
     " Append prefix.
     let l:complete_words = []
@@ -905,9 +912,9 @@ function! s:integrate_completion(complete_result)"{{{
         let l:rank = l:result.rank
         for l:keyword in l:result.complete_words
             let l:word = l:keyword.word
-            let l:keyword.rank = has_key(l:frequency, l:word)? l:rank * l:frequency[l:word] : l:rank
-            let l:keyword.prev_rank = has_key(l:prev_frequency, l:word)? l:prev_frequency[l:word] : 0
-            let l:keyword.prepre_rank = has_key(l:prepre_frequency, l:word)? l:prepre_frequency[l:word] : 0
+            let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
+            let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:prev_frequencies[l:word] : 0
+            let l:keyword.prepre_rank = has_key(l:prepre_frequencies, l:word)? l:prepre_frequencies[l:word] : 0
         endfor
         let l:complete_words += l:result.complete_words
     endfor

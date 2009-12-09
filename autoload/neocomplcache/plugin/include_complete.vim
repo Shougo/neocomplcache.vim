@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Dec 2009
+" Last Modified: 09 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.09:
 "    - Improved caching.
+"    - Deleted dup.
+"    - Use caching helper.
 "
 "   1.08:
 "    - Caching current buffer.
@@ -292,123 +294,27 @@ function! s:load_from_tags(filename, filetype, is_force)"{{{
     let l:args = has_key(g:NeoComplCache_CtagsArgumentsList, a:filetype) ? 
                 \g:NeoComplCache_CtagsArgumentsList[a:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
     let l:lines = split(system(printf('ctags -f - %s %s', l:args, fnamemodify(a:filename, ':p:.'))), '\n')
-    let l:max_lines = len(l:lines)
+    
+    " Save ctags file.
     call neocomplcache#cache#writefile('include_tags', a:filename, l:lines)
 
-    " Save ctags file.
+    let l:keyword_lists = {}
     
-    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:menu_pattern = '[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's %.'. g:NeoComplCache_MaxFilenameWidth . 's'
-    
-    if l:max_lines > 1000
-        if g:NeoComplCache_CachingPercentInStatusline
-            let l:statusline_save = &l:statusline
+    for l:keyword in neocomplcache#cache#load_from_tags('include_cache', a:filename, l:lines, 'I')
+        let l:key = tolower(l:keyword.word[: s:completion_length-1])
+        if !has_key(l:keyword_lists, l:key)
+            let l:keyword_lists[l:key] = []
         endif
         
-        call neocomplcache#print_caching('Caching include files "' . a:filename . '"... please wait.')
-    endif
-    if l:max_lines > 10000
-        let l:print_cache_percent = l:max_lines / 9
-    elseif l:max_lines > 5000
-        let l:print_cache_percent = l:max_lines / 6
-    elseif l:max_lines > 3000
-        let l:print_cache_percent = l:max_lines / 5
-    elseif l:max_lines > 2000
-        let l:print_cache_percent = l:max_lines / 4
-    elseif l:max_lines > 1000
-        let l:print_cache_percent = l:max_lines / 3
-    elseif l:max_lines > 500
-        let l:print_cache_percent = l:max_lines / 2
-    else
-        let l:print_cache_percent = -1
-    endif
-    let l:line_cnt = l:print_cache_percent
+        call add(l:keyword_lists[l:key], l:keyword)
+    endfor 
     
-    try
-        let l:dup_check = {}
-        let l:line_num = 1
-        for l:line in l:lines"{{{
-            " Percentage check."{{{
-            if l:line_cnt == 0
-                call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
-                let l:line_cnt = l:print_cache_percent
-            endif
-            let l:line_cnt -= 1"}}}
-
-            let l:tag = split(l:line, '\t')
-            " Add keywords.
-            if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
-                        \&& !has_key(l:dup_check, l:tag[0])
-                let l:option = { 'cmd' : 
-                            \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
-                for l:opt in l:tag[3:]
-                    let l:key = matchstr(l:opt, '^\h\w*\ze:')
-                    if l:key == ''
-                        let l:option['kind'] = l:opt
-                    else
-                        let l:option[l:key] = matchstr(l:opt, '^\h\w*:\zs.*')
-                    endif
-                endfor
-
-                if has_key(l:option, 'file') || (has_key(l:option, 'access') && l:option.access != 'public')
-                    let l:line_num += 1
-                    continue
-                endif
-
-                let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
-                let l:keyword = {
-                            \ 'word' : l:tag[0], 'icase' : 1,
-                            \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
-                            \   printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr,
-                            \ 'kind' : l:option['kind']
-                            \}
-                if has_key(l:option, 'struct')
-                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
-                    let keyword.class = l:option.struct
-                elseif has_key(l:option, 'class')
-                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
-                    let keyword.class = l:option.class
-                elseif has_key(l:option, 'enum')
-                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
-                    let keyword.class = l:option.enum
-                else
-                    let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
-                    let keyword.class = ''
-                endif
-
-                let l:key = tolower(l:tag[0][: s:completion_length-1])
-                if !has_key(l:keyword_lists, l:key)
-                    let l:keyword_lists[l:key] = []
-                endif
-                call add(l:keyword_lists[l:key], l:keyword)
-
-                let l:dup_check[l:tag[0]] = 1
-            endif
-
-            let l:line_num += 1
-        endfor"}}}
-    catch /E684:/
-        call neocomplcache#print_error('Error occured while analyzing tags!')
-        let l:log_file = g:NeoComplCache_TemporaryDir . '/tags_cache/error_log'
-        call neocomplcache#print_error('Please look tags file: ' . l:log_file)
-        call writefile(l:lines, l:log_file)
-        return {}
-    endtry
-
-    if l:max_lines > 1000
-        call neocomplcache#print_caching('Caching done.')
-
-        if g:NeoComplCache_CachingPercentInStatusline
-            let &l:statusline = l:statusline_save
-        endif
-    endif
-
     if empty(l:keyword_lists) && a:is_force
         return s:load_from_file(a:filename, a:filetype)
     endif
     
     if !empty(l:keyword_lists)
-        call s:save_cache(a:filename, neocomplcache#unpack_list(values(l:keyword_lists)))
+        call neocomplcache#cache#save_cache('include_cache', a:filename, neocomplcache#unpack_list(values(l:keyword_lists)))
     endif
     
     return l:keyword_lists
@@ -416,175 +322,36 @@ endfunction"}}}
 function! s:load_from_file(filename, filetype)"{{{
     " Initialize include list from file.
 
-    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:lines = readfile(a:filename)
-    let l:max_lines = len(l:lines)
-    
-    if l:max_lines > 1000
-        if g:NeoComplCache_CachingPercentInStatusline
-            let l:statusline_save = &l:statusline
-        endif
-        
-        call neocomplcache#print_caching('Caching include files "' . a:filename . '"... please wait.')
-    endif
-    if l:max_lines > 10000
-        let l:print_cache_percent = l:max_lines / 9
-    elseif l:max_lines > 5000
-        let l:print_cache_percent = l:max_lines / 6
-    elseif l:max_lines > 3000
-        let l:print_cache_percent = l:max_lines / 5
-    elseif l:max_lines > 2000
-        let l:print_cache_percent = l:max_lines / 4
-    elseif l:max_lines > 1000
-        let l:print_cache_percent = l:max_lines / 3
-    elseif l:max_lines > 500
-        let l:print_cache_percent = l:max_lines / 2
-    else
-        let l:print_cache_percent = -1
-    endif
-    let l:line_cnt = l:print_cache_percent
-    
-    let l:line_num = 1
-    let l:pattern = neocomplcache#get_keyword_pattern()
-    let l:menu = printf('[I] %.' . g:NeoComplCache_MaxFilenameWidth . 's', fnamemodify(a:filename, ':t'))
     let l:keyword_lists = {}
-    let l:dup_check = {}
+    let l:loaded_list = neocomplcache#cache#load_from_file(a:filename, neocomplcache#get_keyword_pattern(), 'I', 1, '$')
+    if len(l:loaded_list) > 300
+        call neocomplcache#cache#save_cache('include_cache', a:filename, l:loaded_list)
+    endif
 
-    for l:line in l:lines"{{{
-        " Percentage check."{{{
-        if l:line_cnt == 0
-            call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
-            let l:line_cnt = l:print_cache_percent
+    for l:keyword in l:loaded_list
+        let l:key = tolower(l:keyword.word[: s:completion_length-1])
+        if !has_key(l:keyword_lists, l:key)
+            let l:keyword_lists[l:key] = []
         endif
-        let l:line_cnt -= 1"}}}
-        
-        let [l:match_num, l:match] = [0, match(l:line, l:pattern)]
-        while l:match >= 0"{{{
-            let l:match_str = matchstr(l:line, l:pattern, l:match)
-
-            " Ignore too short keyword.
-            if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
-                        \&& !has_key(l:dup_check, l:match_str)
-                " Append list.
-                let l:keyword = {
-                            \'word' : l:match_str, 'menu' : l:menu, 'icase' : 1, 'kind' : '', 'class' : ''
-                            \}
-
-                let l:keyword.abbr = 
-                            \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
-                            \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
-
-                let l:key = tolower(l:match_str[: s:completion_length-1])
-                if !has_key(l:keyword_lists, l:key)
-                    let l:keyword_lists[l:key] = []
-                endif
-                call add(l:keyword_lists[l:key], l:keyword)
-                
-                let l:dup_check[l:match_str] = 1
-            endif
-
-            let l:match_num = l:match + len(l:match_str)
-            let l:match = match(l:line, l:pattern, l:match_num)
-        endwhile"}}}
-        
-        let l:line_num += 1
+        call add(l:keyword_lists[l:key], l:keyword)
     endfor"}}}
 
-    if l:max_lines > 300
-        call s:save_cache(a:filename, neocomplcache#unpack_list(values(l:keyword_lists)))
-    endif
-    
-    if l:max_lines > 1000
-        call neocomplcache#print_caching('Caching done.')
-
-        if g:NeoComplCache_CachingPercentInStatusline
-            let &l:statusline = l:statusline_save
-        endif
-    endif
-    
     return l:keyword_lists
 endfunction"}}}
 function! s:load_from_cache(filename)"{{{
-    let l:cache_name = g:NeoComplCache_TemporaryDir . '/include_cache/' .
-                \substitute(substitute(a:filename, ':', '=-', 'g'), '[/\\]', '=+', 'g') . '='
-    if getftime(l:cache_name) == -1 || getftime(l:cache_name) <= getftime(a:filename)
-        return {}
-    endif
-    
     let l:keyword_lists = {}
-    let l:lines = readfile(l:cache_name)
-    let l:max_lines = len(l:lines)
     
-    if l:max_lines > 3000
-        if g:NeoComplCache_CachingPercentInStatusline
-            let l:statusline_save = &l:statusline
+    for l:keyword in neocomplcache#cache#load_from_cache('buffer_cache', a:filename)
+        let l:key = tolower(l:keyword.word[: s:completion_length-1])
+        if !has_key(l:keyword_lists, l:key)
+            let l:keyword_lists[l:key] = []
         endif
+        call add(l:keyword_lists[l:key], l:keyword)
 
-        call neocomplcache#print_caching('Caching include files "' . a:filename . '"... please wait.')
-    endif
-    if l:max_lines > 10000
-        let l:print_cache_percent = l:max_lines / 5
-    elseif l:max_lines > 5000
-        let l:print_cache_percent = l:max_lines / 4
-    elseif l:max_lines > 3000
-        let l:print_cache_percent = l:max_lines / 3
-    else
-        let l:print_cache_percent = -1
-    endif
-    let l:line_cnt = l:print_cache_percent
-    
-    try
-        let l:line_num = 1
-        for l:line in l:lines"{{{
-            " Percentage check."{{{
-            if l:line_cnt == 0
-                call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
-                let l:line_cnt = l:print_cache_percent
-            endif
-            let l:line_cnt -= 1"}}}
-
-            let l:cache = split(l:line, '!!!', 1)
-            let l:keyword = {
-                        \ 'word' : l:cache[0], 'icase' : 1, 'dup' : 1,
-                        \ 'abbr' : l:cache[1], 'menu' : l:cache[2], 'kind' : l:cache[3], 'class' :  l:cache[4]
-                        \}
-
-            let l:key = tolower(l:cache[0][: s:completion_length-1])
-            if !has_key(l:keyword_lists, l:key)
-                let l:keyword_lists[l:key] = []
-            endif
-            call add(l:keyword_lists[l:key], l:keyword)
-
-            let l:line_num += 1
-        endfor"}}}
-    catch /E684:/
-        call neocomplcache#print_error('Error occured while analyzing cache!')
-        let l:cache_dir = g:NeoComplCache_TemporaryDir . '/include_cache'
-        call neocomplcache#print_error('Please delete cache directory: ' . l:cache_dir)
-        return {}
-    endtry
-    
-    if l:max_lines > 3000
-        call neocomplcache#print_caching('Caching done.')
-
-        if g:NeoComplCache_CachingPercentInStatusline
-            let &l:statusline = l:statusline_save
-        endif
-    endif
+        let l:keyword_lists[l:keyword.word] = 1
+    endfor 
     
     return l:keyword_lists
-endfunction"}}}
-function! s:save_cache(filename, keyword_list)"{{{
-    let l:cache_name = g:NeoComplCache_TemporaryDir . '/include_cache/' .
-                \substitute(substitute(a:filename, ':', '=-', 'g'), '[/\\]', '=+', 'g') . '='
-
-    " Output cache.
-    let l:word_list = []
-    for keyword in a:keyword_list
-        call add(l:word_list, printf('%s!!!%s!!!%s!!!%s!!!%s', 
-                    \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
-    endfor
-    call writefile(l:word_list, l:cache_name)
 endfunction"}}}
 
 " Global options definition."{{{

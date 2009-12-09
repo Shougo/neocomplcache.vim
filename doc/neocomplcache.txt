@@ -610,6 +610,11 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved caching print.
     - Improved calc frequency.
     - Optimized speed.
+    - Deleted dup in include_complete.
+    - Use caching helper in plugins.
+    - Improved option in vim_complete.
+    - Delete dup check in buffer_complete.
+    - Improved garbage collect in buffer_complete.
     
 ChangeLog NeoComplCache 3.00-: {{{
    3.22:

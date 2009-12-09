@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Dec 2009
+" Last Modified: 09 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.28:
 "    - Improved caching.
+"    - Use caching helper.
 "
 "   1.27:
 "    - Disabled in vim.
@@ -196,7 +197,7 @@ function! s:recaching(filetype)"{{{
 endfunction"}}}
 
 function! s:initialize_syntax()"{{{
-    let l:keyword_lists = s:caching_from_cache()
+    let l:keyword_lists = neocomplcache#cache#index_load_from_cache('syntax_cache', &filetype, s:completion_length)
     if !empty(l:keyword_lists)
         " Caching from cache.
         return l:keyword_lists
@@ -287,43 +288,7 @@ function! s:caching_from_syn()"{{{
     endfor
 
     " Save syntax cache.
-    let l:save_list = []
-    for keyword_list in values(l:keyword_lists)
-        for keyword in keyword_list
-            call add(l:save_list, keyword.word .','. keyword.menu)
-        endfor
-    endfor
-    let l:cache_name = printf('%s/syntax_cache/%s=', g:NeoComplCache_TemporaryDir, &filetype)
-    call writefile(l:save_list, l:cache_name)
-
-    return l:keyword_lists
-endfunction"}}}
-
-function! s:caching_from_cache()"{{{
-    let l:cache_name = printf('%s/syntax_cache/%s=', g:NeoComplCache_TemporaryDir, &filetype)
-    let l:syntax_files = split(globpath(&runtimepath, 'syntax/'.&filetype.'.vim'), '\n')
-    if getftime(l:cache_name) == -1 || (!empty(l:syntax_files) && getftime(l:cache_name) <= getftime(l:syntax_files[-1]))
-        return []
-    endif
-
-    let l:syntax_lines = readfile(l:cache_name)
-    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:keyword_lists = {}
-    for syntax in l:syntax_lines
-        let l:splited = split(syntax, ',')
-        let l:keyword =  {
-                    \ 'word' : l:splited[0], 'menu' : l:splited[1], 'icase' : 1
-                    \}
-        let l:keyword.abbr = 
-                    \ (len(l:splited[0]) > g:NeoComplCache_MaxKeywordWidth)? 
-                    \ printf(l:abbr_pattern, l:splited[0], l:splited[0][-8:]) : l:splited[0]
-
-        let l:key = tolower(l:keyword.word[: s:completion_length-1])
-        if !has_key(l:keyword_lists, l:key)
-            let l:keyword_lists[l:key] = []
-        endif
-        call add(l:keyword_lists[l:key], l:keyword)
-    endfor
+    call neocomplcache#cache#save_cache('syntax_cache', &filetype, neocomplcache#unpack_list(values(l:keyword_lists)))
 
     return l:keyword_lists
 endfunction"}}}

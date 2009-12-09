@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Dec 2009
+" Last Modified: 09 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.05:
 "    - Changed for neocomplcache 4.0.
+"    - Improved option.
 "
 "   1.04:
 "    - Implemented environment variable completion.
@@ -119,7 +120,7 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
         endif
     endif"}}}
 
-    let l:pattern = '\.$\|&\h[[:alnum:]_:]*\|\$\h\w*\|' . neocomplcache#get_keyword_pattern_end('vim')
+    let l:pattern = '\.$\|' . neocomplcache#get_keyword_pattern_end('vim')
     let l:cur_keyword_pos = match(a:cur_text, l:pattern)
     
     if g:NeoComplCache_EnableWildCard
