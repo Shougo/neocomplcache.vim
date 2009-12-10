@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Dec 2009
+" Last Modified: 10 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -30,6 +30,8 @@
 "    - Improved caching.
 "    - Deleted dup.
 "    - Use caching helper.
+"    - Use /dev/stdout in Linux and Mac.
+"    - Deleted caching current buffer.
 "
 "   1.08:
 "    - Caching current buffer.
@@ -211,14 +213,10 @@ function! s:check_buffer(bufname)"{{{
         
         " Check include.
         let l:include_files = s:get_include_files(l:bufnumber)
-        if filereadable(l:bufname)
-            let s:include_cache[l:bufname] = s:load_from_tags(l:bufname, l:filetype, 0)
-        endif
-
         for l:filename in l:include_files
             if !has_key(s:include_cache, l:filename)
                 " Caching.
-                let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype, 1)
+                let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype)
             endif
         endfor
         
@@ -279,7 +277,7 @@ function! s:get_include_files(bufnumber)"{{{
     return l:include_files
 endfunction"}}}
 
-function! s:load_from_tags(filename, filetype, is_force)"{{{
+function! s:load_from_tags(filename, filetype)"{{{
     " Initialize include list from tags.
 
     let l:keyword_lists = s:load_from_cache(a:filename)
@@ -287,13 +285,16 @@ function! s:load_from_tags(filename, filetype, is_force)"{{{
         return l:keyword_lists
     endif
 
-    if !executable('ctags') && a:is_force
+    if !executable('ctags')
         return s:load_from_file(a:filename, a:filetype)
     endif
     
     let l:args = has_key(g:NeoComplCache_CtagsArgumentsList, a:filetype) ? 
                 \g:NeoComplCache_CtagsArgumentsList[a:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
-    let l:lines = split(system(printf('ctags -f - %s %s', l:args, fnamemodify(a:filename, ':p:.'))), '\n')
+    let l:command = has('win32') || has('win64') ? 
+                \printf('ctags -f - %s %s', l:args, fnamemodify(a:filename, ':p:.')) : 
+                \printf('ctags -f /dev/stdout %s %s', l:args, fnamemodify(a:filename, ':p:.'))
+    let l:lines = split(system(l:command), '\n')
     
     if !empty(l:lines)
         " Save ctags file.
@@ -311,7 +312,7 @@ function! s:load_from_tags(filename, filetype, is_force)"{{{
         call add(l:keyword_lists[l:key], l:keyword)
     endfor 
     
-    if empty(l:keyword_lists) && a:is_force
+    if empty(l:keyword_lists)
         return s:load_from_file(a:filename, a:filetype)
     endif
     

@@ -105,6 +105,7 @@ function! neocomplcache#plugin#tags_complete#initialize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#finalize()"{{{
+    delcommand NeoComplCacheCachingTags
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{{{

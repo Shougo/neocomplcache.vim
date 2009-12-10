@@ -77,6 +77,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     command! -nargs=? -complete=buffer NeoComplCacheCachingDictionary call s:caching_dictionary(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCachePrintSource call s:print_source(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
+    command! -nargs=? -complete=buffer NeoComplCacheSaveCache call s:save_all_cache()
     command! -nargs=? -complete=buffer NeoComplCacheCachingDisable call s:caching_disable(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheCachingEnable call s:caching_enable(<q-args>)
     "}}}
@@ -88,14 +89,16 @@ endfunction
 
 function! neocomplcache#plugin#buffer_complete#finalize()"{{{
     delcommand NeoComplCacheCachingBuffer
+    delcommand NeoComplCacheCachingDictionary
     delcommand NeoComplCachePrintSource
     delcommand NeoComplCacheOutputKeyword
+    delcommand NeoComplCacheSaveCache
     delcommand NeoComplCacheCachingDisable
     delcommand NeoComplCacheCachingEnable
 
-    let s:sources = {}
-
     call s:save_all_cache()
+    
+    let s:sources = {}
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)"{{{
@@ -210,7 +213,7 @@ function! s:calc_freauency(list)"{{{
             endfor
             if l:isdeletable && l:frequencies[l:word] == 0
                 let l:key = tolower(l:word[: s:completion_length-1])
-                "echomsg l:word
+                echomsg l:word
                 call remove(l:source.keyword_cache[l:key], l:word)
             endif
 
@@ -562,41 +565,6 @@ function! s:caching_from_cache(srcname)"{{{
     return 0
 endfunction"}}}
 
-function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
-    let l:end = -1
-    let l:start_pattern = '\%(' . a:start_pattern . '\)'
-    let l:end_pattern = '\%(' . a:end_pattern . '\)'
-
-    let l:i = a:start_cnt
-    let l:max = len(a:string)
-    let l:nest_level = 0
-    while l:i < l:max
-        let l:start = match(a:string, l:start_pattern, l:i)
-        let l:end = match(a:string, l:end_pattern, l:i)
-
-        if l:start >= 0 && (l:end < 0 || l:start < l:end)
-            let l:i = matchend(a:string, l:start_pattern, l:i)
-            let l:nest_level += 1
-        elseif l:end >= 0 && (l:start < 0 || l:end < l:start)
-            let l:nest_level -= 1
-
-            if l:nest_level == 0
-                return l:end
-            endif
-
-            let l:i = matchend(a:string, l:end_pattern, l:i)
-        else
-            break
-        endif
-    endwhile
-
-    if l:nest_level != 0
-        return -1
-    else
-        return l:end
-    endif
-endfunction"}}}
-
 function! s:check_changed_buffer(bufname)"{{{
     let l:ft = getbufvar(a:bufname, '&filetype')
     if l:ft == ''
@@ -813,7 +781,7 @@ function! s:print_source(name)"{{{
     endfor
 endfunction"}}}
 function! s:output_keyword(name)"{{{
-    if a:number == ''
+    if a:name == ''
         let l:number = bufnr('%')
     else
         let l:number = bufnr(a:name)
@@ -829,10 +797,8 @@ function! s:output_keyword(name)"{{{
     endif
 
     " Output buffer.
-    for keyword_list in neocomplcache#unpack_dictionary_dictionary(s:sources[l:number].keyword_cache)
-        for keyword in keyword_list
-            silent put=keyword
-        endfor
+    for keyword in neocomplcache#unpack_dictionary_dictionary(s:sources[l:number].keyword_cache)
+        silent put=string(keyword)
     endfor
 endfunction "}}}
 function! s:caching_disable(name)"{{{

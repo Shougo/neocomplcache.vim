@@ -614,6 +614,12 @@ CHANGELOG					*neocomplcache-changelog*
     - Implemented auto cache in tags_complete.
     - Fixed tags_complete caching error.
     - Don't save empty tags file.
+    - Fixed output keyword error.
+    - Fixed finalize error.
+    - Use /dev/stdout in Linux and Mac in include_complete.
+    - Deleted caching current buffer in include_complete.
+    - Improved tex keyword pattern.
+    - Improved analyze in syntax_complete.
     
 ChangeLog NeoComplCache 3.00-: {{{
    3.22:

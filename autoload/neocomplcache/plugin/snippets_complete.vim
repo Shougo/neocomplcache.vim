@@ -267,6 +267,9 @@ endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#finalize()"{{{
     delcommand NeoComplCacheEditSnippets
+    delcommand NeoComplCacheEditRuntimeSnippets
+    delcommand NeoComplCachePrintSnippets
+    
     hi clear NeoComplCacheExpandSnippets
 endfunction"}}}
 

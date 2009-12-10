@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Dec 2009
+" Last Modified: 10 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.28:
 "    - Improved caching.
 "    - Use caching helper.
+"    - Improved analyze.
 "
 "   1.27:
 "    - Disabled in vim.
@@ -218,11 +219,8 @@ function! s:caching_from_syn()"{{{
 
     let l:group_name = ''
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    if has_key(g:NeoComplCache_KeywordPatterns, &filetype)
-        let l:keyword_pattern = g:NeoComplCache_KeywordPatterns[&filetype]
-    else
-        let l:keyword_pattern = g:NeoComplCache_KeywordPatterns['default']
-    endif
+    let l:keyword_pattern = neocomplcache#get_keyword_pattern()
+    
     let l:dup_check = {}
     let l:menu = '[S] '
 
@@ -245,7 +243,6 @@ function! s:caching_from_syn()"{{{
 
         if l:line =~ '^\s*match'
             let l:line = s:substitute_candidate(matchstr(l:line, '/\zs[^/]\+\ze/'))
-            "echomsg l:line
         elseif l:line =~ '^\s*start='
             let l:line = 
                         \s:substitute_candidate(matchstr(l:line, 'start=/\zs[^/]\+\ze/')) . ' ' .
@@ -254,13 +251,8 @@ function! s:caching_from_syn()"{{{
 
         " Add keywords.
         let l:match_num = 0
-        let l:line_max = len(l:line) - g:NeoComplCache_MinSyntaxLength
-        while 1
-            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
-            if l:match_str == ''
-                break
-            endif
-
+        let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
+        while l:match_str != ''
             " Ignore too short keyword.
             if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
                         \&& l:match_str =~ '^[[:print:]]\+$'
@@ -279,11 +271,10 @@ function! s:caching_from_syn()"{{{
 
                 let l:dup_check[l:match_str] = 1
             endif
-
+            
             let l:match_num += len(l:match_str)
-            if l:match_num > l:line_max
-                break
-            endif
+            
+            let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
         endwhile
     endfor
 
@@ -303,26 +294,116 @@ function! s:substitute_candidate(candidate)"{{{
 
     " Collection.
     let l:candidate = substitute(l:candidate,
-                \'\%(\\\\\|[^\\]\)\zs\[.*\]', ' ', 'g')
-    if l:candidate =~ '\\v'
-        " Delete.
-        let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\%([=?+*]\|%[\|\\s\*\)', '', 'g')
-        " Space.
-        let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\%([<>{()|$^]\|\\z\?\a\)', ' ', 'g')
-    else
-        " Delete.
-        let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\%(\\[=?+]\|\\%[\|\\s\*\|\*\)', '', 'g')
-        " Space.
-        let l:candidate = substitute(l:candidate,
-                    \'\%(\\\\\|[^\\]\)\zs\%(\\[<>{()|]\|[$^]\|\\z\?\a\)', ' ', 'g')
-    endif
+                \'\\\@<!\[[^\]]*\]', ' ', 'g')
+    
+    " Delete.
+    let l:candidate = substitute(l:candidate,
+                \'\\\@<!\%(\\[=?+]\|\\%[\|\\s\*\)', '', 'g')
+    " Space.
+    let l:candidate = substitute(l:candidate,
+                \'\\\@<!\%(\\[<>{}]\|[$^]\|\\z\?\a\)', ' ', 'g')
 
+    if l:candidate =~ '\\%\?('
+        let l:candidate = join(s:split_pattern(l:candidate))
+    endif
+    
     " \
     let l:candidate = substitute(l:candidate, '\\\\', '\\', 'g')
+    " *
+    let l:candidate = substitute(l:candidate, '\\\*', '*', 'g')
     return l:candidate
+endfunction"}}}
+
+function! s:split_pattern(keyword_pattern)"{{{
+    let l:pattern = a:keyword_pattern
+    let l:keyword_patterns = []
+    let l:keyword_pattern = [ '' ]
+
+    let l:i = 0
+    let l:max = len(l:pattern)
+    while l:i < l:max
+        if match(l:pattern, '^\\%\?(', l:i) >= 0
+            " Grouping.
+            let l:end = s:match_pair(l:pattern, '\\%\?(', '\\)', l:i)
+            if l:end < 0
+                "call neocomplcache#print_error('Unmatched (.')
+                return []
+            endif
+            
+            let l:save_pattern = l:keyword_pattern
+            let l:keyword_pattern = []
+            for l:keyword in split(l:pattern[matchend(l:pattern, '^\\%\?(', l:i) : l:end], '\\|')
+                for l:prefix in l:save_pattern
+                    call add(l:keyword_pattern, l:prefix . l:keyword)
+                endfor
+            endfor
+
+            let l:i = l:end + 1
+        elseif match(l:pattern, '^\\|', l:i) >= 0
+            " Select.
+            let l:keyword_patterns += l:keyword_pattern
+            let l:keyword_pattern = [ '' ]
+            let l:pattern = l:pattern[l:i+2 :]
+            let l:max = len(l:pattern)
+
+            let l:i = 0
+        elseif l:pattern[l:i] == '\' && l:i+1 < l:max
+            let l:save_pattern = l:keyword_pattern
+            let l:keyword_pattern = []
+            for l:prefix in l:save_pattern
+                call add(l:keyword_pattern, l:prefix . l:pattern[l:i] . l:pattern[l:i+1])
+            endfor
+            
+            " Escape.
+            let l:i += 2
+        else
+            let l:save_pattern = l:keyword_pattern
+            let l:keyword_pattern = []
+            for l:prefix in l:save_pattern
+                call add(l:keyword_pattern, l:prefix . l:pattern[l:i])
+            endfor
+            
+            let l:i += 1
+        endif
+    endwhile
+
+    let l:keyword_patterns += l:keyword_pattern
+    return l:keyword_patterns
+endfunction"}}}
+
+function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
+    let l:end = -1
+    let l:start_pattern = '\%(' . a:start_pattern . '\)'
+    let l:end_pattern = '\%(' . a:end_pattern . '\)'
+
+    let l:i = a:start_cnt
+    let l:max = len(a:string)
+    let l:nest_level = 0
+    while l:i < l:max
+        let l:start = match(a:string, l:start_pattern, l:i)
+        let l:end = match(a:string, l:end_pattern, l:i)
+
+        if l:start >= 0 && (l:end < 0 || l:start < l:end)
+            let l:i = matchend(a:string, l:start_pattern, l:i)
+            let l:nest_level += 1
+        elseif l:end >= 0 && (l:start < 0 || l:end < l:start)
+            let l:nest_level -= 1
+
+            if l:nest_level == 0
+                return l:end
+            endif
+
+            let l:i = matchend(a:string, l:end_pattern, l:i)
+        else
+            break
+        endif
+    endwhile
+
+    if l:nest_level != 0
+        return -1
+    else
+        return l:end
+    endif
 endfunction"}}}
 
 " Global options definition."{{{

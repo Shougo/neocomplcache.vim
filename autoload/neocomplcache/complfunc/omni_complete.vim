@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Dec 2009
+" Last Modified: 10 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -132,6 +132,7 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
     command! -nargs=? -complete=buffer NeoComplCacheCachingOmni call s:caching(<q-args>, 1)
 endfunction"}}}
 function! neocomplcache#complfunc#omni_complete#finalize()"{{{
+    delcommand NeoComplCacheCachingOmni
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{

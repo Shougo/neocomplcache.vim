@@ -81,7 +81,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
                 \'\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_-]*>\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:]*\%(#\h\w*\)*\%(!\|()\?\)\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
-                \'\v\\\a\{\a{1,2}}|\\[[:alpha:]@][[:alnum:]@]*[[{]?|\a[[:alnum:]:]*[*[{]?')
+                \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%([[]\|{\%(\h\w*\*\?}\)\?\)\?\|\a[[:alnum:]:]*[*[{]\?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh',
                 \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\[|\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vimshell',
