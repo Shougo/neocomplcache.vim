@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2009
+" Last Modified: 10 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.13, for Vim 7.0
+" Version: 1.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.14:
 "    - Use cache helper.
+"    - Supported neocomplcache ver.4.00.
+"    - Fixed tags_complete caching error.
 "
 "   1.13:
 "    - Save error log.
@@ -99,16 +101,21 @@ function! neocomplcache#plugin#tags_complete#initialize()"{{{
         call mkdir(g:NeoComplCache_TemporaryDir . '/tags_cache', 'p')
     endif
     
-    command! -nargs=? -complete=buffer NeoComplCacheCachingTags call s:caching_tags(<q-args>)
+    command! -nargs=? -complete=buffer NeoComplCacheCachingTags call s:caching_tags(<q-args>, 1)
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{{{
-    if empty(s:tags_list)
+    if !has_key(s:tags_list, bufnr('%'))
+        call s:caching_tags(bufnr('%'), 0)
+    endif
+
+    if empty(s:tags_list[bufnr('%')])
         return []
     endif
+    let l:tags_list = s:tags_list[bufnr('%')]
     
     let l:ft = &filetype
     if l:ft == ''
@@ -127,18 +134,11 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
     let l:keyword_list = []
     let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
     if len(l:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
-        for tags in split(&l:tags, ',')
-            let l:filename = fnamemodify(tags, ':p')
-            if filereadable(l:filename) && has_key(s:tags_list, l:filename)
-                let l:keyword_list += neocomplcache#unpack_list(values(s:tags_list[l:filename]))
-            endif
-        endfor
+        let l:keyword_list += neocomplcache#unpack_dictionary_dictionary(l:tags_list)
     else
-        for tags in split(&l:tags, ',')
-            let l:filename = fnamemodify(tags, ':p')
-            if filereadable(l:filename) && has_key(s:tags_list, l:filename) 
-                        \&& has_key(s:tags_list[l:filename], l:key)
-                let l:keyword_list += s:tags_list[l:filename][l:key]
+        for tags in values(l:tags_list)
+            if has_key(tags, l:key)
+                let l:keyword_list += tags[l:key]
             endif
         endfor
         
@@ -158,12 +158,14 @@ endfunction"}}}
 function! neocomplcache#plugin#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
 endfunction"}}}
 
-function! s:caching_tags(bufname)"{{{
-    let l:bufname = (a:bufname == '') ? bufname('%') : a:bufname
-    for tags in split(getbufvar(bufnr(l:bufname), '&tags'), ',')
+function! s:caching_tags(bufname, force)"{{{
+    let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
+    let s:tags_list[l:bufnumber] = {}
+    for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
         let l:filename = fnamemodify(tags, ':p')
         if filereadable(l:filename)
-            let s:tags_list[l:filename] = s:initialize_tags(l:filename)
+                            \&& (a:force || getfsize(l:filename) < g:NeoComplCache_CachingLimitFileSize)
+            let s:tags_list[l:bufnumber][l:filename] = s:initialize_tags(l:filename)
         endif
     endfor
 endfunction"}}}

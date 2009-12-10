@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Dec 2009
+" Last Modified: 10 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -112,16 +112,15 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, complet
             let l:keyword_lists[l:key] = []
         endif
         call add(l:keyword_lists[l:key], l:keyword)
-
-        let l:keyword_lists[l:keyword.word] = 1
     endfor 
     
     return l:keyword_lists
 endfunction"}}}
-function! neocomplcache#cache#load_from_file(filename, pattern, mark, start_line, end_line)"{{{
+function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
 
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:lines = bufexists(a:filename)? getbufline(bufnr(a:filename), a:start_line, a:end_line) : readfile(a:filename)
+    let l:lines = (bufexists(a:filename) || fnamemodify(a:filename, ':t') == '')?
+                \getbufline(bufnr(a:filename), 1, '$') : readfile(a:filename)
     let l:max_lines = len(l:lines)
 
     if l:max_lines > 400
@@ -245,8 +244,10 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
             " Add keywords.
             if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
                         \&& !has_key(l:dup_check, l:tag[0])
-                let l:option = { 'cmd' : 
-                            \substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g') }
+                let l:option = {
+                            \ 'cmd' : substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g'), 
+                            \ 'kind' : ''
+                            \}
                 for l:opt in l:tag[3:]
                     let l:key = matchstr(l:opt, '^\h\w*\ze:')
                     if l:key == ''
@@ -261,7 +262,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
                     continue
                 endif
 
-                let l:abbr = (l:tag[3] == 'd' || l:option['cmd'] == '')? l:tag[0] : l:option['cmd']
+                let l:abbr = (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
                 let l:keyword = {
                             \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1,
                             \ 'abbr' : (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)?
@@ -290,9 +291,10 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
         endfor"}}}
     catch /E684:/
         echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
+        echohl WarningMsg | echomsg v:exception | echohl None
         let l:log_file = g:NeoComplCache_TemporaryDir . '/' . a:cache_dir . '/error_log'
         echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
-        call writefile(l:lines, l:log_file)
+        call writefile(a:tags_list, l:log_file)
         return []
     endtry
 

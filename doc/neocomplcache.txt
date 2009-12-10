@@ -260,14 +260,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 	
 		Default value is '0.2'.
 
-g:NeoComplCache_EnableInfo				*g:NeoComplCache_EnableInfo*
-		When a preview window opens, this variable controls whether
-		neocomplcache display additional information.  Only
-		tags_complete plugin supports now.  This variable changes
-		'completeopt'.
-	
-		Default value is 0.
-
 g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
 		This variable controls whether neocomplcache uses a random
 		number caching when Vim come out of Insert mode.
@@ -511,8 +503,6 @@ EXAMPLES					*neocomplcache-examples*
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
 	let g:NeoComplCache_SmartCase = 1
-	" Use preview window.
-	let g:NeoComplCache_EnableInfo = 1
 	" Use camel case completion.
 	let g:NeoComplCache_EnableCamelCaseCompletion = 1
 	" Use underbar completion.
@@ -560,10 +550,11 @@ snippets_complete.vim					*snippets_complete*
 
 tags_complete.vim					*tags_complete*
 		This plugin will use a tag file defined in 'tags' for
-		completion.  neocomplcache do not work if you do not execute
-		|:NeoComplCacheCachingTags| command.  Because tags_complete
-		is too slow if tags_complete read a big tags file.  You
-		should use more convenient include completion now.
+		completion.  When a huge tag file is set, neocomplcache
+		don't make cash if you don't execute
+		|:NeoComplCacheCachingTags|command.  Because tags_complete
+		is too slow if tags_complete read a big tags file. 
+		You should use more convenient include completion now.
 
 syntax_complete.vim					*syntax_complete*
 		This plugin will analyze a syntax file like
@@ -615,6 +606,14 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved option in vim_complete.
     - Delete dup check in buffer_complete.
     - Improved garbage collect in buffer_complete.
+    - Deleted prev_rank.
+    - Deleted g:NeoComplCache_EnableInfo option.
+    - Fixed fatal buffer_complete bug.
+    - Improved buffer caching.
+    - Added NeoComplCacheCachingDictionary command.
+    - Implemented auto cache in tags_complete.
+    - Fixed tags_complete caching error.
+    - Don't save empty tags file.
     
 ChangeLog NeoComplCache 3.00-: {{{
    3.22:

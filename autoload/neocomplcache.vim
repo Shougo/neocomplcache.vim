@@ -42,8 +42,8 @@ function! neocomplcache#enable() "{{{
     let s:global_complfuncs = {}
     let s:skip_next_complete = 0
     let s:cur_keyword_pos = -1
+    let s:cur_keyword_str = ''
     let s:complete_words = []
-    let s:cur_keyword_pos = -1
     let s:update_time = &updatetime
     let s:prev_numbered_list = []
     let s:cur_text = ''
@@ -281,24 +281,14 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             endif
         endfor
         "}}}
-        let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = s:integrate_completion(l:complete_result)
-        if empty(s:complete_words)
+        let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(l:complete_result)
+        if empty(l:complete_words)
             return -1
         endif
+        let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
         return s:cur_keyword_pos
     else
-        if g:NeoComplCache_EnableInfo"{{{
-            " Check preview window.
-            silent! wincmd P
-            if &previewwindow
-                wincmd p
-                setlocal completeopt+=preview
-            else
-                setlocal completeopt-=preview
-            endif
-        endif"}}}
-
         return s:complete_words
     endif
 endfunction"}}}
@@ -309,17 +299,6 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
     else
         " Restore option.
         let &l:completefunc = 'neocomplcache#manual_complete'
-
-        if g:NeoComplCache_EnableInfo"{{{
-            " Check preview window.
-            silent! wincmd P
-            if &previewwindow
-                wincmd p
-                setlocal completeopt+=preview
-            else
-                setlocal completeopt-=preview
-            endif
-        endif"}}}
 
         return s:complete_words
     endif
@@ -410,17 +389,17 @@ function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
         return neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
     endif
 endfunction"}}}
-function! neocomplcache#unpack_list(list)"{{{
+function! neocomplcache#unpack_dictionary(dict)"{{{
     let l:ret = []
-    for l in a:list
+    for l in values(a:dict)
         let l:ret += l
     endfor
 
     return l:ret
 endfunction"}}}
-function! neocomplcache#unpack_list_dictionary(list)"{{{
+function! neocomplcache#unpack_dictionary_dictionary(dict)"{{{
     let l:ret = []
-    for l in a:list
+    for l in values(a:dict)
         let l:ret += values(l)
     endfor
 
@@ -543,23 +522,17 @@ function! neocomplcache#get_prev_word(cur_keyword_str)"{{{
         let l:word_end = matchend(l:line_part, l:keyword_pattern, l:prev_word_end)
         if l:word_end >= 0
             while l:word_end >= 0
-                let l:prepre_word_end = l:prev_word_end
                 let l:prev_word_end = l:word_end
                 let l:word_end = matchend(l:line_part, l:keyword_pattern, l:prev_word_end)
             endwhile
-            let l:prepre_word = matchstr(l:line_part[: l:prepre_word_end-1], l:keyword_pattern . '$')
-        else
-            let l:prepre_word = '^'
         endif
 
         let l:prev_word = matchstr(l:line_part[: l:prev_word_end-1], l:keyword_pattern . '$')
     else
-        let l:prepre_word = ''
         let l:prev_word = '^'
     endif
-    "echomsg printf('prepre = %s, pre = %s', l:prepre_word, l:prev_word)
     
-    return [l:prev_word, l:prepre_word]
+    return l:prev_word
 endfunction"}}}
 function! neocomplcache#match_word(cur_text)"{{{
     return matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
@@ -721,9 +694,7 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
     endif
     
     let s:skipped = 0
-    let s:cur_keyword_pos = l:cur_keyword_pos
-    let s:cur_keyword_str = l:cur_keyword_str
-    let s:complete_words = l:complete_words
+    let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
@@ -753,7 +724,6 @@ endfunction"}}}
 function! s:complete()"{{{
     if s:skip_next_complete
         let s:skip_next_complete = 0
-
         return
     endif
 
@@ -851,7 +821,7 @@ function! s:complete()"{{{
     "}}}
 
     " Start auto complete.
-    let [s:cur_keyword_pos, s:cur_keyword_str, l:complete_words] = s:integrate_completion(l:complete_result)
+    let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(l:complete_result)
 
     if empty(l:complete_words)
         let &l:completefunc = 'neocomplcache#manual_complete'
@@ -868,19 +838,12 @@ function! s:complete()"{{{
         return
     endif
 
-    let s:complete_words = l:complete_words
+    let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
 endfunction"}}}
 function! s:integrate_completion(complete_result)"{{{
     if empty(a:complete_result)
-        return [-1, '', []]
-    endif
-    
-    if g:NeoComplCache_EnableSkipCompletion
-                \&& len(a:complete_result) > g:NeoComplCache_MaxList*2 
-                \&& &l:completefunc != 'neocomplcache#manual_complete'
-        echo 'Skipped auto completion'
         return [-1, '', []]
     endif
     
@@ -895,7 +858,6 @@ function! s:integrate_completion(complete_result)"{{{
 
     let l:frequencies = neocomplcache#plugin#buffer_complete#get_frequencies()
     let l:prev_frequencies = neocomplcache#plugin#buffer_complete#get_prev_frequencies()
-    let l:prepre_frequencies = neocomplcache#plugin#buffer_complete#get_prepre_frequencies()
     
     " Append prefix.
     let l:complete_words = []
@@ -914,23 +876,26 @@ function! s:integrate_completion(complete_result)"{{{
             let l:word = l:keyword.word
             let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
             let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:prev_frequencies[l:word] : 0
-            let l:keyword.prepre_rank = has_key(l:prepre_frequencies, l:word)? l:prepre_frequencies[l:word] : 0
         endfor
         let l:complete_words += l:result.complete_words
     endfor
+    
     " Sort.
     if (has_key(g:NeoComplCache_DisablePluginList, 'buffer_complete') && g:NeoComplCache_DisablePluginList['buffer_complete'])
                 \|| g:NeoComplCache_AlphabeticalOrder
-        let l:complete_words = sort(l:complete_words, 'neocomplcache#compare_words')[: g:NeoComplCache_MaxList]
+        let l:func = 'neocomplcache#compare_words'
     else
-        let l:complete_words = sort(l:complete_words, 'neocomplcache#compare_prev_rank')[: g:NeoComplCache_MaxList]
+        let l:func = 'neocomplcache#compare_prev_rank'
     endif
     
-    return [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
+    return [l:cur_keyword_pos, l:cur_keyword_str, sort(l:complete_words, l:func)[: g:NeoComplCache_MaxList]]
 endfunction"}}}
 function! s:insert_leave()"{{{
     let s:old_text = ''
     let s:skip_next_complete = 0
+    let s:cur_keyword_pos = -1
+    let s:cur_keyword_str = ''
+    let s:complete_words = []
 endfunction"}}}
 function! s:remove_next_keyword(list)"{{{
     let l:list = a:list

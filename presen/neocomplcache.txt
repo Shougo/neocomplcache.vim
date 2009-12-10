@@ -177,7 +177,7 @@ neocomplcacheの代表的機能
 ・カーソル後方のキーワードに応じた補完
 ・SmartCase
 ・豊富なカスタマイズ項目
-・文脈依存補完（3-gram completion）
+・文脈依存補完（2-gram completion）
 ・Omni補完
 ・ローカルタグ補完
 ・キーワード補完を試す
@@ -313,7 +313,7 @@ let g:NeoComplCache_SmartCase = 1
 設定項目は豊富にあるので、ヘルプを参照してください。
 
 --------------------------------
-文脈依存補完（3-gram completion）
+文脈依存補完（2-gram completion）
 
 文脈を解析し、補完する機能が実装されました。
 例えば、バッファ内に
@@ -321,12 +321,8 @@ hoge piyo
 と入力しているとすると、hogeの後にはpiyoが来やすいと認識、次の補完時にpiyoが上の方に来ます。
 
 追記：
-3-gram completionも実装しました！
-これで、より精度の高い補完が可能になります。
-
-この機能を使用するには、
-let g:NeoComplCache_PreviousKeywordCompletion = 1
-とする必要があります。
+3-gram completionはメモリを食う割に効果がないので、
+Ver.4.00より廃止しました。
 
 --------------------------------
 Omni補完
@@ -365,17 +361,6 @@ let g:NeoComplCache_SameFileTypeLists['c'] = 'cpp'
 let g:NeoComplCache_SameFileTypeLists['cpp'] = 'c'
 というように設定すれば、C/C++間のバッファで補完できるようになります。
 一方だけ設定すれば、相互でない補完も可能です。
-
---------------------------------
-preview windowに対応
-
-preview windowが存在するとき、プラグインによっては追加情報を表示します。
-
-追記：
-Ver.2.02より、この機能を使用するには、
-let g:NeoComplCache_EnableInfo = 1
-とする必要があります。
-ただしこの設定を行うと、neocomplcacheが&completeoptを勝手に変更するので注意してください。
 
 --------------------------------
 シンタックス補完
@@ -695,8 +680,6 @@ neocomplcacheのオプションはdoc/neocomplcache.jaxに詳しい解説があ�
 let g:NeoComplCache_EnableAtStartup = 1
 " Use smartcase.
 let g:NeoComplCache_SmartCase = 1
-" Use preview window.
-let g:NeoComplCache_EnableInfo = 1
 " Use camel case completion.
 let g:NeoComplCache_EnableCamelCaseCompletion = 1
 " Use underbar completion.

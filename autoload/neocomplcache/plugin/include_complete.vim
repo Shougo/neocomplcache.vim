@@ -159,7 +159,7 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
     let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
     if len(l:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
         for l:include in s:include_info[bufnr('%')].include_files
-            let l:keyword_list += neocomplcache#unpack_list(values(s:include_cache[l:include]))
+            let l:keyword_list += neocomplcache#unpack_dictionary(s:include_cache[l:include])
         endfor
         
         let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
@@ -295,8 +295,10 @@ function! s:load_from_tags(filename, filetype, is_force)"{{{
                 \g:NeoComplCache_CtagsArgumentsList[a:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
     let l:lines = split(system(printf('ctags -f - %s %s', l:args, fnamemodify(a:filename, ':p:.'))), '\n')
     
-    " Save ctags file.
-    call neocomplcache#cache#writefile('include_tags', a:filename, l:lines)
+    if !empty(l:lines)
+        " Save ctags file.
+        call neocomplcache#cache#writefile('include_tags', a:filename, l:lines)
+    endif
 
     let l:keyword_lists = {}
     
@@ -314,7 +316,7 @@ function! s:load_from_tags(filename, filetype, is_force)"{{{
     endif
     
     if !empty(l:keyword_lists)
-        call neocomplcache#cache#save_cache('include_cache', a:filename, neocomplcache#unpack_list(values(l:keyword_lists)))
+        call neocomplcache#cache#save_cache('include_cache', a:filename, neocomplcache#unpack_dictionary(l:keyword_lists))
     endif
     
     return l:keyword_lists

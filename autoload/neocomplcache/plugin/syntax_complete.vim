@@ -144,7 +144,7 @@ function! neocomplcache#plugin#syntax_complete#get_keyword_list(cur_keyword_str)
 
     let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
     if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
-        return neocomplcache#keyword_filter(neocomplcache#unpack_list(values(s:syntax_list[&filetype])), a:cur_keyword_str)
+        return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(s:syntax_list[&filetype]), a:cur_keyword_str)
     elseif !has_key(s:syntax_list[&filetype], l:key)
         return []
     elseif len(a:cur_keyword_str) == s:completion_length
@@ -288,7 +288,7 @@ function! s:caching_from_syn()"{{{
     endfor
 
     " Save syntax cache.
-    call neocomplcache#cache#save_cache('syntax_cache', &filetype, neocomplcache#unpack_list(values(l:keyword_lists)))
+    call neocomplcache#cache#save_cache('syntax_cache', &filetype, neocomplcache#unpack_dictionary(l:keyword_lists))
 
     return l:keyword_lists
 endfunction"}}}
