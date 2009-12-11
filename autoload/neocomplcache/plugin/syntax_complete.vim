@@ -315,60 +315,60 @@ function! s:substitute_candidate(candidate)"{{{
 endfunction"}}}
 
 function! s:split_pattern(keyword_pattern)"{{{
-    let l:pattern = a:keyword_pattern
-    let l:keyword_patterns = []
-    let l:keyword_pattern = [ '' ]
+    let l:original_pattern = a:keyword_pattern
+    let l:result_patterns = []
+    let l:analyzing_patterns = [ '' ]
 
     let l:i = 0
-    let l:max = len(l:pattern)
+    let l:max = len(l:original_pattern)
     while l:i < l:max
-        if match(l:pattern, '^\\%\?(', l:i) >= 0
+        if match(l:original_pattern, '^\\%\?(', l:i) >= 0
             " Grouping.
-            let l:end = s:match_pair(l:pattern, '\\%\?(', '\\)', l:i)
+            let l:end = s:match_pair(l:original_pattern, '\\%\?(', '\\)', l:i)
             if l:end < 0
                 "call neocomplcache#print_error('Unmatched (.')
-                return []
+                return [ a:keyword_pattern ]
             endif
             
-            let l:save_pattern = l:keyword_pattern
-            let l:keyword_pattern = []
-            for l:keyword in split(l:pattern[matchend(l:pattern, '^\\%\?(', l:i) : l:end], '\\|')
+            let l:save_pattern = l:analyzing_patterns
+            let l:analyzing_patterns = []
+            for l:keyword in split(l:original_pattern[matchend(l:original_pattern, '^\\%\?(', l:i) : l:end], '\\|')
                 for l:prefix in l:save_pattern
-                    call add(l:keyword_pattern, l:prefix . l:keyword)
+                    call add(l:analyzing_patterns, l:prefix . l:keyword)
                 endfor
             endfor
 
             let l:i = l:end + 1
-        elseif match(l:pattern, '^\\|', l:i) >= 0
+        elseif match(l:original_pattern, '^\\|', l:i) >= 0
             " Select.
-            let l:keyword_patterns += l:keyword_pattern
-            let l:keyword_pattern = [ '' ]
-            let l:pattern = l:pattern[l:i+2 :]
-            let l:max = len(l:pattern)
+            let l:result_patterns += l:analyzing_patterns
+            let l:analyzing_patterns = [ '' ]
+            let l:original_pattern = l:original_pattern[l:i+2 :]
+            let l:max = len(l:original_pattern)
 
             let l:i = 0
-        elseif l:pattern[l:i] == '\' && l:i+1 < l:max
-            let l:save_pattern = l:keyword_pattern
-            let l:keyword_pattern = []
+        elseif l:original_pattern[l:i] == '\' && l:i+1 < l:max
+            let l:save_pattern = l:analyzing_patterns
+            let l:analyzing_patterns = []
             for l:prefix in l:save_pattern
-                call add(l:keyword_pattern, l:prefix . l:pattern[l:i] . l:pattern[l:i+1])
+                call add(l:analyzing_patterns, l:prefix . l:original_pattern[l:i] . l:original_pattern[l:i+1])
             endfor
             
             " Escape.
             let l:i += 2
         else
-            let l:save_pattern = l:keyword_pattern
-            let l:keyword_pattern = []
+            let l:save_pattern = l:analyzing_patterns
+            let l:analyzing_patterns = []
             for l:prefix in l:save_pattern
-                call add(l:keyword_pattern, l:prefix . l:pattern[l:i])
+                call add(l:analyzing_patterns, l:prefix . l:original_pattern[l:i])
             endfor
             
             let l:i += 1
         endif
     endwhile
 
-    let l:keyword_patterns += l:keyword_pattern
-    return l:keyword_patterns
+    let l:result_patterns += l:analyzing_patterns
+    return l:result_patterns
 endfunction"}}}
 
 function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{

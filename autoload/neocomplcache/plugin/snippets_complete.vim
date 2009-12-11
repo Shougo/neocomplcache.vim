@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Dec 2009
+" Last Modified: 10 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -297,7 +297,7 @@ function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_st
         endfor
     endif
 
-    return sort(s:keyword_filter(l:snippets, a:cur_keyword_str), 's:compare_words')
+    return s:keyword_filter(l:snippets, a:cur_keyword_str)
 endfunction"}}}
 
 function! s:compare_words(i1, i2)
@@ -307,7 +307,7 @@ endfunction
 function! s:keyword_filter(list, cur_keyword_str)"{{{
     let l:keyword_escape = neocomplcache#keyword_escape(a:cur_keyword_str)
 
-    let l:prev_word = neocomplcache#get_prev_word(a:cur_keyword_str)[0]
+    let l:prev_word = neocomplcache#get_prev_word(a:cur_keyword_str)
     " Keyword filter.
     let l:pattern = printf('v:val.word =~ %s && (!has_key(v:val, "prev_word") || v:val.prev_word == %s)', 
                 \string('^' . l:keyword_escape), string(l:prev_word))
