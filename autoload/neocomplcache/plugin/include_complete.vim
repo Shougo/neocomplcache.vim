@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2009
+" Last Modified: 11 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -32,6 +32,7 @@
 "    - Use caching helper.
 "    - Use /dev/stdout in Linux and Mac.
 "    - Deleted caching current buffer.
+"    - Fixed error when load file.
 "
 "   1.08:
 "    - Caching current buffer.
@@ -326,7 +327,7 @@ function! s:load_from_file(filename, filetype)"{{{
     " Initialize include list from file.
 
     let l:keyword_lists = {}
-    let l:loaded_list = neocomplcache#cache#load_from_file(a:filename, neocomplcache#get_keyword_pattern(), 'I', 1, '$')
+    let l:loaded_list = neocomplcache#cache#load_from_file(a:filename, neocomplcache#get_keyword_pattern(), 'I')
     if len(l:loaded_list) > 300
         call neocomplcache#cache#save_cache('include_cache', a:filename, l:loaded_list)
     endif

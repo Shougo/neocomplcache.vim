@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 4.00
+Version: 4.01
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -232,8 +232,8 @@ g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
 		
 		初期値は1なので、有効になっている。
 
-g:NeoComplCache_CalcRankRandomize			*g:NeoComplCache_CalcRankRandomize*
-		頻度を再計算するときに、乱数を使用するかを制御する。 1ならば
+g:NeoComplCache_EnableRandomize			*g:NeoComplCache_EnableRandomize*
+		頻度を再計算するときなどに、乱数を使用するかを制御する。 1ならば
 		有効になる。
 		
 		初期値は+reltimeの時に1となる。
@@ -249,13 +249,6 @@ g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		の値は文字列でなければならない。
 		
 		初期値は'0.2'である。
-
-g:NeoComplCache_CachingRandomize			*g:NeoComplCache_CachingRandomize*
-		Insert modeから出る時、現在のキャッシュラインをキャッシュす
-		るかどうか決定するのに、 乱数を用いるかどうか制御する。1なら
-		ば有効になる。
-		
-		初期値は+reltimeの時に1となる。
 
 g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompletion*
 		大文字を入力したときに、それを単語の区切りとしてあいまい検索
@@ -310,6 +303,12 @@ g:NeoComplCache_TemporaryDir				*g:NeoComplCache_TemporaryDir*
 g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
 		補完するためのキーワードパターンを記録する。 これはファイル
 		タイプ毎に正規表現で指定されている。
+		
+		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
+
+g:NeoComplCache_NextKeywordPatterns				*g:NeoComplCache_NextKeywordPatterns*
+		カーソルより後のキーワードパターンを認識するための正規表現を記録する。
+		|g:NeoComplCache_KeywordPatterns|と形式は同じである。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 

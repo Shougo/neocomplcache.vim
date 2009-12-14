@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2009
+" Last Modified: 11 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.09, for Vim 7.0
+" Version: 1.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.10:
+"    - Supported mark down filetype.
+"
 "   1.09:
 "    - Fixed manual completion error.
 "    - Experimental tags support.
@@ -100,7 +103,7 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
         catch
         endtry
     endif
-    call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'html,xhtml,xml',
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'html,xhtml,xml,markdown',
                 \'<[^>]*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'css',
                 \'^\s\+\w+\|\w+[):;]?\s\+\|[@!]')

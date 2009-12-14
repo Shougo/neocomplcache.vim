@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2009
+" Last Modified: 11 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.00, for Vim 7.0
+" Version: 4.01, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -194,12 +194,7 @@ function! s:calc_freauency(list)"{{{
         let l:calc_cnt = 2
     endif
 
-    if g:NeoComplCache_CalcRankRandomize
-        let l:match_end = matchend(reltimestr(reltime()), '\d\+\.') + 1
-    endif
-
     let l:source = s:sources[bufnr('%')]
-    let l:isdeletable = neocomplcache#plugin#buffer_complete#caching_percent(bufnr('%')) == 100
     for keyword in a:list
         if s:rank_cache_count <= 0
             " Set rank.
@@ -211,15 +206,10 @@ function! s:calc_freauency(list)"{{{
                     let l:frequencies[l:word] += cache_lines.keywords[l:word].rank
                 endif
             endfor
-            if l:isdeletable && l:frequencies[l:word] == 0
-                let l:key = tolower(l:word[: s:completion_length-1])
-                echomsg l:word
-                call remove(l:source.keyword_cache[l:key], l:word)
-            endif
 
             " Reset count.
-            let s:rank_cache_count = (g:NeoComplCache_CalcRankRandomize)? 
-                        \ reltimestr(reltime())[l:match_end : ] % l:calc_cnt + 2 : l:calc_cnt
+            let s:rank_cache_count = (g:NeoComplCache_EnableRandomize)? 
+                        \ neocomplcache#rand(l:calc_cnt) : l:calc_cnt
         endif
 
         let s:rank_cache_count -= 1
@@ -256,8 +246,6 @@ function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
 endfunction"}}}
 
 function! s:update_source()"{{{
-    call s:check_deleted_buffer()
-
     let l:caching_num = 0
     for source_name in keys(s:sources)
         if source_name =~ '^\d'
@@ -602,6 +590,9 @@ function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
 endfunction"}}}
 
 function! s:check_source()"{{{
+    call s:check_deleted_buffer()
+    call s:garbage_collect(bufnr('%'))
+    
     let l:bufnumber = 1
     let l:ft_dicts = ['default']
 
@@ -687,14 +678,43 @@ function! s:save_cache(srcname)"{{{
         return -1
     endif
 
+    call s:garbage_collect(a:srcname)
+
     " Output buffer.
     call neocomplcache#cache#save_cache('buffer_cache', l:srcname, neocomplcache#unpack_dictionary_dictionary(s:sources[a:srcname].keyword_cache))
 endfunction "}}}
-
 function! s:save_all_cache()"{{{
     for l:key in keys(s:sources)
         call s:save_cache(l:key)
     endfor
+endfunction"}}}
+function! s:garbage_collect(srcname)"{{{
+    " Garbage collect.
+    if neocomplcache#plugin#buffer_complete#caching_percent(a:srcname) == 100
+        let l:source = s:sources[a:srcname]
+        for [l:word, l:frequency] in items(l:source.frequencies)
+            if l:frequency == 0
+                " Calc frequency.
+                for cache_lines in values(l:source.cache_lines)
+                    if has_key(cache_lines.keywords, l:word)
+                        let l:frequency += cache_lines.keywords[l:word].rank
+                    endif
+                endfor
+                
+                if l:frequency == 0
+                    " Delete.
+                    let l:key = tolower(l:word[: s:completion_length-1])
+                    "echomsg l:word
+                    if has_key(l:source.keyword_cache[l:key], l:word)
+                        call remove(l:source.keyword_cache[l:key], l:word)
+                        call remove(l:source.frequencies, l:word)
+                    endif
+                else
+                    let l:source.frequencies[l:word] = l:frequency
+                endif
+            endif
+        endfor
+    endif
 endfunction"}}}
 
 " Command functions."{{{

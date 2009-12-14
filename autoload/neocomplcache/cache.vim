@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2009
+" Last Modified: 13 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -318,27 +318,24 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
     endif
     
     let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+    
+    " Create dictionary key.
+    for keyword in a:keyword_list
+        if !has_key(keyword, 'kind')
+            let keyword.kind = ''
+        endif
+        if !has_key(keyword, 'class')
+            let keyword.class = ''
+        endif
+    endfor
 
     " Output cache.
     let l:word_list = []
-    if has_key(a:keyword_list[0], 'kind')
-        if has_key(a:keyword_list[0], 'class')
-            for keyword in a:keyword_list
-                call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s', 
-                            \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
-            endfor
-        else
-            for keyword in a:keyword_list
-                call add(l:word_list, printf('%s|||%s|||%s|||%s', 
-                            \keyword.word, keyword.abbr, keyword.menu, keyword.kind))
-            endfor
-        endif
-    else
-        for keyword in a:keyword_list
-            call add(l:word_list, printf('%s|||%s|||%s', 
-                        \keyword.word, keyword.abbr, keyword.menu))
-        endfor
-    endif
+    for keyword in a:keyword_list
+        call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s', 
+                    \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
+    endfor
+    
     call writefile(l:word_list, l:cache_name)
 endfunction"}}}
 

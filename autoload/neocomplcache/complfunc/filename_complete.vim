@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Dec 2009
+" Last Modified: 11 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.06, for Vim 7.0
+" Version: 1.07, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.07:
+"    - Fixed in TeX behaviour.
+"
 "   1.06:
 "    - Don't expand environment variable.
 "    - Improved skip.
@@ -70,9 +73,6 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{{
     let l:is_win = has('win32') || has('win64')
-    if l:is_win && &filetype == 'tex'
-        return -1
-    endif
 
     " Not Filename pattern.
     if a:cur_text =~ '[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|^\a:$'
@@ -80,7 +80,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     endif
 
     " Filename pattern.
-    let l:pattern = '[~]\?\%(\\[^[:alnum:].-]\|\f\|\*\)\+$'
+    let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
 
     let l:cur_keyword_pos = match(a:cur_text, l:pattern)
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
@@ -89,8 +89,9 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     endif
     
     " Not Filename pattern.
-    if l:is_win && l:cur_keyword_str =~ 
-                \'|\|^\a:[/\\]\@!\|\\[[:alnum:].-]'
+    if l:is_win && l:cur_keyword_str =~ '|\|^\a:[/\\]\@!\|\\[[:alnum:].-]'
+        return -1
+    elseif l:is_win && &filetype == 'tex' && l:cur_keyword_str =~ '\\'
         return -1
     elseif l:cur_keyword_str =~ '\*\*\|^{}'
         return -1
