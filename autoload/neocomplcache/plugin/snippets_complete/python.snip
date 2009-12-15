@@ -1,0 +1,85 @@
+snippet     class
+abbr        class Class(...): ...
+prev_word   '^'
+    class ${1:name}(${2:object}):
+        """${3:class documentation}"""
+        def __init__(self, ${4}):
+            """${5:__init__ documentation}"""
+            ${6:pass}
+
+snippet     def
+abbr        def function(...): ...
+prev_word   '^'
+    def ${1:name}(${2}):
+        """${3:function documentation}"""
+        ${4:pass}
+
+snippet     defm
+abbr        def method(self, ...): ...
+prev_word   '^'
+    def ${1:name}(self, ${2}):
+        """${3:method documentation}"""
+        ${4:pass}
+
+snippet     elif
+abbr        elif ...: ...
+prev_word   '^'
+    elif ${1:condition}:
+        ${2:pass}
+
+snippet     else
+abbr        else: ...
+prev_word   '^'
+    else:
+        ${1:pass}
+
+snippet     fileidiom
+abbr        f = None try: f = open(...) finally: ...
+prev_word   '^'
+    ${1:f} = None
+    try:
+        $1 = open(${2})
+        ${3}
+    finally:
+        if $1:
+            $1.close()
+
+snippet     for
+abbr        for ... in ...: ...
+prev_word   '^'
+    for ${1:value} in ${2:list}:
+        ${3:pass}
+
+snippet     if
+abbr        if ...: ...
+prev_word   '^'
+    if ${1:condition}:
+        ${2:pass}
+
+snippet     ifmain
+abbr        if __name__ == '__main__': ...
+prev_word   '^'
+    if __name__ == '__main__':
+        ${1:pass}
+
+snippet     tryexcept
+abbr        try: ... except ...: ...
+prev_word   '^'
+    try:
+        ${1:pass}
+    except ${2:ExceptionClass}:
+        ${3:pass}
+
+snippet     tryfinally
+abbr        try: ... finally: ...
+prev_word   '^'
+    try:
+        ${1:pass}
+    finally:
+        ${2:pass}
+
+snippet     while
+abbr        while ...: ...
+prev_word   '^'
+    while ${1:condition}:
+        ${2:pass}

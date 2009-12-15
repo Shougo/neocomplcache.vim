@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Dec 2009
+" Last Modified: 14 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.01, for Vim 7.0
+" Version: 4.02, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -113,9 +113,9 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'awk',
                 \'\v\h\w*%(\s*\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell',
-                \'\h\w*['']?')
+                \'[[:alpha:]_''][[:alnum:]_'']*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml',
-                \'\v[~]?[[:alpha:]_''][[:alnum:]_]*['']?')
+                \'[~]\?[[:alpha:]_''][[:alnum:]_'']*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang',
                 \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'html,xhtml,xml,markdown',
@@ -191,6 +191,14 @@ function! neocomplcache#enable() "{{{
         let g:NeoComplCache_QuickMatchPatterns = {}
     endif
     call neocomplcache#set_variable_pattern('g:NeoComplCache_QuickMatchPatterns', 'default', '-')
+    "}}}
+    
+    " Initialize tags filter patterns."{{{
+    if !exists('g:NeoComplCache_TagsFilterPatterns')
+        let g:NeoComplCache_TagsFilterPatterns = {}
+    endif
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_TagsFilterPatterns', 'c,cpp', 
+                \'v:val.word !~ ''^[~_]''')
     "}}}
     
     " Initialize plugin completion length."{{{
@@ -398,7 +406,8 @@ function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
         let l:prefix = matchstr(a:cur_keyword_str, g:NeoComplCache_MemberPrefixPatterns[l:ft])
         let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
 
-        let l:ret = deepcopy(neocomplcache#keyword_filter(filter(a:list, 'v:val.kind ==# "m" || v:val.class != ""'), l:cur_keyword_str))
+        let l:ret = deepcopy(neocomplcache#keyword_filter(filter(a:list, 
+                    \'(has_key(v:val, "kind") && v:val.kind ==# "m") || (has_key(v:val, "class") && v:val.class != "")'), l:cur_keyword_str))
         for l:keyword in l:ret
             let l:keyword.word = l:prefix . l:keyword.word
         endfor
