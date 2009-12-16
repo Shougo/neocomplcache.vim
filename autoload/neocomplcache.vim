@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2009
+" Last Modified: 16 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -525,7 +525,8 @@ function! neocomplcache#check_skip_time()"{{{
     endif
 endfunction"}}}
 function! neocomplcache#rand(max)"{{{
-    return abs(reltime()[1]) % (a:max + 1)
+    let l:time = reltime()[1]
+    return (l:time < 0 ? -l:time : l:time)% (a:max + 1)
 endfunction"}}}
 
 function! neocomplcache#caching_percent()"{{{
