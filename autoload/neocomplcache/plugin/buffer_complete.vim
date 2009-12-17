@@ -703,7 +703,7 @@ function! s:garbage_collect(srcname)"{{{
                 if l:frequency == 0
                     " Delete.
                     let l:key = tolower(l:word[: s:completion_length-1])
-                    echomsg l:word
+                    "echomsg l:word
                     if has_key(l:source.keyword_cache[l:key], l:word)
                         call remove(l:source.keyword_cache[l:key], l:word)
                         call remove(l:source.frequencies, l:word)
