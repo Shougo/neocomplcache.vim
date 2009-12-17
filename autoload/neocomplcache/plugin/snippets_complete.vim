@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Dec 2009
+" Last Modified: 17 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.34, for Vim 7.0
+" Version: 1.35, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.35:
+"    - Changed display interface.
+"    - Improved compatiblity with snipMate.
+"
 "   1.34:
 "    - Deleted rank and condition.
 "    - Ignore space.
@@ -318,11 +322,13 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     " Substitute abbr.
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     for snippet in l:list
-        let snippet.abbr = (snippet.snip =~ '`[^`]*`')? 
-                    \s:eval_snippet(snippet.snip) : snippet.snip
-        
-        if len(snippet.abbr) > g:NeoComplCache_MaxKeywordWidth 
-            let snippet.abbr = printf(l:abbr_pattern, snippet.abbr, snippet.abbr[-8:])
+        if snippet.snip =~ '`[^`]*`'
+            let snippet.menu = s:eval_snippet(snippet.snip)
+            
+            if len(snippet.menu) > g:NeoComplCache_MaxKeywordWidth 
+                let snippet.menu = printf(l:abbr_pattern, snippet.menu, snippet.menu[-8:])
+            endif
+            let snippet.menu = '`Snip` ' . snippet.menu
         endif
     endfor
 
@@ -398,24 +404,27 @@ function! s:set_snippet_pattern(dict)"{{{
     let l:word = a:dict.word
     if a:dict.word =~ '\${\d\+\%(:.\{-}\)\?\\\@<!}'
         let l:word .= '<expand>'
-        let l:menu_pattern = '<Snip> %.'.g:NeoComplCache_MaxFilenameWidth.'s'
+        let l:menu_pattern = '<Snip> '
     else
         if a:dict.word =~ '<\\n>'
             let l:word .= '<expand>'
         endif
-        let l:menu_pattern = '[Snip] %.'.g:NeoComplCache_MaxFilenameWidth.'s'
+        let l:menu_pattern = '[Snip] '
     endif
+    
     let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : 
-                \substitute(a:dict.word, '<\\n>\|<expand>', '', 'g')
+                \substitute(a:dict.word, '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+\|<\%(\\n\|expand\|\\t\)>\|\s\+', ' ', 'g')
+    let l:abbr = (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
+                \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
+    let l:name = (len(a:dict.name) > g:NeoComplCache_MaxKeywordWidth)? 
+                \ printf(l:abbr_pattern, a:dict.name, a:dict.name[-8:]) : a:dict.name
 
     let l:dict = {
                 \'word' : a:dict.name, 'snip' : l:word,
-                \'menu' : printf(l:menu_pattern, a:dict.name), 
+                \'abbr' : l:name, 
+                \'menu' : l:menu_pattern . l:abbr, 
                 \'icase' : 1, 'dup' : 1
                 \}
-    let l:dict.abbr = 
-                \ (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
-                \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
     if has_key(a:dict, 'prev_word')
         let l:dict.prev_word = a:dict.prev_word
     endif
@@ -499,13 +508,13 @@ function! s:caching_snippets(filetype)"{{{
     let l:snippet = {}
     let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip*'), '\n')
     for snippets_file in l:snippets_files
-        call extend(l:snippet, s:load_snippets(snippets_file))
+        call extend(l:snippet, s:load_snippets(snippets_file, a:filetype))
     endfor
 
     let s:snippets[a:filetype] = l:snippet
 endfunction"}}}
 
-function! s:load_snippets(snippets_file)"{{{
+function! s:load_snippets(snippets_file, filetype)"{{{
     let l:snippet = {}
     let l:snippet_pattern = { 'word' : '' }
     for line in readfile(a:snippets_file)
@@ -514,7 +523,7 @@ function! s:load_snippets(snippets_file)"{{{
             let l:filetype = matchstr(line, '^include\s\+\zs.*\ze\s*$')
             let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
             for snippets_file in l:snippets_files
-                call extend(l:snippet, s:load_snippets(snippets_file))
+                call extend(l:snippet, s:load_snippets(snippets_file, l:filetype))
             endfor
         elseif line =~ '^snippet\s'
             if has_key(l:snippet_pattern, 'name')
@@ -529,7 +538,15 @@ function! s:load_snippets(snippets_file)"{{{
                 endif
                 let l:snippet_pattern = { 'word' : '' }
             endif
-            let l:snippet_pattern.name = substitute(matchstr(line, '^snippet\s\+\zs.*\ze\s*$'), '\s', '_', 'g')
+            
+            let l:name = matchstr(line, '^snippet\s\+\zs.*\ze\s*$')
+            if l:name !~ '^\%('.neocomplcache#get_keyword_pattern(a:filetype).'\m\)$'
+                        \&& l:name !~ '^\h\w*[^[:alnum:][:space:]]*$'
+                " Substitute pattern.
+                let l:name = substitute(l:name, '[^[:alnum:]]', '_', 'g')
+            endif
+
+            let l:snippet_pattern.name = l:name
         elseif line =~ '^abbr\s'
             let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze\s*$')
         elseif line =~ '^alias\s'

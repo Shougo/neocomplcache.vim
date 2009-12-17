@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 16 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.02, for Vim 7.0
+" Version: 4.03, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -704,7 +703,7 @@ function! s:garbage_collect(srcname)"{{{
                 if l:frequency == 0
                     " Delete.
                     let l:key = tolower(l:word[: s:completion_length-1])
-                    "echomsg l:word
+                    echomsg l:word
                     if has_key(l:source.keyword_cache[l:key], l:word)
                         call remove(l:source.keyword_cache[l:key], l:word)
                         call remove(l:source.frequencies, l:word)
