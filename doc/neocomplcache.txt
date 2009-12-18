@@ -609,6 +609,7 @@ CHANGELOG					*neocomplcache-changelog*
     - Changed display interface in snippets_complete.
     - Implemented no options in vim_complete.
     - Improved compatiblity with snipMate.
+    - Fixed typo in neocomplcache.jax.
     
 ChangeLog NeoComplCache 4.00-: {{{
    4.02:

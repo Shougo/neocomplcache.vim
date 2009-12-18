@@ -543,6 +543,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
             if l:name !~ '^\%('.neocomplcache#get_keyword_pattern(a:filetype).'\m\)$'
                         \&& l:name !~ '^\h\w*[^[:alnum:][:space:]]*$'
                 " Substitute pattern.
+                let l:snippet_pattern.abbr = l:name
                 let l:name = substitute(l:name, '[^[:alnum:]]', '_', 'g')
             endif
 

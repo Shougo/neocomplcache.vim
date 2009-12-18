@@ -306,7 +306,7 @@ g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_NextKeywordPatterns			*g:NeoComplCache_TagsFilterPatterns*
+g:NeoComplCache_NextKeywordPatterns			*g:NeoComplCache_NextKeywordPatterns*
 		カーソルより後のキーワードパターンを認識するための正規表現を記録する。
 		|g:NeoComplCache_KeywordPatterns|と形式は同じである。
 		
