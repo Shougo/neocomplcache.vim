@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Dec 2009
+" Last Modified: 22 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.03, for Vim 7.0
+" Version: 4.04, for Vim 7.0
 "=============================================================================
 
 function! neocomplcache#enable() "{{{
@@ -780,6 +780,47 @@ function! neocomplcache#undo_completion()"{{{
     return (pumvisible() ? "\<C-e>" : '')
                 \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:old_keyword_str
 endfunction"}}}
+function! neocomplcache#complete_common_string()"{{{
+    if !exists(':NeoComplCacheDisable')
+        return ''
+    endif
+
+    " Get cursor word.
+    let l:cur_keyword_str = neocomplcache#match_word(s:get_cur_text())
+    
+    " Save options.
+    let l:ignorecase_save = &ignorecase
+
+    if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+        let &ignorecase = 0
+    else
+        let &ignorecase = g:NeoComplCache_IgnoreCase
+    endif
+    
+    let l:complete_words = neocomplcache#keyword_filter(copy(s:complete_words), l:cur_keyword_str)
+    if empty(l:complete_words)
+        return ''
+    endif
+    
+    let l:common_str = l:complete_words[0].word
+    for keyword in l:complete_words[1:]
+        while keyword.word !~ '^\V' . l:common_str 
+            let l:common_str = l:common_str[: -2]
+        endwhile
+    endfor
+    if &ignorecase
+        let l:common_str = tolower(l:common_str)
+    endif
+    
+    let &ignorecase = l:ignorecase_save
+
+    " Disable skip.
+    let s:skip_next_complete = 0
+    let s:old_text = ''
+
+    return (pumvisible() ? "\<C-e>" : '')
+                \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:common_str
+endfunction"}}}
 "}}}
 
 " Event functions."{{{
@@ -989,10 +1030,10 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
 endfunction"}}}
 
 let s:quickmatch_table = {
-            \'a' : 0, 's' : 1, 'd' : 2, 'f' : 3, 'g' : 4, 'h' : 5, 'j' : 6, 'k' : 7, 'l' : 8, 
-            \'q' : 9, 'w' : 10, 'e' : 11, 'r' : 12, 't' : 13, 'y' : 14, 'u' : 15, 'i' : 16, 'o' : 17, 'p' : 18, 
-            \'z' : 19, 'x' : 20, 'c' : 21, 'v' : 22, 'b' : 23, 'n' : 24, 'm' : 25,
-            \'1' : 26, '2' : 27, '3' : 28, '4' : 29, '5' : 30, '6' : 31, '7' : 32, '8' : 33, '9' : 34, '0' : 35,
+            \'a' : 0, 's' : 1, 'd' : 2, 'f' : 3, 'g' : 4, 'h' : 5, 'j' : 6, 'k' : 7, 'l' : 8, ';' : 9,
+            \'q' : 10, 'w' : 11, 'e' : 12, 'r' : 13, 't' : 14, 'y' : 15, 'u' : 16, 'i' : 17, 'o' : 18, 'p' : 19, 
+            \'z' : 20, 'x' : 21, 'c' : 22, 'v' : 23, 'b' : 24, 'n' : 25, 'm' : 26, ',' : 27, '.' : 28, '/' : 29,
+            \'1' : 30, '2' : 31, '3' : 32, '4' : 33, '5' : 34, '6' : 35, '7' : 36, '8' : 37, '9' : 38, '0' : 39
             \}
 function! s:make_quickmatch_list(list)"{{{
     " Check dup.

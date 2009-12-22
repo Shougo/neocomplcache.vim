@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.03
+Version: 4.04
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -506,6 +506,13 @@ neocomplcache#undo_completion				*neocomplcache#undo_completion*
 >
 		inoremap <expr><C-g>     neocomplcache#undo_completion()
 <
+neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()*
+		Use this function on inoremap <expr>.  Complete common
+		string in candidates. It will be convenient when candidates
+		have long common string.
+>
+		inoremap <expr><C-l>     neocomplcache#complete_common_string()
+<
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
 >
@@ -538,6 +545,7 @@ EXAMPLES					*neocomplcache-examples*
 	smap <C-l>     <Plug>(neocomplcache_snippets_expand)
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	inoremap <expr><C-g>     neocomplcache#undo_completion()
+	inoremap <expr><C-l>     neocomplcache#complete_common_string()
 <
 ==============================================================================
 PLUGINS					*neocomplcache-plugins*
@@ -604,6 +612,13 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   4.04:
+    - Implemented common string completion.
+    - Added css snippet file.
+    - Added quickmatch key.
+    - Implemented hash.
+    
+ChangeLog NeoComplCache 4.00-: {{{
    4.03:
     - Don't use abs() for Vim7.
     - Changed display interface in snippets_complete.
@@ -611,7 +626,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved compatiblity with snipMate.
     - Fixed typo in neocomplcache.jax.
     
-ChangeLog NeoComplCache 4.00-: {{{
    4.02:
     - Added Python snippet.
     - Added g:NeoComplCache_TagsFilterPatterns option.

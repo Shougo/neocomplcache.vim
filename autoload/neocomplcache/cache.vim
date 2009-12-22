@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2009
+" Last Modified: 22 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -360,8 +360,8 @@ function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
     call writefile(a:list, l:cache_name)
 endfunction"}}}
 function! neocomplcache#cache#encode_name(cache_dir, filename)
-    return printf('%s/%s/%s=', g:NeoComplCache_TemporaryDir, a:cache_dir, 
-                \substitute(substitute(a:filename, ':', '=-', 'g'), '[/\\]', '=+', 'g'))
+    let l:dir = printf('%s/%s/', g:NeoComplCache_TemporaryDir, a:cache_dir) 
+    return l:dir . s:create_hash(l:dir, a:filename)
 endfunction
 function! neocomplcache#cache#check_dir(cache_dir)"{{{
     " Check cache directory.
@@ -376,4 +376,18 @@ function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
     return getftime(l:cache_name) == -1 || getftime(l:cache_name) <= getftime(a:filename)
 endfunction"}}}
 
+function! s:create_hash(dir, str)
+    if len(a:dir) + len(a:str) < 150
+        let l:hash = substitute(substitute(a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
+    else
+        let l:sum = 0
+        for i in range(len(a:str))
+            let l:sum += char2nr(a:str[i]) * 2
+        endfor
+        
+        let l:hash = printf('%x', l:sum)
+    endif
+
+    return l:hash
+endfunction
 " vim: foldmethod=marker
