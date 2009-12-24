@@ -617,6 +617,15 @@ CHANGELOG					*neocomplcache-changelog*
     - Added css snippet file.
     - Added quickmatch key.
     - Implemented hash.
+    - Use vimproc#system() if available.
+    - Supported vimshell interpreters.
+    - Fixed manual filename completion bug.
+    - Use md5.vim if available.
+    - Cache previous results.
+    - Skip listed files in include_complete.
+    - Implemented fast mode when last completion was skipped.
+    - Deleted C/C++ omni completion support.
+    - Improved caching tag.
     
 ChangeLog NeoComplCache 4.00-: {{{
    4.03:

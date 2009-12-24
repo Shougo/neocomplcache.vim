@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 24 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -240,14 +239,18 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
             endif
             let l:line_cnt -= 1"}}}
 
-            let l:tag = split(l:line, '\t', 1)
+            let l:tag = split(substitute(l:line, "\<CR>", '', 'g'), '\t', 1)
             " Add keywords.
             if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
                         \&& !has_key(l:dup_check, l:tag[0])
                 let l:option = {
-                            \ 'cmd' : substitute(substitute(l:tag[2], '^[/?]\^\?\s*\|\$\?[/?];"$', '', 'g'), '\\\\', '\\', 'g'), 
+                            \ 'cmd' : substitute(substitute(l:tag[2], '^\%([/?]\^\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'), 
                             \ 'kind' : ''
                             \}
+                if l:option.cmd =~ '\d\+'
+                    let l:option.cmd = l:tag[0]
+                endif
+                
                 for l:opt in l:tag[3:]
                     let l:key = matchstr(l:opt, '^\h\w*\ze:')
                     if l:key == ''
@@ -376,10 +379,16 @@ function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
     return getftime(l:cache_name) == -1 || getftime(l:cache_name) <= getftime(a:filename)
 endfunction"}}}
 
+" Check md5.
+let s:is_md5 = exists('*md5#md5')
 function! s:create_hash(dir, str)
     if len(a:dir) + len(a:str) < 150
         let l:hash = substitute(substitute(a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
+    elseif s:is_md5
+        " Use md5.vim.
+        let l:hash = md5#md5(a:str)
     else
+        " Use simple hash.
         let l:sum = 0
         for i in range(len(a:str))
             let l:sum += char2nr(a:str[i]) * 2

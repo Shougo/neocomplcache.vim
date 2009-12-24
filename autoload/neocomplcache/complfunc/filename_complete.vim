@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Dec 2009
+" Last Modified: 23 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.07:
 "    - Fixed in TeX behaviour.
+"    - Fixed manual filename completion bug.
 "
 "   1.06:
 "    - Don't expand environment variable.
@@ -84,7 +85,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
 
     let l:cur_keyword_pos = match(a:cur_text, l:pattern)
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-    if len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
+    if neocomplcache#is_auto_complete() && len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
         return -1
     endif
     
@@ -99,7 +100,8 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     
     " Skip directory.
     if neocomplcache#is_auto_complete()
-        let l:dir = matchstr(l:cur_keyword_str, '^/\|^\a\+:')
+        let l:dir = matchstr(l:cur_keyword_str, l:is_win ? '^/' : '^\a\+:')
+        
         if l:dir == ''
             let l:dir = getcwd()
         endif
@@ -108,7 +110,6 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
             return -1
         endif
     endif
-
 
     return l:cur_keyword_pos
 endfunction"}}}

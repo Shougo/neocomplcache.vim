@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Dec 2009
+" Last Modified: 24 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,8 +26,9 @@
 " Version: 1.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.10:
+"   1.11:
 "    - Supported mark down filetype.
+"    - Deleted C/C++ omni completion support.
 "
 "   1.09:
 "    - Fixed manual completion error.
@@ -211,20 +212,6 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
         let l:cur_keyword_str = a:cur_keyword_str
     endif
     
-    if &filetype == 'c' || &filetype == 'cpp'
-        let l:filename = fnamemodify(bufname('%'), ':p')
-        let l:tags_save = &tags
-        
-        let l:tags = []
-        for l:include_file in neocomplcache#plugin#include_complete#get_include_files(bufnr('%'))
-            if neocomplcache#cache#filereadable('include_tags', l:include_file)
-                call add(l:tags, neocomplcache#cache#getfilename('include_tags', l:include_file))
-            endif
-        endfor
-        
-        let &tags = &tags . ',' . escape(join(l:tags, ','), ' ')
-    endif
-    
     try
         if &filetype == 'ruby' && l:is_wildcard
             let l:line = getline('.')
@@ -242,10 +229,6 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     endtry
     call setpos('.', l:pos)
 
-    if &filetype == 'c' || &filetype == 'cpp'
-        let &tags = l:tags_save
-    endif
-    
     if empty(l:list)
         return []
     endif
