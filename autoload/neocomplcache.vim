@@ -534,8 +534,8 @@ function! neocomplcache#rand(max)"{{{
     let l:time = reltime()[1]
     return (l:time < 0 ? -l:time : l:time)% (a:max + 1)
 endfunction"}}}
-function! neocomplcache#system(str)"{{{
-    return s:is_vimproc ? vimproc#system(a:str): system(a:str)
+function! neocomplcache#system(str, ...)"{{{
+    return s:is_vimproc ? vimproc#system(a:str, join(a:000)): system(a:str, join(a:000))
 endfunction"}}}
 
 function! neocomplcache#caching_percent()"{{{
