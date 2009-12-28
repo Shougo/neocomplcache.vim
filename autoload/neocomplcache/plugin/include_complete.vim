@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2009
+" Last Modified: 27 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -166,8 +166,8 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
     endif
     
     let l:keyword_list = []
-    let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
-    if len(l:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+    if len(l:cur_keyword_str) < s:completion_length ||
+                \neocomplcache#check_match_filter(l:cur_keyword_str, s:completion_length)
         for l:include in s:include_info[bufnr('%')].include_files
             if !buflisted(l:include)
                 let l:keyword_list += neocomplcache#unpack_dictionary(s:include_cache[l:include])
@@ -176,6 +176,7 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
         
         let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
     else
+        let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
         for l:include in s:include_info[bufnr('%')].include_files
             if !buflisted(l:include) && has_key(s:include_cache[l:include], l:key)
                 let l:keyword_list += s:include_cache[l:include][l:key]

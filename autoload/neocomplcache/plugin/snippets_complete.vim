@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Dec 2009
+" Last Modified: 25 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.35, for Vim 7.0
+" Version: 1.36, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.36:
+"    - Improved snippet alias.
+"
 "   1.35:
 "    - Changed display interface.
 "    - Improved compatiblity with snipMate.
@@ -517,6 +520,8 @@ endfunction"}}}
 function! s:load_snippets(snippets_file, filetype)"{{{
     let l:snippet = {}
     let l:snippet_pattern = { 'word' : '' }
+    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+    
     for line in readfile(a:snippets_file)
         if line =~ '^include'
             " Include snippets.
@@ -530,9 +535,14 @@ function! s:load_snippets(snippets_file, filetype)"{{{
                 let l:pattern = s:set_snippet_pattern(l:snippet_pattern)
                 let l:snippet[l:snippet_pattern.name] = l:pattern
                 if has_key(l:snippet_pattern, 'alias')
-                    for alias in l:snippet_pattern.alias
+                    for l:alias in l:snippet_pattern.alias
                         let l:alias_pattern = copy(l:pattern)
-                        let l:alias_pattern.word = alias
+                        let l:alias_pattern.word = l:alias
+                        
+                        let l:abbr = (len(l:alias) > g:NeoComplCache_MaxKeywordWidth)? 
+                                    \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
+                        let l:alias_pattern.abbr = l:abbr
+                        
                         let l:snippet[alias] = l:alias_pattern
                     endfor
                 endif
@@ -576,9 +586,14 @@ function! s:load_snippets(snippets_file, filetype)"{{{
         let l:pattern = s:set_snippet_pattern(l:snippet_pattern)
         let l:snippet[l:snippet_pattern.name] = l:pattern
         if has_key(l:snippet_pattern, 'alias')
-            for alias in l:snippet_pattern.alias
+            for l:alias in l:snippet_pattern.alias
                 let l:alias_pattern = copy(l:pattern)
-                let l:alias_pattern.word = alias
+                let l:alias_pattern.word = l:alias
+
+                let l:abbr = (len(l:alias) > g:NeoComplCache_MaxKeywordWidth)? 
+                            \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
+                let l:alias_pattern.abbr = l:abbr
+
                 let l:snippet[alias] = l:alias_pattern
             endfor
         endif

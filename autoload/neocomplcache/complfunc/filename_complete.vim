@@ -29,6 +29,7 @@
 "   1.07:
 "    - Fixed in TeX behaviour.
 "    - Fixed manual filename completion bug.
+"    - Improved trunk filename.
 "
 "   1.06:
 "    - Don't expand environment variable.
@@ -195,7 +196,9 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         
         let l:abbr = keyword.word
         if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-            let l:abbr = printf('%s~%s', l:abbr[:9], l:abbr[len(l:abbr)-g:NeoComplCache_MaxKeywordWidth-10:])
+            let l:over_len = len(l:abbr) - g:NeoComplCache_MaxKeywordWidth
+            let l:prefix_len = (l:over_len > 10) ?  10 : l:over_len
+            let l:abbr = printf('%s~%s', l:abbr[: l:prefix_len - 1], l:abbr[l:over_len+l:prefix_len :])
         endif
 
         if isdirectory(keyword.word)

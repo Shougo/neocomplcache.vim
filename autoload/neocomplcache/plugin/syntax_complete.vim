@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2009
+" Last Modified: 27 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -143,15 +143,19 @@ function! neocomplcache#plugin#syntax_complete#get_keyword_list(cur_keyword_str)
         return []
     endif
 
-    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
-    if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+    if len(a:cur_keyword_str) < s:completion_length ||
+                \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
         return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(s:syntax_list[&filetype]), a:cur_keyword_str)
-    elseif !has_key(s:syntax_list[&filetype], l:key)
-        return []
-    elseif len(a:cur_keyword_str) == s:completion_length
-        return s:syntax_list[&filetype][l:key]
     else
-        return neocomplcache#keyword_filter(copy(s:syntax_list[&filetype][l:key]), a:cur_keyword_str)
+        let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
+        
+        if !has_key(s:syntax_list[&filetype], l:key)
+            return []
+        elseif len(a:cur_keyword_str) == s:completion_length
+            return s:syntax_list[&filetype][l:key]
+        else
+            return neocomplcache#keyword_filter(copy(s:syntax_list[&filetype][l:key]), a:cur_keyword_str)
+        endif
     endif
 endfunction"}}}
 

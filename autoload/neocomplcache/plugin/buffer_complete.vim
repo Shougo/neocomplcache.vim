@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2009
+" Last Modified: 27 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,9 +103,9 @@ endfunction"}}}
 function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)"{{{
     let l:keyword_list = []
 
-    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
     let l:current = bufnr('%')
-    if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+    if len(a:cur_keyword_str) < s:completion_length ||
+                \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
         for src in s:get_sources_list()
             let l:keyword_cache = neocomplcache#keyword_filter(
                         \neocomplcache#unpack_dictionary_dictionary(s:sources[src].keyword_cache), a:cur_keyword_str)
@@ -116,6 +116,7 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
             let l:keyword_list += l:keyword_cache
         endfor
     else
+        let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
         for src in s:get_sources_list()
             if has_key(s:sources[src].keyword_cache, l:key)
                 let l:keyword_cache = values(s:sources[src].keyword_cache[l:key])
