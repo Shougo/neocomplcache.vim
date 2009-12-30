@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2009
+" Last Modified: 28 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.36:
 "    - Improved snippet alias.
+"    - Improved command completion.
 "
 "   1.35:
 "    - Changed display interface.
@@ -435,11 +436,27 @@ function! s:set_snippet_pattern(dict)"{{{
 endfunction"}}}
 
 function! s:filetype_complete(arglead, cmdline, cursorpos)"{{{
-    if len(split(a:cmdline)) > 1
-        return []
+    let l:list = split(globpath(&runtimepath, 'snippets/*.snip*'), '\n') +
+                \split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete/*.snip*'), '\n')
+    if exists('g:NeoComplCache_SnippetsDir')
+        for l:dir in split(g:NeoComplCache_SnippetsDir, ',')
+            let l:dir = expand(l:dir)
+            if isdirectory(l:dir)
+                let l:list += split(globpath(l:dir, '*.snip*'), '\n')
+            endif
+        endfor
     endif
-
-    return filter(keys(s:snippets), printf('v:val =~ "^%s"', a:arglead))
+    let l:items = map(l:list, 'fnamemodify(v:val, ":t:r")')
+    
+    " Dup check.
+    let l:ret = {}
+    for l:item in l:items
+        if !has_key(l:ret, l:item) && l:item =~ '^'.a:arglead
+            let l:ret[l:item] = 1
+        endif
+    endfor
+    
+    return sort(keys(l:ret))
 endfunction"}}}
 function! s:edit_snippets(filetype, isruntime)"{{{
     if a:filetype == ''

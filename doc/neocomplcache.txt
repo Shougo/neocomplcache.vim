@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.05
+Version: 4.06
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -612,6 +612,13 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   4.06:
+    - Improved command completion in snippets_complete.
+    - Improved skip directory in filename_complete.
+    - Improved head match.
+    - Added completefunc_complete.
+    
+ChangeLog NeoComplCache 4.00-: {{{
    4.05:
     - Improved snippet alias.
     - Improved analyzing extra args in vim_complete.
@@ -622,7 +629,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved trunk filename in filename_complete.
     - Fixed complete common string bug.
     
-ChangeLog NeoComplCache 4.00-: {{{
    4.04:
     - Implemented common string completion.
     - Added css snippet file.

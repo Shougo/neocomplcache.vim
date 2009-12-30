@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 29 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.05, for Vim 7.0
+" Version: 4.06, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -643,7 +643,7 @@ function! neocomplcache#trunk_string(string, max)"{{{
     return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
 function! neocomplcache#head_match(checkstr, headstr)"{{{
-    return a:headstr == ''? 1 : a:checkstr[: len(a:headstr)-1] == a:headstr
+    return a:headstr == ''? 1 : a:checkstr[: len(a:headstr)-1] ==# a:headstr
 endfunction"}}}
 
 " Set pattern helper.
@@ -774,6 +774,17 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
     
     let s:skipped = 0
     let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
+
+    " Set function.
+    let &l:completefunc = 'neocomplcache#auto_complete'
+
+    " Start complete.
+    return "\<C-x>\<C-u>\<C-p>"
+endfunction"}}}
+
+function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words)"{{{
+    let s:skipped = 0
+    let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2009
+" Last Modified: 29 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.07, for Vim 7.0
+" Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.08:
+"    - Improved skip directory.
+"
 "   1.07:
 "    - Fixed in TeX behaviour.
 "    - Fixed manual filename completion bug.
@@ -101,13 +104,8 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     
     " Skip directory.
     if neocomplcache#is_auto_complete()
-        let l:dir = matchstr(l:cur_keyword_str, l:is_win ? '^/' : '^\a\+:')
-        
-        if l:dir == ''
-            let l:dir = getcwd()
-        endif
-        
-        if has_key(s:skip_dir, getcwd())
+        let l:dir = fnamemodify(l:cur_keyword_str, ':p:h')
+        if l:dir != '' && has_key(s:skip_dir, l:dir)
             return -1
         endif
     endif
@@ -153,11 +151,10 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     endif
 
     if neocomplcache#check_skip_time()
-        let l:dir = matchstr(l:cur_keyword_str, '^/\|^\a\+:')
-        if l:dir == ''
-            let l:dir = getcwd()
+        let l:dir = fnamemodify(l:cur_keyword_str, ':p:h')
+        if l:dir != ''
+            let s:skip_dir[l:dir] = 1
         endif
-        let s:skip_dir[l:dir] = 1
         
         return []
     endif
@@ -189,6 +186,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
             if l:dir == ''
                 let l:dir = getcwd()
             endif
+            let l:dir = fnamemodify(l:dir, ':p:h')
             let s:skip_dir[l:dir] = 1
             
             return []
