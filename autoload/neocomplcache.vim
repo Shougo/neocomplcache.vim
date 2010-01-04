@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2009
+" Last Modified: 03 Jan 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -545,8 +545,7 @@ endfunction"}}}
 
 function! neocomplcache#get_cur_text()"{{{
     " Return cached text.
-
-    return s:cur_text
+    return neocomplcache#is_auto_complete()? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
     if has_key(g:NeoComplCache_PluginCompletionLength, a:plugin_name)

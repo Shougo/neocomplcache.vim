@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2009
+" Last Modified: 03 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -118,7 +118,7 @@ endfunction"}}}
 function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
 
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
-    let l:lines = (bufexists(a:filename) || fnamemodify(a:filename, ':t') == '')?
+    let l:lines = (buflisted(a:filename) || fnamemodify(a:filename, ':t') == '')?
                 \getbufline(bufnr(a:filename), 1, '$') : readfile(a:filename)
     let l:max_lines = len(l:lines)
 

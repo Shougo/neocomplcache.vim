@@ -617,6 +617,8 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved skip directory in filename_complete.
     - Improved head match.
     - Added completefunc_complete.
+    - Fixed neocomplcache#get_cur_text() bug.
+    - Fixed unpack dictionary bug in tags_complete.
     
 ChangeLog NeoComplCache 4.00-: {{{
    4.05:

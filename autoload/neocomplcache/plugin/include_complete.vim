@@ -140,7 +140,8 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
         let l:ft = 'nothing'
     endif
     
-    if has_key(g:NeoComplCache_MemberPrefixPatterns, l:ft) && a:cur_keyword_str =~ g:NeoComplCache_MemberPrefixPatterns[l:ft]
+    if has_key(g:NeoComplCache_MemberPrefixPatterns, l:ft) 
+                \&& a:cur_keyword_str =~ g:NeoComplCache_MemberPrefixPatterns[l:ft]
         let l:use_member_filter = 1
         
         let l:prefix = matchstr(a:cur_keyword_str, g:NeoComplCache_MemberPrefixPatterns[l:ft])
