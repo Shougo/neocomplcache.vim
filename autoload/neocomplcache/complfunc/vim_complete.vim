@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2009
+" Last Modified: 11 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.07, for Vim 7.0
+" Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.08:
+"    - Fixed functions_prototype bug.
+"
 "   1.07:
 "    - Improved analyzing extra args.
 "    - Fixed analyzing bug.
@@ -107,7 +110,7 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
     if g:NeoComplCache_EnableDispalyParameter"{{{
         " Echo prototype.
         let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
-                    \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'functions_prototype' : [] }
+                    \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'functions_prototype' : {} }
         
         let l:prototype_name = matchstr(l:cur_text, 
                     \'\%(<[sS][iI][dD]>\|[sSgGbBwWtTlL]:\)\=\%(\i\|[#.]\|{.\{-1,}}\)*\s*(\ze\%([^(]\|(.\{-})\)*$')
@@ -148,7 +151,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     endif
     
     let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
-                \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'functions_prototype' : [] }
+                \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'functions_prototype' : {} }
 
     let l:list = []
     
@@ -323,7 +326,7 @@ function! s:get_local_candidates()"{{{
 
     " Search function.
     let l:line_num = line('.') - 1
-    let l:end_line = (line('.') < 100) ? line('.') - 100 : 1
+    let l:end_line = (line('.') > 100) ? line('.') - 100 : 1
     while l:line_num >= l:end_line
         let l:line = getline(l:line_num)
         if l:line =~ '\<endf\%[nction]\>'
@@ -341,7 +344,7 @@ function! s:get_local_candidates()"{{{
 
                 let l:keyword_dict[l:word] = l:keyword
             endfor
-            if l:line =~ '\.\.\.'
+            if l:line =~ '\.\.\.)'
                 " Extra arguments.
                 for l:arg in range(5)
                     let l:word = 'a:' . l:arg
@@ -355,6 +358,7 @@ function! s:get_local_candidates()"{{{
                     let l:keyword_dict[l:word] = l:keyword
                 endfor
             endif
+            
             break
         endif
 

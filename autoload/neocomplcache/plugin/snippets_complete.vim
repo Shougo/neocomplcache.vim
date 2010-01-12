@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,6 +28,7 @@
 "   1.36:
 "    - Improved snippet alias.
 "    - Improved command completion.
+"    - Improved for same filetype.
 "
 "   1.35:
 "    - Changed display interface.
@@ -197,13 +197,6 @@
 "   1.00:
 "    - Initial version.
 " }}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
 "=============================================================================
 
 let s:begin_snippet = 0
@@ -249,9 +242,9 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
                     \'\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
     augroup END"}}}
 
-    command! -nargs=? -complete=customlist,s:filetype_complete NeoComplCacheEditSnippets call s:edit_snippets(<q-args>, 0)
-    command! -nargs=? -complete=customlist,s:filetype_complete NeoComplCacheEditRuntimeSnippets call s:edit_snippets(<q-args>, 1)
-    command! -nargs=? -complete=customlist,s:filetype_complete NeoComplCachePrintSnippets call s:print_snippets(<q-args>)
+    command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheEditSnippets call s:edit_snippets(<q-args>, 0)
+    command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheEditRuntimeSnippets call s:edit_snippets(<q-args>, 1)
+    command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCachePrintSnippets call s:print_snippets(<q-args>)
 
     hi def link NeoComplCacheExpandSnippets Special
 
@@ -283,28 +276,11 @@ function! neocomplcache#plugin#snippets_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_str)"{{{
-    " Set buffer filetype.
-    if &filetype == ''
-        let l:ft = 'nothing'
-    else
-        let l:ft = &filetype
-    endif
-
     let l:snippets = values(s:snippets['_'])
-    for l:t in split(l:ft, '\.')
-        if has_key(s:snippets, l:t)
-            let l:snippets += values(s:snippets[l:t])
-        endif
+    
+    for l:source in neocomplcache#get_sources_list(s:snippets, &filetype)
+        let l:snippets += values(l:source)
     endfor
-
-    " Set same filetype.
-    if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-        for l:same_ft in split(g:NeoComplCache_SameFileTypeLists[l:ft], ',')
-            if has_key(s:snippets, l:same_ft)
-                let l:snippets += values(s:snippets[l:same_ft])
-            endif
-        endfor
-    endif
 
     return s:keyword_filter(l:snippets, a:cur_keyword_str)
 endfunction"}}}
@@ -381,25 +357,11 @@ function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
 endfunction"}}}
 
 function! s:caching()"{{{
-    " Set buffer filetype.
-    if &filetype == ''
-        let l:ft = 'nothing'
-    else
-        let l:ft = &filetype
-    endif
-
-    if !has_key(s:snippets, l:ft)
-        call s:caching_snippets(l:ft)
-    endif
-
-    " Same filetype.
-    if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-        for l:same_ft in split(g:NeoComplCache_SameFileTypeLists[l:ft], ',')
-            if !has_key(s:snippets, l:same_ft)
-                call s:caching_snippets(l:same_ft)
-            endif
-        endfor
-    endif
+    for l:filetype in keys(neocomplcache#get_source_filetypes(&filetype))
+        if !has_key(s:snippets, l:filetype)
+            call s:caching_snippets(l:filetype)
+        endif
+    endfor
 endfunction"}}}
 
 function! s:set_snippet_pattern(dict)"{{{
@@ -435,29 +397,6 @@ function! s:set_snippet_pattern(dict)"{{{
     return l:dict
 endfunction"}}}
 
-function! s:filetype_complete(arglead, cmdline, cursorpos)"{{{
-    let l:list = split(globpath(&runtimepath, 'snippets/*.snip*'), '\n') +
-                \split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete/*.snip*'), '\n')
-    if exists('g:NeoComplCache_SnippetsDir')
-        for l:dir in split(g:NeoComplCache_SnippetsDir, ',')
-            let l:dir = expand(l:dir)
-            if isdirectory(l:dir)
-                let l:list += split(globpath(l:dir, '*.snip*'), '\n')
-            endif
-        endfor
-    endif
-    let l:items = map(l:list, 'fnamemodify(v:val, ":t:r")')
-    
-    " Dup check.
-    let l:ret = {}
-    for l:item in l:items
-        if !has_key(l:ret, l:item) && l:item =~ '^'.a:arglead
-            let l:ret[l:item] = 1
-        endif
-    endfor
-    
-    return sort(keys(l:ret))
-endfunction"}}}
 function! s:edit_snippets(filetype, isruntime)"{{{
     if a:filetype == ''
         if &filetype == ''

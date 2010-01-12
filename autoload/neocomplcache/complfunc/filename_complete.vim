@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +27,8 @@
 " ChangeLog: "{{{
 "   1.08:
 "    - Improved skip directory.
+"    - Deleted '...' pattern.
+"    - Disabled in vimshell.
 "
 "   1.07:
 "    - Fixed in TeX behaviour.
@@ -61,13 +62,6 @@
 "   1.00:
 "    - Initial version.
 " }}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
 "=============================================================================
 
 function! neocomplcache#complfunc#filename_complete#initialize()"{{{
@@ -77,10 +71,14 @@ function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{{
+    if &filetype == 'vimshell'
+        return -1
+    endif
+    
     let l:is_win = has('win32') || has('win64')
 
     " Not Filename pattern.
-    if a:cur_text =~ '[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|^\a:$'
+    if a:cur_text =~ '\.\.\+$\|[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
         return -1
     endif
 
@@ -94,17 +92,13 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     endif
     
     " Not Filename pattern.
-    if l:is_win && l:cur_keyword_str =~ '|\|^\a:[/\\]\@!\|\\[[:alnum:].-]'
-        return -1
-    elseif l:is_win && &filetype == 'tex' && l:cur_keyword_str =~ '\\'
-        return -1
-    elseif l:cur_keyword_str =~ '\*\*\|^{}'
+    if l:is_win && &filetype == 'tex' && l:cur_keyword_str =~ '\\'
         return -1
     endif
     
     " Skip directory.
     if neocomplcache#is_auto_complete()
-        let l:dir = fnamemodify(l:cur_keyword_str, ':p:h')
+        let l:dir = simplify(fnamemodify(l:cur_keyword_str, ':p:h'))
         if l:dir != '' && has_key(s:skip_dir, l:dir)
             return -1
         endif
@@ -118,10 +112,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 
     let l:is_win = has('win32') || has('win64')
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
-    " Substitute ... -> ../..
-    while l:cur_keyword_str =~ '\.\.\.'
-        let l:cur_keyword_str = substitute(l:cur_keyword_str, '\.\.\zs\.', '/\.\.', 'g')
-    endwhile
 
     if a:cur_keyword_str =~ '^\$\h\w*'
         let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
@@ -151,7 +141,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     endif
 
     if neocomplcache#check_skip_time()
-        let l:dir = fnamemodify(l:cur_keyword_str, ':p:h')
+        let l:dir = simplify(fnamemodify(l:cur_keyword_str, ':p:h'))
         if l:dir != ''
             let s:skip_dir[l:dir] = 1
         endif
@@ -182,13 +172,11 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     for keyword in l:list
         " Skip completion if takes too much time."{{{
         if neocomplcache#check_skip_time()
-            let l:dir = matchstr(l:cur_keyword_str, '^/\|^\a\+:')
-            if l:dir == ''
-                let l:dir = getcwd()
+            let l:dir = simplify(fnamemodify(l:cur_keyword_str, ':p:h'))
+            if l:dir != ''
+                let s:skip_dir[l:dir] = 1
             endif
-            let l:dir = fnamemodify(l:dir, ':p:h')
-            let s:skip_dir[l:dir] = 1
-            
+
             return []
         endif"}}}
         

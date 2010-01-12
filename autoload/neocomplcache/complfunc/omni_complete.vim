@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 11 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
+" Version: 1.12, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.12:
+"    - Added vimshell omni completion support.
+"
 "   1.11:
 "    - Supported mark down filetype.
 "    - Deleted C/C++ omni completion support.
@@ -123,6 +126,8 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
                 \'\h\w\+\|\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'cpp',
                 \'\%(\h\w*\|)\)\%(\.\|->\)\h\w*\|\h\w*::')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'vimshell',
+                \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
     "}}}
 
     let s:keyword_cache = {}

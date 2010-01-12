@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.04, for Vim 7.0
+" Version: 4.07, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -40,13 +40,6 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
         autocmd VimLeavePre * call s:save_all_cache()
     augroup END"}}}
 
-    " Initialize assume file type lists."{{{
-    if !exists('g:NeoComplCache_NonBufferFileTypeDetect')
-        let g:NeoComplCache_NonBufferFileTypeDetect = {}
-    endif
-    " For test.
-    "let g:NeoComplCache_NonBufferFileTypeDetect['rb'] = 'ruby'"}}}
-
     " Initialize script variables."{{{
     let s:sources = {}
     let s:rank_cache_count = 1
@@ -60,20 +53,8 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
         call mkdir(g:NeoComplCache_TemporaryDir . '/buffer_cache', 'p')
     endif
 
-    " Initialize dictionary and tags."{{{
-    if !exists('g:NeoComplCache_DictionaryFileTypeLists')
-        let g:NeoComplCache_DictionaryFileTypeLists = {}
-    endif
-    if !has_key(g:NeoComplCache_DictionaryFileTypeLists, 'default')
-        let g:NeoComplCache_DictionaryFileTypeLists['default'] = ''
-    endif
-    " For test.
-    "let g:NeoComplCache_DictionaryFileTypeLists['vim'] = 'CSApprox.vim,LargeFile.vim'
-    "}}}
-
     " Add commands."{{{
     command! -nargs=? -complete=buffer NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
-    command! -nargs=? -complete=buffer NeoComplCacheCachingDictionary call s:caching_dictionary(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCachePrintSource call s:print_source(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
     command! -nargs=? -complete=buffer NeoComplCacheSaveCache call s:save_all_cache()
@@ -88,7 +69,6 @@ endfunction
 
 function! neocomplcache#plugin#buffer_complete#finalize()"{{{
     delcommand NeoComplCacheCachingBuffer
-    delcommand NeoComplCacheCachingDictionary
     delcommand NeoComplCachePrintSource
     delcommand NeoComplCacheOutputKeyword
     delcommand NeoComplCacheSaveCache
@@ -248,69 +228,25 @@ endfunction"}}}
 function! s:update_source()"{{{
     let l:caching_num = 0
     for source_name in keys(s:sources)
-        if source_name =~ '^\d'
-            " Lazy caching.
-            if s:caching_source(str2nr(source_name), '^', 2) == 0
-                let l:caching_num += 2
+        " Lazy caching.
+        if s:caching_source(str2nr(source_name), '^', 2) == 0
+            let l:caching_num += 2
 
-                if l:caching_num >= 6
-                    break
-                endif
+            if l:caching_num >= 6
+                break
             endif
         endif
     endfor
 endfunction"}}}
 
 function! s:get_sources_list()"{{{
-    " Set buffer filetype.
-    if &filetype == ''
-        let l:ft = 'nothing'
-    else
-        let l:ft = &filetype
-    endif
-
-    " Check dictionaries are exists.
-    if &filetype != '' && has_key(g:NeoComplCache_DictionaryFileTypeLists, &filetype)
-        let l:ft_dict = '^' . l:ft
-    elseif g:NeoComplCache_DictionaryFileTypeLists['default'] != ''
-        let l:ft_dict = '^default'
-    else
-        " Dummy pattern.
-        let l:ft_dict = '^$'
-    endif
-
     let l:sources_list = []
+    
+    let l:filetypes = neocomplcache#get_source_filetypes(&filetype)
     for key in keys(s:sources)
-        if (key =~ '^\d' && l:ft == s:sources[key].filetype) || key =~ l:ft_dict
+        if has_key(l:filetypes, s:sources[key].filetype)
             call add(l:sources_list, key)
         endif
-    endfor
-
-    let l:ft_list = []
-    " Set same filetype.
-    if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-        let l:ft_list += split(g:NeoComplCache_SameFileTypeLists[&filetype], ',')
-    endif
-
-    " Set compound filetype.
-    if l:ft =~ '\.'
-        let l:ft_list += split(l:ft, '\.')
-    endif
-
-    for l:t in l:ft_list
-        if l:t != '' && has_key(g:NeoComplCache_DictionaryFileTypeLists, l:t)
-            let l:ft_dict = '^' . l:t
-        else
-            " Dummy pattern.
-            let l:ft_dict = '^$'
-        endif
-
-        for key in keys(s:sources)
-            if key =~ '^\d' && l:t == s:sources[key].filetype
-                        \|| key =~ l:ft_dict
-                call add(l:sources_list, key)
-            endif
-        endfor
     endfor
 
     return l:sources_list
@@ -323,7 +259,6 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
     endif
 
     let l:source = s:sources[a:srcname]
-    " Buffer.
     let l:filename = fnamemodify(l:source.name, ':t')
 
     let l:start_line = (a:start_line-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
@@ -346,7 +281,6 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
     let l:cache_num = (l:start_line-1) / l:source.cache_line_cnt
     let l:source.cache_lines[l:cache_num] = { 'keywords' : {} }
 
-    " Buffer.
     let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
     let l:menu = printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
     let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
@@ -423,74 +357,47 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 endfunction"}}}
 
 function! s:initialize_source(srcname)"{{{
-    if a:srcname =~ '^\d'
-        " Buffer.
-        let l:filename = fnamemodify(bufname(a:srcname), ':t')
+    let l:filename = fnamemodify(bufname(a:srcname), ':t')
 
-        " Set cache line count.
-        let l:buflines = getbufline(a:srcname, 1, '$')
-        let l:end_line = len(l:buflines)
+    " Set cache line count.
+    let l:buflines = getbufline(a:srcname, 1, '$')
+    let l:end_line = len(l:buflines)
 
-        if l:end_line > 150
-            let cnt = 0
-            for line in l:buflines[50:150] 
-                let cnt += len(line)
-            endfor
+    if l:end_line > 150
+        let cnt = 0
+        for line in l:buflines[50:150] 
+            let cnt += len(line)
+        endfor
 
-            if cnt <= 3000
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount
-            elseif cnt <= 4000
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount*7 / 10
-            elseif cnt <= 5000
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 2
-            elseif cnt <= 7500
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 3
-            elseif cnt <= 10000
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 5
-            elseif cnt <= 12000
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 7
-            elseif cnt <= 14000
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 10
-            else
-                let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 13
-            endif
-        elseif l:end_line > 100
+        if cnt <= 3000
+            let l:cache_line_cnt = g:NeoComplCache_CacheLineCount
+        elseif cnt <= 4000
+            let l:cache_line_cnt = g:NeoComplCache_CacheLineCount*7 / 10
+        elseif cnt <= 5000
+            let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 2
+        elseif cnt <= 7500
             let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 3
-        else
+        elseif cnt <= 10000
             let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 5
-        endif
-
-        let l:ft = getbufvar(a:srcname, '&filetype')
-        if l:ft == ''
-            let l:ft = 'nothing'
-        endif
-
-        let l:keyword_pattern = neocomplcache#assume_buffer_pattern(a:srcname)
-    else
-        " Dictionary.
-        let l:filename = split(a:srcname, ',')[1]
-        let l:end_line = len(readfile(l:filename))
-
-        " Assuming filetype.
-        if a:srcname =~ '^dict:'
-            " Current buffer filetype.
-            let l:ft = &filetype
+        elseif cnt <= 12000
+            let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 7
+        elseif cnt <= 14000
+            let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 10
         else
-            " Embeded filetype.
-            let l:ft = split(a:srcname, ',')[0]
+            let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 13
         endif
-
-        let l:keyword_pattern = neocomplcache#assume_pattern(l:filename)
-        if l:keyword_pattern == ''
-            " Assuming failed.
-            let l:keyword_pattern = has_key(g:NeoComplCache_KeywordPatterns, l:ft)? 
-                        \g:NeoComplCache_KeywordPatterns[l:ft] : g:NeoComplCache_KeywordPatterns['default']
-        endif
-
-        " Set cache line count.
-        let l:cache_line_cnt = g:NeoComplCache_CacheLineCount
+    elseif l:end_line > 100
+        let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 3
+    else
+        let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 5
     endif
 
+    let l:ft = getbufvar(a:srcname, '&filetype')
+    if l:ft == ''
+        let l:ft = 'nothing'
+    endif
+
+    let l:keyword_pattern = neocomplcache#assume_buffer_pattern(a:srcname)
 
     let s:sources[a:srcname] = {
                 \'keyword_cache' : {}, 'cache_lines' : {}, 'next_word_list' : {}, 
@@ -511,10 +418,9 @@ function! s:word_caching(srcname)"{{{
 
     let l:source = s:sources[a:srcname]
 
-    let l:mark = (a:srcname =~ '^\d')? 'B' : 'D'
-    let l:filename = (a:srcname =~ '^\d')? fnamemodify(bufname(str2nr(a:srcname)), ':p') : split(a:srcname, ',')[1]
+    let l:filename = fnamemodify(bufname(str2nr(a:srcname)), ':p')
 
-    for l:keyword in neocomplcache#cache#load_from_file(l:filename, l:source.keyword_pattern, l:mark)
+    for l:keyword in neocomplcache#cache#load_from_file(l:filename, l:source.keyword_pattern, 'B')
         let l:key = tolower(l:keyword.word[: s:completion_length-1])
         if !has_key(l:source.keyword_cache, l:key)
             let l:source.keyword_cache[l:key] = {}
@@ -524,17 +430,11 @@ function! s:word_caching(srcname)"{{{
 endfunction"}}}
 
 function! s:caching_from_cache(srcname)"{{{
-    if a:srcname =~ '^\d'
-        if getbufvar(a:srcname, '&buftype') =~ 'nofile'
-            return -1
-        endif
-
-        " Buffer.
-        let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
-    else
-        " Dictionary.
-        let l:srcname = split(a:srcname, ',')[1]
+    if getbufvar(a:srcname, '&buftype') =~ 'nofile'
+        return -1
     endif
+
+    let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
     
     if neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
         return -1
@@ -573,8 +473,7 @@ function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
 
         let l:start_line = l:source.cached_last_line
         " Check overflow.
-        if l:start_line > l:source.end_line &&
-                    \(a:srcname !~ '^\d' || !s:check_changed_buffer(a:srcname))
+        if l:start_line > l:source.end_line && !s:check_changed_buffer(a:srcname)
             " Caching end.
             return -1
         endif
@@ -594,7 +493,6 @@ function! s:check_source()"{{{
     call s:garbage_collect(bufnr('%'))
     
     let l:bufnumber = 1
-    let l:ft_dicts = ['default']
 
     " Check new buffer.
     while l:bufnumber <= bufnr('$')
@@ -608,34 +506,15 @@ function! s:check_source()"{{{
                 " Caching.
                 call s:word_caching(l:bufnumber)
             endif
-
-            if has_key(g:NeoComplCache_DictionaryFileTypeLists, getbufvar(l:bufnumber, '&filetype'))
-                call add(l:ft_dicts, getbufvar(l:bufnumber, '&filetype'))
-            endif
         endif
 
         let l:bufnumber += 1
     endwhile
-
-    " Check dictionary.
-    for l:ft_dict in l:ft_dicts
-        " Ignore if empty.
-        if l:ft_dict != ''
-            for dict in split(g:NeoComplCache_DictionaryFileTypeLists[l:ft_dict], ',')
-                let l:dict_name = printf('%s,%s', l:ft_dict, dict)
-                if !has_key(s:sources, l:dict_name) && filereadable(dict)
-                            \&& getfsize(dict) < g:NeoComplCache_CachingLimitFileSize
-                    " Caching.
-                    call s:word_caching(l:dict_name)
-                endif
-            endfor
-        endif
-    endfor
 endfunction"}}}
 function! s:check_deleted_buffer()"{{{
     " Check deleted buffer.
     for key in keys(s:sources)
-        if key =~ '^\d' && !buflisted(str2nr(key))
+        if !buflisted(str2nr(key))
             " Save cache.
             call s:save_cache(key)
 
@@ -659,20 +538,15 @@ function! s:save_cache(srcname)"{{{
         return
     endif
 
-    if a:srcname =~ '^\d'
-        if getbufvar(a:srcname, '&buftype') =~ 'nofile'
-            return
-        endif
-
-        " Buffer.
-        let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
-        if !filereadable(l:srcname)
-            return
-        endif
-    else
-        " Dictionary.
-        let l:srcname = split(a:srcname, ',')[1]
+    if getbufvar(a:srcname, '&buftype') =~ 'nofile'
+        return
     endif
+
+    let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
+    if !filereadable(l:srcname)
+        return
+    endif
+    
     let l:cache_name = neocomplcache#cache#encode_name('buffer_cache', l:srcname)
     if getftime(l:cache_name) >= getftime(l:srcname)
         return -1
@@ -747,37 +621,6 @@ function! s:caching_buffer(name)"{{{
 
     " Disable auto caching.
     let s:sources[l:number].cached_last_line = s:sources[l:number].end_line+1
-endfunction"}}}
-function! s:caching_dictionary(name)"{{{
-    if a:name == ''
-        let l:number = bufnr('%')
-    else
-        let l:number = bufnr(a:name)
-
-        if l:number < 0
-            call neocomplcache#print_error('Invalid buffer name.')
-            return
-        endif
-    endif
-
-    let l:ft_dicts = ['default']
-    if has_key(g:NeoComplCache_DictionaryFileTypeLists, getbufvar(l:number, '&filetype'))
-        call add(l:ft_dicts, getbufvar(l:number, '&filetype'))
-    endif
-
-    " Check dictionary.
-    for l:ft_dict in l:ft_dicts
-        " Ignore if empty.
-        if l:ft_dict != ''
-            for dict in split(g:NeoComplCache_DictionaryFileTypeLists[l:ft_dict], ',')
-                let l:dict_name = printf('%s,%s', l:ft_dict, dict)
-                if !has_key(s:sources, l:dict_name) && filereadable(dict)
-                    " Caching.
-                    call s:word_caching(l:dict_name)
-                endif
-            endfor
-        endif
-    endfor
 endfunction"}}}
 function! s:print_source(name)"{{{
     if a:namame == ''

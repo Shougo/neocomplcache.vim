@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 11 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,9 @@
 " Version: 1.28, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.29:
+"    - Improved for same filetype.
+"
 "   1.28:
 "    - Improved caching.
 "    - Use caching helper.
@@ -108,13 +111,6 @@
 "   1.00:
 "    - Initial version.
 " }}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
 "=============================================================================
 
 function! neocomplcache#plugin#syntax_complete#initialize()"{{{
@@ -126,7 +122,7 @@ function! neocomplcache#plugin#syntax_complete#initialize()"{{{
     autocmd neocomplcache FileType * call s:caching()
 
     " Add command.
-    command! -nargs=? NeoComplCacheCachingSyntax call s:recaching(<q-args>)
+    command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheCachingSyntax call s:recaching(<q-args>)
 
     " Create cache directory.
     if !isdirectory(g:NeoComplCache_TemporaryDir . '/syntax_cache')
@@ -139,44 +135,57 @@ function! neocomplcache#plugin#syntax_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#syntax_complete#get_keyword_list(cur_keyword_str)"{{{
-    if &filetype == '' || !has_key(s:syntax_list, &filetype)
-        return []
-    endif
-
-    if len(a:cur_keyword_str) < s:completion_length ||
-                \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
-        return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(s:syntax_list[&filetype]), a:cur_keyword_str)
-    else
-        let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
-        
-        if !has_key(s:syntax_list[&filetype], l:key)
-            return []
-        elseif len(a:cur_keyword_str) == s:completion_length
-            return s:syntax_list[&filetype][l:key]
+    let l:list = []
+    
+    for l:source in neocomplcache#get_sources_list(s:syntax_list, &filetype)
+        if len(a:cur_keyword_str) < s:completion_length ||
+                    \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
+            let l:list += neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(l:source), a:cur_keyword_str)
         else
-            return neocomplcache#keyword_filter(copy(s:syntax_list[&filetype][l:key]), a:cur_keyword_str)
+            let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
+
+            if has_key(l:source, l:key)
+                if len(a:cur_keyword_str) == s:completion_length
+                    let l:list += l:source[l:key]
+                else
+                    let l:list += neocomplcache#keyword_filter(copy(l:source[l:key]), a:cur_keyword_str)
+                endif
+            endif
         endif
-    endif
+    endfor
+
+    return l:list
 endfunction"}}}
 
 function! s:caching()"{{{
-    if &filetype == '' || &filetype == 'vim' || !buflisted(bufnr('%')) && has_key(s:syntax_list, &filetype)
+    if &filetype == '' || &filetype == 'vim'
         return
     endif
     
-    if g:NeoComplCache_CachingPercentInStatusline
-        let l:statusline_save = &l:statusline
-    endif
-    
-    call neocomplcache#print_caching('Caching syntax "' . &filetype . '"... please wait.')
-    
-    let s:syntax_list[&filetype] = s:initialize_syntax()
-    
-    call neocomplcache#print_caching('Caching done.')
-    
-    if g:NeoComplCache_CachingPercentInStatusline
-        let &l:statusline = l:statusline_save
-    endif
+    for l:filetype in keys(neocomplcache#get_source_filetypes(&filetype))
+        if !has_key(s:syntax_list, l:filetype)
+            let l:keyword_lists = neocomplcache#cache#index_load_from_cache('syntax_cache', l:filetype, s:completion_length)
+            if !empty(l:keyword_lists)
+                " Caching from cache.
+                let s:syntax_list[l:filetype] = l:keyword_lists
+            elseif l:filetype == &filetype
+                if g:NeoComplCache_CachingPercentInStatusline
+                    let l:statusline_save = &l:statusline
+                endif
+                
+                call neocomplcache#print_caching('Caching syntax "' . l:filetype . '"... please wait.')
+                
+                " Caching from syn list.
+                let s:syntax_list[l:filetype] = s:caching_from_syn()
+                
+                call neocomplcache#print_caching('Caching done.')
+
+                if g:NeoComplCache_CachingPercentInStatusline
+                    let &l:statusline = l:statusline_save
+                endif
+            endif
+        endif
+    endfor
 endfunction"}}}
 
 function! s:recaching(filetype)"{{{
@@ -199,16 +208,6 @@ function! s:recaching(filetype)"{{{
     if g:NeoComplCache_CachingPercentInStatusline
         let &l:statusline = l:statusline_save
     endif
-endfunction"}}}
-
-function! s:initialize_syntax()"{{{
-    let l:keyword_lists = neocomplcache#cache#index_load_from_cache('syntax_cache', &filetype, s:completion_length)
-    if !empty(l:keyword_lists)
-        " Caching from cache.
-        return l:keyword_lists
-    endif
-
-    return s:caching_from_syn()
 endfunction"}}}
 
 function! s:caching_from_syn()"{{{
