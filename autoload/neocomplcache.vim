@@ -928,7 +928,9 @@ function! s:complete()"{{{
         
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
-    elseif g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'$'
+    elseif g:NeoComplCache_EnableQuickMatch 
+                \&& l:cur_text =~ l:quickmatch_pattern.'$'
+                \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
                 \&& neocomplcache#head_match(l:cur_text, l:save_old)
         " Print quickmatch list.
         let l:norrowing = l:cur_text[len(l:save_old) : -len(l:quickmatch_pattern)-1]
@@ -1116,16 +1118,19 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
     let l:num = 0
     let l:qlist = []
     let l:key = 'asdfghjklqwertyuiopzxcvbnm1234567890'
-    for keyword in a:list[: len(s:quickmatch_table)]
+    for keyword in a:list
         if keyword.word != '' && neocomplcache#head_match(keyword.word, a:cur_keyword_str) 
                     \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
             let l:dup_check[keyword.word] = 1
+            let l:keyword = deepcopy(l:keyword)
             let keyword.abbr = printf('%s: %s', l:key[l:num], keyword.abbr)
 
             call add(l:qlist, keyword)
             let l:num += 1
         endif
     endfor
+    " Trunk too many items.
+    let l:qlist = l:qlist[: len(s:quickmatch_table)]
 
     " Save numbered lists.
     let s:prev_numbered_list = l:qlist
