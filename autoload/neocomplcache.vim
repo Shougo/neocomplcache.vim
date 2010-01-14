@@ -225,7 +225,6 @@ function! neocomplcache#enable() "{{{
     if !exists('g:NeoComplCache_PluginCompletionLength')
         let g:NeoComplCache_PluginCompletionLength = {}
     endif
-    call neocomplcache#set_variable_pattern('g:NeoComplCache_PluginCompletionLength', 'omni_complete', 0)
     "}}}
     
     " Add commands."{{{
