@@ -290,6 +290,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
         let l:cur_text = s:get_cur_text()
+        let s:old_text = l:cur_text
 
         " Try complfuncs completion."{{{
         let l:complete_result = {}
@@ -764,6 +765,7 @@ endfunction"}}}
 
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
     let l:cur_text = s:get_cur_text()
+    let s:old_text = l:cur_text
 
     " Set function.
     let &l:completefunc = 'neocomplcache#manual_complete'
@@ -906,8 +908,8 @@ function! s:complete()"{{{
         return
     endif
 
+    let l:save_old = s:old_text
     let s:old_text = l:cur_text
-    let l:use_previous_result = neocomplcache#head_match(l:cur_text, s:old_text)
     
     let l:quickmatch_pattern = s:get_quickmatch_pattern()
     if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9;,./]$'
@@ -927,8 +929,10 @@ function! s:complete()"{{{
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
     elseif g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'$'
+                \&& neocomplcache#head_match(l:cur_text, l:save_old)
         " Print quickmatch list.
-        let s:complete_words = s:make_quickmatch_list(s:complete_words) 
+        let l:norrowing = l:cur_text[len(l:save_old) : -len(l:quickmatch_pattern)-1]
+        let s:complete_words = s:make_quickmatch_list(s:complete_words, s:cur_keyword_str . l:norrowing) 
 
         let &l:completefunc = 'neocomplcache#auto_complete'
         call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -1106,16 +1110,15 @@ let s:quickmatch_table = {
             \'z' : 20, 'x' : 21, 'c' : 22, 'v' : 23, 'b' : 24, 'n' : 25, 'm' : 26, ',' : 27, '.' : 28, '/' : 29,
             \'1' : 30, '2' : 31, '3' : 32, '4' : 33, '5' : 34, '6' : 35, '7' : 36, '8' : 37, '9' : 38, '0' : 39
             \}
-function! s:make_quickmatch_list(list)"{{{
+function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
     " Check dup.
     let l:dup_check = {}
     let l:num = 0
     let l:qlist = []
     let l:key = 'asdfghjklqwertyuiopzxcvbnm1234567890'
     for keyword in a:list[: len(s:quickmatch_table)]
-        if keyword.word != '' && (
-                    \!has_key(l:dup_check, keyword.word) ||
-                    \(has_key(keyword, 'dup') && keyword.dup))
+        if keyword.word != '' && neocomplcache#head_match(keyword.word, a:cur_keyword_str) 
+                    \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
             let l:dup_check[keyword.word] = 1
             let keyword.abbr = printf('%s: %s', l:key[l:num], keyword.abbr)
 
