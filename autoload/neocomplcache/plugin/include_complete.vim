@@ -306,15 +306,15 @@ function! s:load_from_tags(filename, filetype)"{{{
         return l:keyword_lists
     endif
 
-    if !executable('ctags')
+    if !executable(g:NeoComplCache_CtagsProgram)
         return s:load_from_file(a:filename, a:filetype)
     endif
     
     let l:args = has_key(g:NeoComplCache_CtagsArgumentsList, a:filetype) ? 
                 \g:NeoComplCache_CtagsArgumentsList[a:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
     let l:command = has('win32') || has('win64') ? 
-                \printf('ctags -f - %s %s', l:args, fnamemodify(a:filename, ':p:.')) : 
-                \printf('ctags -f /dev/stdout %s %s', l:args, fnamemodify(a:filename, ':p:.'))
+                \printf('%s -f - %s %s', g:NeoComplCache_CtagsProgram, l:args, fnamemodify(a:filename, ':p:.')) : 
+                \printf('%s -f /dev/stdout 2>/dev/null %s %s', g:NeoComplCache_CtagsProgram, l:args, fnamemodify(a:filename, ':p:.'))
     let l:lines = split(neocomplcache#system(l:command), '\n')
     
     if !empty(l:lines)

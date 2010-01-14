@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.07
+Version: 4.08
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -353,14 +353,6 @@ g:NeoComplCache_SameFileTypeLists			*g:NeoComplCache_SameFileTypeLists*
 		Because it is complicated, refer to
 		autoload/neocomplcache.vim for the initial value.
 
-g:NeoComplCache_NonBufferFileTypeDetect			*g:NeoComplCache_NonBufferFileTypeDetect*
-		It is a dictionary to connect file type with extension.
-		When neocomplcache cannot judge file type well, dictionary
-		files are effective.
-	
-		Because it is complicated, refer to
-		autoload/neocomplcache.vim for the initial value.
-
 g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLists*
 		It is a dictionary to connect a dictionary file with file
 		type.  The dictionary's key is filetype and value is a path
@@ -381,6 +373,11 @@ g:NeoComplCache_DisableSelectModeMappings		*g:NeoComplCache_DisableSelectModeMap
 		better usually validate it.
 		
 		Default value is 1.
+
+g:NeoComplCache_CtagsProgram				*g:NeoComplCache_CtagsProgram*
+		It is the path to the ctags command.
+		
+		Default value is "ctags".
 
 g:NeoComplCache_CtagsArgumentsList			*g:NeoComplCache_CtagsArgumentsList*
 		It is the dictionary of the character string to set a value
@@ -612,6 +609,16 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   4.08:
+    - Improved keywords in vim_complete.
+    - Deleted g:NeoComplCache_NonBufferFileTypeDetect option.
+    - Improved composition filetype keyword support.
+    - Fixed neocomplcache#system.
+    - Added g:NeoComplCache_CtagsProgram option.
+    - Fixed ctags execution bug.
+    - Improved quickmatch behaivior.
+
+ChangeLog NeoComplCache 4.00-: {{{
    4.07:
     - Improved filaname pattern.
     - Deleted '...' pattern.
@@ -627,7 +634,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved same filetype.
     - Improved filetype completion.
 
-ChangeLog NeoComplCache 4.00-: {{{
    4.06:
     - Improved command completion in snippets_complete.
     - Improved skip directory in filename_complete.

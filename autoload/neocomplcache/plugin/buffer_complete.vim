@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.07, for Vim 7.0
+" Version: 4.08, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -397,7 +397,7 @@ function! s:initialize_source(srcname)"{{{
         let l:ft = 'nothing'
     endif
 
-    let l:keyword_pattern = neocomplcache#assume_buffer_pattern(a:srcname)
+    let l:keyword_pattern = neocomplcache#get_keyword_pattern(l:ft)
 
     let s:sources[a:srcname] = {
                 \'keyword_cache' : {}, 'cache_lines' : {}, 'next_word_list' : {}, 

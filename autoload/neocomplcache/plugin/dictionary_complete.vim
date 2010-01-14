@@ -153,7 +153,7 @@ function! s:caching_from_dict(filetype)"{{{
     for l:dictionary in split(g:NeoComplCache_DictionaryFileTypeLists[a:filetype], ',')
         if filereadable(l:dictionary)
             let l:keyword_list += neocomplcache#cache#load_from_file(l:dictionary, 
-                        \neocomplcache#assume_pattern(l:dictionary), 'D')
+                        \neocomplcache#get_keyword_pattern(a:filetype), 'D')
         endif
     endfor
     
