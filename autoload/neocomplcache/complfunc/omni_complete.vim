@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 14 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.12:
 "    - Added vimshell omni completion support.
+"    - Fixed complete length bug.
 "
 "   1.11:
 "    - Supported mark down filetype.
@@ -132,6 +133,7 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
 
     let s:keyword_cache = {}
     let s:iskeyword = 0
+    let s:completion_length = neocomplcache#get_completion_length('omni_complete')
     
     augroup neocomplcache
         " Caching events
@@ -198,6 +200,11 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
         call setline('.', l:line)
     endif
     call setpos('.', l:pos)
+    
+    if col('.') - l:cur_keyword_pos < s:completion_length 
+        " Too short completion length.
+        return -1
+    endif
 
     return l:cur_keyword_pos
 endfunction"}}}

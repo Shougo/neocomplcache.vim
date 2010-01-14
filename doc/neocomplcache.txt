@@ -617,6 +617,7 @@ CHANGELOG					*neocomplcache-changelog*
     - Added g:NeoComplCache_CtagsProgram option.
     - Fixed ctags execution bug.
     - Improved quickmatch behaivior.
+    - Fixed complete length bug in omni_complete.
 
 ChangeLog NeoComplCache 4.00-: {{{
    4.07:
