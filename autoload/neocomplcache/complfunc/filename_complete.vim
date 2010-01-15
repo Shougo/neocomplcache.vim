@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,6 +25,9 @@
 " Version: 1.08, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.09:
+"    - Fixed wildcard freeze.
+"
 "   1.08:
 "    - Improved skip directory.
 "    - Deleted '...' pattern.
@@ -78,7 +81,8 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     let l:is_win = has('win32') || has('win64')
 
     " Not Filename pattern.
-    if a:cur_text =~ '\.\.\+$\|[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+    if a:cur_text =~ 
+                \'\*$\|\.\.\+$\|[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
         return -1
     endif
 

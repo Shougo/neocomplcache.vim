@@ -618,6 +618,7 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed ctags execution bug.
     - Improved quickmatch behaivior.
     - Fixed complete length bug in omni_complete.
+    - Fixed wildcard freeze in filename_complete.
 
 ChangeLog NeoComplCache 4.00-: {{{
    4.07:

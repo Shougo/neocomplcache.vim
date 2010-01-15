@@ -42,7 +42,7 @@ neocomplcacheは更新が頻繁にあるので、簡単にアップグレード�
 残念ながらWindowsでは使えないですが、drryさんがワンライナーを作ってくれました。
 
 <pre>
-wget -qO - http://github.com/Shougo/neocomplcache/tarball/master | tar -xzC ~/.vim --strip-components=1 --exclude=presen
+curl -L http://github.com/Shougo/neocomplcache/tarball/master | tar -xzC ~/.vim --strip-components=1 --exclude=presen
 </pre>
 
 Windowsでも使えるワンライナーを現在募集中です。
@@ -843,6 +843,7 @@ Twitterはneocomplcache開発日記と化しているので、こまめにチェ
 
 ## 更新履歴
 
+2010/12/15     ワンライナーを修正。
 2009/12/27     MarkDown化。
 2009/12/08     neocomplcache Ver.4.00に対応。
 2009/11/25     neocomplcache Ver.3.18に対応。
