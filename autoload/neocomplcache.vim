@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jan 2010
+" Last Modified: 16 Jan 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -904,6 +904,7 @@ function! s:complete()"{{{
     " Prevent infinity loop.
     " Not complete multi byte character for ATOK X3.
     if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
+        let s:complete_words = []
         return
     endif
 
@@ -928,6 +929,7 @@ function! s:complete()"{{{
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
     elseif g:NeoComplCache_EnableQuickMatch 
+                \&& !empty(s:complete_words)
                 \&& l:cur_text =~ l:quickmatch_pattern.'$'
                 \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
                 \&& neocomplcache#head_match(l:cur_text, l:save_old)
@@ -942,6 +944,7 @@ function! s:complete()"{{{
         let s:prev_numbered_list = []
         let l:is_quickmatch_list = 0
     endif
+    let s:complete_words = []
     
     echo ''
     redraw
