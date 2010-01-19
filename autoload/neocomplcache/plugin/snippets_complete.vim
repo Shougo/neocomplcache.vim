@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.36, for Vim 7.0
+" Version: 1.37, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.37:
+"    - Improved syntax detect.
+"    - Improved NeoComplCachePrintSnippets command.
+"    - Fixed snippet newline expand.
+"    - Improved syntax highlight.
+"
 "   1.36:
 "    - Improved snippet alias.
 "    - Improved command completion.
@@ -237,7 +243,7 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
         " Recaching events
         autocmd BufWritePost *.snip,*.snippets call s:caching_snippets(expand('<afile>:t:r')) 
         " Detect syntax file.
-        autocmd BufNewFile,BufWinEnter *.snip,*.snippets setfiletype snippet
+        autocmd BufNewFile,BufRead *.snip,*.snippets set filetype=snippet
         autocmd BufNewFile,BufWinEnter * syn match   NeoComplCacheExpandSnippets         
                     \'\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
     augroup END"}}}
@@ -455,8 +461,10 @@ function! s:print_snippets(filetype)"{{{
     for snip in sort(l:list, 'neocomplcache#compare_words')
         echohl String
         echo snip.word
+        echohl Special
+        echo snip.menu
         echohl None
-        echo snip.abbr
+        echo snip.snip
         echo ' '
     endfor
 
@@ -608,6 +616,11 @@ function! s:snippets_expand(cur_text, col)"{{{
                 call s:expand_tabline()
             else
                 call s:expand_newline()
+            endif
+            if l:old_col < col('$')
+                startinsert
+            else
+                startinsert!
             endif
             
             call s:snippets_jump(a:cur_text, a:col)
