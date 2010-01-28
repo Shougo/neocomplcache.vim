@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jan 2010
+" Last Modified: 28 Jan 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -141,6 +141,10 @@ function! neocomplcache#enable() "{{{
                 \'\v[[:alpha:]_.-][[:alnum:]_.-]*')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'scala',
                 \'\v[.]?\h\w*%(\s*\(\)?|\[)?')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'int_termtter',
+                \'\h[[:alnum:]_-]*\|@[[:alnum:]_+-]\+\|\$\a\+')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'dosbatch,int_cmdproxy',
+                \'\$\w+\|[[:alpha:]_./-][[:alnum:]_.-]*')
     "}}}
 
     " Initialize next keyword patterns."{{{
@@ -180,7 +184,7 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_zsh', 'zsh')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_bash', 'bash')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_sh', 'sh')
-    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_cmdproxy', 'bat')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_cmdproxy', 'dosbatch')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_powershell', 'powershell')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_perlsh', 'perl')
     call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_perl6', 'perl6')
@@ -896,6 +900,7 @@ function! s:complete()"{{{
                 \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
                 \|| g:NeoComplCache_DisableAutoComplete
                 \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
+                \|| (exists('b:skk_on') && b:skk_on)
         return
     endif
 
@@ -1161,8 +1166,26 @@ endfunction"}}}
 function! s:get_cur_text()"{{{
     let l:pos = mode() ==# 'i' ? 2 : 1
 
-    let s:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
-    return s:cur_text
+    let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    
+    if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
+        let l:len = len(getline('.'))
+
+        " Skip multibyte
+        let l:pos -= 1
+        let l:cur_text = getline('.')[: col('.') - l:pos]
+        let l:fchar = char2nr(l:cur_text[-1:])
+        while col('.')-l:pos+1 < l:len && l:fchar >= 0x80
+            let l:pos -= 1
+
+            let l:cur_text = getline('.')[: col('.') - l:pos]
+            let l:fchar = char2nr(l:cur_text[-1:])
+        endwhile
+    endif
+
+    " Save cur_text.
+    let s:cur_text = l:cur_text
+    return l:cur_text
 endfunction"}}}
 
 " vim: foldmethod=marker

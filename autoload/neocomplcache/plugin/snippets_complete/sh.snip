@@ -1,0 +1,59 @@
+snippet if
+	if [ ${1:condition} ]; then
+		${0:#statements}
+	fi
+
+
+snippet el
+	else
+    	${0:#statements}
+
+
+snippet elif
+	elif [ ${1:condition} ]; then
+		${0:#statements}
+
+
+snippet for
+	for ${1:i} in ${2:words}; do
+		${0:#statements}
+	done
+    
+
+snippet wh
+abbr while
+	while ${1:condition} ; do
+		${0:#statements}
+	done
+
+
+snippet until
+	until ${1:condition} ; do
+		${0:#statements}
+	done
+
+
+snippet case
+	case ${1:word} in
+		${2:pattern} )
+			${0}
+            ;;
+	esac
+    
+    
+snippet h
+	<<${1}
+		${0}
+    
+
+snippet env
+	#!/usr/bin/env ${1}
+
+
+snippet tmp
+	${1:TMPFILE}="mktemp -t ${2:untitled}"
+	trap "rm -f '$${1}'" 0               # EXIT
+	trap "rm -f '$${1}'; exit 1" 2       # INT
+	trap "rm -f '$${1}'; exit 1" 1 15    # HUP TERM
+    ${0}
+    

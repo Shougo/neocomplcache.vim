@@ -614,6 +614,12 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved NeoComplCachePrintSnippets command.
     - Fixed snippet newline expand in snippets_complete.
     - Improved syntax highlight in snippets_complete.
+    - Optimized filename_complete.
+    - Added snippet files(Thanks mfumi!).
+    - Fixed multibyte input bug.
+    - Added interactive termtter keyword.
+    - Added keyword pattern of batch file.
+    - Disable completion when using skk.vim.
     
 ChangeLog NeoComplCache 4.00-: {{{
    4.08:

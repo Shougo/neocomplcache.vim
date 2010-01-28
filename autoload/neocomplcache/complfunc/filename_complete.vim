@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 20 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,11 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.08, for Vim 7.0
+" Version: 1.09, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.09:
 "    - Fixed wildcard freeze.
+"    - Optimized.
 "
 "   1.08:
 "    - Improved skip directory.
@@ -203,10 +204,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
         endif
 
         let keyword.abbr = l:abbr
-
-        if !filewritable(keyword.word)
-            let keyword.menu .= ' [-]'
-        endif
     endfor
 
     " Escape word.
