@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.09
+Version: 4.10
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -609,6 +609,15 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+   4.10:
+    - Fixed interactive Gauche support.
+    - Added omni_complete and vim_complete rank.
+    - Implemented fuzzy filter(experimental).
+    - Improved lingr-vim support.
+    - Implemented spell_complete.vim(experimental)
+    - Improved skk.vim support.
+    
+ChangeLog NeoComplCache 4.00-: {{{
    4.09:
     - Improved syntax detect in snippets_complete.
     - Improved NeoComplCachePrintSnippets command.
@@ -629,7 +638,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Fixed indent.
     - Supported interactive ocaml.
     
-ChangeLog NeoComplCache 4.00-: {{{
    4.08:
     - Improved keywords in vim_complete.
     - Deleted g:NeoComplCache_NonBufferFileTypeDetect option.

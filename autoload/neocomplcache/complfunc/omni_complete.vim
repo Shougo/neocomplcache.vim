@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Feb 2010
+" Last Modified: 12 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.13:
 "    - Supported omnifunc name pattern.
 "    - Fixed complete length bug.
+"    - Increased rank.
 "
 "   1.12:
 "    - Added vimshell omni completion support.
@@ -270,7 +271,7 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_rank()"{{{
-    return 20
+    return 50
 endfunction"}}}
 
 function! s:caching(bufname, force)"{{{

@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: dictionary.vim
+" FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 11 Jun 2010
 " License: MIT license  {{{

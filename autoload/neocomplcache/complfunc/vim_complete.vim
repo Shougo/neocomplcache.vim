@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 12 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.08:
 "    - Fixed functions_prototype bug.
+"    - Increased rank.
 "
 "   1.07:
 "    - Improved analyzing extra args.
@@ -240,7 +241,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_rank()"{{{
-    return 20
+    return 50
 endfunction"}}}
 
 function! s:global_caching()"{{{

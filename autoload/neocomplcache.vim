@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Feb 2010
+" Last Modified: 15 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.09, for Vim 7.0
+" Version: 4.10, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -75,7 +75,7 @@ function! neocomplcache#enable() "{{{
         \'\k\+')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'filename',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=]\)\+')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,int_gauche,int_clisp', 
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,int_gosh,int_clisp', 
         \'(\?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby,int_irb',
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\.\|\%(\h\w*::\)\+\)\?\h\w*[!?]\?\%(\s*\%(\%(()\)\?\s*\%(do\|{\)\%(\s*|\)\?\|()\?\)\)\?')
@@ -175,13 +175,13 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'html,xml', 'xhtml')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'xhtml', 'html,xml')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'help', 'vim')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'lingr-say', 'lingr-messages')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'lingr-say', 'lingr-messages,lingr-members')
 
   " Interactive filetypes.
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_irb', 'ruby')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_ghci,int_hugs', 'haskell')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_python,int_ipython', 'python')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_gauche', 'scheme')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_gosh', 'scheme')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_clisp', 'lisp')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_erl', 'erlang')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_zsh', 'zsh')
@@ -341,7 +341,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       return -1
     endif
     let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-          \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
+          \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
     return s:cur_keyword_pos
   else
@@ -423,6 +423,49 @@ function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
       endif
     endfor
   endif
+
+  return ret
+endfunction"}}}
+function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
+  let l:ret = []
+  
+  let l:cur_keyword_str = a:cur_keyword_str[2:]
+  let l:max_str2 = len(l:cur_keyword_str)
+  let l:len = len(a:cur_keyword_str)
+  let m = range(l:max_str2+1)
+  for keyword in filter(a:list, 'len(v:val.word) >= '.l:max_str2)
+    let l:str1 = keyword.word[2 : l:len-1]
+    
+    let i = 0
+    while i <= l:max_str2+1
+      let m[i] = range(l:max_str2+1)
+      
+      let i += 1
+    endwhile
+    let i = 0
+    while i <= l:max_str2+1
+      let m[i][0] = i
+      let m[0][i] = i
+      
+      let i += 1
+    endwhile
+    
+    let i = 1
+    let l:max = l:max_str2 + 1
+    while i < l:max
+      let j = 1
+      while j < l:max
+        let m[i][j] = min([m[i-1][j]+1, m[i][j-1]+1, m[i-1][j-1]+(l:str1[i-1] != l:cur_keyword_str[j-1])])
+
+        let j += 1
+      endwhile
+
+      let i += 1
+    endwhile
+    if m[-1][-1] <= 2
+      call add(l:ret, keyword)
+    endif
+  endfor
 
   return ret
 endfunction"}}}
@@ -819,7 +862,7 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
 
   let s:skipped = 0
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-        \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
+        \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'
@@ -916,6 +959,7 @@ function! s:complete()"{{{
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
+        \ || l:cur_text =~ '▽[あ-ん]*\*\?[[:alpha:]]\+$'
     let s:complete_words = []
     return
   endif
@@ -1061,7 +1105,7 @@ function! s:integrate_completion(complete_result)"{{{
       for l:keyword in l:result.complete_words
         let l:word = l:keyword.word
         let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
-        let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:prev_frequencies[l:word] : 0
+        let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:rank * l:prev_frequencies[l:word] : l:rank
       endfor
     endif
 
