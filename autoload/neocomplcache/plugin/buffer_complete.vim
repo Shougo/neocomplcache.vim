@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Feb 2010
+" Last Modified: 15 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -477,9 +477,9 @@ function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
     endif
 
     " Check overflow.
-    if bufwinnr(a:srcname) >= 0
+    if a:srcname == bufnr('%')
       " Update endline.
-      let l:source.end_line = len(getbufline(a:srcname, 1, '$'))
+      let l:source.end_line = line('$')
     endif
     
     if l:start_line > l:source.end_line && !s:check_changed_buffer(a:srcname)

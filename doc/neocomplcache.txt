@@ -616,6 +616,8 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved lingr-vim support.
     - Implemented spell_complete.vim(experimental)
     - Improved skk.vim support.
+    - Improved lisp keyword pattern.
+    - Added clojure support.
     
 ChangeLog NeoComplCache 4.00-: {{{
    4.09:

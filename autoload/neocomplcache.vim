@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2010
+" Last Modified: 17 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -75,8 +75,8 @@ function! neocomplcache#enable() "{{{
         \'\k\+')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'filename',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=]\)\+')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,int_gosh,int_clisp', 
-        \'(\?[[:alpha:]*@$%^&_=<>~.][[:alnum:]+*@$%^&_=<>~.-]*[!?]\?')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,clojure,int_gosh,int_clisp,int_clojure', 
+        \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby,int_irb',
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\.\|\%(\h\w*::\)\+\)\?\h\w*[!?]\?\%(\s*\%(\%(()\)\?\s*\%(do\|{\)\%(\s*|\)\?\|()\?\)\)\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'eruby',
@@ -192,6 +192,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_perlsh', 'perl')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_perl6', 'perl6')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_ocaml', 'ocaml')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_clojure', 'clojure')
   "}}}
 
   " Initialize member prefix patterns."{{{
