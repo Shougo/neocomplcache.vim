@@ -612,6 +612,7 @@ CHANGELOG					*neocomplcache-changelog*
 2010-02-19
     * Fixed snippets expand bug.
     * Fixed interactive filetype.
+    * Fixed manual completion bug.
 
 2010-02-18
     * Fixed filename pattern.

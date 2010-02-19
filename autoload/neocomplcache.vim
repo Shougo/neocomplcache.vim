@@ -299,20 +299,19 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     " Get cursor word.
     let l:cur_text = s:get_cur_text()
     let s:old_text = l:cur_text
+    let s:complete_words = []
 
     " Try complfuncs completion."{{{
     let l:complete_result = {}
     for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
-
       let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
       if l:cur_keyword_pos < 0
         " Try append 'a'.
         let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text.'a'])
       endif
 
-      if l:cur_keyword_pos >= 0
-        let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-
+      let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+      if l:cur_keyword_pos >= 0 && len(l:cur_keyword_str) >= g:NeoComplCache_ManualCompletionStartLength
         " Save options.
         let l:ignorecase_save = &ignorecase
 
