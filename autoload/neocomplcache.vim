@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2010
+" Last Modified: 19 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,28 +74,28 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'default',
         \'\k\+')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'filename',
-        \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=]\)\+')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,clojure,int_gosh,int_clisp,int_clojure', 
+        \'\%(\\[^[:alnum:].-]\|[[:alnum:]:@/._+,#$%~=-]\)\+')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,clojure,int-gosh,int-clisp,int-clojure', 
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby,int_irb',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby,int-irb',
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\.\|\%(\h\w*::\)\+\)\?\h\w*[!?]\?\%(\s*\%(\%(()\)\?\s*\%(do\|{\)\%(\s*|\)\?\|()\?\)\)\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'eruby',
         \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|%(\@\@|[:$@])\h\w*|%(\.|%(\h\w*::)+)?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|->\(\h\w*\%(\s*()\?\)\?\)\?\|\%(\h\w*::\)*\h\w*\%(\s*()\?\)\?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl,int_perlsh',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl,int-perlsh',
         \'<\h\w*>\?\|[$@%&*]\h\w*\|\h\w*\%(::\h\w*\)*\%(\s*()\?\)\?\|->\h\w*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl6,int_perl6',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl6,int-perl6',
         \'<\h\w*>\?\|[$@%&][!.*?]\?\h\w*\|\h\w*\%(::\h\w*\)*\%(\s*()\?\)\?\|\.\h\w*\%(()\?\)\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
         \'\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
         \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:]*\*\?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh,int_zsh,int_bash,int_sh',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh,int-zsh,int-bash,int-sh',
         \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s*\[|\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vimshell',
         \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ps1,int_powershell',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ps1,int-powershell',
         \'\v\[\h%([[:alnum:]_.]*\]::)?|[$%@.]?[[:alpha:]_.:-][[:alnum:]_.:-]*%(\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'c',
         \'\v^\s*#\s*\h\w*|%(\.|-\>)?\h\w*%(\s*\(\)?)?')
@@ -107,7 +107,7 @@ function! neocomplcache#enable() "{{{
         \'\v^\s*#\s*\h\w*|%(\.|-\>|%(\h\w*::)+)?\h\w*%(\s*\(\)?|\<\>?|:)?|\@\h\w*%(\s*\(\)?)?|\(\s*\h\w*\s*\*?\s*\)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'd',
         \'\v[.]?\h\w*%(!?\s*\(\)?)?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'python,int_python,int_ipython',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'python,int-python,int-ipython',
         \'\v[.]?\h\w*%(\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'cs',
         \'\v[.]?\h\w*%(\s*%(\(\)?|\<))?')
@@ -117,11 +117,11 @@ function! neocomplcache#enable() "{{{
         \'\v[.]?\h\w*%(\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'awk',
         \'\v\h\w*%(\s*\(\)?)?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell,int_ghci',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell,int-ghci',
         \'[[:alpha:]_''][[:alnum:]_'']*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml,int_ocaml',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml,int-ocaml',
         \'[~]\?[[:alpha:]_''][[:alnum:]_'']*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang,int_erl',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang,int-erl',
         \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'html,xhtml,xml,markdown',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
@@ -141,9 +141,9 @@ function! neocomplcache#enable() "{{{
         \'\v[[:alpha:]_.-][[:alnum:]_.-]*')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'scala',
         \'\v[.]?\h\w*%(\s*\(\)?|\[)?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'int_termtter',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'int-termtter',
         \'\h[[:alnum:]_-]*\|@[[:alnum:]_+-]\+\|\$\a\+\|#\h\w*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'dosbatch,int_cmdproxy',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'dosbatch,int-cmdproxy',
         \'\$\w+\|[[:alpha:]_./-][[:alnum:]_.-]*')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vb',
         \'[.]\?\a[[:alnum:]]*\%(()\?\)\?\|#\a[[:alnum:]]*')
@@ -178,21 +178,21 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'lingr-say', 'lingr-messages,lingr-members')
 
   " Interactive filetypes.
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_irb', 'ruby')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_ghci,int_hugs', 'haskell')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_python,int_ipython', 'python')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_gosh', 'scheme')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_clisp', 'lisp')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_erl', 'erlang')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_zsh', 'zsh')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_bash', 'bash')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_sh', 'sh')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_cmdproxy', 'dosbatch')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_powershell', 'powershell')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_perlsh', 'perl')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_perl6', 'perl6')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_ocaml', 'ocaml')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int_clojure', 'clojure')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-irb', 'ruby')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-ghci,int-hugs', 'haskell')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-python,int-ipython', 'python')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-gosh', 'scheme')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-clisp', 'lisp')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-erl', 'erlang')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-zsh', 'zsh')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-bash', 'bash')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-sh', 'sh')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-cmdproxy', 'dosbatch')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-powershell', 'powershell')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-perlsh', 'perl')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-perl6', 'perl6')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-ocaml', 'ocaml')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-clojure', 'clojure')
   "}}}
 
   " Initialize member prefix patterns."{{{

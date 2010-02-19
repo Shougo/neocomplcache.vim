@@ -609,6 +609,13 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-02-19
+    * Fixed snippets expand bug.
+    * Fixed interactive filetype.
+
+2010-02-18
+    * Fixed filename pattern.
+
    4.10:
     - Fixed interactive Gauche support.
     - Added omni_complete and vim_complete rank.
