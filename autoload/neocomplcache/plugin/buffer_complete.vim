@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2010
+" Last Modified: 02 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -510,6 +510,7 @@ function! s:check_source()"{{{
       if (!has_key(s:sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
             \&& !has_key(s:caching_disable_list, l:bufnumber)
             \&& (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
+            \&& l:bufname !=# '[Command line]'
             \&& getbufvar(l:bufnumber, '&readonly') == 0
             \&& getfsize(l:bufname) < g:NeoComplCache_CachingLimitFileSize
         " Caching.

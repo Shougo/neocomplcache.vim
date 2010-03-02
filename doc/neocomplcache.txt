@@ -609,6 +609,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-03-02
+    * Caching disable when bufname is '[Command line]'
+
 2010-02-19
     * Fixed snippets expand bug.
     * Fixed interactive filetype.
