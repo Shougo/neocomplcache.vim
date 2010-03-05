@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 4.09
+Version: 4.10
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -31,6 +31,7 @@ Interface		|neocomplcache-interface|
   Key mappings		  |neocomplcache-key-mappings|
 Examples		|neocomplcache-examples|
 Plugins			|neocomplcache-plugins|
+Snippet			|neocomplcache-snippet|
 Create plugin		|neocomplcache-create-plugin|
 Changelog		|neocomplcache-changelog|
 
@@ -544,6 +545,139 @@ vim_complete.vim					*vim_complete*
 		ている補完よりも、高機能なものにすることが目標である。 現在、
 		ローカル変数やスクリプト変数、関数やコマンドの解析が実装され
 		ている。
+
+==============================================================================
+SNIPPET							*neocomplcache-snippet-completion*
+
+neocomplcacheではスニペット機能を内蔵しています。 スニペットはsnipMate.vim風
+に記述できるので、簡単に移植できるでしょう。
+>
+	snippet     if
+	abbr        if endif
+	prev_word   '^'
+	if ${1:condition}
+	    ${2}
+	endif
+<
+例えば上記のようなファイルを
+'autoload/neocomplcache/snippet_complete/vim.snip' として保 存すると、vimファ
+イルタイプを開いたときに自動的に読み込みます。 #を行頭に書くとコメントで、
+空行は無視されます。 snippet の後には補完するために入力する文字列、先頭に空
+白文字があると 補完されるキーワード、abbrはポップアップメニューに表示され る
+略語（省略可）、prev_wordは優先して補完する文脈を,で区切っ て''で囲んで指定
+します（省略可）。ちなみに'^'は文の先頭とい う意味になります。 スニペットファ
+イルのシンタックスファイル を作成したので、それぞれの要素が色分けされます。
+詳しくは autoload/neocomplcache/snippet_completeにあるスニペット補完 ファイ
+ルを参照してください。 最近のsnipMateではシンタックスファイルが付属していま
+すが、 neocomplcacheが使用しているもの の方が高機能なので、そちらを利用して
+ください。
+
+snipMateと違って、外部スニペットのインクルードも使えます。
+	include c
+例えばこのように記述すると、そのスニペットファイルにc用のス ニペットを加えて
+補完候補とします。 共通部分を補完するのに便 利です。 ただし再帰的処理を行っ
+ているので、無限ループに陥らないように注意してください。
+
+snipMateのように、``を用いたevalも動作します。
+>
+	snippet     hoge
+	prev_word   '^'
+	    `expand("%")`
+<
+例えばこのように記述すると、現在開いているバッファ名を補完で きます。 ただし
+補完候補を展開するときに評価を行うため、副作 用には十分注意してください。
+
+簡単にスニペットファイルを編集できるように、 |:NeoComplCacheEditSnippets|と
+いうコマンドを用意しています。 このコマンドを用いると、filetypeのスニペット
+補完 ファイルを 簡単に編集することができます。 filetypeを省略すると、
+&filetypeとなります。保存すると自動的に再キャッシュさ れるの で、さらに便利
+です。
+>
+	imap <C-l>    <Plug>(neocomplcache_snippets_expand)
+	smap <C-l>    <Plug>(neocomplcache_snippets_expand)
+<
+のようにplugin keymappingを定義しておけば、<C-l>でスニペッ トを展開できます。
+展開時にインデントもきちんとなされるので便利です。
+
+snipMate風のプレースホルダにも対応しています。
+>
+	snippet     if
+	abbr        if endif
+	prev_word   '^'
+	    if ${1:condition}
+	        ${2}
+	    endif
+<
+${1}が最初に入力する単語です。スニペットの展開時に自動的に移動します。 もう
+一回|<Plug>(neocomplcache_snippets_expand)|を押すと、${2}, ${3}, ...に移動し
+ます。 ${1:condition}はデフォルトでconditionという単語が選択された状態になり
+ます。 スニペットの中でスニペットを補完したりといった複雑な場合も、ある程度
+直感的に動作するようになっています。 プレースホルダはソースコード中でも色分
+けされます。
+
+vnoremapやvmap, mapはselect modeでも有効になるので、 変なマッピングをしてい
+ると、デフォルト値の選択時に上手く文字が入力できなくなります。 .vimrcにその
+ような記述があれば、xnoremapやxmapに修正することをオススメします。
+
+ユーザが定義するスニペットの保存場所は自由に指定できます。
+指定するときは、
+	let g:NeoComplCache_SnippetsDir = $HOME.'/snippets'
+のように.vimrcに記述してください。
+|:NeoComplCacheEditSnippets|では、|g:NeoComplCache_SnippetsDir|を優先して読
+み込みます。
+
+展開可能かどうかを判断する関数として、
+|neocomplcache#snippets_complete#expandable()|を追加しました。 これを使えば、
+	imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
+のように設定でき、展開可能でない場合は他の機能にキーバインドを割り当てること
+が出来ます。
+
+複数回展開が必要なスニペットは表示が変わり、[Snippet]が<Snippet>に変化します。
+
+Ver.2.39より、スニペット名が同じスニペットを定義した場合、上書きされるように
+なりました。 インクルードしたスニペットや標準のスニペットを書き換えるときに
+便利です。
+
+Ver.2.57より、どのファイルタイプでも読み込まれる、'_.snip'を追加しました。
+さらに、snipMate形式のスニペットファイルもそのまま読み込めます。
+
+alias hoge hogera hogehoge
+のように空白で区切って指定すると、スニペットの別名定義ができます。
+スニペット名を直接入力するときに、覚えることが簡単になるので便利です。
+
+Ver.2.76より、プレースホルダの同期を実装。 ${1}は$1のプレースホルダに同期さ
+れます。 これでsnipMateのスニペットとの互換性も上がりました。 即座に同期され
+るsnipMateと違い、次にジャンプするときに同期されるので注意。 同期させる値に
+は改行を含ませることはできないことにも注意してください。 ${0}は最後に展開さ
+れるので、最後に入力する部分に指定すると良いです。
+
+スニペットの一覧を表示するには|:NeoComplCachePrintSnippets|コマンドを実行します。
+スニペットを忘れたときに便利です。
+>
+	snippet ${1:trigger} ${2:description}
+	${3}
+<
+で表される、snipMateのmulti snippetにも対応。 ただし英数字でないスニペット名
+は、_に変換されます。
+
+スニペット補完はSame filetypeや、最後に記号を含むスニペットにも対応していま
+す。
+>
+	snippet div
+	<div ${1:id="${2:someid\}"}>${3}</div>${4}
+<
+プレースホルダの中にプレースホルダを書くことができま す。ただ し、}はエスケー
+プしてください。 \がエスケープ文字になっているので、\を初期値に入れるとき
+は\\とする必要があります。
+>
+	snippet if
+		if (${1:/* condition */}) {
+			${2:// code...}
+		}
+<
+このように、ハードタブを使ってインデントすると、 indent pluginの設定を使わず
+にインデントを復元します。 phpなど、indent pluginが非力な言語を使うときに便
+利です。snipMateはハードタブ固定なので、互換性も上がりました。
 
 ==============================================================================
 CREATE PLUGIN					*neocomplcache-create-plugin*

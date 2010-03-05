@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2010
+" Last Modified: 05 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,11 +93,10 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
     endtry
 
     if l:max_lines > 3000
-        call neocomplcache#print_caching('Caching done.')
-
         if g:NeoComplCache_CachingPercentInStatusline
             let &l:statusline = l:statusline_save
         endif
+        redraw
     endif
 
     return l:keyword_lists
@@ -188,11 +187,10 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
     endfor"}}}
 
     if l:max_lines > 400
-        call neocomplcache#print_caching('Caching done.')
-
         if g:NeoComplCache_CachingPercentInStatusline
             let &l:statusline = l:statusline_save
         endif
+        redraw
     endif
 
     return l:keyword_lists
@@ -302,11 +300,10 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
     endtry
 
     if l:max_lines > 1000
-        call neocomplcache#print_caching('Caching done.')
-
         if g:NeoComplCache_CachingPercentInStatusline
             let &l:statusline = l:statusline_save
         endif
+        redraw
     endif
 
     if a:filetype != '' && has_key(g:NeoComplCache_TagsFilterPatterns, a:filetype)
