@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.10, for Vim 7.0
+" Version: 4.11, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.

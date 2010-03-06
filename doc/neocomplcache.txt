@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.10
+Version: 4.11
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -609,6 +609,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-03-06
+    * Improved frequency garbage collect.
+    * Improved buffer caching.
+
 2010-03-05
     * Improved caching print.
     * Incleased omni completion rank.
@@ -625,6 +629,7 @@ CHANGELOG					*neocomplcache-changelog*
 2010-02-18
     * Fixed filename pattern.
 
+ChangeLog NeoComplCache 4.00-: {{{
    4.10:
     - Fixed interactive Gauche support.
     - Added omni_complete and vim_complete rank.
@@ -635,7 +640,6 @@ CHANGELOG					*neocomplcache-changelog*
     - Improved lisp keyword pattern.
     - Added clojure support.
     
-ChangeLog NeoComplCache 4.00-: {{{
    4.09:
     - Improved syntax detect in snippets_complete.
     - Improved NeoComplCachePrintSnippets command.
