@@ -609,6 +609,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-03-11
+    * Fixed quickmatch bug.
+
 2010-03-06
     * Improved frequency garbage collect.
     * Improved buffer caching.

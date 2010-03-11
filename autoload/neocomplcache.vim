@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Feb 2010
+" Last Modified: 11 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1177,9 +1177,24 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
   let l:dup_check = {}
   let l:num = 0
   let l:qlist = []
-  let l:key = 'asdfghjklqwertyuiopzxcvbnm1234567890'
+  let l:key = 
+        \'asdfghjkl;'.
+        \'qwertyuiop'.
+        \'zxcvbnm,./'.
+        \'1234567890'
+
+  " Save options.
+  let l:ignorecase_save = &ignorecase
+
+  if g:NeoComplCache_SmartCase && a:cur_keyword_str =~ '\u'
+    let &ignorecase = 0
+  else
+    let &ignorecase = g:NeoComplCache_IgnoreCase
+  endif
+
   for keyword in a:list
-    if keyword.word != '' && neocomplcache#head_match(keyword.word, a:cur_keyword_str) 
+    if keyword.word != '' && 
+          \(keyword.word == a:cur_keyword_str || keyword.word[: len(a:cur_keyword_str)-1] == a:cur_keyword_str)
           \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
       let l:dup_check[keyword.word] = 1
       let l:keyword = deepcopy(l:keyword)
@@ -1189,6 +1204,9 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
       let l:num += 1
     endif
   endfor
+  
+  let &ignorecase = l:ignorecase_save
+  
   " Trunk too many items.
   let l:qlist = l:qlist[: len(s:quickmatch_table)]
 
