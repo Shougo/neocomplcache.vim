@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Mar 2010
+" Last Modified: 16 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,6 @@ function! neocomplcache#enable() "{{{
     " Auto complete events
     autocmd CursorMovedI * call s:complete()
     autocmd InsertLeave * call s:insert_leave()
-    autocmd BufWinLeave * call s:bufwin_leave()
   augroup END "}}}
 
   " Initialize"{{{
@@ -51,8 +50,6 @@ function! neocomplcache#enable() "{{{
   let s:prev_numbered_list = []
   let s:cur_text = ''
   let s:start_time = reltime()
-  let s:is_fast_mode = 0
-  let s:old_order = g:NeoComplCache_AlphabeticalOrder
   "}}}
 
   " Initialize complfuncs table."{{{
@@ -351,7 +348,9 @@ endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{
   if a:findstart
-    return s:cur_keyword_pos
+    let l:cur_keyword_pos = s:cur_keyword_pos
+    let s:cur_keyword_pos = -1
+    return l:cur_keyword_pos
   else
     " Restore option.
     let &l:completefunc = 'neocomplcache#manual_complete'
@@ -391,7 +390,9 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   return l:keyword_escape
 endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
-  if neocomplcache#check_match_filter(a:cur_keyword_str)
+  if a:cur_keyword_str == ''
+    return a:list
+  elseif neocomplcache#check_match_filter(a:cur_keyword_str)
     " Match filter.
     return filter(a:list, printf("v:val.word =~ %s", 
           \string('^' . neocomplcache#keyword_escape(a:cur_keyword_str))))
@@ -1046,12 +1047,6 @@ function! s:complete()"{{{
       if neocomplcache#check_skip_time()
         echo 'Skipped auto completion'
         let &l:completefunc = 'neocomplcache#manual_complete'
-
-        " Enable fast mode.
-        let s:is_fast_mode = 1
-        let s:old_order = g:NeoComplCache_AlphabeticalOrder
-        let g:NeoComplCache_AlphabeticalOrder = 1
-
         return
       endif
     endif
@@ -1129,13 +1124,6 @@ function! s:insert_leave()"{{{
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
-endfunction"}}}
-function! s:bufwin_leave()"{{{
-  if s:is_fast_mode
-    " Disable fast mode.
-    let s:is_fast_mode = 0
-    let g:NeoComplCache_AlphabeticalOrder = s:old_order
-  endif
 endfunction"}}}
 function! s:remove_next_keyword(plugin_name, list)"{{{
   let l:list = a:list

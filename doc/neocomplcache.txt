@@ -609,6 +609,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-03-16
+    * Deleted obsolute variables.
+    * Improved manual complete.
+    * Improved keyword_filter.
+    * Improved vim_complete.
+
 2010-03-11
     * Fixed quickmatch bug.
 
