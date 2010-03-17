@@ -24,10 +24,12 @@
 " }}}
 "=============================================================================
 
-let s:internal_candidates_list = {}
-let s:global_candidates_list = {}
-let s:script_candidates_list = {}
-let s:local_candidates_list = {}
+if !exists('s:internal_candidates_list')
+  let s:internal_candidates_list = {}
+  let s:global_candidates_list = {}
+  let s:script_candidates_list = {}
+  let s:local_candidates_list = {}
+endif
 
 function! neocomplcache#complfunc#vim_complete#helper#script_caching_check()"{{{
   if empty(s:global_candidates_list)
@@ -101,8 +103,8 @@ function! neocomplcache#complfunc#vim_complete#helper#buffer(cur_text, cur_keywo
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#command(cur_text, cur_keyword_str)"{{{
-  let l:list = s:internal_candidates_list.commands
-  let l:list += s:global_candidates_list.commands
+  let l:list = neocomplcache#keyword_filter(s:internal_candidates_list.commands, a:cur_keyword_str)
+  let l:list += neocomplcache#keyword_filter(s:global_candidates_list.commands, a:cur_keyword_str)
 
   if a:cur_keyword_str =~ '^en\%[d]'
     let l:list += s:get_endlist()
