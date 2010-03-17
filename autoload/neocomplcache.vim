@@ -46,6 +46,8 @@ function! neocomplcache#enable() "{{{
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
+  let s:old_cur_keyword_pos = -1
+  let s:old_complete_words = []
   let s:update_time = &updatetime
   let s:prev_numbered_list = []
   let s:cur_text = ''
@@ -348,14 +350,16 @@ endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{
   if a:findstart
-    let l:cur_keyword_pos = s:cur_keyword_pos
+    let s:old_cur_keyword_pos = s:cur_keyword_pos
     let s:cur_keyword_pos = -1
-    return l:cur_keyword_pos
+    return s:old_cur_keyword_pos
   else
     " Restore option.
     let &l:completefunc = 'neocomplcache#manual_complete'
+    let s:old_complete_words = s:complete_words
+    let s:complete_words = []
 
-    return s:complete_words
+    return s:old_complete_words
   endif
 endfunction"}}}
 
@@ -975,6 +979,7 @@ function! s:complete()"{{{
 
     if !empty(l:complete_words)
       let s:complete_words = l:complete_words
+      let s:cur_keyword_pos = s:old_cur_keyword_pos
       let s:prev_numbered_list = []
 
       " Set function.
@@ -986,13 +991,14 @@ function! s:complete()"{{{
     let s:prev_numbered_list = []
     let l:is_quickmatch_list = 0
   elseif g:NeoComplCache_EnableQuickMatch 
-        \&& !empty(s:complete_words)
+        \&& !empty(s:old_complete_words)
         \&& l:cur_text =~ l:quickmatch_pattern.'$'
         \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
         \&& neocomplcache#head_match(l:cur_text, l:save_old)
     " Print quickmatch list.
     let l:norrowing = l:cur_text[len(l:save_old) : -len(l:quickmatch_pattern)-1]
-    let s:complete_words = s:make_quickmatch_list(s:complete_words, s:cur_keyword_str . l:norrowing) 
+    let s:cur_keyword_pos = s:old_cur_keyword_pos
+    let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str . l:norrowing) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
