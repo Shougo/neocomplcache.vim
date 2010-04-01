@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2010
+" Last Modified: 01 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -976,20 +976,17 @@ function! s:complete()"{{{
   if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9;,./]$'
     " Select quickmatch list.
     let l:complete_words = s:select_quickmatch_list(l:cur_text[-1:])
+    let s:prev_numbered_list = []
 
     if !empty(l:complete_words)
       let s:complete_words = l:complete_words
       let s:cur_keyword_pos = s:old_cur_keyword_pos
-      let s:prev_numbered_list = []
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
       call feedkeys("\<C-x>\<C-u>", 'n')
       return 
     endif
-
-    let s:prev_numbered_list = []
-    let l:is_quickmatch_list = 0
   elseif g:NeoComplCache_EnableQuickMatch 
         \&& !empty(s:old_complete_words)
         \&& l:cur_text =~ l:quickmatch_pattern.'$'
@@ -1003,11 +1000,12 @@ function! s:complete()"{{{
     let &l:completefunc = 'neocomplcache#auto_complete'
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
     return
-  else
-    let s:prev_numbered_list = []
-    let l:is_quickmatch_list = 0
   endif
+  
+  let l:is_quickmatch_list = 0
+  let s:prev_numbered_list = []
   let s:complete_words = []
+  let s:old_complete_words = []
 
   echo ''
   redraw
