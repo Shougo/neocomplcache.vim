@@ -611,6 +611,8 @@ CHANGELOG					*neocomplcache-changelog*
 
 2010-04-06
     * Improved mappings dictionary.
+    * Lazy caching environment variables.
+    * Added variables dictionary.
 
 2010-04-01
     * Fixed quickmatch bug.

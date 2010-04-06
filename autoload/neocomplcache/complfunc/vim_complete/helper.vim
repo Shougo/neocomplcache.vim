@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2010
+" Last Modified: 06 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -119,6 +119,11 @@ function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#environment(cur_text, cur_keyword_str)"{{{
+  if !has_key(s:global_candidates_list, 'environments')
+    " Caching.
+    call s:global_candidates_list.environments = s:get_envlist()
+  endif
+  
   return s:global_candidates_list.environments
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#event(cur_text, cur_keyword_str)"{{{
@@ -206,11 +211,10 @@ function! s:global_caching()"{{{
   " Caching.
 
   let s:global_candidates_list.commands = s:get_cmdlist()
-  let s:global_candidates_list.variables = s:get_variablelist()
+  let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist(), 'force')
   let s:global_candidates_list.functions = s:get_functionlist()
   let s:global_candidates_list.augroups = s:get_augrouplist()
   let s:global_candidates_list.mappings = s:get_mappinglist()
-  let s:global_candidates_list.environments = s:get_envlist()
 
   let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f')
   let s:internal_candidates_list.options = s:caching_from_dict('options', 'o')
