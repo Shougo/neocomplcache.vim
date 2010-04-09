@@ -1,193 +1,191 @@
-Next [count] [++opt] [+cmd]
-Print [count] [flags]
-append[!]
-abbreviate
-abclear
-aboveleft {cmd}
-all[!] [N]
-amenu
-anoremenu
-args
-argadd {name} ..
-argdelete{pattern} ..
-argedit
-argdo[!] {cmd}
-argglobal
-arglocal[!] [++opt] [+cmd] {arglist}
-argument[count] [++opt] [+cmd]
-ascii
-autocmd [group] {event} {pat} [nested] {cmd}
-augroup {name}
-augroup! {name}
-aunmenu
-buffer[!] [N]
-bNext[!] [N]
-ball [N]
-badd [+lnum] {fname}
-bdelete[!] N1 N2 ...
-behave {model}
-belowright {cmd}
-bfirst
-blast[!]
-bmodified[!] [N]
-bnext[!] [N]
-botright {cmd}
-bprevious[!] [N]
-brewind[!]
-break
-breakadd func [lnum] {name}
-breakdel {nr}
-breaklist
-browse {command}
-bufdo[!] {cmd}
-buffers[!]
-bunload[!] N1 N2 ...
-bwipeout[!] N1 N2 ...
-change[!]
-cNext[!]
-cNfile[!]
-cabbrev [<expr>] [lhs] [rhs]
-cabclear
-caddbuffer [bufnr]
-caddexpr {expr}
-caddfile
-call
-catch
-cbuffer
-cc
-cclose
-cd
-center
-cexpr
-cfile
-cfirst
-cgetbuffer
-cgetexpr
-cgetfile
+N[ext]          [count] [++opt] [+cmd]
+P[rint]         [count] [flags]
+a[ppend]
+ab[breviate]
+abc[lear]
+abo[veleft]     {cmd}
+al[l]           [N]
+am[enu]
+an[oremenu]     {menu}
+ar[gs]
+arga[dd]        {name} ..
+argd[elete]     {pattern} ..
+arge[dit]       [++opt] [+cmd] {name}
+argdo           {cmd}
+argg[lobal]     [++opt] [+cmd] {arglist}
+argl[ocal]      [++opt] [+cmd] {arglist}
+argu[ment]      [count] [++opt] [+cmd]
+as[cii]
+au[tocmd]       [group] {event} {pat} [nested] {cmd}
+aug[roup]       {name}
+aun[menu]       {menu}
+b[uffer]        {bufname}
+bN[ext]         [N]
+ba[ll]          [N]
+bad[d]          [+lnum] {fname}
+bd[elete]       {bufname}
+be[have]        {model}
+bel[owright]    {cmd}
+bf[irst]
+bl[ast]
+bm[odified]     [N]
+bn[ext]         [N]
+bo[tright]      {cmd}
+bp[revious]     [N]
+br[ewind]
+brea[k]
+breaka[dd]      func [lnum] {name}
+breakd[el]      {nr}
+breakl[ist]
+bro[wse]        {command}
+bufdo[]         {cmd}
+buffers[]
+bun[load]       {bufname}
+bw[ipeout]      {bufname}
+c[hange]
+cN[ext]
+cNf[ile]
+ca[bbrev]       [<expr>] [lhs] [rhs]
+cabc[lear]
+caddb[uffer]    [bufnr]
+cad[dexpr]      {expr}
+caddf[ile]      [errorfile]
+cal[l]          {name}([arguments])
+cat[ch]         /{pattern}/
+cb[uffer][]     [bufnr]
+cc              [nr]
+ccl[ose]
+cd[]            {path}
+ce[nter]        [width]
+cex[pr]         {expr}
+cf[ile]         [errorfile]
+cfir[st]        [nr]
+cgetb[uffer]    [bufnr]
+cgete[xpr]      {expr}
+cg[etfile]      [errorfile]
 changes
-chdir
-checkpath
-checktime
-clist
-clast
-close
-cmap
-cmapclear
-cmenu
-cnext
-cnewer
-cnfile
-cnoremap
-cnoreabbrev
-cnoremenu
-copy
-colder
-colorscheme
-command
-comclear
-compiler
-continue
-confirm
-copen
-cprevious
-cpfile
-cquit
-crewind
-cscope
-cstag
-cunmap
-cunabbrev
-cunmenu
-cwindow
-delete
-delmarks
-debug
-debuggreedy
-delcommand
-delfunction
-diffupdate
-diffget
-diffoff
-diffpatch
-diffput
-diffsplit
+chd[ir]         [path]
+che[ckpath]
+checkt[ime]
+cl[ist]         [from] [, [to]]
+cla[st]         [nr]
+clo[se]
+cm[ap]          {lhs} {rhs}
+cmapc[lear]
+cme[nu]         {menu}
+cn[ext]
+cnew[er]        [count]
+cnf[ile]
+cno[remap]      {lhs} {rhs}
+cnorea[bbrev]   [<expr>] [lhs] [rhs]
+cnoreme[nu]     {menu}
+co[py]          {address}
+col[der]        [count]
+colo[rscheme]   {name}
+com[mand]       [{attr}...] {cmd} {rep}
+comc[lear]
+comp[iler]      {name}
+con[tinue]
+conf[irm]       {command}
+cope[n]         [height]
+cp[revious]
+cpf[ile]
+cq[uit]
+cr[ewind]       [nr]
+cs[cope]
+cst[ag]
+cu[nmap]        {lhs}
+cuna[bbrev]     {lhs}
+cunme[nu]       {menu}
+cw[indow]       [height]
+d[elete]        [x]
+delm[arks]      {marks}
+deb[ug]         {cmd}
+debugg[reedy]
+del[command]    {cmd}
+delf[unction]   {name}
+diffu[pdate]
+diffg[et]       [bufspec]
+diffo[ff]
+diffp[atch]     {patchfile}
+diffpu[t]       [bufspec]
+diffs[plit]     {filename}
 diffthis
-digraphs
-display
-djump
-dlist
-doautocmd
-doautoall
-drop
-dsearch
-dsplit
-edit
-earlier
-echo
-echoerr
-echohl
-echomsg
-echon
-else
-elseif
-emenu
-endif
-endfor
-endfunction
-endtry
-endwhile
-enew
-ex
-execute
-exit
-exusage
-file
-files
-filetype
-find
-finally
-finish
-first
-fixdel
-fold
-foldclose
-folddoopen
-folddoclosed
-foldopen
-for
-function
-global
-goto
-grep
-grepadd
-gui
-gvim
-hardcopy
-help
-helpfind
-helpgrep
-helptags
-highlight
-hide
-history
-insert
-iabbrev
-iabclear
-if
-ijump
+dig[raphs]      {char1}{char2} {number} ...
+di[splay]       [arg]
+dj[ump]         [count] [/]string[/]
+dl[ist]         [/]string[/]
+do[autocmd]     [group] {event} [fname]
+doautoa[ll]     [group] {event} [fname]
+dr[op]          [++opt] [+cmd] {file} ..
+ds[earch]       [count] [/]string[/]
+dsp[lit]        [count] [/]string[/]
+e[dit]          [++opt] [+cmd] {file}
+ea[rlier]       {count} | {N}s | {N}h
+ec[ho]          {expr1} ..
+echoe[rr]       {expr1} ..
+echoh[l]        {expr1} ..
+echom[sg]       {expr1} ..
+echon           {expr1} ..
+el[se]
+elsei[f]        {expr1}
+em[enu]         {menu}
+en[dif]
+endfo[r]
+endf[unction]
+endt[ry]
+endw[hile]
+ene[w]
+ex              [++opt] [+cmd] [file]
+exe[cute]       {expr1} ..
+exi[t]          [++opt] [file]
+exu[sage]
+f[ile]
+files[]
+filet[ype]
+fin[d]          [++opt] [+cmd] {file}
+fina[lly]
+fini[sh]
+fir[st]         [++opt] [+cmd]
+fix[del]
+fo[ld]
+foldc[lose]
+foldd[oopen]    {cmd}
+folddoc[losed]  {cmd}
+foldo[pen]
+for             {var} in {list}
+fu[nction]      {name}([arguments]) [range] [abort] [dict]
+go[to]          [count]
+gr[ep]          [arguments]
+grepa[dd]       [arguments]
+gu[i]           [++opt] [+cmd] [-f|-b] [files...]
+gv[im]          [++opt] [+cmd] [-f|-b] [files...]
+ha[rdcopy]      [arguments]
+h[elp]          {subject}
+helpf[ind]
+helpg[rep]      {pattern}[@xx]
+helpt[ags]      [++t] {dir}
+hi[ghlight]     [default] {group-name} {key}={arg} ..
+hid[e]          {cmd}
+his[tory]       [{name}] [{first}][, [{last}]]
+i[nsert]
+ia[bbrev]       [<expr>] [lhs] [rhs]
+iabc[lear]
+if              {expr1}
+ij[ump][]       [count] [/]pattern[/]
 ilist
 imap
 imapclear
-imenu
+imenu           {menu}
 inoremap
 inoreabbrev
-inoremenu
+inoremenu       {menu}
 intro
 isearch
 isplit
 iunmap
 iunabbrev
-iunmenu
+iunmenu         {menu}
 join
 jumps
 k
@@ -252,7 +250,7 @@ map
 mapclear
 marks
 match
-menu
+menu            {menu}
 menutranslate
 messages
 mkexrc
@@ -268,29 +266,29 @@ next
 new
 nmap
 nmapclear
-nmenu
+nmenu           {menu}
 nnoremap
-nnoremenu
+nnoremenu       {menu}
 noautocmd
 noremap
 nohlsearch
 noreabbrev
-noremenu
+noremenu        {menu}
 normal
 number
 nunmap
-nunmenu
+nunmenu         {menu}
 oldfiles
 open
 omap
 omapclear
-omenu
+omenu           {menu}
 only
 onoremap
-onoremenu
+onoremenu       {menu}
 options
 ounmap
-ounmenu
+ounmenu         {menu}
 pclose
 pedit
 perl
@@ -319,7 +317,7 @@ put
 pwd
 python
 pyfile
-quit
+q[uit]
 quitall
 qall
 read
@@ -373,12 +371,12 @@ slast
 smagic
 smap
 smapclear
-smenu
+smenu           {menu}
 snext
 sniff
 snomagic
 snoremap
-snoremenu
+snoremenu       {menu}
 sort
 source
 spelldump
@@ -400,7 +398,7 @@ stjump
 stselect
 sunhide
 sunmap
-sunmenu
+sunmenu         {menu}
 suspend
 sview
 swapname
@@ -433,14 +431,14 @@ tfirst
 throw
 tjump
 tlast
-tmenu
+tmenu           {menu}
 tnext
 topleft
 tprevious
 trewind
 try
 tselect
-tunmenu
+tunmenu         {menu}
 undo
 undojoin
 undolist
@@ -449,27 +447,27 @@ unhide
 unlet
 unlockvar
 unmap
-unmenu
+unmenu          {menu}
 unsilent
 update
 vglobal
-version
-verbose
+ve[rsion]
+verb[ose]       {command}
 vertical
-vimgrep
+vim[grep]       /{pattern}/[g][j] {file} ...
 vimgrepadd
 visual
 viusage
 view
 vmap
 vmapclear
-vmenu
+vmenu           {menu}
 vnew
 vnoremap
-vnoremenu
+vnoremenu       {menu}
 vsplit
 vunmap
-vunmenu
+vunmenu         {menu}
 windo
 write
 wNext
@@ -488,9 +486,9 @@ xit
 xall
 xmapclear
 xmap
-xmenu
+xmenu           {menu}
 xnoremap
-xnoremenu
+xnoremenu       {menu}
 xunmap
-xunmenu
+xunmenu         {menu}
 yank

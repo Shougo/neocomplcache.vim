@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Apr 2010
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,19 +76,25 @@ function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"
         \'\%(<[sS][iI][dD]>\|[sSgGbBwWtTlL]:\)\=\%(\i\|[#.]\|{.\{-1,}}\)*\s*(\ze\%([^(]\|(.\{-})\)*$')
   if l:prototype_name != ''
     if has_key(s:internal_candidates_list.functions_prototype, l:prototype_name)
-      echo s:internal_candidates_list.functions_prototype[l:prototype_name]
+      echohl Function | echo l:prototype_name | echohl None
+      echon s:internal_candidates_list.functions_prototype[l:prototype_name]
     elseif has_key(s:global_candidates_list.functions_prototype, l:prototype_name)
-      echo s:global_candidates_list.functions_prototype[l:prototype_name]
+      echohl Function | echo l:prototype_name | echohl None
+      echon s:global_candidates_list.functions_prototype[l:prototype_name]
     elseif has_key(l:script_candidates_list.functions_prototype, l:prototype_name)
-      echo l:script_candidates_list.functions_prototype[l:prototype_name]
+      echohl Function | echo l:prototype_name | echohl None
+      echon l:script_candidates_list.functions_prototype[l:prototype_name]
     endif
   else
     " Search command name.
-    let l:prototype_name = matchstr(a:cur_text, '\<\h\w*')
+    " Skip head digits.
+    let l:prototype_name = matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?')
     if has_key(s:internal_candidates_list.commands_prototype, l:prototype_name)
-      echo s:internal_candidates_list.commands_prototype[l:prototype_name]
+      echohl Statement | echo l:prototype_name | echohl None
+      echon s:internal_candidates_list.commands_prototype[l:prototype_name]
     elseif has_key(s:global_candidates_list.commands_prototype, l:prototype_name)
-      echo s:global_candidates_list.commands_prototype[l:prototype_name]
+      echohl Statement | echo l:prototype_name | echohl None
+      echon s:global_candidates_list.commands_prototype[l:prototype_name]
     endif
   endif
 endfunction"}}}
@@ -235,13 +241,9 @@ function! s:global_caching()"{{{
   for function in s:internal_candidates_list.functions
     let l:functions_prototype[function.word] = function.abbr
   endfor
-  let s:internal_candidates_list.functions_prototype = l:functions_prototype
+  let s:internal_candidates_list.functions_prototype = s:caching_prototype_from_dict('functions')
 
-  let l:commands_prototype = {}
-  for command in s:internal_candidates_list.commands
-    let l:commands_prototype[command.word] = command.abbr
-  endfor
-  let s:internal_candidates_list.commands_prototype = l:commands_prototype
+  let s:internal_candidates_list.commands_prototype = s:caching_prototype_from_dict('commands')
 endfunction"}}}
 
 function! s:get_local_variables()"{{{
@@ -395,19 +397,47 @@ function! s:caching_from_dict(dict_name, kind)"{{{
 
   let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
   let l:menu_pattern = '[V] '.a:dict_name[: -2]
-  let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
+  let l:keyword_pattern =
+        \'^\%(-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
   let l:keyword_list = []
   for line in readfile(l:dict_files[-1])
     let l:keyword =  {
-          \ 'word' : matchstr(line, l:keyword_pattern), 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : a:kind
+          \ 'word' : substitute(matchstr(line, l:keyword_pattern), '[\[\]]', '', 'g'), 
+          \ 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : a:kind, 
+          \ 'abbr' : (len(line) > g:NeoComplCache_MaxKeywordWidth ? 
+          \ printf(l:abbr_pattern, line, line[-8:]) : line)
           \}
-    let l:keyword.abbr =  (len(line) > g:NeoComplCache_MaxKeywordWidth)? 
-          \ printf(l:abbr_pattern, line, line[-8:]) : line
-
     call add(l:keyword_list, l:keyword)
   endfor
 
   return l:keyword_list
+endfunction"}}}
+function! s:caching_prototype_from_dict(dict_name)"{{{
+  let l:dict_files = split(globpath(&runtimepath, 'autoload/neocomplcache/complfunc/vim_complete/'.a:dict_name.'.dict'), '\n')
+  if empty(l:dict_files)
+    return {}
+  endif
+
+  let l:keyword_pattern =
+        \'^\%(-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
+  let l:keyword_dict = {}
+  for l:line in readfile(l:dict_files[-1])
+    let l:word = matchstr(l:line, l:keyword_pattern)
+    let l:rest = l:line[len(l:word):]
+    if l:word =~ '\['
+      let [l:word_head, l:word_tail] = split(l:word, '[')
+      let l:word_tail = ' ' . substitute(l:word_tail, '\]', '', '')
+    else
+      let l:word_head = l:word
+      let l:word_tail = ' '
+    endif
+    
+    for i in range(len(l:word_tail))
+      let l:keyword_dict[l:word_head . l:word_tail[1:i]] = l:rest
+    endfor
+  endfor
+
+  return l:keyword_dict
 endfunction"}}}
 
 function! s:get_cmdlist()"{{{

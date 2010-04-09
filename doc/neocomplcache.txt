@@ -609,6 +609,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-04-10
+    * Improved command completion in vim_complete.
+    * Skip head digits in vim_complete.
+    * Highlight color when print prototype.
+
 2010-04-09
     * Improved _ snippets.
 
