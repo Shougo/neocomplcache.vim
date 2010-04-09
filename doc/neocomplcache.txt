@@ -609,6 +609,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2010-04-09
+    * Improved _ snippets.
+
 2010-04-06
     * Improved mappings dictionary.
     * Lazy caching environment variables.
