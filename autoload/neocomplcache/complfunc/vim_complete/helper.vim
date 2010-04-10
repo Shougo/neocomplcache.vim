@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Apr 2010
+" Last Modified: 10 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -243,7 +243,7 @@ function! s:global_caching()"{{{
   endfor
   let s:internal_candidates_list.functions_prototype = s:caching_prototype_from_dict('functions')
 
-  let s:internal_candidates_list.commands_prototype = s:caching_prototype_from_dict('commands')
+  let s:internal_candidates_list.commands_prototype = s:caching_prototype_from_dict('command_prototypes')
 endfunction"}}}
 
 function! s:get_local_variables()"{{{

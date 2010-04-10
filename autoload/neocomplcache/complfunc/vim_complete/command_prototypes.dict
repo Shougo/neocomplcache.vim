@@ -1,0 +1,493 @@
+N[ext]          [count] [++opt] [+cmd]
+P[rint]         [count] [flags]
+a[ppend]
+ab[breviate]
+abc[lear]
+abo[veleft]     {cmd}
+al[l]           [N]
+am[enu]
+an[oremenu]     {menu}
+ar[gs]
+arga[dd]        {name} ..
+argd[elete]     {pattern} ..
+arge[dit]       [++opt] [+cmd] {name}
+argdo           {cmd}
+argg[lobal]     [++opt] [+cmd] {arglist}
+argl[ocal]      [++opt] [+cmd] {arglist}
+argu[ment]      [count] [++opt] [+cmd]
+as[cii]
+au[tocmd]       [group] {event} {pat} [nested] {cmd}
+aug[roup]       {name}
+aun[menu]       {menu}
+b[uffer]        {bufname}
+bN[ext]         [N]
+ba[ll]          [N]
+bad[d]          [+lnum] {fname}
+bd[elete]       {bufname}
+be[have]        {model}
+bel[owright]    {cmd}
+bf[irst]
+bl[ast]
+bm[odified]     [N]
+bn[ext]         [N]
+bo[tright]      {cmd}
+bp[revious]     [N]
+br[ewind]
+brea[k]
+breaka[dd]      func [lnum] {name}
+breakd[el]      {nr}
+breakl[ist]
+bro[wse]        {command}
+bufdo[]         {cmd}
+buffers[]
+bun[load]       {bufname}
+bw[ipeout]      {bufname}
+c[hange]
+cN[ext]
+cNf[ile]
+ca[bbrev]       [<expr>] [lhs] [rhs]
+cabc[lear]
+caddb[uffer]    [bufnr]
+cad[dexpr]      {expr}
+caddf[ile]      [errorfile]
+cal[l]          {name}([arguments])
+cat[ch]         /{pattern}/
+cb[uffer][]     [bufnr]
+cc              [nr]
+ccl[ose]
+cd[]            {path}
+ce[nter]        [width]
+cex[pr]         {expr}
+cf[ile]         [errorfile]
+cfir[st]        [nr]
+cgetb[uffer]    [bufnr]
+cgete[xpr]      {expr}
+cg[etfile]      [errorfile]
+changes
+chd[ir]         [path]
+che[ckpath]
+checkt[ime]
+cl[ist]         [from] [, [to]]
+cla[st]         [nr]
+clo[se]
+cm[ap]          {lhs} {rhs}
+cmapc[lear]
+cme[nu]         {menu}
+cn[ext]
+cnew[er]        [count]
+cnf[ile]
+cno[remap]      {lhs} {rhs}
+cnorea[bbrev]   [<expr>] [lhs] [rhs]
+cnoreme[nu]     {menu}
+co[py]          {address}
+col[der]        [count]
+colo[rscheme]   {name}
+com[mand]       [{attr}...] {cmd} {rep}
+comc[lear]
+comp[iler]      {name}
+con[tinue]
+conf[irm]       {command}
+cope[n]         [height]
+cp[revious]
+cpf[ile]
+cq[uit]
+cr[ewind]       [nr]
+cs[cope]        add {file|dir} [pre-path] [flags] | find {querytype} {name} | kill {num|partial_name} | help | reset | show
+cst[ag]
+cu[nmap]        {lhs}
+cuna[bbrev]     {lhs}
+cunme[nu]       {menu}
+cw[indow]       [height]
+d[elete]        [x]
+delm[arks]      {marks}
+deb[ug]         {cmd}
+debugg[reedy]
+del[command]    {cmd}
+delf[unction]   {name}
+diffu[pdate]
+diffg[et]       [bufspec]
+diffo[ff]
+diffp[atch]     {patchfile}
+diffpu[t]       [bufspec]
+diffs[plit]     {filename}
+diffthis
+dig[raphs]      {char1}{char2} {number} ...
+di[splay]       [arg]
+dj[ump]         [count] [/]string[/]
+dl[ist]         [/]string[/]
+do[autocmd]     [group] {event} [fname]
+doautoa[ll]     [group] {event} [fname]
+dr[op]          [++opt] [+cmd] {file} ..
+ds[earch]       [count] [/]string[/]
+dsp[lit]        [count] [/]string[/]
+e[dit]          [++opt] [+cmd] {file}
+ea[rlier]       {count} | {N}s | {N}h
+ec[ho]          {expr1} ..
+echoe[rr]       {expr1} ..
+echoh[l]        {expr1} ..
+echom[sg]       {expr1} ..
+echon           {expr1} ..
+el[se]
+elsei[f]        {expr1}
+em[enu]         {menu}
+en[dif]
+endfo[r]
+endf[unction]
+endt[ry]
+endw[hile]
+ene[w]
+ex              [++opt] [+cmd] [file]
+exe[cute]       {expr1} ..
+exi[t]          [++opt] [file]
+exu[sage]
+f[ile]
+files[]
+filet[ype]
+fin[d]          [++opt] [+cmd] {file}
+fina[lly]
+fini[sh]
+fir[st]         [++opt] [+cmd]
+fix[del]
+fo[ld]
+foldc[lose]
+foldd[oopen]    {cmd}
+folddoc[losed]  {cmd}
+foldo[pen]
+for             {var} in {list}
+fu[nction]      {name}([arguments]) [range] [abort] [dict]
+go[to]          [count]
+gr[ep]          [arguments]
+grepa[dd]       [arguments]
+gu[i]           [++opt] [+cmd] [-f|-b] [files...]
+gv[im]          [++opt] [+cmd] [-f|-b] [files...]
+ha[rdcopy]      [arguments]
+h[elp]          {subject}
+helpf[ind]
+helpg[rep]      {pattern}[@xx]
+helpt[ags]      [++t] {dir}
+hi[ghlight]     [default] {group-name} {key}={arg} ..
+hid[e]          {cmd}
+his[tory]       [{name}] [{first}][, [{last}]]
+i[nsert]
+ia[bbrev]       [<expr>] [lhs] [rhs]
+iabc[lear]
+if              {expr1}
+ij[ump][]       [count] [/]pattern[/]
+il[ist]         [/]pattern[/]
+im[ap]          {lhs} {rhs}
+imapc[lear]
+imenu           {menu}
+ino[remap]      {lhs} {rhs}
+inorea[bbrev]   [<expr>] [lhs] [rhs]
+inoreme[nu]     {menu}
+int[ro]
+is[earch]       [count] [/]pattern[/]
+isp[lit]        [count] [/]pattern[/]
+iu[nmap]        {lhs}
+iuna[bbrev]     {lhs}
+iunme[nu]       {menu}
+j[oin]          {count} [flags]
+ju[mps]
+keepa[lt]       {cmd}
+kee[pmarks]     {command}
+keep[jumps]     {command}
+lN[ext]
+lNf[ile]
+l[ist]          [count] [flags]
+lad[dexpr]      {expr}
+laddb[uffer]    [bufnr]
+laddf[ile]      [errorfile]
+la[st]          [++opt] [+cmd]
+lan[guage]      {name} | mes[sages] {name} | cty[pe] {name} | tim[e] {name}
+lat[er]         {count} | {N}s | {N}m | {N}h
+lb[uffer]       [bufnr]
+lc[d]           {path}
+lch[dir]        {path}
+lcl[ose]
+lcs[cope]       add {file|dir} [pre-path] [flags] | find {querytype} {name} | kill {num|partial_name} | help | reset | show
+le[ft]          [indent]
+lefta[bove]     {cmd}
+let             {var-name} = {expr1}
+lex[pr]         {expr}
+lf[ile]         [errorfile]
+lfir[st]        [nr]
+lgetb[uffer]    [bufnr]
+lgete[xpr]      {expr}
+lg[etfile]      [errorfile]
+lgr[ep]         [arguments]
+lgrepa[dd]      [arguments]
+lh[elpgrep]     {pattern}[@xx]
+ll              [nr]
+lla[st]         [nr]
+lli[st]         [from] [, [to]]
+lmak[e]         [arguments]
+lm[ap]          {lhs} {rhs}
+lmapc[lear]
+lne[xt]
+lnew[er]        [count]
+lnf[ile]
+ln[oremap]      {lhs} {rhs}
+loadk[eymap]
+lo[adview]      [nr]
+loc[kmarks]     {command}
+lockv[ar]       [depth] {name} ...
+lol[der]        [count]
+lop[en]         [height]
+lp[revious]
+lpf[ile]
+lr[ewind]       [nr]
+ls
+lt[ag]          [ident]
+lu[nmap]        {lhs}
+lv[imgrep]      /{pattern}/[g][j] {file} ... | {pattern} {file} ...
+lvimgrepadd     /{pattern}/[g][j] {file} ... | {pattern} {file} ...
+lwindow         [height]
+m[ove]          {address}
+ma[rk]          {a-zA-z'}
+mak[e]          [arguments]
+map             {lhs} {rhs}
+mapc[lear]
+marks
+match           {group} /{pattern}/
+menu            {menu}
+menut[ranslate] clear | {english} {mylang}
+mes[sages]      
+mk[exrc]        [file]
+mks[ession]     [file]
+mksp[ell]       [-ascii] {outname} {inname} ...
+mkv[imrc]       [file]
+mkvie[w]        [file]
+mod[e]          [mode]
+mz[scheme]      {stmt} | << {endmarker} {script} {endmarker} | {file}
+mzf[ile]        {file}
+nb[key]         key
+n[ext]          [++opt] [+cmd]
+new
+nm[ap]          {lhs} {rhs}
+nmapc[lear]
+nmenu           {menu}
+nno[remap]      {lhs} {rhs}
+nnoreme[nu]     {menu}
+noa[utocmd]     {cmd}
+no[remap]       {lhs} {rhs} 
+noh[lsearch]    
+norea[bbrev]    [<expr>] [lhs] [rhs]
+noreme[nu]      {menu}
+norm[al]        {commands}
+nu[mber]        [count] [flags]
+nun[map]        {lhs}
+nunme[nu]       {menu}
+ol[dfiles]
+o[pen]          /pattern/
+om[ap]          {lhs} {rhs}
+omapc[lear]
+ome[nu]         {menu}
+on[ly]
+ono[remap]      {lhs} {rhs}
+onoreme[nu]     {menu}
+opt[ions]
+ou[nmap]        {lhs}
+ounmenu         {menu}
+pc[lose]
+ped[it]         [++opt] [+cmd] {file}
+pe[rl]          {cmd} | << {endpattern} {script} {endpattern}
+p[rint]         {count} [flags]
+profd[el]       ...
+prof[ile]       start {fname} | pause | continue | func {pattern} | file {pattern}
+promptf[ind]    [string]
+promptr[epl]    [string]
+perld[o]        {cmd}
+po[p]
+popu[p]         {name}
+pp[op]
+pre[serve]
+prev[ious]      [count] [++opt] [+cmd]
+ps[earch]       [count] [/]pattern[/]
+pta[g]          [tagname]
+ptN[ext]
+ptf[irst]
+ptj[ump]
+ptl[ast]
+ptn[ext]
+ptp[revious]
+ptr[ewind]
+pts[elect]      [ident]
+pu[t]           [x]
+pw[d]
+py[thon]        {stmt} | << {endmarker} {script} {endmarker}
+pyf[ile]        {file}
+q[uit]
+quita[ll]
+qa[ll]
+r[ead]          [++opt] [name]
+rec[over]       [file]
+red[o]
+redi[r]         > {file} | >> {file} | @{a-zA-Z} | => {var} | END
+redr[aw]
+redraws[tatus]
+reg[isters]     {arg}
+res[ize]
+ret[ab]         [new_tabstop]
+retu[rn]        [expr]
+rew[ind]        [++opt] [+cmd]
+ri[ght]         [width]
+rightb[elow]    {cmd}
+rub[y]          {cmd} | << {endpattern} {script} {endpattern}
+rubyd[o]        {cmd}
+rubyf[ile]      {file}
+runtime         {file} ..
+rv[iminfo]      [file]
+s[ubstitute]    /{pattern}/{string}/[flags] [count]
+sN[ext]         [++opt] [+cmd] [N]
+san[dbox]       {cmd}
+sa[rgument]     [++opt] [+cmd] [N]
+sal[l]
+sav[eas]        [++opt] {file}
+sb[uffer]       {bufname}
+sbN[ext]        [N]
+sba[ll]         [N]
+sbf[irst]
+sbl[ast]
+sbm[odified]    [N]
+sbn[ext]        [N]
+sbp[revious]    [N]
+sbr[ewind]
+scrip[tnames]
+scripte[ncoding] [encoging]
+scscope               add {file|dir} [pre-path] [flags] | find {querytype} {name} | kill {num|partial_name} | help | reset | show
+se[t]                 {option}={value} {option}? | {option} | {option}&
+setf[iletype]   {filetype}
+setg[lobal]     ...
+setl[ocal]      ...
+sf[ind]         [++opt] [+cmd] {file}
+sfir[st]        [++opt] [+cmd]
+sh[ell]
+sim[alt]        {key}
+sig[n]          define {name} {argument}... | icon={pixmap} | linehl={group} | text={text} | texthl={group}
+sil[ent]        {command}
+sl[eep]         [N] [m]
+sla[st]         [++opt] [+cmd]
+sm[agic]        ...
+sm[ap]          {lhs} {rhs}
+smapc[lear]
+sme[nu]         {menu}
+sn[ext]         [++opt] [+cmd] [file ..]
+sni[ff]         request [symbol]
+sno[magic]      ...
+sno[remap]      {lhs} {rhs}
+snoreme[nu]     {menu}
+sor[t]          [i][u][r][n][x][o] [/{pattern}/]
+so[urce]        {file}
+spelldump
+spellgood
+spellinfo
+spellrepall
+spellundo
+spellwrong
+split
+sprevious
+srewind
+stop
+stag
+startinsert
+startgreplace
+startreplace
+stopinsert
+stjump
+stselect
+sunhide
+sunm[ap]        {lhs}
+sunmenu         {menu}
+suspend
+sview
+swapname
+syntax
+syncbind
+t
+tNext
+tabNext
+tabclose
+tabdo
+tabedit
+tabfind
+tabfirst
+tablast
+tabmove
+tabnew
+tabnext
+tabonly
+tabprevious
+tabrewind
+tabs
+tab
+tag
+tags
+tcl
+tcldo
+tclfile
+tearoff
+tfirst
+throw
+tjump
+tlast
+tmenu           {menu}
+tnext
+topleft
+tprevious
+trewind
+try
+tselect
+tu[nmenu]         {menu}
+u[ndo]          {N}
+undoj[oin]
+undol[ist]
+una[bbreviate]  {lhs}
+unh[ide]        [N]
+unl[et]         {name} ...
+unlo[ckvar]     [depth] {name} ...
+unm[ap]         {lhs}
+unme[nu]        {menu}
+uns[ilent]      {command}
+up[date]        [++opt] [>>] [file]
+vg[lobal]       /{pattern}/[cmd]
+ve[rsion]
+verb[ose]       {command}
+vert[ical]      {cmd}
+vim[grep]       /{pattern}/[g][j] {file} ... | {pattern} {file} ...
+vimgrepa[dd]    /{pattern}/[g][j] {file} ... | {pattern} {file} ...
+vi[sual]        [++opt] [+cmd] [file]
+viu[sage]
+vie[w]          [++opt] [+cmd] file
+vm[ap]          {lhs} {rhs}
+vmapc[lear]
+vmenu           {menu}
+vne[w]          [++opt] [+cmd] [file]
+vn[oremap]      {lhs} {rhs}
+vnoremenu       {menu}
+vsp[lit]        [++opt] [+cmd] [file]
+vu[nmap]        {lhs}
+vunmenu         {menu}
+windo           {cmd}
+w[rite]         [++opt] [file]
+wN[ext]         [++opt] [file]
+wa[ll]
+wh[ile]         {expr1}
+win[size]       {width} {height}
+winc[md]        {arg}
+winp[os]        {X} {Y}
+wn[ext]         [++opt]
+wp[revious]     [++opt] [file]
+wq              [++opt]
+wqa[ll]         [++opt]
+ws[verb]        verb
+wv[iminfo]      [file]
+x[it]           [++opt] [file]
+xa[ll]          [++opt]
+xmapc[lear]
+xm[ap]          {lhs} {rhs}
+xmenu           {menu}
+xn[oremap]      {lhs} {rhs}
+xnoremenu       {menu}
+xu[nmap]        {lhs}
+xunmenu         {menu}
+y[ank]          [x] {count}
