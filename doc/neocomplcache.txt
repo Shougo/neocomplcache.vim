@@ -612,6 +612,8 @@ CHANGELOG					*neocomplcache-changelog*
 2010-04-11
     * Improved command completion text.
     * Improved command prototype dictionary in vim_complete.
+    * Completed prototype dictionary.
+    * Improved command name search.
 
 2010-04-10
     * Improved command completion in vim_complete.

@@ -378,66 +378,66 @@ sno[remap]      {lhs} {rhs}
 snoreme[nu]     {menu}
 sor[t]          [i][u][r][n][x][o] [/{pattern}/]
 so[urce]        {file}
-spelldump
-spellgood
-spellinfo
-spellrepall
-spellundo
-spellwrong
-split
-sprevious
-srewind
-stop
-stag
-startinsert
-startgreplace
-startreplace
-stopinsert
-stjump
-stselect
-sunhide
+spelld[ump]
+spe[llgood]     {word}
+spelli[nfo]     
+spellr[epall]
+spellu[ndo]     {word}
+spellw[rong]    {word}
+sp[lit]         [++opt] [+cmd]
+spr[evious]     [++opt] [+cmd] [N]
+sre[wind]       [++opt] [+cmd]
+st[op]
+sta[g]          [tagname]
+star[tinsert]
+startg[replace]
+startr[eplace]
+stopi[nsert]
+stj[ump]        [ident]
+sts[elect]      [ident]
+sun[hide]       [N]
 sunm[ap]        {lhs}
-sunmenu         {menu}
-suspend
-sview
-swapname
-syntax
-syncbind
+sunme[nu]       {menu}
+sus[pend]
+sv[iew]         [++opt] [+cmd] {file}
+sw[apname]
+sy[ntax]        list {group-name} | list @{cluster-name}
+sync[bind]
 t
-tNext
-tabNext
-tabclose
-tabdo
-tabedit
-tabfind
-tabfirst
-tablast
-tabmove
-tabnew
-tabnext
-tabonly
-tabprevious
-tabrewind
+tN[ext]
+tabN[ext]
+tabc[lose]
+tabd[o]         {cmd}
+tabe[dit]       [++opt] [+cmd] {file}
+tabf[ind]       [++opt] [+cmd] {file}
+tabfir[st]
+tabl[ast]
+tabm[ove]       [N]
+tabnew          [++opt] [+cmd] {file}
+tabn[ext]
+tabo[nly]
+tabp[revious]
+tabr[ewind]
 tabs
-tab
-tag
+tab             {cmd}
+ta[g]           {ident}
 tags
-tcl
-tcldo
-tclfile
-tearoff
-tfirst
-throw
-tjump
-tlast
-tmenu           {menu}
-tnext
-topleft
-tprevious
-trewind
+tc[l]           {cmd} | {endmarker} {script} {endmarker}
+tcld[o]         {cmd}
+tclf[ile]       {file}
+te[aroff]       {name}
+tf[irst]
+th[row]         {expr1}
+tj[ump]         [ident]
+tl[ast]         
+tm[enu]         {menu}
+tn[ext]
+to[pleft]       {cmd}
+tp[revious]
+tr[ewind]
 try
 tselect
-tu[nmenu]         {menu}
+tu[nmenu]       {menu}
 u[ndo]          {N}
 undoj[oin]
 undol[ist]
