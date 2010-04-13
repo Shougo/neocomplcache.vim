@@ -967,7 +967,8 @@ function! s:complete()"{{{
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
-        \ || l:cur_text =~ neocomplcache#escape_match(g:skk_marker_white).'[あ-ん]*\*\?[[:alpha:]]\+$'
+        \ || (exists('g:skk_marker_white') && 
+            \l:cur_text =~ neocomplcache#escape_match(g:skk_marker_white).'[あ-ん]*\*\?[[:alpha:]]\+$')
     let s:complete_words = []
     return
   endif
