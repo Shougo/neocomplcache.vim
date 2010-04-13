@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.11
+Version: 4.20
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -22,7 +22,7 @@ License: MIT license  {{{
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 }}}
 
-CONTENTS					*neocomplcache-contents*
+CONTENTS						*neocomplcache-contents*
 
 Introduction		|neocomplcache-introduction|
 Interface		|neocomplcache-interface|
@@ -37,23 +37,23 @@ Bugs			|neocomplcache-bugs|
 Changelog		|neocomplcache-changelog|
 
 ==============================================================================
-INTRODUCTION					*neocomplcache-introduction*
+INTRODUCTION						*neocomplcache-introduction*
 
-*neocomplcache* performs keyword completion by making a cash of keyword in
+*neocomplcache* performs keyword completion by making a cache of keyword in
 buffer. Because I implemented it by paying own expenses unlike the keyword
 completion including the Vim composing type, neocomplcache can be customized
 flexibly. Unfortunately neocomplcache may use more memory than other
 plugins.
 
 ==============================================================================
-INTERFACE					*neocomplcache-interface*
+INTERFACE						*neocomplcache-interface*
 
 ------------------------------------------------------------------------------
-COMMANDS 					*neocomplcache-commands*
+COMMANDS 						*neocomplcache-commands*
 
 :NeoComplCacheEnable					*:NeoComplCacheEnable*
 		Validate neocomplcache and initialize it.
-		Warning: Conventional cash disappears.
+		Warning: Conventional cache disappears.
 
 :NeoComplCacheDisable					*:NeoComplCacheDisable*
 		Invalidate neocomplcache and clean it up.
@@ -80,8 +80,8 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
 		Caching [bufname] buffer.  Warning: considerably take time,
 		for the big buffer.  Select current buffer when [bufname]
-		omitted.  When [bufname] buffer is not cashed, perform only
-		simple cashing.
+		omitted.  When [bufname] buffer is not cacheed, perform only
+		simple cacheing.
 
 :NeoComplCacheCachingSyntax [filetype]			*:NeoComplCacheCachingSyntax*
 		Caching [filetype] syntax file.
@@ -103,7 +103,7 @@ COMMANDS 					*neocomplcache-commands*
 		For a command for debugging, a user will not need to use it mainly.
 
 :NeoComplCacheOutputKeyword [bufname]			*:NeoComplCacheOutputKeyword*
-		Write the keyword which cashed [bufname] buffer in current
+		Write the keyword which cacheed [bufname] buffer in current
 		buffer.  Select current buffer when [bufname] omitted.  When
 		you make a dictionary file by yourself, it may be
 		convenient.
@@ -117,15 +117,15 @@ COMMANDS 					*neocomplcache-commands*
 		snippets when [filetype] omitted.  When there is not
 		[filetype] snippet file, it is generated newly.  This
 		command edits a snippet file in g:NeoComplCache_SnippetsDir
-		with precedence.  It is done re-cash automatically when you
+		with precedence.  It is done re-cache automatically when you
 		store a snippet file.
 
-:NeoComplCacheEditRuntimeSnippets [filetype]			*:NeoComplCacheEditRuntimeSnippets*
+:NeoComplCacheEditRuntimeSnippets [filetype]		*:NeoComplCacheEditRuntimeSnippets*
 		Edit [filetype] snippets. Edit current buffer's filetype
 		snippets when [filetype] omitted. When there is not
 		[filetype] snippet file, it is generated newly. This
 		command edits a runtime snippet file with snippets_complete.
-		It is done re-cash automatically when you store a snippet
+		It is done re-cache automatically when you store a snippet
 		file.
 
 :NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*
@@ -133,7 +133,7 @@ COMMANDS 					*neocomplcache-commands*
 		snippets when [filetype] omitted.
 
 ------------------------------------------------------------------------------
-VARIABLES 					*neocomplcache-variables*
+VARIABLES 						*neocomplcache-variables*
 
 g:NeoComplCache_EnableAtStartup				*g:NeoComplCache_EnableAtStartup*
 		This variable controls whether I validate neocomplcache at
@@ -212,10 +212,10 @@ g:NeoComplCache_AlphabeticalOrder			*g:NeoComplCache_AlphabeticalOrder*
 		Default value is 0.
 
 g:NeoComplCache_CacheLineCount				*g:NeoComplCache_CacheLineCount*
-		This variable controls whether neocomplcache make a cash
+		This variable controls whether neocomplcache make a cache
 		every several lines of the buffer.  The search of the
 		candidate becomes early so that this is small, but takes
-		time to make a cash.
+		time to make a cache.
 	
 		Default value is 70.
 
@@ -240,7 +240,7 @@ g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
 	
 		Default value is 1.
 
-g:NeoComplCache_EnableRandomize			*g:NeoComplCache_EnableRandomize*
+g:NeoComplCache_EnableRandomize				*g:NeoComplCache_EnableRandomize*
 		When neocomplcache calculate frequency again, this variable
 		controls whether neocomplcache use a random number.
 	
@@ -284,15 +284,15 @@ g:NeoComplCache_EnableDispalyParameter			*g:NeoComplCache_EnableDispalyParameter
 		Default value is 1.
 
 g:NeoComplCache_CachingLimitFileSize			*g:NeoComplCache_CachingLimitFileSize*
-		This variable set file size to make a cash of a file.  If
+		This variable set file size to make a cache of a file.  If
 		open file is bigger than this size, neocomplcache do not
-		make a cash.
+		make a cache.
 	
 		Default value is 1000000.
 
 g:NeoComplCache_CachingDisablePattern			*g:NeoComplCache_CachingDisablePattern*
 		This variable set a pattern of the buffer name which does
-		not make a cash of a buffer in regular expression.  When it
+		not make a cache of a buffer in regular expression.  When it
 		is an empty character string, it becomes invalid.
 	
 		Default value is ''.
@@ -311,7 +311,7 @@ g:NeoComplCache_TemporaryDir				*g:NeoComplCache_TemporaryDir*
 		This variable appoints the directory that neocomplcache
 		begins to write a file at one time.  When there is not the
 		directory which appointed here, it is made.  For example,
-		keyword_complete.vim stores cash of the keyword in this
+		keyword_complete.vim stores cache of the keyword in this
 		'keyword_cache' sub directory.
 	
 		Default value is '~/.neocon'.
@@ -430,7 +430,7 @@ g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
 		
 		Default value is {}.
 
-g:NeoComplCache_MemberPrefixPatterns				*g:NeoComplCache_MemberPrefixPatterns*
+g:NeoComplCache_MemberPrefixPatterns			*g:NeoComplCache_MemberPrefixPatterns*
 		This variable appoints a keyword pattern to complete a
 		member in include_complete and tags_complete.  This is
 		appointed in regular expression every file type.
@@ -438,7 +438,7 @@ g:NeoComplCache_MemberPrefixPatterns				*g:NeoComplCache_MemberPrefixPatterns*
 		Because it is complicated, refer to
 		autoload/neocomplcache.vim for the initial value.
 
-g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
+g:NeoComplCache_QuickMatchPatterns			*g:NeoComplCache_QuickMatchPatterns*
 		This option records an input pattern to display a quick
 		match list.  This is appointed in regular expression to
 		match the end of the input character string every file type.
@@ -448,20 +448,20 @@ g:NeoComplCache_QuickMatchPatterns				*g:NeoComplCache_QuickMatchPatterns*
 		Default value is { 'default' : '-' }.
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS 					*neocomplcache-key-mappings*
+KEY MAPPINGS 						*neocomplcache-key-mappings*
 
-<Plug>(neocomplcache_snippets_expand)				*<Plug>(neocomplcache_snippets_expand)*
+<Plug>(neocomplcache_snippets_expand)			*<Plug>(neocomplcache_snippets_expand)*
 		Expand a snippet of plural lines. When there is not snippet,
 		jump to the next placeholder.  The snippet which unfolded is
 		easy to become display by the high rank so that a rank
 		rises.
 
-<Plug>(neocomplcache_snippets_jump)				*<Plug>(neocomplcache_snippets_jump)*
+<Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
 		Jump to the next place holder. Do not expand snippet.  When
 		you do not want to expand a snippet name, use this
 		keymapping.
 
-neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complete*
+neocomplcache#manual_filename_complete			*neocomplcache#manual_filename_complete*
 		Use this function on inoremap <expr>.  The keymapping call
 		the file name completion of neocomplcache.  When you
 		rearrange the file name completion of the Vim standard, you
@@ -469,14 +469,14 @@ neocomplcache#manual_filename_complete				*neocomplcache#manual_filename_complet
 >
 		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_omni_complete				*neocomplcache#manual_omni_complete*
+neocomplcache#manual_omni_complete			*neocomplcache#manual_omni_complete*
 		Use this function on inoremap <expr>.  The keymapping call
 		the omni completion of neocomplcache.  When you rearrange
 		the omni completion of the Vim standard, you use it.
 >
 		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_keyword_complete				*neocomplcache#manual_keyword_complete*
+neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
 		Use this function on inoremap <expr>.  The keymapping call
 		keyword completion of neocomplcache.  When you rearrange the
 		keyword completion of the Vim standard, you use it.
@@ -511,7 +511,7 @@ neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()
 		inoremap <expr><C-l>     neocomplcache#complete_common_string()
 <
 ==============================================================================
-EXAMPLES					*neocomplcache-examples*
+EXAMPLES						*neocomplcache-examples*
 >
 	" Use neocomplcache.
 	let g:NeoComplCache_EnableAtStartup = 1
@@ -545,7 +545,7 @@ EXAMPLES					*neocomplcache-examples*
 	inoremap <expr><C-l>     neocomplcache#complete_common_string()
 <
 ==============================================================================
-PLUGINS					*neocomplcache-plugins*
+PLUGINS							*neocomplcache-plugins*
 
 In this clause, I comment on plug in attached to neocomplcache.
 Neocomplcache reads automatically the plugin saved in an
@@ -566,7 +566,7 @@ snippets_complete.vim					*snippets_complete*
 tags_complete.vim					*tags_complete*
 		This plugin will use a tag file defined in 'tags' for
 		completion.  When a huge tag file is set, neocomplcache
-		don't make cash if you don't execute
+		don't make cache if you don't execute
 		|:NeoComplCacheCachingTags|command.  Because tags_complete
 		is too slow if tags_complete read a big tags file. 
 		You should use more convenient include completion now.
@@ -595,22 +595,24 @@ vim_complete.vim					*vim_complete*
 		command are implemented now.
 
 ==============================================================================
-TODO						*neocomplcache-todo*
+TODO							*neocomplcache-todo*
 
 ==============================================================================
-BUGS						*neocomplcache-bugs*
+BUGS							*neocomplcache-bugs*
 
 ==============================================================================
-CREATE PLUGIN					*neocomplcache-create-plugin*
+CREATE PLUGIN						*neocomplcache-create-plugin*
 
 In this clause, I comment on a method to make plugin of neocomplcache.  The
 ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
-CHANGELOG					*neocomplcache-changelog*
+CHANGELOG						*neocomplcache-changelog*
 
 2010-04-13
     * Improved for skk.vim.
+    * Use neocomplcache#escape_match().
+    * Marked as ver.4.20.
 
 2010-04-11
     * Improved command completion text.
@@ -1160,7 +1162,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Added snippet file snippet.
     - Improved keyword pattern.
     - Insert quickmatched candidate immediately.
-    - The quick match input does not make a cash.
+    - The quick match input does not make a cache.
 
    2.66:
     - Improved manual.

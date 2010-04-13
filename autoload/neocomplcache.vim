@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.11, for Vim 7.0
+" Version: 4.20, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -712,6 +712,9 @@ function! neocomplcache#get_sources_list(dictionary, filetype)"{{{
 
   return l:list
 endfunction"}}}
+function! neocomplcache#escape_match(str)"{{{
+  return escape(a:str, '~" \.^$[]')
+endfunction"}}}
 
 " Set pattern helper.
 function! neocomplcache#set_variable_pattern(variable, filetype, pattern)"{{{
@@ -964,7 +967,7 @@ function! s:complete()"{{{
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
-        \ || l:cur_text =~ g:skk_marker_white.'[あ-ん]*\*\?[[:alpha:]]\+$'
+        \ || l:cur_text =~ neocomplcache#escape_match(g:skk_marker_white).'[あ-ん]*\*\?[[:alpha:]]\+$'
     let s:complete_words = []
     return
   endif
