@@ -58,7 +58,7 @@ if !exists('g:NeoComplCache_MinKeywordLength')
     let g:NeoComplCache_MinKeywordLength = 4
 endif
 if !exists('g:NeoComplCache_IgnoreCase')
-    let g:NeoComplCache_IgnoreCase = 1
+    let g:NeoComplCache_IgnoreCase = &ignorecase
 endif
 if !exists('g:NeoComplCache_SmartCase')
     let g:NeoComplCache_SmartCase = 0

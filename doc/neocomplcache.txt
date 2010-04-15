@@ -195,7 +195,7 @@ g:NeoComplCache_IgnoreCase				*g:NeoComplCache_IgnoreCase*
 		variable controls whether neocomplcache ignores the upper-
 		and lowercase.  If it is 1, neocomplcache ignores case.
 	
-		Default value is 1.
+		Default value is 'ignorecase'.
 
 g:NeoComplCache_SmartCase				*g:NeoComplCache_SmartCase*
 		When a capital letter is included in input, neocomplcache do
@@ -608,6 +608,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-04-15
+    * Changed default value of g:NeoComplCache_IgnoreCase.
 
 2010-04-13
     * Improved for skk.vim.
