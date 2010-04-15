@@ -612,6 +612,9 @@ CHANGELOG						*neocomplcache-changelog*
 2010-04-15
     * Improved vim_complete.
     - Supported '<,'>command...
+    * Fixed g:NeoComplCache_IgnoreCase bug.
+    - Improved filtering.
+    * Fixed neocomplcache#complete_common_string() bug.
 
 ChangeLog NeoComplCache 4.20: {{{
 2010-04-15

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Mar 2010
+" Last Modified: 15 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.11, for Vim 7.0
 "=============================================================================
 
 " Important variables.
@@ -100,7 +99,7 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
     for src in s:get_sources_list()
       if has_key(s:sources[src].keyword_cache, l:key)
         let l:keyword_cache = values(s:sources[src].keyword_cache[l:key])
-        if len(a:cur_keyword_str) != s:completion_length
+        if len(a:cur_keyword_str) != s:completion_length || !&ignorecase
           let l:keyword_cache = neocomplcache#keyword_filter(l:keyword_cache, a:cur_keyword_str)
         endif
 

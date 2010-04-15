@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 15 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,73 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.11:
-"    - Use neocomplcache#system().
-"    - Skip listed files.
-"
-"   1.10:
-"    - Use g:NeoComplCache_TagsFilterPatterns.
-"    - Supported nested include file in C/C++ filetype.
-"
-"   1.09:
-"    - Improved caching.
-"    - Deleted dup.
-"    - Use caching helper.
-"    - Use /dev/stdout in Linux and Mac.
-"    - Deleted caching current buffer.
-"    - Fixed error when load file.
-"
-"   1.08:
-"    - Caching current buffer.
-"    - Fixed filetype bug.
-"    - Don't cache huge file.
-"
-"   1.07:
-"    - Improved caching speed when FileType.
-"    - Deleted caching when BufWritePost.
-"    - Fixed set path pattern in Python.
-"
-"   1.06:
-"    - Ignore no suffixes file.
-"    - Improved set patterns.
-"    - Fixed error; when open the file of the filetype that g:NeoComplCache_KeywordPatterns does not have.
-"
-"   1.05:
-"    - Save error log.
-"    - Implemented member filter.
-"    - Fixed error.
-"
-"   1.04:
-"    - Implemented fast search.
-"
-"   1.03:
-"    - Improved caching.
-"
-"   1.02:
-"    - Fixed keyword pattern error.
-"    - Added g:NeoComplCache_IncludeSuffixes option. 
-"    - Fixed empty filetype error.
-"    - Echo filename when caching.
-"
-"   1.01:
-"    - Fixed filter bug.
-"    - Fixed matchstr timing.
-"    - Fixed error when includeexpr is empty.
-"    - Don't caching readonly buffer.
-"
-"   1.00:
-"    - Initial version.
-" }}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
 "=============================================================================
 
 let s:include_info = {}
@@ -184,7 +117,7 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
             endif
         endfor
         
-        if len(a:cur_keyword_str) != s:completion_length
+        if len(a:cur_keyword_str) != s:completion_length || !&ignorecase
             let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
         endif
     endif

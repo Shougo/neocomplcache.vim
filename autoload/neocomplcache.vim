@@ -414,20 +414,11 @@ function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
 
   let l:cur_max = len(l:cur_keyword) - 1
   let l:ret = []
-  if &ignorecase
-    let l:cur_keyword = tolower(l:cur_keyword)
-    for keyword in a:list
-      if l:cur_keyword == tolower(keyword.word[: l:cur_max])
-        call add(l:ret, keyword)
-      endif
-    endfor
-  else
-    for keyword in a:list
-      if l:cur_keyword == keyword.word[: l:cur_max] 
-        call add(l:ret, keyword)
-      endif
-    endfor
-  endif
+  for keyword in a:list
+    if l:cur_keyword == keyword.word[: l:cur_max] 
+      call add(l:ret, keyword)
+    endif
+  endfor
 
   return ret
 endfunction"}}}
@@ -493,6 +484,21 @@ function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
     return ret
   else
     return neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
+  endif
+endfunction"}}}
+function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completion_length)"{{{
+  if len(a:cur_keyword_str) < a:completion_length ||
+        \neocomplcache#check_match_filter(a:cur_keyword_str, a:completion_length)
+    return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
+  else
+    let l:key = tolower(a:cur_keyword_str[: a:completion_length-1])
+
+    if !has_key(a:dictionary, l:key)
+      return []
+    endif
+
+    return (len(a:cur_keyword_str) == a:completion_length && &ignorecase)?
+          \ a:dictionary[l:key] : neocomplcache#keyword_filter(copy(a:dictionary[l:key]), a:cur_keyword_str)
   endif
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
@@ -922,7 +928,7 @@ function! neocomplcache#complete_common_string()"{{{
     let &ignorecase = g:NeoComplCache_IgnoreCase
   endif
 
-  let l:complete_words = neocomplcache#keyword_filter(copy(s:complete_words), l:cur_keyword_str)
+  let l:complete_words = neocomplcache#keyword_filter(copy(s:old_complete_words), l:cur_keyword_str)
   if empty(l:complete_words)
     return ''
   endif
@@ -1124,6 +1130,15 @@ function! s:integrate_completion(complete_result)"{{{
   endif
 
   let l:complete_words = sort(l:complete_words, l:func)[: g:NeoComplCache_MaxList]
+  
+  if !g:NeoComplCache_IgnoreCase || 
+        \(g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u')
+    " Set no-icase.
+    for l:keyword in l:complete_words
+      let l:keyword.icase = 0
+    endfor
+  endif
+  
   return [l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
 endfunction"}}}
 function! s:insert_leave()"{{{
