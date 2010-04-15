@@ -429,16 +429,6 @@ neocomplcache Ver.2.50より、ファイルを開くときにすべてのキー�
 Ver.3.00より、`neocomplcache#caching_percent()`で呼び出せるようになりました。
 以前の`neocomplcache#keyword_complete#caching_percent()`は動作しないので注意してください。
 
-## 自動補完のスキップ
-
-補完に時間がかかるときは自動補完をスキップするようになりました。
-スキップする時間は
-`
-let g:NeoComplCache_SkipCompletionTime = '0.3'
-`
-のようにすることで調整ができます。
-値は文字列にしないと動作しないので注意。
-
 ## ポップアップメニューを閉じる
 
 Ver.2.45より実装。通常では二回`<C-y>`や`<C-e>`を押さなければポップアップが消えませんが、

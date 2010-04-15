@@ -81,12 +81,6 @@ endif
 if !exists('g:NeoComplCache_EnableRandomize')
     let g:NeoComplCache_EnableRandomize = has('reltime')
 endif
-if !exists('g:NeoComplCache_EnableSkipCompletion')
-    let g:NeoComplCache_EnableSkipCompletion = has('reltime')
-endif
-if !exists('g:NeoComplCache_SkipCompletionTime')
-    let g:NeoComplCache_SkipCompletionTime = '0.2'
-endif
 if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
     let g:NeoComplCache_EnableCamelCaseCompletion = 0
 endif
@@ -95,6 +89,12 @@ if !exists('g:NeoComplCache_EnableUnderbarCompletion')
 endif
 if !exists('g:NeoComplCache_EnableDispalyParameter')
     let g:NeoComplCache_EnableDispalyParameter = 1
+endif
+if !exists('g:NeoComplCache_EnableCursorHoldI')
+    let g:NeoComplCache_EnableCursorHoldI = 0
+endif
+if !exists('g:NeoComplCache_CursorHoldITime')
+    let g:NeoComplCache_CursorHoldITime = 300
 endif
 if !exists('g:NeoComplCache_CachingLimitFileSize')
     let g:NeoComplCache_CachingLimitFileSize = 1000000
