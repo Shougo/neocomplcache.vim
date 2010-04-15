@@ -88,7 +88,7 @@ function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"
   else
     " Search command name.
     " Skip head digits.
-    let l:prototype_name = matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|\<\%([[:digit:],[:space:]$]\+\)\?\zs\h\w*\ze/.*')
+    let l:prototype_name = matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
     if has_key(s:internal_candidates_list.commands_prototype, l:prototype_name)
       echohl Statement | echo l:prototype_name | echohl None
       echon s:internal_candidates_list.commands_prototype[l:prototype_name]
