@@ -609,13 +609,16 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-04-xx
+    *
+
+ChangeLog NeoComplCache 4.20: {{{
 2010-04-15
     * Changed default value of g:NeoComplCache_IgnoreCase.
 
 2010-04-13
     * Improved for skk.vim.
     * Use neocomplcache#escape_match().
-    * Marked as ver.4.20.
 
 2010-04-11
     * Improved command completion text.
@@ -671,7 +674,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-02-18
     * Fixed filename pattern.
-
+}}}
 ChangeLog NeoComplCache 4.00-: {{{
    4.10:
     - Fixed interactive Gauche support.
