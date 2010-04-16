@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2010
+" Last Modified: 15 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -21,54 +21,6 @@
 "     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
-" Version: 1.10, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.10:
-"    - Fixed indent.
-"    - Fixed wildcard bug.
-"
-"   1.09:
-"    - Fixed wildcard freeze.
-"    - Optimized.
-"
-"   1.08:
-"    - Improved skip directory.
-"    - Deleted '...' pattern.
-"    - Disabled in vimshell.
-"
-"   1.07:
-"    - Fixed in TeX behaviour.
-"    - Fixed manual filename completion bug.
-"    - Improved trunk filename.
-"
-"   1.06:
-"    - Don't expand environment variable.
-"    - Improved skip.
-"    - Implemented skip directory.
-"
-"   1.05:
-"    - Fixed freeze bug.
-"    - Improved backslash.
-"
-"   1.04:
-"    - Fixed auto completion bug.
-"    - Fixed executable bug.
-"
-"   1.03:
-"    - Added rank.
-"
-"   1.02:
-"    - Add '*' to a delimiter.
-"
-"   1.01:
-"    - Improved completion.
-"    - Deleted cdpath completion.
-"    - Fixed escape bug.
-"
-"   1.00:
-"    - Initial version.
 " }}}
 "=============================================================================
 
@@ -153,15 +105,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     return []
   endif
 
-  if neocomplcache#check_skip_time()
-    let l:dir = simplify(fnamemodify(l:cur_keyword_str, ':p:h'))
-    if l:dir != ''
-      let s:skip_dir[l:dir] = 1
-    endif
-
-    return []
-  endif
-
   let l:list = []
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
   for word in l:files
@@ -183,16 +126,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 
   let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
   for keyword in l:list
-    " Skip completion if takes too much time."{{{
-    if neocomplcache#check_skip_time()
-      let l:dir = simplify(fnamemodify(l:cur_keyword_str, ':p:h'))
-      if l:dir != ''
-        let s:skip_dir[l:dir] = 1
-      endif
-
-      return []
-    endif"}}}
-
     let l:abbr = keyword.word
     if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
       let l:over_len = len(l:abbr) - g:NeoComplCache_MaxKeywordWidth

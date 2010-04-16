@@ -239,17 +239,19 @@ g:NeoComplCache_EnableRandomize				*g:NeoComplCache_EnableRandomize*
 		
 		初期値は+reltimeの時に1となる。
 
-g:NeoComplCache_EnableSkipCompletion			*g:NeoComplCache_EnableSkipCompletion*
-		候補の計算に時間がかかりすぎると自動補完を中止するかどうか制
-		御する。 1ならば有効になる。
+g:NeoComplCache_EnableCursorHoldI			*g:NeoComplCache_EnableCursorHoldI*
+		候補の計算を|CursorHoldI|イベント時に行うかどうかを制御する。
+		このオプションが設定されなかった場合、|CursorMovedI|イベン
+		トを使用する。
 		
-		初期値は+reltimeの時に1となる。
+		副作用があるので、初期値は0である。
 
 g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
-		自動補完を中止するための計算時間を定義する。 このオプション
-		の値は文字列でなければならない。
+		|g:NeoComplCache_EnableCursorHoldI|が有効になっている場合、
+		自動補完を開始するための計算時間を定義する。このオプションは
+		'updatetime'の値を書き換える。
 		
-		初期値は'0.2'である。
+		初期値は300である。
 
 g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompletion*
 		大文字を入力したときに、それを単語の区切りとしてあいまい検索

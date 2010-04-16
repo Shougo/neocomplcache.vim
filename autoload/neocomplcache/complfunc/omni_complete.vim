@@ -189,11 +189,6 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
     return []
   endif
 
-  " Skip completion if takes too much time."{{{
-  if neocomplcache#check_skip_time()
-    return []
-  endif"}}}
-
   if l:is_wildcard
     return neocomplcache#keyword_filter(s:get_omni_list(l:list), a:cur_keyword_str)
   else

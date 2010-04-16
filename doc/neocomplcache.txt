@@ -246,19 +246,16 @@ g:NeoComplCache_EnableRandomize				*g:NeoComplCache_EnableRandomize*
 	
 		Default value is has ('reltime').
 
-g:NeoComplCache_EnableSkipCompletion			*g:NeoComplCache_EnableSkipCompletion*
-		This variable controls whether neocomplcache cancels
-		automatic completion when the calculation of the candidate
-		takes too much time.
+g:NeoComplCache_EnableCursorHoldI			*g:NeoComplCache_EnableCursorHoldI*
+		This variable controls whether neocomplcache use |CursorHoldI| event
+		when complete candidates.
 	
-		Default value is has ('reltime').
+		Default value is 0.
 
-g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
-		This variable defines calculation time to cancel automatic
-		completion by a second unit.  This optional value must be
-		character string.
-	
-		Default value is '0.2'.
+g:NeoComplCache_CursorHoldITime				*g:NeoComplCache_CursorHoldITime*
+		This variable defines time of automatic completion by a milli second unit.
+		
+		Default value is 300.
 
 g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompletion*
 		When you input a capital letter, this variable controls
@@ -618,6 +615,9 @@ CHANGELOG						*neocomplcache-changelog*
     * Fixed g:NeoComplCache_IgnoreCase bug.
     - Improved filtering.
     * Fixed neocomplcache#complete_common_string() bug.
+    * Implemented CursorHoldI completion.
+    * Added g:NeoComplCache_EnableCursorHoldI and g:NeoComplCache_CursorHoldITime options.
+    * Deleted g:NeoComplCache_EnableSkipCompletion and g:NeoComplCache_SkipCompletionTime options.
 
 ChangeLog NeoComplCache 4.20: {{{
 2010-04-15
