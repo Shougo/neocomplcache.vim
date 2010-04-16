@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 16 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   let s:completion_length = neocomplcache#get_completion_length('vim_complete')
 
   " Set caching event.
-  autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#script_caching_check()
+  autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()
 
   " Add command.
   command! -nargs=? -complete=buffer NeoComplCacheCachingVim call neocomplcache#complfunc#vim_complete#helper#recaching(<q-args>)
@@ -44,16 +44,12 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  let l:cur_text = s:get_cur_text()
+  let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
 
   if l:cur_text =~ '^\s*"'
     " Comment.
     return -1
   endif
-
-  if g:NeoComplCache_EnableDispalyParameter"{{{
-    call neocomplcache#complfunc#vim_complete#helper#print_prototype(l:cur_text)
-  endif"}}}
 
   let l:pattern = '\.$\|' . neocomplcache#get_keyword_pattern_end('vim')
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
@@ -72,7 +68,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     return []
   endif
 
-  let l:cur_text = s:get_cur_text()
+  let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
 
   let l:list = []
   
@@ -128,7 +124,7 @@ function! neocomplcache#complfunc#vim_complete#get_rank()"{{{
   return 100
 endfunction"}}}
 
-function! s:get_cur_text()
+function! neocomplcache#complfunc#vim_complete#get_cur_text()
   let l:cur_text = neocomplcache#get_cur_text()
   let l:line = line('%')
   while l:cur_text =~ '^\s*\\' && l:line > 1

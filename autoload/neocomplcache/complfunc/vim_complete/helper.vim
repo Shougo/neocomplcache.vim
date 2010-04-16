@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Apr 2010
+" Last Modified: 16 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,7 +31,7 @@ if !exists('s:internal_candidates_list')
   let s:local_candidates_list = {}
 endif
 
-function! neocomplcache#complfunc#vim_complete#helper#script_caching_check()"{{{
+function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
   if empty(s:global_candidates_list)
     " Global caching.
     call s:global_caching()
@@ -50,7 +50,17 @@ function! neocomplcache#complfunc#vim_complete#helper#script_caching_check()"{{{
 
     let l:bufnumber += 1
   endwhile
+
+  autocmd neocomplcache CursorMovedI <buffer> call s:on_moved_i()
 endfunction"}}}
+
+function! s:on_moved_i()
+  if g:NeoComplCache_EnableDispalyParameter
+    " Print prototype.
+    call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
+  endif
+endfunction
+
 function! neocomplcache#complfunc#vim_complete#helper#recaching(bufname)"{{{
   " Caching script candidates.
 
