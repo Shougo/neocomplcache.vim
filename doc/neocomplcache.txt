@@ -608,6 +608,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-04-17
     * Improved print prototype behaivior when g:NeoComplCache_CursorHoldITime.
+    * Improved redraw.
 
 2010-04-16
     * Improved print prototype in vim_complete.

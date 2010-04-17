@@ -52,17 +52,10 @@ function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
   endwhile
 
   autocmd neocomplcache CursorMovedI <buffer> call s:on_moved_i()
-  autocmd neocomplcache CursorHoldI <buffer> call s:on_hold_i()
 endfunction"}}}
 
 function! s:on_moved_i()
   if g:NeoComplCache_EnableDispalyParameter
-    " Print prototype.
-    call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
-  endif
-endfunction
-function! s:on_hold_i()
-  if g:NeoComplCache_EnableDispalyParameter && g:NeoComplCache_EnableCursorHoldI
     " Print prototype.
     call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 17 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1019,9 +1019,6 @@ function! s:complete()"{{{
   let s:prev_numbered_list = []
   let s:complete_words = []
   let s:old_complete_words = []
-
-  echo ''
-  redraw
 
   " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'
