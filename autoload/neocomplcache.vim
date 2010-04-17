@@ -977,7 +977,7 @@ function! s:complete()"{{{
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
-        \ || (exists('b:skk_on') && b:skk_on
+        \ || (exists('b:skk_on') && b:skk_on)
     let s:complete_words = []
     return
   endif
