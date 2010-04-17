@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 17 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -52,10 +52,17 @@ function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
   endwhile
 
   autocmd neocomplcache CursorMovedI <buffer> call s:on_moved_i()
+  autocmd neocomplcache CursorHoldI <buffer> call s:on_hold_i()
 endfunction"}}}
 
 function! s:on_moved_i()
   if g:NeoComplCache_EnableDispalyParameter
+    " Print prototype.
+    call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
+  endif
+endfunction
+function! s:on_hold_i()
+  if g:NeoComplCache_EnableDispalyParameter && g:NeoComplCache_EnableCursorHoldI
     " Print prototype.
     call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
   endif
