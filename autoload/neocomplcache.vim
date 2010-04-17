@@ -951,9 +951,10 @@ function! s:on_hold_i()"{{{
 endfunction"}}}
 function! s:on_moved_i()"{{{
   if g:NeoComplCache_EnableCursorHoldI
-    " Dummy cursor move.
-    call feedkeys("\<C-r>\<ESC>", 'n')
-
+    if !exists('b:skk_on') || !b:skk_on
+      " Dummy cursor move.
+      call feedkeys("\<C-r>\<ESC>", 'n')
+    endif
   else
     call s:complete()
   endif
@@ -976,8 +977,7 @@ function! s:complete()"{{{
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
-        \ || (exists('g:skk_marker_white') && 
-            \l:cur_text =~ neocomplcache#escape_match(g:skk_marker_white).'[あ-ん]*\*\?[[:alpha:]]\+$')
+        \ || (exists('b:skk_on') && b:skk_on
     let s:complete_words = []
     return
   endif
