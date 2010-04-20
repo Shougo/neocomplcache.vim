@@ -102,7 +102,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     let l:list += neocomplcache#complfunc#vim_complete#helper#environment(l:cur_text, a:cur_keyword_str)
   endif
 
-  if l:cur_text =~ '\<\%([[:digit:],[:space:]$''<>]\+\)\?\h\w*$'
+  if l:cur_text =~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
     " Commands.
     let l:list += neocomplcache#complfunc#vim_complete#helper#command(l:cur_text, a:cur_keyword_str)
   elseif l:cur_text =~ '\<let\s\+[[:alnum:]_:]*$'
