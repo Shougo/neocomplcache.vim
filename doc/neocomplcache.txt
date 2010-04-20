@@ -608,6 +608,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-04-20
     * Fixed vim completion bug.
+    * Implemented lazy caching in vim_complete.
 
 2010-04-17
     * Improved print prototype behaivior when g:NeoComplCache_CursorHoldITime.

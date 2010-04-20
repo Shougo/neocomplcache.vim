@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2010
+" Last Modified: 20 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,13 +32,7 @@ if !exists('s:internal_candidates_list')
 endif
 
 function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
-  if empty(s:global_candidates_list)
-    " Global caching.
-    call s:global_caching()
-  endif
-
   " Caching script candidates.
-
   let l:bufnumber = 1
 
   " Check buffer.
@@ -63,15 +57,7 @@ endfunction
 
 function! neocomplcache#complfunc#vim_complete#helper#recaching(bufname)"{{{
   " Caching script candidates.
-
   let l:bufnumber = a:bufname != '' ? bufnr(a:bufname) : bufnr('%')
-
-  " Caching.
-  let s:global_candidates_list.commands = s:get_cmdlist()
-  let s:global_candidates_list.variables = s:get_variablelist()
-  let s:global_candidates_list.functions = s:get_functionlist()
-  let s:global_candidates_list.augroups = s:get_augrouplist()
-  let s:global_candidates_list.mappings = s:get_mappinglist()
 
   if getbufvar(l:bufnumber, '&filetype') == 'vim' && buflisted(l:bufnumber)
     let s:script_candidates_list[l:bufnumber] = s:get_script_candidates(l:bufnumber)
@@ -85,6 +71,12 @@ function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"
   let l:prototype_name = matchstr(a:cur_text, 
         \'\%(<[sS][iI][dD]>\|[sSgGbBwWtTlL]:\)\=\%(\i\|[#.]\|{.\{-1,}}\)*\s*(\ze\%([^(]\|(.\{-})\)*$')
   if l:prototype_name != ''
+    if !has_key(s:internal_candidates_list, 'functions_prototype')
+      " No cache.
+      return
+    endif
+    
+    " Search function name.
     if has_key(s:internal_candidates_list.functions_prototype, l:prototype_name)
       echohl Function | echo l:prototype_name | echohl None
       echon s:internal_candidates_list.functions_prototype[l:prototype_name]
@@ -96,6 +88,11 @@ function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"
       echon l:script_candidates_list.functions_prototype[l:prototype_name]
     endif
   else
+    if !has_key(s:internal_candidates_list, 'commands_prototype')
+      " No cache.
+      return
+    endif
+    
     " Search command name.
     " Skip head digits.
     let l:prototype_name = matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
@@ -110,15 +107,38 @@ function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#helper#autocmd_args(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:global_candidates_list, 'augroups')
+    let s:global_candidates_list.augroups = s:get_augrouplist()
+  endif
+  if !has_key(s:internal_candidates_list, 'autocmds')
+    let s:internal_candidates_list.autocmds = s:caching_from_dict('autocmds', '')
+  endif
+  
   return s:internal_candidates_list.autocmds + s:global_candidates_list.augroups
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#augroup(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:global_candidates_list, 'augroups')
+    let s:global_candidates_list.augroups = s:get_augrouplist()
+  endif
+  
   return s:global_candidates_list.augroups
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#buffer(cur_text, cur_keyword_str)"{{{
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#command(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:global_candidates_list, 'commands')
+    let s:global_candidates_list.commands = s:get_cmdlist()
+  endif
+  if !has_key(s:internal_candidates_list, 'commands')
+    let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c')
+    
+    let s:internal_candidates_list.commands_prototype = s:caching_prototype_from_dict('command_prototypes')
+  endif
+  
   let l:list = neocomplcache#keyword_filter(s:internal_candidates_list.commands, a:cur_keyword_str)
   let l:list += neocomplcache#keyword_filter(s:global_candidates_list.commands, a:cur_keyword_str)
 
@@ -129,15 +149,22 @@ function! neocomplcache#complfunc#vim_complete#helper#command(cur_text, cur_keyw
   return l:list
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#command_args(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:internal_candidates_list, 'command_args')
+    let s:internal_candidates_list.command_args = s:caching_from_dict('command_args', '')
+
+    let s:internal_candidates_list.command_replaces = s:caching_from_dict('command_replaces', '')
+  endif
+  
   return s:internal_candidates_list.command_args + s:internal_candidates_list.command_replaces
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#environment(cur_text, cur_keyword_str)"{{{
+  " Caching.
   if !has_key(s:global_candidates_list, 'environments')
-    " Caching.
-    call s:global_candidates_list.environments = s:get_envlist()
+    let s:global_candidates_list.environments = s:get_envlist()
   endif
   
   return s:global_candidates_list.environments
@@ -150,12 +177,29 @@ function! neocomplcache#complfunc#vim_complete#helper#expression(cur_text, cur_k
         \+ neocomplcache#complfunc#vim_complete#helper#var(a:cur_text, a:cur_keyword_str)
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#feature(cur_text, cur_keyword_str)"{{{
+  if !has_key(s:internal_candidates_list, 'features')
+    let s:internal_candidates_list.features = s:caching_from_dict('features', '')
+  endif
   return s:internal_candidates_list.features
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#file(cur_text, cur_keyword_str)"{{{
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:global_candidates_list, 'functions')
+    let s:global_candidates_list.functions = s:get_functionlist()
+  endif
+  if !has_key(s:internal_candidates_list, 'functions')
+    let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f')
+
+    let l:functions_prototype = {}
+    for function in s:internal_candidates_list.functions
+      let l:functions_prototype[function.word] = function.abbr
+    endfor
+    let s:internal_candidates_list.functions_prototype = s:caching_prototype_from_dict('functions')
+  endif
+  
   let l:list = []
   let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
         \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'functions_prototype' : {} }
@@ -183,12 +227,31 @@ function! neocomplcache#complfunc#vim_complete#helper#highlight(cur_text, cur_ke
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#mapping(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:global_candidates_list, 'mappings')
+    let s:global_candidates_list.mappings = s:get_mappinglist()
+  endif
+  if !has_key(s:internal_candidates_list, 'mappings')
+    let s:internal_candidates_list.mappings = s:caching_from_dict('mappings', '')
+  endif
+  
   return s:internal_candidates_list.mappings + s:global_candidates_list.mappings
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#menu(cur_text, cur_keyword_str)"{{{
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#option(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:internal_candidates_list, 'options')
+    let s:internal_candidates_list.options = s:caching_from_dict('options', 'o')
+    
+    for l:keyword in deepcopy(s:internal_candidates_list.options)
+      let l:keyword.word = 'no' . l:keyword.word
+      let l:keyword.abbr = 'no' . l:keyword.abbr
+      call add(s:internal_candidates_list.options, l:keyword)
+    endfor
+  endif
+  
   return s:internal_candidates_list.options
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#shellcmd(cur_text, cur_keyword_str)"{{{
@@ -201,6 +264,11 @@ function! neocomplcache#complfunc#vim_complete#helper#tag_listfiles(cur_text, cu
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#var(cur_text, cur_keyword_str)"{{{
+  " Caching.
+  if !has_key(s:global_candidates_list, 'variables')
+    let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist(), 'force')
+  endif
+  
   let l:list = []
   if a:cur_keyword_str =~ '^s:'
     let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
@@ -221,39 +289,6 @@ function! neocomplcache#complfunc#vim_complete#helper#custom(cur_text, cur_keywo
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#customlist(cur_text, cur_keyword_str, funcname)"{{{
   return []
-endfunction"}}}
-
-function! s:global_caching()"{{{
-  " Caching.
-
-  let s:global_candidates_list.commands = s:get_cmdlist()
-  let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist(), 'force')
-  let s:global_candidates_list.functions = s:get_functionlist()
-  let s:global_candidates_list.augroups = s:get_augrouplist()
-  let s:global_candidates_list.mappings = s:get_mappinglist()
-
-  let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f')
-  let s:internal_candidates_list.options = s:caching_from_dict('options', 'o')
-  let s:internal_candidates_list.features = s:caching_from_dict('features', '')
-  let s:internal_candidates_list.mappings = s:caching_from_dict('mappings', '')
-  let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c')
-  let s:internal_candidates_list.command_args = s:caching_from_dict('command_args', '')
-  let s:internal_candidates_list.autocmds = s:caching_from_dict('autocmds', '')
-  let s:internal_candidates_list.command_replaces = s:caching_from_dict('command_replaces', '')
-
-  for l:keyword in deepcopy(s:internal_candidates_list.options)
-    let l:keyword.word = 'no' . l:keyword.word
-    let l:keyword.abbr = 'no' . l:keyword.abbr
-    call add(s:internal_candidates_list.options, l:keyword)
-  endfor
-
-  let l:functions_prototype = {}
-  for function in s:internal_candidates_list.functions
-    let l:functions_prototype[function.word] = function.abbr
-  endfor
-  let s:internal_candidates_list.functions_prototype = s:caching_prototype_from_dict('functions')
-
-  let s:internal_candidates_list.commands_prototype = s:caching_prototype_from_dict('command_prototypes')
 endfunction"}}}
 
 function! s:get_local_variables()"{{{
