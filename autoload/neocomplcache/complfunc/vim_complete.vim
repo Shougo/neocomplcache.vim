@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 20 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -102,7 +102,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     let l:list += neocomplcache#complfunc#vim_complete#helper#environment(l:cur_text, a:cur_keyword_str)
   endif
 
-  if l:cur_text =~ '\<\%([[:digit:],[:space:]$''<>]\+\)\?\h\w*'
+  if l:cur_text =~ '\<\%([[:digit:],[:space:]$''<>]\+\)\?\h\w*$'
     " Commands.
     let l:list += neocomplcache#complfunc#vim_complete#helper#command(l:cur_text, a:cur_keyword_str)
   elseif l:cur_text =~ '\<let\s\+[[:alnum:]_:]*$'

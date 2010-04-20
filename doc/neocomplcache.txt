@@ -606,6 +606,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-04-20
+    * Fixed vim completion bug.
+
 2010-04-17
     * Improved print prototype behaivior when g:NeoComplCache_CursorHoldITime.
     * Improved redraw.
