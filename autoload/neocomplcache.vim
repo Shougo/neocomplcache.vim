@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2010
+" Last Modified: 25 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -946,20 +946,13 @@ endfunction"}}}
 " Event functions."{{{
 function! s:on_hold_i()"{{{
   if g:NeoComplCache_EnableCursorHoldI
-    call s:complete()
+    call s:complete(0)
   endif
 endfunction"}}}
 function! s:on_moved_i()"{{{
-  if g:NeoComplCache_EnableCursorHoldI
-    if !exists('b:skk_on') || !b:skk_on
-      " Dummy cursor move.
-      call feedkeys("\<C-r>\<ESC>", 'n')
-    endif
-  else
-    call s:complete()
-  endif
+  call s:complete(1)
 endfunction"}}}
-function! s:complete()"{{{
+function! s:complete(is_moved)"{{{
   if s:skip_next_complete
     let s:skip_next_complete = 0
     return
@@ -976,7 +969,8 @@ function! s:complete()"{{{
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
-  if l:cur_text == s:old_text || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
+  if (a:is_moved && g:NeoComplCache_EnableCursorHoldI && l:cur_text == s:old_text)
+        \ || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
         \ || (exists('b:skk_on') && b:skk_on)
     let s:complete_words = []
     return
@@ -1012,6 +1006,13 @@ function! s:complete()"{{{
 
     let &l:completefunc = 'neocomplcache#auto_complete'
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    return
+  endif
+  
+  if a:is_moved && g:NeoComplCache_EnableCursorHoldI
+    " Dummy cursor move.
+    call feedkeys("\<C-r>\<ESC>", 'n')
+    
     return
   endif
   

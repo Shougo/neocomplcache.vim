@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2010
+" Last Modified: 25 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -492,20 +492,36 @@ function! s:get_cmdlist()"{{{
   redir END
 
   let l:keyword_list = []
+  let l:completions = [ 'augroup', 'buffer', 'command', 'dir', 'environment', 
+        \ 'event', 'expression', 'file', 'shellcmd', 'function', 
+        \ 'help', 'highlight', 'mapping', 'menu', 'option', 'tag', 'tag_listfiles', 
+        \ 'var', 'custom', 'customlist' ]
   let l:commands_prototype = {}
   let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
   let l:menu_pattern = '[V] command'
   for line in split(l:redir, '\n')[1:]
     let l:word = matchstr(line, '\a\w*')
+    
+    " Analyze prototype.
+    let l:completion = matchstr(line, '\a\w*', matchend(line, '\a\w*'))
+    let l:prototype = ''
+    for l:comp in l:completions
+      if l:comp == l:completion
+        let l:prototype = repeat(' ', 16 - len(l:word)) . l:completion
+        break
+      endif
+    endfor
+    let l:commands_prototype[l:word] = l:prototype
+    
+    let l:abbr = l:word . l:prototype
     let l:keyword =  {
           \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
           \ 'kind' : 'c'
           \}
-    let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
-          \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
+    let l:keyword.abbr =  (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
+          \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
 
     call add(l:keyword_list, l:keyword)
-    let l:commands_prototype[l:word] = l:word
   endfor
   let s:global_candidates_list.commands_prototype = l:commands_prototype
 
