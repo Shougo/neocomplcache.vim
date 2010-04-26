@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2010
+" Last Modified: 26 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -63,24 +63,17 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  if neocomplcache#is_auto_complete() && a:cur_keyword_str != '.'
-        \&& len(a:cur_keyword_str) < s:completion_length
+  if (neocomplcache#is_auto_complete() && a:cur_keyword_str != '.'
+        \&& len(a:cur_keyword_str) < s:completion_length)
+        \|| a:cur_keyword_str =~ '^\.'
     return []
   endif
-
-  let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
 
   let l:list = []
-  
-  if a:cur_keyword_str =~ '^\.'
-    " Dictionary.
-    return []
-  endif
-
-  let l:prev_word = neocomplcache#get_prev_word(a:cur_keyword_str)
-  if l:prev_word =~ '^\%(setl\%[ocal]\|setg\%[lobal]\|set\)$'
-    let l:list += neocomplcache#complfunc#vim_complete#helper#option(l:cur_text, a:cur_keyword_str)
-  elseif a:cur_keyword_str =~ '^&\%([gl]:\)\?'
+  let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
+  let l:command = neocomplcache#complfunc#vim_complete#get_command(l:cur_text)
+  if a:cur_keyword_str =~ '^&\%([gl]:\)\?'
+    " Options.
     let l:prefix = matchstr(a:cur_keyword_str, '&\%([gl]:\)\?')
     let l:options = deepcopy(neocomplcache#complfunc#vim_complete#helper#option(l:cur_text, a:cur_keyword_str))
     for l:keyword in l:options
@@ -89,32 +82,19 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     endfor
     let l:list += l:options
   elseif l:cur_text =~ '\<has(''\h\w*$'
+    " Features.
     let l:list += neocomplcache#complfunc#vim_complete#helper#feature(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '\<\%(map\|cm\%[ap]\|cno\%[remap]\|im\%[ap]\|ino\%[remap]\|lm\%[ap]\|ln\%[oremap]\|nm\%[ap]\|nn\%[oremap]\|no\%[remap]\|om\%[ap]\|ono\%[remap]\|smap\|snor\%[emap]\|vm\%[ap]\|vn\%[oremap]\|xm\%[ap]\|xn\%[oremap]\)\>'
-    let l:list += neocomplcache#complfunc#vim_complete#helper#mapping(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '\<au\%[tocmd]!\?'
-    let l:list += neocomplcache#complfunc#vim_complete#helper#autocmd_args(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '\<aug\%[roup]'
-    let l:list += neocomplcache#complfunc#vim_complete#helper#augroup(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '\<com\%[mand]!\?'
-    let l:list += neocomplcache#complfunc#vim_complete#helper#command_args(l:cur_text, a:cur_keyword_str)
   elseif l:cur_text =~ '^\$'
+    " Environment.
     let l:list += neocomplcache#complfunc#vim_complete#helper#environment(l:cur_text, a:cur_keyword_str)
   endif
 
   if l:cur_text =~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
     " Commands.
     let l:list += neocomplcache#complfunc#vim_complete#helper#command(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '\<let\s\+[[:alnum:]_:]*$'
-    " Variables.
-    let l:list += neocomplcache#complfunc#vim_complete#helper#var(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ 
-        \'\<call\s\+\%(<[sS][iI][dD]>\|[sSgGbBwWtTlL]:\)\?\%(\i\|[#.]\|{.\{-1,}}\)*\s*(\?$'
-    " Functions.
-    let l:list += neocomplcache#complfunc#vim_complete#helper#function(l:cur_text, a:cur_keyword_str)
   else
-    " Expressions.
-    let l:list += neocomplcache#complfunc#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
+    " Commands args.
+    let l:list += neocomplcache#complfunc#vim_complete#helper#get_command_completion(l:command, l:cur_text, a:cur_keyword_str)
   endif
 
   return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
@@ -124,7 +104,7 @@ function! neocomplcache#complfunc#vim_complete#get_rank()"{{{
   return 100
 endfunction"}}}
 
-function! neocomplcache#complfunc#vim_complete#get_cur_text()
+function! neocomplcache#complfunc#vim_complete#get_cur_text()"{{{
   let l:cur_text = neocomplcache#get_cur_text()
   let l:line = line('%')
   while l:cur_text =~ '^\s*\\' && l:line > 1
@@ -133,6 +113,9 @@ function! neocomplcache#complfunc#vim_complete#get_cur_text()
   endwhile
 
   return l:cur_text
-endfunction
+endfunction"}}}
+function! neocomplcache#complfunc#vim_complete#get_command(cur_text)"{{{
+  return matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
+endfunction"}}}
 
 " vim: foldmethod=marker
