@@ -38,8 +38,8 @@ breaka[dd]      func [lnum] {name}
 breakd[el]      {nr}
 breakl[ist]
 bro[wse]        {command}
-bufdo[]         {cmd}
-buffers[]
+bufdo         {cmd}
+buffers
 bun[load]       {bufname}
 bw[ipeout]      {bufname}
 c[hange]
@@ -52,10 +52,10 @@ cad[dexpr]      {expr}
 caddf[ile]      [errorfile]
 cal[l]          {name}([arguments])
 cat[ch]         /{pattern}/
-cb[uffer][]     [bufnr]
+cb[uffer]     [bufnr]
 cc              [nr]
 ccl[ose]
-cd[]            {path}
+cd            {path}
 ce[nter]        [width]
 cex[pr]         {expr}
 cf[ile]         [errorfile]
@@ -141,7 +141,7 @@ exe[cute]       {expr1} ..
 exi[t]          [++opt] [file]
 exu[sage]
 f[ile]
-files[]
+files
 filet[ype]
 fin[d]          [++opt] [+cmd] {file}
 fina[lly]
@@ -172,7 +172,7 @@ i[nsert]
 ia[bbrev]       [<expr>] [lhs] [rhs]
 iabc[lear]
 if              {expr1}
-ij[ump][]       [count] [/]pattern[/]
+ij[ump]       [count] [/]pattern[/]
 il[ist]         [/]pattern[/]
 im[ap]          {lhs} {rhs}
 imapc[lear]
@@ -373,7 +373,6 @@ smapc[lear]
 sme[nu]         {menu}
 sn[ext]         [++opt] [+cmd] [file ..]
 sni[ff]         request [symbol]
-sno[magic]      ...
 sno[remap]      {lhs} {rhs}
 snoreme[nu]     {menu}
 sor[t]          [i][u][r][n][x][o] [/{pattern}/]
