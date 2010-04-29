@@ -608,6 +608,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-04-29
     * Use b:changedtick.
+    * Ignore command line window caching.
 
 2010-04-26
     * Improved vim_complete. Recognize context.

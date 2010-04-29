@@ -422,6 +422,11 @@ function! s:word_caching(srcname)"{{{
   " Initialize source.
   call s:initialize_source(a:srcname)
 
+  if fnamemodify(bufname(str2nr(a:srcname)), ':t') ==# '[Command Line]'
+    " Ignore caching.
+    return
+  endif
+
   if s:caching_from_cache(a:srcname) == 0
     " Caching from cache.
     return
