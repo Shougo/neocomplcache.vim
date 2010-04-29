@@ -252,6 +252,14 @@ g:NeoComplCache_EnableCursorHoldI			*g:NeoComplCache_EnableCursorHoldI*
 	
 		Default value is 0.
 
+g:NeoComplCache_EnableAutoSelect			*g:NeoComplCache_EnableAutoSelect*
+		When neocomplcache displays candidates, this option controls
+		whether neocomplcache selects the first candidate
+		automatically.  If you enable this option, neocomplcache's
+		completion behaivior is like |AutoComplPop|.
+
+		Default value is 0.
+
 g:NeoComplCache_CursorHoldITime				*g:NeoComplCache_CursorHoldITime*
 		This variable defines time of automatic completion by a milli second unit.
 		
@@ -609,6 +617,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-04-29
     * Use b:changedtick.
     * Ignore command line window caching.
+    * Added g:NeoComplCache_EnableAutoSelect option.
 
 2010-04-26
     * Improved vim_complete. Recognize context.

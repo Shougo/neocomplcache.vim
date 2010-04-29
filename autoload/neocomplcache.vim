@@ -995,7 +995,11 @@ function! s:complete(is_moved)"{{{
     let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str . l:norrowing) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    if g:NeoComplCache_EnableAutoSelect
+      call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+    else
+      call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    endif
     return
   endif
   
@@ -1062,7 +1066,11 @@ function! s:complete(is_moved)"{{{
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
         \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
 
-  call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+  if g:NeoComplCache_EnableAutoSelect
+    call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+  else
+    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+  endif
   let s:changedtick = b:changedtick
 endfunction"}}}
 function! s:integrate_completion(complete_result)"{{{

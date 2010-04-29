@@ -96,6 +96,9 @@ endif
 if !exists('g:NeoComplCache_CursorHoldITime')
     let g:NeoComplCache_CursorHoldITime = 300
 endif
+if !exists('g:NeoComplCache_EnableAutoSelect')
+    let g:NeoComplCache_EnableAutoSelect = 0
+endif
 if !exists('g:NeoComplCache_CachingLimitFileSize')
     let g:NeoComplCache_CachingLimitFileSize = 1000000
 endif

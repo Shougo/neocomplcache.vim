@@ -246,6 +246,13 @@ g:NeoComplCache_EnableCursorHoldI			*g:NeoComplCache_EnableCursorHoldI*
 		
 		副作用があるので、初期値は0である。
 
+g:NeoComplCache_EnableAutoSelect			*g:NeoComplCache_EnableAutoSelect*
+		補完候補を出すときに、自動的に一番上の候補を選択するかどうか
+		を制御する。 このオプションを有効化すると、|AutoComplPop|と
+		似た補完動作となる。
+		
+		初期値は0である。
+
 g:NeoComplCache_SkipCompletionTime			*g:NeoComplCache_SkipCompletionTime*
 		|g:NeoComplCache_EnableCursorHoldI|が有効になっている場合、
 		自動補完を開始するための計算時間を定義する。このオプションは
