@@ -606,6 +606,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-04-29
+    * Use b:changedtick.
+
 2010-04-25
     * Enable spell_complete in manual_complete.
     * Fixed quickmatch behaivior.

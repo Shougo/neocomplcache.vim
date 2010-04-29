@@ -40,8 +40,6 @@ function! neocomplcache#enable() "{{{
 
   " Initialize"{{{
   let s:complete_lock = {}
-  let s:old_text = ''
-  let s:skipped = 0
   let s:complfuncs_func_table = []
   let s:global_complfuncs = {}
   let s:skip_next_complete = 0
@@ -53,6 +51,7 @@ function! neocomplcache#enable() "{{{
   let s:update_time = &updatetime
   let s:prev_numbered_list = []
   let s:cur_text = ''
+  let s:changedtick = b:changedtick
   "}}}
 
   " Initialize complfuncs table."{{{
@@ -298,7 +297,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
     " Get cursor word.
     let l:cur_text = s:get_cur_text()
-    let s:old_text = l:cur_text
     let s:complete_words = []
 
     " Try complfuncs completion."{{{
@@ -789,7 +787,6 @@ function! neocomplcache#close_popup()"{{{
     return ''
   endif
 
-  let s:old_text = neocomplcache#get_cur_text()
   let s:prev_numbered_list = []
 
   return "\<C-y>"
@@ -821,7 +818,6 @@ endfunction"}}}
 
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   let l:cur_text = s:get_cur_text()
-  let s:old_text = l:cur_text
 
   " Set function.
   let &l:completefunc = 'neocomplcache#manual_complete'
@@ -863,7 +859,6 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
     let &ignorecase = l:ignorecase_save
   endif
 
-  let s:skipped = 0
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
         \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
@@ -875,7 +870,6 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
 endfunction"}}}
 
 function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words)"{{{
-  let s:skipped = 0
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
 
   " Set function.
@@ -936,7 +930,6 @@ function! neocomplcache#complete_common_string()"{{{
 
   " Disable skip.
   let s:skip_next_complete = 0
-  let s:old_text = ''
 
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:common_str
@@ -958,7 +951,8 @@ function! s:complete(is_moved)"{{{
     return
   endif
 
-  if (&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
+  if b:changedtick == s:changedtick ||
+        \(&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
         \|| g:NeoComplCache_DisableAutoComplete
         \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
@@ -969,15 +963,11 @@ function! s:complete(is_moved)"{{{
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
-  if (a:is_moved && g:NeoComplCache_EnableCursorHoldI && l:cur_text == s:old_text)
-        \ || l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
+  if l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
         \ || (exists('b:skk_on') && b:skk_on)
     let s:complete_words = []
     return
   endif
-
-  let l:save_old = s:old_text
-  let s:old_text = l:cur_text
 
   let l:quickmatch_pattern = s:get_quickmatch_pattern()
   if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9;,./]$'
@@ -1012,7 +1002,6 @@ function! s:complete(is_moved)"{{{
   if a:is_moved && g:NeoComplCache_EnableCursorHoldI
     " Dummy cursor move.
     call feedkeys("\<C-r>\<ESC>", 'n')
-    
     return
   endif
   
@@ -1020,12 +1009,12 @@ function! s:complete(is_moved)"{{{
   let s:prev_numbered_list = []
   let s:complete_words = []
   let s:old_complete_words = []
+  let s:changedtick = b:changedtick
 
   " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'
   " Try complfuncs completion."{{{
   let l:complete_result = {}
-  let s:skipped = 0
   for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
     let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
 
@@ -1066,6 +1055,7 @@ function! s:complete(is_moved)"{{{
 
   if empty(l:complete_words)
     let &l:completefunc = 'neocomplcache#manual_complete'
+    let s:changedtick = b:changedtick
     return
   endif
 
@@ -1073,6 +1063,7 @@ function! s:complete(is_moved)"{{{
         \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
 
   call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+  let s:changedtick = b:changedtick
 endfunction"}}}
 function! s:integrate_completion(complete_result)"{{{
   if empty(a:complete_result)
@@ -1140,7 +1131,6 @@ function! s:on_insert_enter()"{{{
   let &updatetime = g:NeoComplCache_CursorHoldITime
 endfunction"}}}
 function! s:on_insert_leave()"{{{
-  let s:old_text = ''
   let s:skip_next_complete = 0
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
