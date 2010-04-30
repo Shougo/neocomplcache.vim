@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2010
+" Last Modified: 30 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -966,6 +966,7 @@ function! s:complete(is_moved)"{{{
   if l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
         \ || (exists('b:skk_on') && b:skk_on)
     let s:complete_words = []
+    let s:old_complete_words = []
     return
   endif
 
@@ -988,14 +989,12 @@ function! s:complete(is_moved)"{{{
         \&& !empty(s:old_complete_words)
         \&& l:cur_text =~ l:quickmatch_pattern.'$'
         \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
-        \&& neocomplcache#head_match(l:cur_text, l:save_old)
     " Print quickmatch list.
-    let l:norrowing = l:cur_text[len(l:save_old) : -len(l:quickmatch_pattern)-1]
-    let s:cur_keyword_pos = s:old_cur_keyword_pos
-    let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str . l:norrowing) 
+    let s:cur_keywordpos = s:old_cur_keyword_pos
+    let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
-    if g:NeoComplCache_EnableAutoSelect
+    if g:NeoComplCache_EnableAutoSelect && mapcheck('<CR>', 'i') == ''
       call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
     else
       call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -1066,7 +1065,7 @@ function! s:complete(is_moved)"{{{
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
         \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
 
-  if g:NeoComplCache_EnableAutoSelect
+  if g:NeoComplCache_EnableAutoSelect && mapcheck('<CR>', 'i') == ''
     call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
   else
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')

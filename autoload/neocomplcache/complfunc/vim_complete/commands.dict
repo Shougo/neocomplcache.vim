@@ -245,7 +245,7 @@ mapclear	; clear all mappings for Normal and Visual mode
 marks	; list all marks
 match	; define a match to highlight
 menu	; enter a new menu item
-menutranslate] add a menu translation item
+menutranslate	; add a menu translation item
 messages	; view previously displayed messages
 mkexrc	; write current mappings and settings to a file
 mksession	; write session info to a file
@@ -348,7 +348,7 @@ sbnext	; split window and go to next file in the buffer list
 sbprevious	; split window and go to previous file in the buffer list
 sbrewind	; split window and go to first file in the buffer list
 scriptnames	; list names of all sourced Vim scripts
-scriptencodingng]	; encoding used in sourced Vim script
+scriptencodingng	; encoding used in sourced Vim script
 scscope	; split window and execute cscope command
 set	; show or set options
 setfiletype	; set 'filetype', unless it was set already
@@ -385,7 +385,7 @@ srewind	; split window and go to first file in the argument list
 stop	; suspend the editor or escape to a shell
 stag	; split window and jump to a tag
 startinsert	; start Insert mode
-startgreplace] start Virtual Replace mode
+startgreplace	; start Virtual Replace mode
 startreplace	; start Replace mode
 stopinsert	; stop Insert mode
 stjump	; do "tjump" and split window
