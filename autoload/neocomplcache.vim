@@ -787,6 +787,7 @@ function! neocomplcache#close_popup()"{{{
     return ''
   endif
 
+  let s:skip_next_complete = 1
   let s:prev_numbered_list = []
 
   return "\<C-y>"
@@ -946,11 +947,6 @@ function! s:on_moved_i()"{{{
   call s:complete(1)
 endfunction"}}}
 function! s:complete(is_moved)"{{{
-  if s:skip_next_complete
-    let s:skip_next_complete = 0
-    return
-  endif
-
   if b:changedtick == s:changedtick ||
         \(&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
@@ -1005,6 +1001,11 @@ function! s:complete(is_moved)"{{{
   if a:is_moved && g:NeoComplCache_EnableCursorHoldI
     " Dummy cursor move.
     call feedkeys("\<C-r>\<ESC>", 'n')
+    return
+  endif
+
+  if s:skip_next_complete
+    let s:skip_next_complete = 0
     return
   endif
   

@@ -617,6 +617,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-04-30
     * If <CR> is mapped, g:NeoComplCache_EnableAutoSelect option does not work to avoid a side effect.
+    * Improved neocomplcache#close_popup().
 
 2010-04-29
     * Use b:changedtick.
