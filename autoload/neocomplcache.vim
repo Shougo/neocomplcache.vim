@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2010
+" Last Modified: 01 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -990,7 +990,7 @@ function! s:complete(is_moved)"{{{
     let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
-    if g:NeoComplCache_EnableAutoSelect && mapcheck('<CR>', 'i') == ''
+    if g:NeoComplCache_EnableAutoSelect
       call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
     else
       call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -1066,7 +1066,7 @@ function! s:complete(is_moved)"{{{
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
         \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
 
-  if g:NeoComplCache_EnableAutoSelect && mapcheck('<CR>', 'i') == ''
+  if g:NeoComplCache_EnableAutoSelect
     call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
   else
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')

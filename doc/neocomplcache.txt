@@ -256,8 +256,7 @@ g:NeoComplCache_EnableAutoSelect			*g:NeoComplCache_EnableAutoSelect*
 		When neocomplcache displays candidates, this option controls
 		whether neocomplcache selects the first candidate
 		automatically.  If you enable this option, neocomplcache's
-		completion behaivior is like |AutoComplPop|.  If <CR> is
-		mapped, this option does not work to avoid a side effect.
+		completion behaivior is like |AutoComplPop|.
 
 		Default value is 0.
 
@@ -614,6 +613,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-05-01
+    * Deleted mapping check.
 
 2010-04-30
     * If <CR> is mapped, g:NeoComplCache_EnableAutoSelect option does not work to avoid a side effect.
