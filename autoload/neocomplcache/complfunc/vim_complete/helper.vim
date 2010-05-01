@@ -409,7 +409,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   for l:line in getbufline(a:bufnumber, 1, '$')
     if l:line =~ '\<fu\%[nction]!\?\s\+s:'
       " Get script function.
-      let l:line = substitute(matchstr(l:line, '\<fu\%[nction]!\?\s\+\zs.*'), '".*$', '', '')
+      let l:line = substitute(matchstr(l:line, '\<fu\%[nction]!\?\s\+\zs.*)'), '".*$', '', '')
       let l:orig_line = l:line
       let l:word = matchstr(l:line, l:keyword_pattern)
       if !has_key(l:function_dict, l:word) 
@@ -424,13 +424,13 @@ function! s:get_script_candidates(bufnumber)"{{{
           endif
         endif
         if len(l:word) > g:NeoComplCache_MaxKeywordWidth
-          let l:keyword.abbr = printf(l:abbr_pattern, l:word, l:word[-8:])
+          let l:keyword.abbr = printf(l:abbr_pattern, l:line, l:line[-8:])
         else
-          let keyword.abbr = l:word
+          let keyword.abbr = l:line
         endif
 
         let l:function_dict[l:word] = l:keyword
-        let l:function_prototypes[l:word] = l:orig_line
+        let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
       endif
     elseif l:line =~ '\<let\s\+s:*'
       " Get script variable.
@@ -512,10 +512,15 @@ function! s:caching_prototype_from_dict(dict_name)"{{{
   if empty(l:dict_files)
     return {}
   endif
+  if a:dict_name == 'functions'
+    let l:pattern = '^[[:alnum:]_]\+('
+  else
+    let l:pattern = '^[[:alnum:]_\[\](]\+'
+  endif
 
   let l:keyword_dict = {}
   for l:line in readfile(l:dict_files[0])
-    let l:word = matchstr(l:line, '^[[:alnum:]_\[\]]\+')
+    let l:word = matchstr(l:line, l:pattern)
     let l:rest = l:line[len(l:word):]
     if l:word =~ '\['
       let [l:word_head, l:word_tail] = split(l:word, '\[')
@@ -551,15 +556,29 @@ function! s:get_cmdlist()"{{{
     let l:word = matchstr(line, '\a\w*')
     
     " Analyze prototype.
-    let l:completion = matchstr(line, '\a\w*', matchend(line, '\a\w*'))
-    let l:prototype = ''
-    for l:comp in l:completions
-      if l:comp == l:completion
-        let l:prototype = repeat(' ', 16 - len(l:word)) . l:completion
-        break
+    let l:end = matchend(line, '\a\w*')
+    let l:args = matchstr(line, '[[:digit:]?+*]', l:end)
+    if l:args != '0'
+      let l:completion = matchstr(line, '\a\w*', l:end)
+      let l:prototype = ''
+      for l:comp in l:completions
+        if l:comp == l:completion
+          let l:prototype = repeat(' ', 16 - len(l:word)) . l:completion
+          break
+        endif
+      endfor
+      if l:args == '*'
+        let l:command_prototypes[l:word] = '[' . l:prototype . '] ...'
+      elseif l:args == '?'
+        let l:command_prototypes[l:word] = '[' . l:prototype . ']'
+      elseif l:args == '+'
+        let l:command_prototypes[l:word] = l:prototype . ' ...'
+      else
+        let l:command_prototypes[l:word] = l:prototype
       endif
-    endfor
-    let l:command_prototypes[l:word] = l:prototype
+    else
+      let l:command_prototypes[l:word] = ''
+    endif
     
     let l:abbr = l:word . l:prototype
     let l:keyword =  {
@@ -639,7 +658,7 @@ function! s:get_functionlist()"{{{
 
     call add(l:keyword_list, l:keyword)
 
-    let l:function_prototypes[l:word] = l:orig_line
+    let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
   endfor
 
   let s:global_candidates_list.function_prototypes = l:function_prototypes

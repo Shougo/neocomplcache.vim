@@ -616,6 +616,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-05-01
     * Deleted mapping check.
+    * Improved vim_complete analyze.
 
 2010-04-30
     * If <CR> is mapped, g:NeoComplCache_EnableAutoSelect option does not work to avoid a side effect.
