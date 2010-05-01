@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Apr 2010
+" Last Modified: 02 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,8 +65,7 @@ function! neocomplcache#complfunc#vim_complete#helper#recaching(bufname)"{{{
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"{{{
   " Echo prototype.
-  let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
-        \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'function_prototypes' : {} }
+  let l:script_candidates_list = s:get_cached_script_candidates()
 
   let l:prototype_name = matchstr(a:cur_text, 
         \'\%(<[sS][iI][dD]>\|[sSgGbBwWtTlL]:\)\=\%(\i\|[#.]\|{.\{-1,}}\)*\s*(\ze\%([^(]\|(.\{-})\)*$')
@@ -217,8 +216,7 @@ function! neocomplcache#complfunc#vim_complete#helper#function(cur_text, cur_key
   endif
   
   let l:list = []
-  let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
-        \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'function_prototypes' : {} }
+  let l:script_candidates_list = s:get_cached_script_candidates()
 
   if a:cur_keyword_str =~ '^s:'
     let l:list += l:script_candidates_list.functions
@@ -286,23 +284,29 @@ endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#tag_listfiles(cur_text, cur_keyword_str)"{{{
   return []
 endfunction"}}}
+function! neocomplcache#complfunc#vim_complete#helper#var_dictionary(cur_text, cur_keyword_str)"{{{
+  let l:var_name = matchstr(a:cur_text, '\%(\a:\)\?\h\w*\ze\.\%(\h\w*\%(()\?\)\?\)\?$')
+  if a:cur_text =~ '[swtbgv]:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
+    let l:list = values(get(s:get_cached_script_candidates().dictionary_variables, l:var_name, {}))
+  else
+    let l:list = s:get_local_dictionary_variables(l:var_name)
+  endif
+
+  return l:list
+endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#var(cur_text, cur_keyword_str)"{{{
   " Caching.
   if !has_key(s:global_candidates_list, 'variables')
     let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist(), 'force')
   endif
   
-  let l:list = []
-  if a:cur_keyword_str =~ '^s:'
-    let l:script_candidates_list = has_key(s:script_candidates_list, bufnr('%')) ?
-          \ s:script_candidates_list[bufnr('%')] : { 'functions' : [], 'variables' : [], 'function_prototypes' : {} }
-
-    let l:list += l:script_candidates_list.variables
-  elseif a:cur_keyword_str =~ '^\a:'
-    let l:list += s:global_candidates_list.variables
+  if a:cur_keyword_str =~ '^[swtb]:'
+    let l:list = s:get_cached_script_candidates().variables
+  elseif a:cur_keyword_str =~ '^g:'
+    let l:list = s:global_candidates_list.variables
+  else
+    let l:list = s:get_local_variables()
   endif
-
-  let l:list += s:get_local_variables()
 
   return l:list
 endfunction"}}}
@@ -326,7 +330,7 @@ function! s:get_local_variables()"{{{
   let l:end_line = (line('.') > 100) ? line('.') - 100 : 1
   while l:line_num >= l:end_line
     let l:line = getline(l:line_num)
-    if l:line =~ '\<endf\%[nction]\>'
+    if l:line =~ '\<endf\%[unction]\>'
       break
     elseif l:line =~ '\<fu\%[nction]!\?\s\+'
       " Get function arguments.
@@ -368,10 +372,9 @@ function! s:get_local_variables()"{{{
     let l:line = getline(l:line_num)
 
     if l:line =~ '\<\%(let\|for\)\s\+\a[[:alnum:]_:]*'
-      let l:word = 
-            \matchstr(l:line, '\<\%(let\|for\)\s\+\zs\a[[:alnum:]_:]*')
+      let l:word = matchstr(l:line, '\<\%(let\|for\)\s\+\zs\a[[:alnum:]_:]*')
+      let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
       if !has_key(l:keyword_dict, l:word) 
-        let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
         let l:keyword =  {
               \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
               \ 'kind' : s:get_variable_type(l:expression)
@@ -380,6 +383,68 @@ function! s:get_local_variables()"{{{
               \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
 
         let l:keyword_dict[l:word] = l:keyword
+      elseif l:expression != '' && l:keyword_dict[l:word].kind == ''
+        " Update kind.
+        let l:keyword_dict[l:word].kind = s:get_variable_type(l:expression)
+      endif
+    endif
+
+    let l:line_num += 1
+  endwhile
+
+  return values(l:keyword_dict)
+endfunction"}}}
+function! s:get_local_dictionary_variables(var_name)"{{{
+  " Get local dictionary variable list.
+
+  " Search function.
+  let l:line_num = line('.') - 1
+  let l:end_line = (line('.') > 100) ? line('.') - 100 : 1
+  while l:line_num >= l:end_line
+    let l:line = getline(l:line_num)
+    if l:line =~ '\<fu\%[nction]\>'
+      break
+    endif
+
+    let l:line_num -= 1
+  endwhile
+  let l:line_num += 1
+
+  let l:end_line = line('.') - 1
+  let l:keyword_dict = {}
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+  let l:menu_pattern = '[V] dictionary'
+  let l:var_pattern = a:var_name.'\.\h\w*\%(()\?\)\?'
+  let l:let_pattern = '\<let\s\+'.a:var_name.'\.\h\w*'
+  let l:call_pattern = '\<call\s\+'.a:var_name.'\.\h\w*()\?'
+  while l:line_num <= l:end_line
+    let l:line = getline(l:line_num)
+
+    if l:line =~ l:var_pattern
+      if l:line =~ l:let_pattern
+        let l:word = matchstr(l:line, a:var_name.'\zs\.\h\w*')
+        let l:expression = matchstr(l:line, l:let_pattern.'\s*=\zs.*$')
+        let l:kind = ''
+      elseif l:line =~ l:call_pattern
+        let l:word = matchstr(l:line, a:var_name.'\zs\.\h\w*()\?')
+        let l:kind = '()'
+      else
+        let l:word = matchstr(l:line, a:var_name.'\zs.\h\w*')
+        let l:kind = s:get_variable_type(matchstr(l:line, a:var_name.'\.\h\w*\zs.*$'))
+      endif
+      
+      if !has_key(l:keyword_dict, l:word) 
+        let l:keyword =  {
+              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+              \ 'kind' : l:kind
+              \}
+        let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
+              \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
+
+        let l:keyword_dict[l:word] = l:keyword
+      elseif l:kind != '' && l:keyword_dict[l:word].kind == ''
+        " Update kind.
+        let l:keyword_dict[l:word].kind = l:kind
       endif
     endif
 
@@ -389,16 +454,23 @@ function! s:get_local_variables()"{{{
   return values(l:keyword_dict)
 endfunction"}}}
 
+function! s:get_cached_script_candidates()"{{{
+  return has_key(s:script_candidates_list, bufnr('%')) ?
+        \ s:script_candidates_list[bufnr('%')] : {
+        \   'functions' : [], 'variables' : [], 'function_prototypes' : {}, 'dictionary_variables' : [] }
+endfunction"}}}
 function! s:get_script_candidates(bufnumber)"{{{
   " Get script candidate list.
 
   let l:function_dict = {}
   let l:variable_dict = {}
+  let l:dictionary_variable_dict = {}
   let l:function_prototypes = {}
 
   let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
   let l:menu_pattern_func = '[V] function'
   let l:menu_pattern_var = '[V] variable'
+  let l:menu_pattern_dict = '[V] dictionary'
   let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
 
   if g:NeoComplCache_CachingPercentInStatusline
@@ -417,7 +489,7 @@ function! s:get_script_candidates(bufnumber)"{{{
               \ 'word' : l:word, 'menu' : l:menu_pattern_func, 'icase' : 1, 'kind' : 'f'
               \}
         if len(l:line) > g:NeoComplCache_MaxKeywordWidth
-          let l:line = substitute(l:line, '\(\h\)\w*#', '\1.\~', 'g')
+          let l:line = substitute(l:line, '\(\h\)\w*#', '\1#\~', 'g')
           if len(l:line) > g:NeoComplCache_MaxKeywordWidth
             let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
             let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:5]'), ', '), '')
@@ -432,11 +504,11 @@ function! s:get_script_candidates(bufnumber)"{{{
         let l:function_dict[l:word] = l:keyword
         let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
       endif
-    elseif l:line =~ '\<let\s\+s:*'
+    elseif l:line =~ '\<let\s\+\a[[:alnum:]_:]*\s*='
       " Get script variable.
       let l:word = matchstr(l:line, '\<let\s\+\zs\a[[:alnum:]_:]*')
+      let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
       if !has_key(l:variable_dict, l:word) 
-        let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
         let l:keyword =  {
               \ 'word' : l:word, 'menu' : l:menu_pattern_var, 'icase' : 1,
               \ 'kind' : s:get_variable_type(l:expression)
@@ -445,6 +517,40 @@ function! s:get_script_candidates(bufnumber)"{{{
               \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
 
         let l:variable_dict[l:word] = l:keyword
+      elseif l:expression != '' && l:variable_dict[l:word].kind == ''
+        " Update kind.
+        let l:variable_dict[l:word].kind = s:get_variable_type(l:expression)
+      endif
+    elseif l:line =~ '\a:[[:alnum:]_:]*\.\h\w*\%(()\?\)\?'
+      let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*')
+      if !has_key(l:dictionary_variable_dict, l:var_name) 
+        let l:dictionary_variable_dict[l:var_name] = {}
+      endif
+      
+      " Get dictionary variable.
+      if l:line =~ '\<let\s\+\a:[[:alnum:]_:]*\.\h\w*'
+        let l:word = matchstr(l:line, l:var_name.'\zs\.\h\w*')
+        let l:kind = s:get_variable_type(matchstr(l:line, '\<let\s\+'.l:var_name.'\.\h\w*\s*=\zs.*$'))
+      elseif l:line =~ '\<call\s\+'.l:var_name.'\.\h\w*()\?'
+        let l:word = matchstr(l:line, l:var_name.'\zs\.\h\w*()\?')
+        let l:kind = '()'
+      else
+        let l:word = matchstr(l:line, l:var_name.'\zs\.\h\w*')
+        let l:kind = s:get_variable_type(matchstr(l:line, l:var_name.'\.\h\w*\zs.*$'))
+      endif
+
+      if !has_key(l:dictionary_variable_dict[l:var_name], l:word) 
+        let l:keyword =  {
+              \ 'word' : l:word, 'menu' : l:menu_pattern_dict, 'icase' : 1,
+              \ 'kind' : l:kind
+              \}
+        let l:keyword.abbr =  (len(l:word) > g:NeoComplCache_MaxKeywordWidth)? 
+              \ printf(l:abbr_pattern, l:word, l:word[-8:]) : l:word
+
+        let l:dictionary_variable_dict[l:var_name][l:word] = l:keyword
+      elseif l:kind != '' && l:dictionary_variable_dict[l:var_name][l:word].kind == ''
+        " Update kind.
+        let l:dictionary_variable_dict[l:var_name][l:word].kind = l:kind
       endif
     endif
   endfor
@@ -454,7 +560,8 @@ function! s:get_script_candidates(bufnumber)"{{{
     let &l:statusline = l:statusline_save
   endif
 
-  return { 'functions' : values(l:function_dict), 'variables' : values(l:variable_dict), 'function_prototypes' : l:function_prototypes }
+  return { 'functions' : values(l:function_dict), 'variables' : values(l:variable_dict), 
+        \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : values(l:dictionary_variable_dict) }
 endfunction"}}}
 
 function! s:caching_from_dict(dict_name, kind)"{{{
@@ -804,18 +911,18 @@ function! s:get_endlist()"{{{
 endfunction"}}}
 function! s:get_variable_type(expression)"{{{
   " Analyze variable type.
-  if a:expression =~ '^\s*\d\+\.\d\+'
+  if a:expression =~ '\%(^\|+\)\s*\d\+\.\d\+'
     return '.'
-  elseif a:expression =~ '^\s*\d\+'
+  elseif a:expression =~ '\%(^\|+\)\s*\d\+'
     return '0'
-  elseif a:expression =~ '^\s*["'']'
+  elseif a:expression =~ '\%(^\|\.\)\s*["'']'
     return '""'
   elseif a:expression =~ '\<function('
     return '()'
   elseif a:expression =~
-        \ '^\s*\[\|\<split('
+        \ '\%(^\|+\)\s*\[\|\<split('
     return '[]'
-  elseif a:expression =~ '^\s*{'
+  elseif a:expression =~ '^\s*{\|\.\h[[:alnum:]_:]*'
     return '{}'
   else
     return ''

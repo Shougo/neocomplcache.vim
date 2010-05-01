@@ -614,6 +614,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-02
+    * Implemented dictionary completion in vim_complete.
+
 2010-05-01
     * Deleted mapping check.
     * Improved vim_complete analyze.

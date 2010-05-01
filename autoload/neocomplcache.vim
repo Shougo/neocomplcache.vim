@@ -569,7 +569,7 @@ endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
   if has_key(g:NeoComplCache_PluginCompletionLength, a:plugin_name)
     return g:NeoComplCache_PluginCompletionLength[a:plugin_name]
-  elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'completefunc_complete'
+  elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
     return 0
   else
     return g:NeoComplCache_KeywordCompletionStartLength
