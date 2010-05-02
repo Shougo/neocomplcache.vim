@@ -522,21 +522,21 @@ function! s:get_script_candidates(bufnumber)"{{{
         let l:variable_dict[l:word].kind = s:get_variable_type(l:expression)
       endif
     elseif l:line =~ '\a:[[:alnum:]_:]*\.\h\w*\%(()\?\)\?'
-      let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*')
+      let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
       if !has_key(l:dictionary_variable_dict, l:var_name) 
         let l:dictionary_variable_dict[l:var_name] = {}
       endif
       
       " Get dictionary variable.
       if l:line =~ '\<let\s\+\a:[[:alnum:]_:]*\.\h\w*'
-        let l:word = matchstr(l:line, l:var_name.'\zs\.\h\w*')
-        let l:kind = s:get_variable_type(matchstr(l:line, '\<let\s\+'.l:var_name.'\.\h\w*\s*=\zs.*$'))
-      elseif l:line =~ '\<call\s\+'.l:var_name.'\.\h\w*()\?'
-        let l:word = matchstr(l:line, l:var_name.'\zs\.\h\w*()\?')
+        let l:word = matchstr(l:line, '\a:[[:alnum:]_:]*\zs\.\h\w*')
+        let l:kind = s:get_variable_type(matchstr(l:line, '\<let\s\+\a:[[:alnum:]_:]*\.\h\w*\s*=\zs.*$'))
+      elseif l:line =~ '\<call\s\+\a:[[:alnum:]_:]*\.\h\w*()\?'
+        let l:word = matchstr(l:line, '\a:[[:alnum:]_:]*\zs\.\h\w*()\?')
         let l:kind = '()'
       else
-        let l:word = matchstr(l:line, l:var_name.'\zs\.\h\w*')
-        let l:kind = s:get_variable_type(matchstr(l:line, l:var_name.'\.\h\w*\zs.*$'))
+        let l:word = matchstr(l:line, '\a:[[:alnum:]_:]*\zs\.\h\w*')
+        let l:kind = s:get_variable_type(matchstr(l:line, '\a:[[:alnum:]_:]*\.\h\w*\zs.*$'))
       endif
 
       if !has_key(l:dictionary_variable_dict[l:var_name], l:word) 
