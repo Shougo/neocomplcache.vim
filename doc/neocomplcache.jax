@@ -326,7 +326,8 @@ g:NeoComplCache_OmniPatterns				*g:NeoComplCache_OmniPatterns*
 		オムニ補完するためのキーワードパターンを記録する。 これはファ
 		イルタイプ毎に正規表現で指定されている。
 		
-		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
+		初期値は複雑なので、
+		autoload/neocomplcache/complfunc/omni_complete.vimを参照せよ。
 
 g:NeoComplCache_TagsFilterPatterns			*g:NeoComplCache_TagsFilterPatterns*
 		タグ補完時の候補をフィルタするパターンを記録する。

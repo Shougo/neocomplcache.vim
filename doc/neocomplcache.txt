@@ -341,7 +341,8 @@ g:NeoComplCache_OmniPatterns				*g:NeoComplCache_OmniPatterns*
 		This is appointed in regular expression every file type.
 	
 		Because it is complicated, refer to
-		autoload/neocomplcache.vim for the initial value.
+		autoload/neocomplcache/complfunc/omni_complete.vim for the
+		initial value.
 
 g:NeoComplCache_TagsFilterPatterns			*g:NeoComplCache_TagsFilterPatterns*
 		This dictionary records  a pattern to filter a candidate in
@@ -613,6 +614,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-05-05
+    * Disabled C/C++ Omni patterns.
+    * Improved vimproc#system().
 
 2010-05-02
     * Implemented dictionary completion in vim_complete.

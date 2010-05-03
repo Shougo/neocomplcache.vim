@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2010
+" Last Modified: 04 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -554,8 +554,12 @@ function! neocomplcache#rand(max)"{{{
   return (l:time < 0 ? -l:time : l:time)% (a:max + 1)
 endfunction"}}}
 function! neocomplcache#system(str, ...)"{{{
-  return s:is_vimproc ? (a:0 == 0 ? vimproc#system(a:str) : vimproc#system(a:str, join(a:000)))
+  let l:output = s:is_vimproc ? (a:0 == 0 ? vimproc#system(a:str) : vimproc#system(a:str, join(a:000)))
         \: (a:0 == 0 ? system(a:str) : system(a:str, join(a:000)))
+  if &termencoding != '' && &termencoding != &encoding
+    let l:output = iconv(l:output, &termencoding, &encoding)
+  endif
+  return l:output
 endfunction"}}}
 
 function! neocomplcache#caching_percent()"{{{
@@ -1122,7 +1126,8 @@ function! s:integrate_completion(complete_result)"{{{
     let l:func = 'neocomplcache#compare_prev_rank'
   endif
 
-  let l:complete_words = sort(l:complete_words, l:func)[: g:NeoComplCache_MaxList]
+  let l:complete_words = sort(filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str)),
+        \ l:func)[: g:NeoComplCache_MaxList]
   
   if !g:NeoComplCache_IgnoreCase || 
         \(g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u')
@@ -1132,7 +1137,15 @@ function! s:integrate_completion(complete_result)"{{{
     endfor
   endif
   
-  return [l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
+  " Abbr check.
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+  for l:keyword in l:complete_words
+    if len(l:keyword.abbr) > g:NeoComplCache_MaxKeywordWidth
+      let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-8:])
+    endif
+  endfor
+  
+  return [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 endfunction"}}}
 function! s:on_insert_enter()"{{{
   let s:update_time_save = &updatetime

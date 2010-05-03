@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Mar 2010
+" Last Modified: 04 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,10 +59,10 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
         \'\%(\h\w*\|)\)\.')
   "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'perl',
   "\'\%(\h\w*\|)\)->\h\w*\|\h\w*::')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'c',
-        \'\h\w\+\|\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'cpp',
-        \'\%(\h\w*\|)\)\%(\.\|->\)\h\w*\|\h\w*::')
+  "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'c',
+        "\'\h\w\+\|\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
+  "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'cpp',
+        "\'\%(\h\w*\|)\)\%(\.\|->\)\h\w*\|\h\w*::')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'vimshell',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
   "}}}

@@ -117,6 +117,18 @@ function! neocomplcache#complfunc#vim_complete#helper#get_command_completion(com
     return []
   endif
 endfunction"}}}
+function! neocomplcache#complfunc#vim_complete#helper#get_completion_name(command_name)"{{{
+  if !has_key(s:global_candidates_list, 'command_completions')
+    let s:global_candidates_list.command_completions = s:caching_completion_from_dict('command_completions')
+  endif
+  
+  if has_key(s:global_candidates_list.command_completions, a:command_name) 
+        \&& exists('*neocomplcache#complfunc#vim_complete#helper#'.s:global_candidates_list.command_completions[a:command_name])
+    return s:global_candidates_list.command_completions[a:command_name]
+  else
+    return ''
+  endif
+endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#helper#autocmd_args(cur_text, cur_keyword_str)"{{{
   " Caching.
@@ -198,7 +210,8 @@ function! neocomplcache#complfunc#vim_complete#helper#file(cur_text, cur_keyword
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#filetype(cur_text, cur_keyword_str)"{{{
-  return []
+  return filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 
+        \'fnamemodify(v:val, ":t:r")'), "v:val =~ '^" . neocomplcache#escape_match(a:cur_keyword_str) . "'")
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
   " Caching.
@@ -243,6 +256,9 @@ endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#let(cur_text, cur_keyword_str)"{{{
   if a:cur_text !~ '='
     return neocomplcache#complfunc#vim_complete#helper#var(a:cur_text, a:cur_keyword_str)
+  elseif a:cur_text =~# '\<let\s\+&\%([lg]:\)\?filetype\s*=\s*'
+    " FileType.
+    return neocomplcache#complfunc#vim_complete#helper#filetype(a:cur_text, a:cur_keyword_str)
   else
     return neocomplcache#complfunc#vim_complete#helper#expression(a:cur_text, a:cur_keyword_str)
   endif
@@ -273,7 +289,11 @@ function! neocomplcache#complfunc#vim_complete#helper#option(cur_text, cur_keywo
     endfor
   endif
   
-  return s:internal_candidates_list.options
+  if a:cur_text =~ '\<set\%[local]\s\+filetype='
+    return neocomplcache#complfunc#vim_complete#helper#filetype(a:cur_text, a:cur_keyword_str)
+  else
+    return s:internal_candidates_list.options
+  endif
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#shellcmd(cur_text, cur_keyword_str)"{{{
   return []
@@ -751,7 +771,7 @@ function! s:get_functionlist()"{{{
           \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1
           \}
     if len(l:line) > g:NeoComplCache_MaxKeywordWidth
-      let l:line = substitute(l:line, '\(\h\)\w*#', '\1.\~', 'g')
+      let l:line = substitute(l:line, '\(\h\)\w*#', '\1#\~', 'g')
       if len(l:line) > g:NeoComplCache_MaxKeywordWidth
         let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
         let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:5]'), ', '), '')
@@ -927,5 +947,14 @@ function! s:get_variable_type(expression)"{{{
   else
     return ''
   endif
+endfunction"}}}
+function! s:make_completion_list(list, menu_pattern, kind)"{{{
+  let l:list = []
+  for l:item in a:list
+    call add(l:list, { 'word' : l:ft, 'abbr' : l:ft, 
+          \'menu' : a:menu_pattern, 'icase' : 1, 'kind' : a:kind })
+  endfor 
+
+  return l:list
 endfunction"}}}
 " vim: foldmethod=marker
