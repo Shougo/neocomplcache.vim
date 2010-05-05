@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 May 2010
+" Last Modified: 05 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -957,6 +957,10 @@ function! s:on_moved_i()"{{{
   call s:complete(1)
 endfunction"}}}
 function! s:complete(is_moved)"{{{
+  if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
+    echohl Error | echomsg 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
+    99verbose set completefunc
+  endif
   if b:changedtick == s:changedtick ||
         \(&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])

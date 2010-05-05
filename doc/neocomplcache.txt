@@ -618,6 +618,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-05-05
     * Disabled C/C++ Omni patterns.
     * Improved vimproc#system().
+    * Detect conflicted plugin.
 
 2010-05-02
     * Implemented dictionary completion in vim_complete.
