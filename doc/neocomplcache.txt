@@ -616,55 +616,56 @@ ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG						*neocomplcache-changelog*
 
 2010-05-05
-    * Disabled C/C++ Omni patterns.
-    * Improved vimproc#system().
+* Disabled C/C++ Omni patterns.
+* Improved vimproc#system().
+* Improved g:NeoComplCache_MaxKeywordWidth.
 
 2010-05-02
-    * Implemented dictionary completion in vim_complete.
+* Implemented dictionary completion in vim_complete.
 
 2010-05-01
-    * Deleted mapping check.
-    * Improved vim_complete analyze.
+* Deleted mapping check.
+* Improved vim_complete analyze.
 
 2010-04-30
-    * If <CR> is mapped, g:NeoComplCache_EnableAutoSelect option does not work to avoid a side effect.
-    * Improved neocomplcache#close_popup().
+* If <CR> is mapped, g:NeoComplCache_EnableAutoSelect option does not work to avoid a side effect.
+* Improved neocomplcache#close_popup().
 
 2010-04-29
-    * Use b:changedtick.
-    * Ignore command line window caching.
-    * Added g:NeoComplCache_EnableAutoSelect option.
+* Use b:changedtick.
+* Ignore command line window caching.
+* Added g:NeoComplCache_EnableAutoSelect option.
 
 2010-04-26
-    * Improved vim_complete. Recognize context.
+* Improved vim_complete. Recognize context.
 
 2010-04-25
-    * Enable spell_complete in manual_complete.
-    * Fixed quickmatch behaivior.
-    * Improved user commands analyze in vim_complete.
+* Enable spell_complete in manual_complete.
+* Fixed quickmatch behaivior.
+* Improved user commands analyze in vim_complete.
 
 2010-04-20
-    * Fixed vim completion bug.
-    * Implemented lazy caching in vim_complete.
-    * Enable cache in "[Command line]" buffer.
+* Fixed vim completion bug.
+* Implemented lazy caching in vim_complete.
+* Enable cache in "[Command line]" buffer.
 
 2010-04-17
-    * Improved print prototype behaivior when g:NeoComplCache_CursorHoldITime.
-    * Improved redraw.
-    * Improved for skk.vim.
+* Improved print prototype behaivior when g:NeoComplCache_CursorHoldITime.
+* Improved redraw.
+* Improved for skk.vim.
 
 2010-04-16
-    * Improved print prototype in vim_complete.
+* Improved print prototype in vim_complete.
 
 2010-04-15
-    * Improved vim_complete.
-    - Supported '<,'>command...
-    * Fixed g:NeoComplCache_IgnoreCase bug.
-    - Improved filtering.
-    * Fixed neocomplcache#complete_common_string() bug.
-    * Implemented CursorHoldI completion.
-    * Added g:NeoComplCache_EnableCursorHoldI and g:NeoComplCache_CursorHoldITime options.
-    * Deleted g:NeoComplCache_EnableSkipCompletion and g:NeoComplCache_SkipCompletionTime options.
+* Improved vim_complete.
+- Supported '<,'>command...
+* Fixed g:NeoComplCache_IgnoreCase bug.
+- Improved filtering.
+* Fixed neocomplcache#complete_common_string() bug.
+* Implemented CursorHoldI completion.
+* Added g:NeoComplCache_EnableCursorHoldI and g:NeoComplCache_CursorHoldITime options.
+* Deleted g:NeoComplCache_EnableSkipCompletion and g:NeoComplCache_SkipCompletionTime options.
 
 ChangeLog NeoComplCache 4.20: {{{
 2010-04-15
