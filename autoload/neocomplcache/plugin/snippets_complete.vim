@@ -388,12 +388,10 @@ function! s:set_snippet_pattern(dict)"{{{
         \substitute(a:dict.word, '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+\|<\%(\\n\|\\t\)>\|\s\+', ' ', 'g')
   let l:abbr = (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
         \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
-  let l:name = (len(a:dict.name) > g:NeoComplCache_MaxKeywordWidth)? 
-        \ printf(l:abbr_pattern, a:dict.name, a:dict.name[-8:]) : a:dict.name
 
   let l:dict = {
         \'word' : a:dict.name, 'snip' : l:word,
-        \'abbr' : l:name, 
+        \'abbr' : a:dict.name, 
         \'menu' : l:menu_pattern . l:abbr, 
         \'icase' : 1, 'dup' : 1
         \}

@@ -294,7 +294,6 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
   let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
   let l:menu = printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
   let l:keyword_pattern = l:source.keyword_pattern
 
   let [l:line_cnt, l:max_lines, l:line_num] = [0, len(l:buflines), 0]
@@ -325,16 +324,10 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
           if !has_key(l:source.keyword_cache[l:key], l:match_str)
             " Append list.
-            let l:keyword = {
-                  \'word' : l:match_str, 'menu' : l:menu,
+            let l:source.keyword_cache[l:key][l:match_str] = {
+                  \'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu,
                   \'icase' : 1, 'rank' : 1
                   \}
-
-            let l:keyword.abbr = 
-                  \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
-                  \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
-
-            let l:source.keyword_cache[l:key][l:match_str] = l:keyword
           endif
         else
           let l:line_keyword = l:keywords[l:match_str]

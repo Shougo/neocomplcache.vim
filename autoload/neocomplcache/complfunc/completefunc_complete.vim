@@ -89,32 +89,23 @@ function! neocomplcache#complfunc#completefunc_complete#call_completefunc(funcna
 endfunction"}}}
 
 function! s:get_completefunc_list(list)"{{{
-    let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
     let l:comp_list = []
 
     " Convert string list.
     for str in filter(copy(a:list), 'type(v:val) == '.type(''))
         let l:dict = {
-                    \'word' : str, 'menu' : '[C]', 'icase' : 1
+                    \'word' : str, 'abbr' : str, 'menu' : '[C]', 'icase' : 1
                     \}
-        if len(str) > g:NeoComplCache_MaxKeywordWidth
-            let str = printf(l:abbr_pattern, str, str[-8:])
-        endif
-        let dict.abbr = str
 
         call add(l:comp_list, l:dict)
     endfor
 
     for l:comp in filter(a:list, 'type(v:val) != '.type(''))
         let l:dict = {
-                    \'word' : l:comp.word, 'menu' : '[C]', 'icase' : 1
+                    \'word' : l:comp.word, 
+                    \'abbr' : has_key(l:comp, 'abbr')? l:comp.abbr : l:comp.word,
+                    \'menu' : '[C]', 'icase' : 1
                     \}
-
-        let l:abbr = has_key(l:comp, 'abbr')? l:comp.abbr : l:comp.word
-        if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-            let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
-        endif
-        let dict.abbr = l:abbr
 
         if has_key(l:comp, 'kind')
             let l:dict.kind = l:comp.kind

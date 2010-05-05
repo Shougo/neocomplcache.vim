@@ -119,7 +119,6 @@ function! s:caching_from_syn()"{{{
   endif
 
   let l:group_name = ''
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
   let l:keyword_pattern = neocomplcache#get_keyword_pattern()
 
   let l:dup_check = {}
@@ -158,11 +157,8 @@ function! s:caching_from_syn()"{{{
       if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
             \&& l:match_str =~ '^[[:print:]]\+$'
         let l:keyword = {
-              \ 'word' : l:match_str, 'menu' : l:menu, 'icase' : 1
+              \ 'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu, 'icase' : 1
               \}
-        let l:keyword.abbr = 
-              \ (len(l:match_str) > g:NeoComplCache_MaxKeywordWidth)? 
-              \ printf(l:abbr_pattern, l:match_str, l:match_str[-8:]) : l:match_str
 
         let l:key = tolower(l:keyword.word[: s:completion_length-1])
         if !has_key(l:keyword_lists, l:key)

@@ -218,32 +218,23 @@ function! s:caching(bufname, force)"{{{
 endfunction"}}}
 
 function! s:get_omni_list(list)"{{{
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
   let l:omni_list = []
 
   " Convert string list.
   for str in filter(copy(a:list), 'type(v:val) == '.type(''))
     let l:dict = {
-          \'word' : str, 'menu' : '[O]', 'icase' : 1
+          \'word' : str, 'abbr' : str, 'menu' : '[O]', 'icase' : 1
           \}
-    if len(str) > g:NeoComplCache_MaxKeywordWidth
-      let str = printf(l:abbr_pattern, str, str[-8:])
-    endif
-    let dict.abbr = str
 
     call add(l:omni_list, l:dict)
   endfor
 
   for l:omni in filter(a:list, 'type(v:val) != '.type(''))
     let l:dict = {
-          \'word' : l:omni.word, 'menu' : '[O]', 'icase' : 1
+          \'word' : l:omni.word,
+          \'abbr' : has_key(l:omni, 'abbr')? l:omni.abbr : l:omni.word,
+          \'menu' : '[O]', 'icase' : 1
           \}
-
-    let l:abbr = has_key(l:omni, 'abbr')? l:omni.abbr : l:omni.word
-    if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-      let l:abbr = printf(l:abbr_pattern, l:abbr, l:abbr[-8:])
-    endif
-    let dict.abbr = l:abbr
 
     if has_key(l:omni, 'kind')
       let l:dict.kind = l:omni.kind
