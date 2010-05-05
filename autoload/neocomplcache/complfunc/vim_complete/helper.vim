@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 May 2010
+" Last Modified: 05 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -651,9 +651,9 @@ function! s:get_cmdlist()"{{{
     " Analyze prototype.
     let l:end = matchend(line, '\a\w*')
     let l:args = matchstr(line, '[[:digit:]?+*]', l:end)
+    let l:prototype = ''
     if l:args != '0'
       let l:completion = matchstr(line, '\a\w*', l:end)
-      let l:prototype = ''
       for l:comp in l:completions
         if l:comp == l:completion
           let l:prototype = repeat(' ', 16 - len(l:word)) . l:completion
