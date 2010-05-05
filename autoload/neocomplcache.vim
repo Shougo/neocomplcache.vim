@@ -958,9 +958,10 @@ function! s:on_moved_i()"{{{
 endfunction"}}}
 function! s:complete(is_moved)"{{{
   if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
-    echohl Error | echomsg 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
     99verbose set completefunc
+    echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
   endif
+  
   if b:changedtick == s:changedtick ||
         \(&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
