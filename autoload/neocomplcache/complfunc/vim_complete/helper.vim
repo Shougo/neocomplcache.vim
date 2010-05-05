@@ -488,7 +488,7 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:line = substitute(matchstr(l:line, '\<fu\%[nction]!\?\s\+\zs.*)'), '".*$', '', '')
       let l:orig_line = l:line
       let l:word = matchstr(l:line, l:keyword_pattern)
-      if !has_key(l:function_dict, l:word) 
+      if l:word != '' && !has_key(l:function_dict, l:word) 
         if len(l:line) > g:NeoComplCache_MaxKeywordWidth
           let l:line = substitute(l:line, '\(\h\)\w*#', '\1#\~', 'g')
           if len(l:line) > g:NeoComplCache_MaxKeywordWidth
