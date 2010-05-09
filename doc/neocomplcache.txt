@@ -615,6 +615,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-09
+* neocomplcache disables bell.
+* Improved filename pattern.
+
 2010-05-05
 * Disabled C/C++ Omni patterns.
 * Improved vimproc#system().

@@ -72,8 +72,13 @@ function! neocomplcache#enable() "{{{
   endif
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'default',
         \'\k\+')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'filename',
-        \'\%(\\[^[:alnum:].-]\|[[:alnum:]:@/._+,#$%~=-]\)\+')
+  if has('win32') || has('win64')
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'filename',
+          \'\%(\\[^[:alnum:].-]\|[[:alnum:]:@/._+#$%~-]\)\+')
+  else
+    call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'filename',
+          \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/._+#$%~-]\)\+')
+  endif
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'lisp,scheme,clojure,int-gosh,int-clisp,int-clojure', 
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ruby,int-irb',
@@ -266,6 +271,10 @@ function! neocomplcache#enable() "{{{
   set completeopt-=longest
   set completeopt+=menuone
 
+  " Disable bell.
+  set visualbell
+  set vb t_vb=
+  
   " Initialize.
   for l:complfunc_name in keys(s:global_complfuncs)
     call call(s:global_complfuncs[l:complfunc_name] . 'initialize', [])
