@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 May 2010
+" Last Modified: 11 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -107,23 +107,26 @@ function! neocomplcache#complfunc#vim_complete#helper#print_prototype(cur_text)"
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#helper#get_command_completion(command_name, cur_text, cur_keyword_str)"{{{
-  if !has_key(s:global_candidates_list, 'command_completions')
-    let s:global_candidates_list.command_completions = s:caching_completion_from_dict('command_completions')
-  endif
-  
-  if has_key(s:global_candidates_list.command_completions, a:command_name) 
-        \&& exists('*neocomplcache#complfunc#vim_complete#helper#'.s:global_candidates_list.command_completions[a:command_name])
-    return call('neocomplcache#complfunc#vim_complete#helper#'.s:global_candidates_list.command_completions[a:command_name], [a:cur_text, a:cur_keyword_str])
-  else
+  let l:completion_name = neocomplcache#complfunc#vim_complete#helper#get_completion_name(a:command_name)
+  if l:completion_name == ''
+    " Not found.
     return []
   endif
+  
+  return call('neocomplcache#complfunc#vim_complete#helper#'.l:completion_name, [a:cur_text, a:cur_keyword_str])
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#get_completion_name(command_name)"{{{
+  if !has_key(s:internal_candidates_list, 'command_completions')
+    let s:internal_candidates_list.command_completions = s:caching_completion_from_dict('command_completions')
+  endif
   if !has_key(s:global_candidates_list, 'command_completions')
-    let s:global_candidates_list.command_completions = s:caching_completion_from_dict('command_completions')
+    let s:global_candidates_list.commands = s:get_cmdlist()
   endif
   
-  if has_key(s:global_candidates_list.command_completions, a:command_name) 
+  if has_key(s:internal_candidates_list.command_completions, a:command_name) 
+        \&& exists('*neocomplcache#complfunc#vim_complete#helper#'.s:internal_candidates_list.command_completions[a:command_name])
+    return s:internal_candidates_list.command_completions[a:command_name]
+  elseif has_key(s:global_candidates_list.command_completions, a:command_name) 
         \&& exists('*neocomplcache#complfunc#vim_complete#helper#'.s:global_candidates_list.command_completions[a:command_name])
     return s:global_candidates_list.command_completions[a:command_name]
   else
@@ -184,7 +187,8 @@ function! neocomplcache#complfunc#vim_complete#helper#command_args(cur_text, cur
   return s:internal_candidates_list.command_args + s:internal_candidates_list.command_replaces
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
-  return []
+  return s:make_completion_list(filter(split(glob(a:cur_keyword_str.'*'), '\n'), 
+        \ 'isdirectory(v:val)'), '[V] directory', '')
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#environment(cur_text, cur_keyword_str)"{{{
   " Caching.
@@ -211,8 +215,8 @@ function! neocomplcache#complfunc#vim_complete#helper#file(cur_text, cur_keyword
   return []
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#filetype(cur_text, cur_keyword_str)"{{{
-  return filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 
-        \'fnamemodify(v:val, ":t:r")'), "v:val =~ '^" . neocomplcache#escape_match(a:cur_keyword_str) . "'")
+  return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 
+        \'fnamemodify(v:val, ":t:r")'), "v:val =~ '^" . neocomplcache#escape_match(a:cur_keyword_str) . "'"), '[V] filetype', '')
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
   " Caching.
@@ -644,6 +648,7 @@ function! s:get_cmdlist()"{{{
         \ 'help', 'highlight', 'mapping', 'menu', 'option', 'tag', 'tag_listfiles', 
         \ 'var', 'custom', 'customlist' ]
   let l:command_prototypes = {}
+  let l:command_completions = {}
   let l:menu_pattern = '[V] command'
   for line in split(l:redir, '\n')[1:]
     let l:word = matchstr(line, '\a\w*')
@@ -651,24 +656,22 @@ function! s:get_cmdlist()"{{{
     " Analyze prototype.
     let l:end = matchend(line, '\a\w*')
     let l:args = matchstr(line, '[[:digit:]?+*]', l:end)
-    let l:prototype = ''
     if l:args != '0'
-      let l:completion = matchstr(line, '\a\w*', l:end)
+      let l:prototype = matchstr(line, '\a\w*', l:end)
       for l:comp in l:completions
-        if l:comp == l:completion
-          let l:prototype = repeat(' ', 16 - len(l:word)) . l:completion
+        if l:comp == l:prototype
+          let l:command_completions[l:word] = l:prototype
           break
         endif
       endfor
       if l:args == '*'
-        let l:command_prototypes[l:word] = '[' . l:prototype . '] ...'
+        let l:prototype = '[' . l:prototype . '] ...'
       elseif l:args == '?'
-        let l:command_prototypes[l:word] = '[' . l:prototype . ']'
+        let l:prototype = '[' . l:prototype . ']'
       elseif l:args == '+'
-        let l:command_prototypes[l:word] = l:prototype . ' ...'
-      else
-        let l:command_prototypes[l:word] = l:prototype
+        let l:prototype = l:prototype . ' ...'
       endif
+      let l:command_prototypes[l:word] = repeat(' ', 16 - len(l:word)) . l:prototype
     else
       let l:command_prototypes[l:word] = ''
     endif
@@ -679,6 +682,7 @@ function! s:get_cmdlist()"{{{
           \})
   endfor
   let s:global_candidates_list.command_prototypes = l:command_prototypes
+  let s:global_candidates_list.command_completions = l:command_completions
 
   return l:keyword_list
 endfunction"}}}
@@ -877,7 +881,7 @@ endfunction"}}}
 function! s:make_completion_list(list, menu_pattern, kind)"{{{
   let l:list = []
   for l:item in a:list
-    call add(l:list, { 'word' : l:ft, 'abbr' : l:ft, 
+    call add(l:list, { 'word' : l:item, 'abbr' : l:item, 
           \'menu' : a:menu_pattern, 'icase' : 1, 'kind' : a:kind })
   endfor 
 

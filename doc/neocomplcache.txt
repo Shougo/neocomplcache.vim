@@ -615,6 +615,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-11
+* Fixed vim_complete bugs.
+* Improved vim_complete analyse.
+
 2010-05-09
 * neocomplcache disables bell.
 * Improved filename pattern.
@@ -630,7 +634,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-05-01
 * Deleted mapping check.
-* Improved vim_complete analyze.
+* Improved vim_complete analyse.
 
 2010-04-30
 * If <CR> is mapped, g:NeoComplCache_EnableAutoSelect option does not work to avoid a side effect.
@@ -647,7 +651,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-04-25
 * Enable spell_complete in manual_complete.
 * Fixed quickmatch behaivior.
-* Improved user commands analyze in vim_complete.
+* Improved user commands analsze in vim_complete.
 
 2010-04-20
 * Fixed vim completion bug.
@@ -883,7 +887,7 @@ ChangeLog NeoComplCache 4.00-: {{{
     - Use /dev/stdout in Linux and Mac in include_complete.
     - Deleted caching current buffer in include_complete.
     - Improved tex keyword pattern.
-    - Improved analyze in syntax_complete.
+    - Improved analyse in syntax_complete.
     
      }}}
 ChangeLog NeoComplCache 3.00-: {{{

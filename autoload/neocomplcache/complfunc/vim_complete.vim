@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 May 2010
+" Last Modified: 11 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,8 +103,10 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
       " Commands args.
       let l:list = neocomplcache#complfunc#vim_complete#helper#get_command_completion(l:command, l:cur_text, a:cur_keyword_str)
       
-      " Expression.
-      let l:list += neocomplcache#complfunc#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
+      if l:cur_text =~ '[[(,{]'
+        " Expression.
+        let l:list += neocomplcache#complfunc#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
+      endif
     endif
   endif
 
