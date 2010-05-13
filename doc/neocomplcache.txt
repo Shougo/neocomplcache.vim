@@ -615,6 +615,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-13
+* Fixed quickmatch keyword position bug.
+* Fixed html next keyword pattern.
+
 2010-05-11
 * Fixed vim_complete bugs.
 * Improved vim_complete analyse.

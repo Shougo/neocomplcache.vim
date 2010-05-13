@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 May 2010
+" Last Modified: 13 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,6 +47,7 @@ function! neocomplcache#enable() "{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_cur_keyword_pos = -1
+  let s:quickmatch_keywordpos = -1
   let s:old_complete_words = []
   let s:update_time = &updatetime
   let s:prev_numbered_list = []
@@ -166,7 +167,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_NextKeywordPatterns', 'tex',
         \'\h\w*\*\?[*[{}]')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_NextKeywordPatterns', 'html,xhtml,xml,mkd',
-        \'[[:alnum:]_:-]*>\|[[:alnum:]_-]*="[^"]*"')
+        \'[[:alnum:]_:-]*>\|[^"]*"')
   "}}}
 
   " Initialize same file type lists."{{{
@@ -998,7 +999,7 @@ function! s:complete(is_moved)"{{{
 
     if !empty(l:complete_words)
       let s:complete_words = l:complete_words
-      let s:cur_keyword_pos = s:old_cur_keyword_pos
+      let s:cur_keyword_pos = s:quickmatch_keywordpos
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
@@ -1011,6 +1012,7 @@ function! s:complete(is_moved)"{{{
         \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
     " Print quickmatch list.
     let s:cur_keywordpos = s:old_cur_keyword_pos
+    let s:quickmatch_keywordpos = s:old_cur_keyword_pos
     let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
