@@ -618,6 +618,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-05-13
 * Fixed quickmatch keyword position bug.
 * Fixed html next keyword pattern.
+* Revised completion.
 
 2010-05-11
 * Fixed vim_complete bugs.

@@ -915,6 +915,7 @@ function! neocomplcache#undo_completion()"{{{
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:old_keyword_str
 endfunction"}}}
+
 function! neocomplcache#complete_common_string()"{{{
   if !exists(':NeoComplCacheDisable')
     return ''
@@ -1010,27 +1011,20 @@ function! s:complete(is_moved)"{{{
         \&& !empty(s:old_complete_words)
         \&& l:cur_text =~ l:quickmatch_pattern.'$'
         \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
+
     " Print quickmatch list.
-    let s:cur_keywordpos = s:old_cur_keyword_pos
+    let s:cur_keyword_pos = s:old_cur_keyword_pos
     let s:quickmatch_keywordpos = s:old_cur_keyword_pos
     let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
-    if g:NeoComplCache_EnableAutoSelect
-      call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
-    else
-      call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-    endif
+    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
     return
-  endif
-  
-  if a:is_moved && g:NeoComplCache_EnableCursorHoldI
+  elseif a:is_moved && g:NeoComplCache_EnableCursorHoldI
     " Dummy cursor move.
     call feedkeys("\<C-r>\<ESC>", 'n')
     return
-  endif
-
-  if s:skip_next_complete
+  elseif s:skip_next_complete
     let s:skip_next_complete = 0
     return
   endif
