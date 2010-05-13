@@ -1015,7 +1015,8 @@ function! s:complete(is_moved)"{{{
     " Print quickmatch list.
     let s:cur_keyword_pos = s:old_cur_keyword_pos
     let s:quickmatch_keywordpos = s:old_cur_keyword_pos
-    let s:complete_words = s:make_quickmatch_list(s:old_complete_words, s:cur_keyword_str) 
+    let l:cur_keyword_str = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quickmatch_pattern.'$'))-1])
+    let s:complete_words = s:make_quickmatch_list(s:old_complete_words, l:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
