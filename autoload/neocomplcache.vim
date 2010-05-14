@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2010
+" Last Modified: 14 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,6 +36,7 @@ function! neocomplcache#enable() "{{{
     autocmd CursorHoldI * call s:on_hold_i()
     autocmd InsertEnter * call s:on_insert_enter()
     autocmd InsertLeave * call s:on_insert_leave()
+    autocmd GUIEnter * set vb t_vb=
   augroup END "}}}
 
   " Initialize"{{{
@@ -273,7 +274,6 @@ function! neocomplcache#enable() "{{{
   set completeopt+=menuone
 
   " Disable bell.
-  set visualbell
   set vb t_vb=
   
   " Initialize.
@@ -1000,7 +1000,7 @@ function! s:complete(is_moved)"{{{
 
     if !empty(l:complete_words)
       let s:complete_words = l:complete_words
-      let s:cur_keyword_pos = s:quickmatch_keywordpos
+      let s:cur_keyword_pos = s:old_cur_keyword_pos
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
@@ -1014,7 +1014,6 @@ function! s:complete(is_moved)"{{{
 
     " Print quickmatch list.
     let s:cur_keyword_pos = s:old_cur_keyword_pos
-    let s:quickmatch_keywordpos = s:old_cur_keyword_pos
     let l:cur_keyword_str = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quickmatch_pattern.'$'))-1])
     let s:complete_words = s:make_quickmatch_list(s:old_complete_words, l:cur_keyword_str) 
 
