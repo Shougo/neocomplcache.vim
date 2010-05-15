@@ -94,7 +94,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'perl6,int-perl6',
         \'<\h\w*>\?\|[$@%&][!.*?]\?\h\w*\|\h\w*\%(::\h\w*\)*\%(\s*()\?\)\?\|\.\h\w*\%(()\?\)\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'vim,help',
-        \'\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*\%(=\%(\h\w*\|[01*?+%]\)\?\)\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
+        \'\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'tex',
         \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:]*\*\?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'sh,zsh,int-zsh,int-bash,int-sh',
