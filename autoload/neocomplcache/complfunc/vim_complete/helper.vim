@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2010
+" Last Modified: 15 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -180,7 +180,6 @@ function! neocomplcache#complfunc#vim_complete#helper#command_args(cur_text, cur
   " Caching.
   if !has_key(s:internal_candidates_list, 'command_args')
     let s:internal_candidates_list.command_args = s:caching_from_dict('command_args', '')
-
     let s:internal_candidates_list.command_replaces = s:caching_from_dict('command_replaces', '')
   endif
   
@@ -322,12 +321,12 @@ endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#var(cur_text, cur_keyword_str)"{{{
   " Caching.
   if !has_key(s:global_candidates_list, 'variables')
-    let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist(), 'force')
+    let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist())
   endif
   
   if a:cur_keyword_str =~ '^[swtb]:'
     let l:list = s:get_cached_script_candidates().variables
-  elseif a:cur_keyword_str =~ '^g:'
+  elseif a:cur_keyword_str =~ '^[vg]:'
     let l:list = s:global_candidates_list.variables
   else
     let l:list = s:get_local_variables()
@@ -566,7 +565,7 @@ function! s:caching_from_dict(dict_name, kind)"{{{
 
   let l:menu_pattern = '[V] '.a:dict_name[: -2]
   let l:keyword_pattern =
-        \'^\%(-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
+        \'^\%(-\h\w*\%(=\%(\h\w*\|[01*?+%]\)\?\)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
   let l:keyword_list = []
   for line in readfile(l:dict_files[0])
     call add(l:keyword_list, {
@@ -771,7 +770,7 @@ function! s:get_mappinglist()"{{{
   let l:menu_pattern = '[V] mapping'
   for line in split(l:redir, '\n')
     let l:map = matchstr(line, '^\a*\s*\zs\S\+')
-    if l:map !~ '^<'
+    if l:map !~ '^<' || l:map =~ '^<SNR>'
       continue
     endif
     call add(l:keyword_list, {

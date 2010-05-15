@@ -615,6 +615,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-15
+* Improved vim_complete.
+
 2010-05-14
 * Improved disable bell.
 

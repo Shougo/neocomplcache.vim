@@ -82,7 +82,7 @@ cnoreme[nu]     menu
 co[py]          
 col[der]        
 colo[rscheme]   colorscheme_args
-com[mand]       command
+com[mand]       command_args
 comc[lear]
 comp[iler]      compiler_args
 con[tinue]
