@@ -672,6 +672,7 @@ function! s:get_cmdlist()"{{{
       endif
       let l:command_prototypes[l:word] = repeat(' ', 16 - len(l:word)) . l:prototype
     else
+      let l:prototype = ''
       let l:command_prototypes[l:word] = ''
     endif
     
