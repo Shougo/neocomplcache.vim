@@ -804,41 +804,27 @@ endfunction"}}}
 "}}}
 
 " Key mapping functions."{{{
+" Obsolute.
 function! neocomplcache#close_popup()"{{{
-  if !exists(':NeoComplCacheDisable')
-    return ''
-  endif
-
-  let s:skip_next_complete = 1
-  let s:prev_numbered_list = []
-
   return "\<C-y>"
 endfunction
 "}}}
-
 function! neocomplcache#cancel_popup()"{{{
-  if !exists(':NeoComplCacheDisable')
-    return ''
-  endif
-
-  let s:skip_next_complete = 1
-  let s:prev_numbered_list = []
-
   return "\<C-e>"
 endfunction"}}}
 
+" Wrapper functions.
 function! neocomplcache#manual_filename_complete()"{{{
   return neocomplcache#start_manual_complete('filename_complete')
 endfunction"}}}
-
 function! neocomplcache#manual_omni_complete()"{{{
   return neocomplcache#start_manual_complete('omni_complete')
 endfunction"}}}
-
 function! neocomplcache#manual_keyword_complete()"{{{
   return neocomplcache#start_manual_complete('keyword_complete')
 endfunction"}}}
 
+" Manual complete wrapper.
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   let l:cur_text = s:get_cur_text()
 
@@ -891,7 +877,6 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   " Start complete.
   return "\<C-x>\<C-u>\<C-p>"
 endfunction"}}}
-
 function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words)"{{{
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
 
@@ -977,6 +962,7 @@ function! s:do_complete(is_moved)"{{{
   
   if s:skip_next_complete
     let s:skip_next_complete = 0
+    let s:prev_numbered_list = []
     return
   endif
   

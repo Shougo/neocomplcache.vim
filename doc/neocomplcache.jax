@@ -450,19 +450,11 @@ neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 <
 neocomplcache#close_popup				*neocomplcache#close_popup*
-		inoremap <expr>上で使用する。neocomplcacheのポップアップを閉
-		じ、補完を終了する。 Vim標準の<C-y>よりも確実にポップアップ
-		を閉じることができる。
->
-		inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-y>"
-<
+		この関数は時代遅れなので、将来のバージョンでは削除される予定である。
+
 neocomplcache#cancel_popup				*neocomplcache#cancel_popup*
-		inoremap <expr>上で使用する。neocomplcacheの補完をキャンセル
-		する。 Vim標準の<C-e>よりも確実にポップアップを閉じることが
-		できる。
->
-		inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<C-e>"
-<
+		この関数は時代遅れなので、将来のバージョンでは削除される予定である。
+
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		inoremap <expr>上で使用する。neocomplcacheによって補完した候
 		補を元に戻す。 Vimには確定した補完をキャンセルする機構がない

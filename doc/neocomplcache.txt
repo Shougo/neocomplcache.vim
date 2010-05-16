@@ -490,18 +490,11 @@ neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 
 neocomplcache#close_popup				*neocomplcache#close_popup*
-		Use this function on inoremap <expr>.  Close popup of
-		neocomplcache and finish completion.  You can close popup
-		more surely than <C-y> of the Vim standard.
->
-		inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-y>"
-<
+		This function is obsolute.
+
 neocomplcache#cancel_popup				*neocomplcache#cancel_popup*
-		Use this function on inoremap <expr>.  Cancel completion.
-		You can close popup more surely than <C-e> of the Vim standard.
->
-		inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<C-e>"
-<
+		This function is obsolute.
+
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		Use this function on inoremap <expr>.  Undo inputed
 		candidate.  Because there is not mechanism to cancel
@@ -622,6 +615,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved function display in vim_complete.
 - Added ml keyword pattern.
 - Fixed quickmatch bugs.
+- Deleted obsolute functions.
 
 2010-05-15
 * Improved vim_complete.

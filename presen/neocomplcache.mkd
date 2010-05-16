@@ -429,20 +429,6 @@ neocomplcache Ver.2.50より、ファイルを開くときにすべてのキー�
 Ver.3.00より、`neocomplcache#caching_percent()`で呼び出せるようになりました。
 以前の`neocomplcache#keyword_complete#caching_percent()`は動作しないので注意してください。
 
-## ポップアップメニューを閉じる
-
-Ver.2.45より実装。通常では二回`<C-y>`や`<C-e>`を押さなければポップアップが消えませんが、
-`neocomplcache#close_popup()`や`neocomplcache#cancel_popup()`をキーマッピングに使用することで、確実にポップアップを閉じることができます。
-`neocomplcache#close_popup()`の場合は使用することでキーワードのランクが上昇します。
-
-例：
-`
-" <C-y>: paste.
-inoremap <expr><C-y>  pumvisible() ? neocomplcache#close_popup() :  "\<C-r>0"
-" <C-e>: close popup.
-inoremap <expr><C-e>  pumvisible() ? neocomplcache#cancel_popup() : "\<End>"
-`
-
 ## 確定した補完候補をキャンセルする
 
 Ver.2.67より実装。キーマッピングを定義することで、確定した補完候補をキャンセルできます。
