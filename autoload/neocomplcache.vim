@@ -43,7 +43,6 @@ function! neocomplcache#enable() "{{{
   let s:complete_lock = {}
   let s:complfuncs_func_table = []
   let s:global_complfuncs = {}
-  let s:skip_next_complete = 0
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
@@ -897,8 +896,6 @@ function! neocomplcache#undo_completion()"{{{
   let l:old_keyword_str = s:cur_keyword_str
   let s:cur_keyword_str = l:cur_keyword_str
 
-  let s:skip_next_complete = 1
-
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:old_keyword_str
 endfunction"}}}
@@ -937,9 +934,6 @@ function! neocomplcache#complete_common_string()"{{{
 
   let &ignorecase = l:ignorecase_save
 
-  " Disable skip.
-  let s:skip_next_complete = 0
-
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:common_str
 endfunction"}}}
@@ -958,12 +952,6 @@ function! s:do_complete(is_moved)"{{{
   if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
     99verbose set completefunc
     echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
-  endif
-  
-  if s:skip_next_complete
-    let s:skip_next_complete = 0
-    let s:prev_numbered_list = []
-    return
   endif
   
   if b:changedtick == s:changedtick ||
@@ -1166,7 +1154,6 @@ function! s:on_insert_enter()"{{{
   let &updatetime = g:NeoComplCache_CursorHoldITime
 endfunction"}}}
 function! s:on_insert_leave()"{{{
-  let s:skip_next_complete = 0
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []

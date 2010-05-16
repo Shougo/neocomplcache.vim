@@ -616,6 +616,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added ml keyword pattern.
 - Fixed quickmatch bugs.
 - Deleted obsolute functions.
+- Deleted obsolute internal variable.
 
 2010-05-15
 * Improved vim_complete.
