@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 May 2010
+" Last Modified: 16 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -126,7 +126,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell,int-ghci',
         \'[[:alpha:]_''][[:alnum:]_'']*')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml,int-ocaml',
-        \'[~]\?[[:alpha:]_''][[:alnum:]_'']*')
+        \'[''`#.]\?\h[[:alnum:]_'']*')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang,int-erl',
         \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'html,xhtml,xml,markdown',
@@ -961,13 +961,13 @@ endfunction"}}}
 " Event functions."{{{
 function! s:on_hold_i()"{{{
   if g:NeoComplCache_EnableCursorHoldI
-    call s:complete(0)
+    call s:do_complete(0)
   endif
 endfunction"}}}
 function! s:on_moved_i()"{{{
-  call s:complete(1)
+  call s:do_complete(1)
 endfunction"}}}
-function! s:complete(is_moved)"{{{
+function! s:do_complete(is_moved)"{{{
   if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
     99verbose set completefunc
     echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
@@ -1021,6 +1021,9 @@ function! s:complete(is_moved)"{{{
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
     return
   elseif a:is_moved && g:NeoComplCache_EnableCursorHoldI
+        \&& (!g:NeoComplCache_EnableUnderbarCompletion || l:cur_text !~ '_')
+        \&& (!g:NeoComplCache_EnableWildCard || l:cur_text !~ '*')
+        \&& ((&filetype != 'vim' && &filetype != 'help') || l:cur_text !~ '#')
     " Dummy cursor move.
     call feedkeys("\<C-r>\<ESC>", 'n')
     return

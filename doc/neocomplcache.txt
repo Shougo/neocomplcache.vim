@@ -615,6 +615,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-16
+- Improved ocaml keyword pattern.
+- Improved wildcard check.
+- '#' as wildcard in vim_complete.
+- Improved function display in vim_complete.
+
 2010-05-15
 * Improved vim_complete.
 

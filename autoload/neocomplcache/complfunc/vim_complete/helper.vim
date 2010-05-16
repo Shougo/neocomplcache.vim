@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2010
+" Last Modified: 16 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -493,11 +493,12 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:word = matchstr(l:line, l:keyword_pattern)
       if l:word != '' && !has_key(l:function_dict, l:word) 
         if len(l:line) > g:NeoComplCache_MaxKeywordWidth
-          let l:line = substitute(l:line, '\(\h\)\w*#', '\1#\~', 'g')
+          let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
           if len(l:line) > g:NeoComplCache_MaxKeywordWidth
             let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
-            let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:5]'), ', '), '')
+            let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
           endif
+        endif
         endif
         
         let l:function_dict[l:word] = {
@@ -728,10 +729,10 @@ function! s:get_functionlist()"{{{
     endif
     
     if len(l:line) > g:NeoComplCache_MaxKeywordWidth
-      let l:line = substitute(l:line, '\(\h\)\w*#', '\1#\~', 'g')
+      let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
       if len(l:line) > g:NeoComplCache_MaxKeywordWidth
         let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
-        let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:5]'), ', '), '')
+        let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
       endif
     endif
 
