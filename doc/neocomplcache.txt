@@ -620,6 +620,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved wildcard check.
 - '#' as wildcard in vim_complete.
 - Improved function display in vim_complete.
+- Added ml keyword pattern.
+- Fixed quickmatch bugs.
 
 2010-05-15
 * Improved vim_complete.

@@ -53,6 +53,7 @@ function! neocomplcache#enable() "{{{
   let s:update_time = &updatetime
   let s:prev_numbered_list = []
   let s:cur_text = ''
+  let s:old_cur_text = ''
   let s:changedtick = b:changedtick
   "}}}
 
@@ -125,7 +126,7 @@ function! neocomplcache#enable() "{{{
         \'\v\h\w*%(\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'haskell,int-ghci',
         \'[[:alpha:]_''][[:alnum:]_'']*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ocaml,int-ocaml',
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'ml,ocaml,int-ocaml,int-sml,int-smlsharp',
         \'[''`#.]\?\h[[:alnum:]_'']*')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_KeywordPatterns', 'erlang,int-erl',
         \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
@@ -199,6 +200,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-perl6', 'perl6')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-ocaml', 'ocaml')
   call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-clojure', 'clojure')
+  call neocomplcache#set_variable_pattern('g:NeoComplCache_SameFileTypeLists', 'int-sml,int-smlsharp', 'sml')
   "}}}
 
   " Initialize member prefix patterns."{{{
@@ -973,6 +975,11 @@ function! s:do_complete(is_moved)"{{{
     echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
   endif
   
+  if s:skip_next_complete
+    let s:skip_next_complete = 0
+    return
+  endif
+  
   if b:changedtick == s:changedtick ||
         \(&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
@@ -987,11 +994,12 @@ function! s:do_complete(is_moved)"{{{
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
         \ || (exists('b:skk_on') && b:skk_on)
+        \ || l:cur_text == s:old_cur_text
     let s:complete_words = []
     let s:old_complete_words = []
     return
   endif
-
+  
   let l:quickmatch_pattern = s:get_quickmatch_pattern()
   if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9;,./]$'
     " Select quickmatch list.
@@ -1005,6 +1013,7 @@ function! s:do_complete(is_moved)"{{{
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
       call feedkeys("\<C-x>\<C-u>", 'n')
+      let s:old_cur_text = l:cur_text
       return 
     endif
   elseif g:NeoComplCache_EnableQuickMatch 
@@ -1019,6 +1028,7 @@ function! s:do_complete(is_moved)"{{{
 
     let &l:completefunc = 'neocomplcache#auto_complete'
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    let s:old_cur_text = l:cur_text
     return
   elseif a:is_moved && g:NeoComplCache_EnableCursorHoldI
         \&& (!g:NeoComplCache_EnableUnderbarCompletion || l:cur_text !~ '_')
@@ -1027,10 +1037,9 @@ function! s:do_complete(is_moved)"{{{
     " Dummy cursor move.
     call feedkeys("\<C-r>\<ESC>", 'n')
     return
-  elseif s:skip_next_complete
-    let s:skip_next_complete = 0
-    return
   endif
+
+  let s:old_cur_text = l:cur_text
   
   let l:is_quickmatch_list = 0
   let s:prev_numbered_list = []

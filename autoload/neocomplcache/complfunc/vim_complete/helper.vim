@@ -499,7 +499,6 @@ function! s:get_script_candidates(bufnumber)"{{{
             let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
           endif
         endif
-        endif
         
         let l:function_dict[l:word] = {
               \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern_func, 'icase' : 1, 'kind' : 'f'

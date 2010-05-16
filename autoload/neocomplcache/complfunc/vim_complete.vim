@@ -110,7 +110,6 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     endif
   endif
 
-  echomsg substitute(a:cur_keyword_str, '#', '*#', 'g')
   return neocomplcache#keyword_filter(l:list, substitute(a:cur_keyword_str, '#', '*#', 'g'))
 endfunction"}}}
 
