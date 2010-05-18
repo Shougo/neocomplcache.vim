@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 May 2010
+" Last Modified: 18 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -335,13 +335,6 @@ function! neocomplcache#complfunc#vim_complete#helper#var(cur_text, cur_keyword_
   return l:list
 endfunction"}}}
 
-function! neocomplcache#complfunc#vim_complete#helper#custom(cur_text, cur_keyword_str, funcname)"{{{
-  return []
-endfunction"}}}
-function! neocomplcache#complfunc#vim_complete#helper#customlist(cur_text, cur_keyword_str, funcname)"{{{
-  return []
-endfunction"}}}
-
 function! s:get_local_variables()"{{{
   " Get local variable list.
 
@@ -672,9 +665,9 @@ function! s:get_cmdlist()"{{{
       endif
       let l:command_prototypes[l:word] = repeat(' ', 16 - len(l:word)) . l:prototype
     else
-      let l:prototype = ''
       let l:command_prototypes[l:word] = ''
     endif
+    let l:prototype = l:command_prototypes[l:word]
     
     call add(l:keyword_list, {
           \ 'word' : l:word, 'abbr' : l:word . l:prototype, 'menu' : l:menu_pattern, 'icase' : 1, 
