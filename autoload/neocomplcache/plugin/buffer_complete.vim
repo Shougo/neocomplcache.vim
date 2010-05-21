@@ -35,7 +35,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     autocmd FileType,BufWritePost * call s:check_source()
     autocmd BufWritePost,CursorHold * call s:update_source()
     " Caching current buffer events
-    autocmd InsertLeave * call s:caching_insert_leave()
+    autocmd CursorHoldI * call s:caching_cursor_holdi()
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
@@ -541,7 +541,7 @@ function! s:check_deleted_buffer()"{{{
   endfor
 endfunction"}}}
 
-function! s:caching_insert_leave()"{{{
+function! s:caching_cursor_holdi()"{{{
   if !has_key(s:sources, bufnr('%')) || has_key(s:caching_disable_list, bufnr('%')) || @. == ''
     return
   endif
