@@ -186,8 +186,31 @@ function! neocomplcache#complfunc#vim_complete#helper#command_args(cur_text, cur
   return s:internal_candidates_list.command_args + s:internal_candidates_list.command_replaces
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
-  return s:make_completion_list(filter(split(glob(a:cur_keyword_str.'*'), '\n'), 
-        \ 'isdirectory(v:val)'), '[V] directory', '')
+  " Check dup.
+  let l:check = {}
+  for keyword in filter(split(substitute(globpath(&cdpath, a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 'isdirectory(v:val)')
+    if !has_key(l:check, keyword) && keyword =~ '/'
+      let l:check[keyword] = keyword
+    endif
+  endfor
+
+  let l:ret = []
+  let l:paths = map(split(&cdpath, ','), 'substitute(v:val, "\\\\", "/", "g")')
+  for keyword in keys(l:check)
+    let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : '[V] directory', 'icase' : &ignorecase }
+    " Path search.
+    for path in l:paths
+      if path != '' && neocomplcache#head_match(l:dict.word, path . '/')
+        let l:dict.word = l:dict.word[len(path)+1 : ]
+        break
+      endif
+    endfor
+
+    call add(l:ret, l:dict)
+  endfor
+  echomsg string(l:dict)
+
+  return l:ret
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#environment(cur_text, cur_keyword_str)"{{{
   " Caching.

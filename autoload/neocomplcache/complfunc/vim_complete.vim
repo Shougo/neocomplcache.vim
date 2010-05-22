@@ -52,6 +52,14 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
   endif
 
   let l:pattern = '\.$\|' . neocomplcache#get_keyword_pattern_end('vim')
+  if l:cur_text !~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
+    let l:command_completion = neocomplcache#complfunc#vim_complete#helper#get_completion_name(
+          \neocomplcache#complfunc#vim_complete#get_command(l:cur_text))
+    if l:command_completion =~ '\%(dir\|file\|shellcmd\)'
+      let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
+    endif
+  endif
+  
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
 
   if g:NeoComplCache_EnableWildCard
@@ -63,14 +71,13 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  if (neocomplcache#is_auto_complete() && a:cur_keyword_str != '.'
+  let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
+  if (neocomplcache#is_auto_complete() && l:cur_text !~ '\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
         \&& len(a:cur_keyword_str) < 2)
     return []
   endif
   
-  let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
-
-  if a:cur_keyword_str=~ '^\.'
+  if l:cur_text =~ '\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$' && a:cur_keyword_str=~ '^\.'
     " Dictionary.
     let l:list = neocomplcache#complfunc#vim_complete#helper#var_dictionary(l:cur_text, a:cur_keyword_str)
   elseif a:cur_keyword_str =~# '^&\%([gl]:\)\?'
@@ -92,7 +99,6 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     " Expression.
     let l:list = neocomplcache#complfunc#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
   else
-    let l:command = neocomplcache#complfunc#vim_complete#get_command(l:cur_text)
     if l:cur_text =~ '^[[:digit:],[:space:]$''<>]*!\s*\f\+$'
       " Shell commands.
       let l:list = neocomplcache#complfunc#vim_complete#helper#shellcmd(l:cur_text, a:cur_keyword_str)
@@ -101,6 +107,8 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
       let l:list = neocomplcache#complfunc#vim_complete#helper#command(l:cur_text, a:cur_keyword_str)
     else
       " Commands args.
+      
+      let l:command = neocomplcache#complfunc#vim_complete#get_command(l:cur_text)
       let l:list = neocomplcache#complfunc#vim_complete#helper#get_command_completion(l:command, l:cur_text, a:cur_keyword_str)
       
       if l:cur_text =~ '[[(,{]'
