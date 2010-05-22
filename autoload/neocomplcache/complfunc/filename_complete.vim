@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 23 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
   let l:is_win = has('win32') || has('win64')
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
   if a:cur_keyword_str =~ '^\$\h\w*'
     let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
@@ -87,16 +86,22 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     let l:len_env = len(l:env_ev)
   else
     let l:len_env = 0
+    
+    if a:cur_keyword_str =~ '^\~\h\w*'
+      let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
+    endif
   endif
+  
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
   try
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-    let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
+    let l:files = split(substitute(globpath(&path, l:glob), '\\', '/', 'g'), '\n')
     if empty(l:files)
       " Add '*' to a delimiter.
       let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
       let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-      let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
+      let l:files = split(substitute(globpath(&path, l:glob), '\\', '/', 'g'), '\n')
     endif
   catch /.*/
     return []
@@ -109,12 +114,15 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
   for word in l:files
     let l:dict = {
-          \'word' : substitute(word, l:home_pattern, '\~/', ''), 'menu' : '[F]', 
-          \'icase' : 1, 'rank' : 6
+          \'word' : word, 'menu' : '[F]', 'icase' : 1, 'rank' : 6
           \}
 
+      let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
+      let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
+    else
+      let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
     endif
 
     call add(l:list, l:dict)
@@ -127,6 +135,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
   for keyword in l:list
     let l:abbr = keyword.word
+    
     if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
       let l:over_len = len(l:abbr) - g:NeoComplCache_MaxKeywordWidth
       let l:prefix_len = (l:over_len > 10) ?  10 : l:over_len

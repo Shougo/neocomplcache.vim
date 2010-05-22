@@ -608,6 +608,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-23
+* Improved filename_complete.
+- Implemented ~Username/ completion in filename_complete.
+- Use 'path' in filename_complete.
+
 2010-05-20
 - Disabled php omni completion.
 - Deleted keyword cache in omni_complete.
