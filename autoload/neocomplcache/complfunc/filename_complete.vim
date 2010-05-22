@@ -112,6 +112,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 
   let l:list = []
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
+  let l:paths = map(split(&l:path, ','), 'substitute(v:val, "\\\\", "/", "g")')
   for word in l:files
     let l:dict = {
           \'word' : word, 'menu' : '[F]', 'icase' : 1, 'rank' : 6
@@ -121,8 +122,18 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
       let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
-    else
+    elseif a:cur_keyword_str =~ '^\~/'
       let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
+    elseif word =~ '^\./\.\.\?/'
+      let l:dict.word = word[2:]
+    else
+      " Path search.
+      for path in l:paths
+        if path != '' && neocomplcache#head_match(word, path . '/')
+          let l:dict.word = l:dict.word[len(path)+1 : ]
+          break
+        endif
+      endfor
     endif
 
     call add(l:list, l:dict)
