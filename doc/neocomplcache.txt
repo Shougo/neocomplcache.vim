@@ -612,6 +612,7 @@ CHANGELOG						*neocomplcache-changelog*
 * Improved filename_complete.
 - Implemented ~Username/ completion in filename_complete.
 - Use 'path' in filename_complete.
+- cd source path when searching include files.
 
 2010-05-20
 - Disabled php omni completion.

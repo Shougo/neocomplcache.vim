@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 23 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -197,7 +197,13 @@ function! s:get_buffer_include_files(bufnumber)"{{{
         let l:suffixes = &l:suffixesadd
     endif
 
+    " Change current directory.
+    let l:cwd_save = getcwd()
+    lcd `=fnamemodify(bufname(a:bufnumber), ':p:h')`
+
     let l:include_files = s:get_include_files(0, getbufline(a:bufnumber, 1, 100), l:filetype, l:pattern, l:path, l:expr)
+
+    lcd `=l:cwd_save`
     
     " Restore option.
     if has_key(g:NeoComplCache_IncludeSuffixes, l:filetype)
