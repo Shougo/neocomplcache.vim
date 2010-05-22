@@ -94,14 +94,15 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
+  let l:path = (a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
   try
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-    let l:files = split(substitute(globpath(&path, l:glob), '\\', '/', 'g'), '\n')
+    let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
     if empty(l:files)
       " Add '*' to a delimiter.
       let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
       let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-      let l:files = split(substitute(globpath(&path, l:glob), '\\', '/', 'g'), '\n')
+      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
     endif
   catch /.*/
     return []
@@ -124,9 +125,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
       let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
-    elseif word =~ '^\./\.\.\?/'
-      let l:dict.word = word[2:]
-    else
+    elseif a:cur_keyword_str !~ '^\.\.\?/'
       " Path search.
       for path in l:paths
         if path != '' && neocomplcache#head_match(word, path . '/')
