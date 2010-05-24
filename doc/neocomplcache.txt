@@ -361,8 +361,8 @@ g:NeoComplCache_SameFileTypeLists			*g:NeoComplCache_SameFileTypeLists*
 
 g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLists*
 		It is a dictionary to connect a dictionary file with file
-		type.  The dictionary's key is filetype and value is a path
-		to a dictionary file.
+		type.  The dictionary's key is filetype and comma-separated
+		multiple value is a path to a dictionary file.
 		
 		Default value is {}.
 
@@ -522,26 +522,34 @@ EXAMPLES						*neocomplcache-examples*
 	let g:NeoComplCache_EnableUnderbarCompletion = 1
 	" Set minimum syntax keyword length.
 	let g:NeoComplCache_MinSyntaxLength = 3
-
+	
 	" Define dictionary.
 	let g:NeoComplCache_DictionaryFileTypeLists = {
 	    \ 'default' : '',
 	    \ 'vimshell' : $HOME.'/.vimshell_hist',
 	    \ 'scheme' : $HOME.'/.gosh_completions'
 	        \ }
-
+	
 	" Define keyword.
 	if !exists('g:NeoComplCache_KeywordPatterns')
 	    let g:NeoComplCache_KeywordPatterns = {}
 	endif
 	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
-
+	
 	" Plugin key-mappings.
 	imap <C-l>     <Plug>(neocomplcache_snippets_expand)
 	smap <C-l>     <Plug>(neocomplcache_snippets_expand)
-	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	inoremap <expr><C-g>     neocomplcache#undo_completion()
 	inoremap <expr><C-l>     neocomplcache#complete_common_string()
+	
+	" Recommended key-mappings.
+	" <CR>: close popup and save indent.
+	inoremap <expr><CR>  (pumvisible() ? "\<C-y>":'') . "\<C-f>\<CR>X\<BS>"
+	" <TAB>: completion.
+	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+	" <C-h>, <BS>: close popup and delete backword char.
+	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
@@ -607,6 +615,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-05-25
+- Revised example settings.
 
 2010-05-23
 * Improved filename_complete.

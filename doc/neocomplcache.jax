@@ -344,6 +344,7 @@ g:NeoComplCache_SameFileTypeLists			*g:NeoComplCache_SameFileTypeLists*
 g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLists*
 		ファイルタイプに辞書ファイルを関連づけるためのディクショナリ。
 		キーにファイルタイプ、値に辞書ファイルへのパスを指定する。
+		','区切りで複数の辞書を指定できる。
 		
 		初期値は空である。
 
@@ -498,9 +499,17 @@ EXAMPLES						*neocomplcache-examples*
 	" Plugin key-mappings.
 	imap <C-l>     <Plug>(neocomplcache_snippets_expand)
 	smap <C-l>     <Plug>(neocomplcache_snippets_expand)
-	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	inoremap <expr><C-g>     neocomplcache#undo_completion()
 	inoremap <expr><C-l>     neocomplcache#complete_common_string()
+	
+	" Recommended key-mappings.
+	" <CR>: close popup and save indent.
+	inoremap <expr><CR>  (pumvisible() ? "\<C-y>":'') . "\<C-f>\<CR>X\<BS>"
+	" <TAB>: completion.
+	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+	" <C-h>, <BS>: close popup and delete backword char.
+	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
