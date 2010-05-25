@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2010
+" Last Modified: 25 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -513,7 +513,7 @@ function! s:check_source()"{{{
 
   " Check new buffer.
   while l:bufnumber <= bufnr('$')
-    if buflisted(l:bufnumber)
+    if bufloaded(l:bufnumber)
       let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
       if (!has_key(s:sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
             \&& !has_key(s:caching_disable_list, l:bufnumber)
@@ -531,7 +531,7 @@ endfunction"}}}
 function! s:check_deleted_buffer()"{{{
   " Check deleted buffer.
   for key in keys(s:sources)
-    if !buflisted(str2nr(key))
+    if !bufloaded(str2nr(key))
       " Save cache.
       call s:save_cache(key)
 
@@ -592,7 +592,7 @@ function! s:caching_buffer(name)"{{{
   endif
 
   if !has_key(s:sources, l:number)
-    if buflisted(l:number)
+    if bufloaded(l:number)
       " Word caching.
       call s:word_caching(l:number)
     endif

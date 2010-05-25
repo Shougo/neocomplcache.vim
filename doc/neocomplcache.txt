@@ -512,6 +512,8 @@ neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
 >
+	" Disable AutoComplPop.
+	let g:acp_enableAtStartup = 1
 	" Use neocomplcache.
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
@@ -615,6 +617,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-05-26
+- Improved buffer cache timing.
+- Detect AutoComplPop.
 
 2010-05-25
 - Revised example settings.

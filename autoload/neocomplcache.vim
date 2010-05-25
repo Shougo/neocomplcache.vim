@@ -949,13 +949,20 @@ function! s:on_moved_i()"{{{
   call s:do_complete(1)
 endfunction"}}}
 function! s:do_complete(is_moved)"{{{
+  " Detect global completefunc.
   if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
     99verbose set completefunc
     echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
+    return
+  endif
+
+  " Detect AutoComplPop.
+  if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
+    echohl Error | echoerr 'Detected enabled AutoComplPop! Disabled neocomplcache.' | echohl None
+    return
   endif
   
-  if b:changedtick == s:changedtick ||
-        \(&buftype !~ 'nofile\|nowrite' && !&modified) || &paste
+  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
         \|| g:NeoComplCache_DisableAutoComplete
         \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')

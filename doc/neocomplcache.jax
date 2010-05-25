@@ -143,7 +143,8 @@ VARIABLES 					*neocomplcache-variables*
 g:NeoComplCache_EnableAtStartup				*g:NeoComplCache_EnableAtStartup*
 		Vim起動時にneocomplcacheを有効にするかどうか制御する。 1なら
 		ば自動で有効化する。このオプションは.vimrcで設定するべきであ
-		る。
+		る。neocomplcacheは|AutoComplPop|と競合するので、同時に使用
+		するべきではない。
 		
 		初期値は0なので、手動で有効にしない限りneocomplcacheは使用で
 		きない。
@@ -472,6 +473,8 @@ neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
 >
+	" Disable AutoComplPop.
+	let g:acp_enableAtStartup = 1
 	" Use neocomplcache.
 	let g:NeoComplCache_EnableAtStartup = 1
 	" Use smartcase.
