@@ -115,8 +115,7 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, complet
     return l:keyword_lists
 endfunction"}}}
 function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
-
-    let l:lines = (buflisted(a:filename) || fnamemodify(a:filename, ':t') == '')?
+    let l:lines = (bufloaded(a:filename) || fnamemodify(a:filename, ':t') == '')?
                 \getbufline(bufnr(a:filename), 1, '$') : readfile(a:filename)
     let l:max_lines = len(l:lines)
 

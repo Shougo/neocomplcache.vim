@@ -37,7 +37,7 @@ function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
 
   " Check buffer.
   while l:bufnumber <= bufnr('$')
-    if getbufvar(l:bufnumber, '&filetype') == 'vim' && buflisted(l:bufnumber)
+    if getbufvar(l:bufnumber, '&filetype') == 'vim' && bufloaded(l:bufnumber)
           \&& !has_key(s:script_candidates_list, l:bufnumber)
       let s:script_candidates_list[l:bufnumber] = s:get_script_candidates(l:bufnumber)
     endif
@@ -59,7 +59,7 @@ function! neocomplcache#complfunc#vim_complete#helper#recaching(bufname)"{{{
   " Caching script candidates.
   let l:bufnumber = a:bufname != '' ? bufnr(a:bufname) : bufnr('%')
 
-  if getbufvar(l:bufnumber, '&filetype') == 'vim' && buflisted(l:bufnumber)
+  if getbufvar(l:bufnumber, '&filetype') == 'vim' && bufloaded(l:bufnumber)
     let s:script_candidates_list[l:bufnumber] = s:get_script_candidates(l:bufnumber)
   endif
   let s:global_candidates_list = {}

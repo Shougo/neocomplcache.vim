@@ -621,6 +621,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-05-26
 - Improved buffer cache timing.
 - Detect AutoComplPop.
+- Changed check buflisted() into bufloaded().
 
 2010-05-25
 - Revised example settings.
