@@ -622,6 +622,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Caching readonly buffer.
 - Fixed menu bug in buffer_complete.
 - Improved recaching behaivior.
+- Improved caching.
 
 2010-05-26
 - Improved buffer cache timing.

@@ -427,8 +427,7 @@ function! s:word_caching(srcname)"{{{
 
   let l:source = s:sources[a:srcname]
 
-  let l:filename = fnamemodify(bufname(str2nr(a:srcname)), ':p')
-  for l:keyword in neocomplcache#cache#load_from_file(l:filename, l:source.keyword_pattern, 'B')
+  for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), l:source.keyword_pattern, 'B')
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
     if !has_key(l:source.keyword_cache, l:key)
       let l:source.keyword_cache[l:key] = {}
