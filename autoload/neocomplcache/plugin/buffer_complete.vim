@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 May 2010
+" Last Modified: 27 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -407,7 +407,7 @@ function! s:initialize_source(srcname)"{{{
         \'keyword_cache' : {}, 'cache_lines' : {}, 'next_word_list' : {}, 
         \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
         \'end_line' : l:end_line , 'cached_last_line' : 1, 'cache_line_cnt' : l:cache_line_cnt, 
-        \'frequencies' : {}
+        \'frequencies' : {}, 'check_sum' : len(join(l:buflines[:4], '\n'))
         \}
 endfunction"}}}
 
@@ -428,7 +428,6 @@ function! s:word_caching(srcname)"{{{
   let l:source = s:sources[a:srcname]
 
   let l:filename = fnamemodify(bufname(str2nr(a:srcname)), ':p')
-
   for l:keyword in neocomplcache#cache#load_from_file(l:filename, l:source.keyword_pattern, 'B')
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
     if !has_key(l:source.keyword_cache, l:key)
@@ -474,23 +473,30 @@ endfunction"}}}
 
 function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
   if !has_key(s:sources, a:srcname)
-    return
+    return 1
+  endif
+
+  let l:source = s:sources[a:srcname]
+
+  if getbufvar(a:srcname, '&buftype') =~ 'nofile'
+    " Check buffer changed.
+    let l:check_sum = len(join(getbufline(a:srcname, 1, 5), '\n'))
+    if l:check_sum != l:source.check_sum
+      " Recaching.
+      call s:word_caching(a:srcname)
+      return 1
+    endif
   endif
 
   if a:start_line == '^'
-    let l:source = s:sources[a:srcname]
-
     let l:start_line = l:source.cached_last_line
-    if a:srcname == bufnr('%')
-      " Update endline.
-    endif
 
     " Check overflow.
     if a:srcname == bufnr('%')
       " Update endline.
       let l:source.end_line = line('$')
     endif
-    
+
     if l:start_line > l:source.end_line && !s:check_changed_buffer(a:srcname)
       " Caching end.
       return -1
@@ -518,7 +524,6 @@ function! s:check_source()"{{{
       if (!has_key(s:sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
             \&& !has_key(s:caching_disable_list, l:bufnumber)
             \&& (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
-            \&& getbufvar(l:bufnumber, '&readonly') == 0
             \&& getfsize(l:bufname) < g:NeoComplCache_CachingLimitFileSize
         " Caching.
         call s:word_caching(l:bufnumber)
