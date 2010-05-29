@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,7 +26,8 @@
 
 function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   " Initialize.
-  let s:completion_length = neocomplcache#get_completion_length('vim_complete')
+  let s:completion_length = has_key(g:NeoComplCache_PluginCompletionLength, 'vim_complete') ? 
+        \ g:NeoComplCache_PluginCompletionLength['vim_complete'] : g:NeoComplCache_KeywordCompletionStartLength
 
   " Set caching event.
   autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()
@@ -73,7 +74,7 @@ endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let l:cur_text = neocomplcache#complfunc#vim_complete#get_cur_text()
   if (neocomplcache#is_auto_complete() && l:cur_text !~ '\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
-        \&& len(a:cur_keyword_str) < 2)
+        \&& len(a:cur_keyword_str) < s:completion_length)
     return []
   endif
   

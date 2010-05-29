@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -306,53 +306,13 @@ endfunction"}}}
 
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
-    " Get cursor word.
-    let l:cur_text = s:get_cur_text()
-    let s:complete_words = []
-
-    " Try complfuncs completion."{{{
-    let l:complete_result = {}
-    for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
-      let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
-      if l:cur_keyword_pos < 0
-        " Try append 'a'.
-        let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text.'a'])
-      endif
-
-      let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-      if l:cur_keyword_pos >= 0 && len(l:cur_keyword_str) >= g:NeoComplCache_ManualCompletionStartLength
-        " Save options.
-        let l:ignorecase_save = &ignorecase
-
-        if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
-          let &ignorecase = 0
-        else
-          let &ignorecase = g:NeoComplCache_IgnoreCase
-        endif
-
-        let l:words = call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])
-
-        let &ignorecase = l:ignorecase_save
-
-        if !empty(l:words)
-          let l:complete_result[l:complfunc_name] = {
-                \'complete_words' : l:words, 
-                \'cur_keyword_pos' : l:cur_keyword_pos, 
-                \'cur_keyword_str' : l:cur_keyword_str, 
-                \'rank' : call(l:complfunc . 'get_rank', [])
-                \}
-        endif
-      endif
-    endfor
-    "}}}
-    let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(l:complete_result)
+    let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(s:get_cur_text()))
     if empty(l:complete_words)
       return -1
     endif
-    let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-          \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
+    let s:complete_words = l:complete_words
 
-    return s:cur_keyword_pos
+    return l:cur_keyword_pos
   else
     return s:complete_words
   endif
@@ -360,6 +320,20 @@ endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{
   if a:findstart
+    " Check text was changed.
+    let l:cached_text = s:cur_text
+    if s:get_cur_text() != l:cached_text
+      " Text was changed.
+      
+      " Restore options.
+      let s:cur_keyword_pos = -1
+      let &l:completefunc = 'neocomplcache#manual_complete'
+      let s:old_complete_words = s:complete_words
+      let s:complete_words = []
+      
+      return -1
+    endif
+    
     let s:old_cur_keyword_pos = s:cur_keyword_pos
     let s:cur_keyword_pos = -1
     return s:old_cur_keyword_pos
@@ -1030,13 +1004,40 @@ function! s:do_complete(is_moved)"{{{
 
   " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'
+
+  " Get complete result.
+  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(l:cur_text))
+
+  if empty(l:complete_words)
+    let &l:completefunc = 'neocomplcache#manual_complete'
+    let s:changedtick = b:changedtick
+    return
+  endif
+
+  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
+        \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
+
+  " Start auto complete.
+  if g:NeoComplCache_EnableAutoSelect
+    call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+  else
+    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+  endif
+  let s:changedtick = b:changedtick
+endfunction"}}}
+function! s:get_complete_result(cur_text)"{{{
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
-    let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
+    let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [a:cur_text])
 
+    if !neocomplcache#is_auto_complete() && l:cur_keyword_pos < 0
+      " Try append 'a'.
+      let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [a:cur_text.'a'])
+    endif
+    
     if l:cur_keyword_pos >= 0
-      let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+      let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
       if len(l:cur_keyword_str) < neocomplcache#get_completion_length(l:complfunc_name)
         " Skip.
         continue
@@ -1066,25 +1067,8 @@ function! s:do_complete(is_moved)"{{{
     endif
   endfor
   "}}}
-
-  " Start auto complete.
-  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(l:complete_result)
-
-  if empty(l:complete_words)
-    let &l:completefunc = 'neocomplcache#manual_complete'
-    let s:changedtick = b:changedtick
-    return
-  endif
-
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-        \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
-
-  if g:NeoComplCache_EnableAutoSelect
-    call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
-  else
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-  endif
-  let s:changedtick = b:changedtick
+  
+  return l:complete_result
 endfunction"}}}
 function! s:integrate_completion(complete_result)"{{{
   if empty(a:complete_result)

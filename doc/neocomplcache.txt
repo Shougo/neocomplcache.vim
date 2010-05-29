@@ -618,6 +618,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-29
+* Detect text was changed.
+- Fixed error when NeoComplCacheDisable.
+- Fixed completion length bugs.
+- Refactoringed.
+
 2010-05-27
 - Caching readonly buffer.
 - Fixed menu bug in buffer_complete.

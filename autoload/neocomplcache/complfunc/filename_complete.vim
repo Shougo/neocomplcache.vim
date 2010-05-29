@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,9 @@
 "=============================================================================
 
 function! neocomplcache#complfunc#filename_complete#initialize()"{{{
+  " Initialize.
   let s:skip_dir = {}
+  let s:completion_length = neocomplcache#get_completion_length('filename_complete')
 endfunction"}}}
 function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}
@@ -52,7 +54,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
     let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
   endif
   let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-  if neocomplcache#is_auto_complete() && len(l:cur_keyword_str) < g:NeoComplCache_KeywordCompletionStartLength
+  if neocomplcache#is_auto_complete() && len(l:cur_keyword_str) < s:completion_length
     return -1
   endif
 

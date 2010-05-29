@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,7 +71,6 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   let s:completion_length = neocomplcache#get_completion_length('omni_complete')
 endfunction"}}}
 function! neocomplcache#complfunc#omni_complete#finalize()"{{{
-  delcommand NeoComplCacheCachingOmni
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
@@ -127,7 +126,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
   endif
   call setpos('.', l:pos)
 
-  if col('.') - l:cur_keyword_pos < s:completion_length 
+  if neocomplcache#is_auto_complete() && col('.') - l:cur_keyword_pos < s:completion_length 
     " Too short completion length.
     return -1
   endif
