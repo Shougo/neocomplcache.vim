@@ -630,6 +630,9 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed completion length bugs.
 - Refactoringed.
 - Added AutoComplPop like behavior settings.
+- Improved vim_complete.
+- Implemented ambiguous command completion.
+- Improved dummy move.
 
 2010-05-27
 - Caching readonly buffer.

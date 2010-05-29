@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -167,10 +167,12 @@ function! neocomplcache#complfunc#vim_complete#helper#command(cur_text, cur_keyw
     let s:internal_candidates_list.command_prototypes = s:caching_prototype_from_dict('command_prototypes')
   endif
   
-  let l:list = neocomplcache#keyword_filter(s:internal_candidates_list.commands, a:cur_keyword_str)
-  let l:list += neocomplcache#keyword_filter(s:global_candidates_list.commands, a:cur_keyword_str)
+  let l:list = s:internal_candidates_list.commands + s:global_candidates_list.commands
+  if bufname('%') !=# '[Command Line]'
+    let l:list = neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
+  endif
 
-  if a:cur_keyword_str =~ '^en\%[d]'
+  if a:cur_keyword_str =~# '^en\%[d]'
     let l:list += s:get_endlist()
   endif
 
@@ -673,12 +675,20 @@ function! s:get_cmdlist()"{{{
     let l:args = matchstr(line, '[[:digit:]?+*]', l:end)
     if l:args != '0'
       let l:prototype = matchstr(line, '\a\w*', l:end)
+      let l:found = 0
       for l:comp in l:completions
         if l:comp == l:prototype
           let l:command_completions[l:word] = l:prototype
+          let l:found = 1
+          
           break
         endif
       endfor
+
+      if !l:found
+        let l:prototype = 'arg'
+      endif
+      
       if l:args == '*'
         let l:prototype = '[' . l:prototype . '] ...'
       elseif l:args == '?'
@@ -686,7 +696,8 @@ function! s:get_cmdlist()"{{{
       elseif l:args == '+'
         let l:prototype = l:prototype . ' ...'
       endif
-      let l:command_prototypes[l:word] = repeat(' ', 16 - len(l:word)) . l:prototype
+      
+      let l:command_prototypes[l:word] = ' ' . repeat(' ', 16 - len(l:word)) . l:prototype
     else
       let l:command_prototypes[l:word] = ''
     endif
@@ -770,7 +781,7 @@ function! s:get_augrouplist()"{{{
 
   let l:keyword_list = []
   let l:menu_pattern = '[V] augroup'
-  for l:group in split(l:redir, '\s')
+  for l:group in split(l:redir . ' END', '\s')
     call add(l:keyword_list, {
           \ 'word' : l:group, 'abbr' : l:group, 'menu' : l:menu_pattern, 'icase' : 1
           \})

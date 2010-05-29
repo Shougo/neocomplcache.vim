@@ -106,6 +106,19 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     elseif l:cur_text =~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
       " Commands.
       let l:list = neocomplcache#complfunc#vim_complete#helper#command(l:cur_text, a:cur_keyword_str)
+      if bufname('%') ==# '[Command Line]'
+        let l:ret = []
+        " Use ambiguous filter.
+        for pat in [
+              \ '^'.a:cur_keyword_str,
+              \ '\C^' . substitute(toupper(a:cur_keyword_str), '.', '\0\\l*', 'g') . '$',
+              \ '\C' . substitute(toupper(a:cur_keyword_str), '.', '\0\\l*', 'g')]
+          let l:ret += filter(copy(l:list), 'v:val.word =~? ' . string(pat))
+        endfor
+        call neocomplcache#used_match_filter()
+
+        return l:ret
+      endif
     else
       " Commands args.
       

@@ -54,6 +54,7 @@ function! neocomplcache#enable() "{{{
   let s:cur_text = ''
   let s:old_cur_text = ''
   let s:changedtick = b:changedtick
+  let s:used_match_filter = 0
   "}}}
 
   " Initialize complfuncs table."{{{
@@ -306,6 +307,9 @@ endfunction"}}}
 
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
+    " Clear flag.
+    let s:used_match_filter = 0
+    
     let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(s:get_cur_text()))
     if empty(l:complete_words)
       return -1
@@ -381,6 +385,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   if a:cur_keyword_str == ''
     return a:list
   elseif neocomplcache#check_match_filter(a:cur_keyword_str)
+    let s:used_match_filter = 1
     " Match filter.
     return filter(a:list, printf("v:val.word =~ %s", 
           \string('^' . neocomplcache#keyword_escape(a:cur_keyword_str))))
@@ -518,6 +523,9 @@ function! neocomplcache#add_dictionaries(dictionaries)"{{{
   endfor
 
   return l:ret
+endfunction"}}}
+function! neocomplcache#used_match_filter()"{{{
+  let s:used_match_filter = 1
 endfunction"}}}
 
 " RankOrder."{{{
@@ -800,6 +808,9 @@ endfunction"}}}
 " Manual complete wrapper.
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   let l:cur_text = s:get_cur_text()
+  
+  " Clear flag.
+  let s:used_match_filter = 0
 
   " Set function.
   let &l:completefunc = 'neocomplcache#manual_complete'
@@ -947,14 +958,14 @@ function! s:do_complete(is_moved)"{{{
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
-  if l:cur_text == '' || char2nr(l:cur_text[-1:]) >= 0x80
-        \ || (exists('b:skk_on') && b:skk_on)
+  if l:cur_text == ''
+        \ || (exists('&iminsert') && &l:iminsert)
         \ || l:cur_text == s:old_cur_text
     let s:complete_words = []
     let s:old_complete_words = []
     return
   endif
-  
+
   let l:quickmatch_pattern = s:get_quickmatch_pattern()
   if g:NeoComplCache_EnableQuickMatch && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9;,./]$'
     " Select quickmatch list.
@@ -986,16 +997,17 @@ function! s:do_complete(is_moved)"{{{
     let s:old_cur_text = l:cur_text
     return
   elseif a:is_moved && g:NeoComplCache_EnableCursorHoldI
-        \&& (!g:NeoComplCache_EnableUnderbarCompletion || l:cur_text !~ '_')
-        \&& (!g:NeoComplCache_EnableWildCard || l:cur_text !~ '*')
-        \&& ((&filetype != 'vim' && &filetype != 'help') || l:cur_text !~ '#')
+        \&& !s:used_match_filter
     " Dummy cursor move.
-    call feedkeys("\<C-r>\<ESC>", 'n')
+    call feedkeys("\<C-g>u", 'n')
     return
   endif
 
   let s:old_cur_text = l:cur_text
   
+  " Clear flag.
+  let s:used_match_filter = 0
+
   let l:is_quickmatch_list = 0
   let s:prev_numbered_list = []
   let s:complete_words = []
@@ -1011,6 +1023,7 @@ function! s:do_complete(is_moved)"{{{
   if empty(l:complete_words)
     let &l:completefunc = 'neocomplcache#manual_complete'
     let s:changedtick = b:changedtick
+    let s:used_match_filter = 0
     return
   endif
 
@@ -1149,6 +1162,7 @@ function! s:on_insert_leave()"{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let &updatetime = s:update_time_save
+  let s:used_match_filter = 0
 endfunction"}}}
 function! s:remove_next_keyword(plugin_name, list)"{{{
   let l:list = a:list
