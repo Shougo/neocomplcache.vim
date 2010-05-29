@@ -624,6 +624,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-05-30
+- Improved help file.
+
 2010-05-29
 * Detect text was changed.
 - Fixed error when NeoComplCacheDisable.
