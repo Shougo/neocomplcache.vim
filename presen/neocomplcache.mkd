@@ -551,32 +551,6 @@ neocomplcache自体が標準で自分好みの設定になっているので、�
 vimshellの履歴ファイルを辞書として登録するのは便利なのでオススメです。
 日本語が候補に出てくると煩わしいため、私はデフォルトで日本語を除外しています。
 
-neocomplcacheを使用するに当たっては、Vimの補完関係の設定も重要なので、
-参考までに私の設定を載せておきます。
-`
-" <TAB> completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" C-jでオムニ補完
-inoremap <expr> <C-j>  &filetype == 'vim' ? "\<C-x>\<C-v>\<C-p>" : "\<C-x>\<C-o>\<C-p>"
-" C-kを押すと行末まで削除
-inoremap <C-k>  <C-o>D
-" C-hで補完を続行しない
-inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-" C-nでneocomplcache補完
-inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : "\<C-x>\<C-u>\<C-p>"
-" C-pでkeyword補完
-inoremap <expr><C-p>  pumvisible() ? "\<C-p>" : "\<C-p>\<C-n>"
-" 途中でEnterしたとき、ポップアップを消して改行し、
-" 改行を連続して入力してもインデント部を保持する
-inoremap <expr><CR> pumvisible() ? "\<C-y>\<CR>X\<BS>" : "\<CR>X\<BS>"
-`
-
-C-nでneocomplcacheの手動補完を呼び出します。
-デバッグや、重すぎて候補が表示されなかったときなどに使います。
-C-pはVim標準のキーワード補完。比較のため残してあります。
-C-jでオムニ補完を起動します。filetypeがVimの時には、Vim commands completionを起動します。
-C-hは一度ポップアップを消去し、ちらついたり、重くならないようにしてます。
-
 ## 知名度
 
 autocomplpop: 79,600件

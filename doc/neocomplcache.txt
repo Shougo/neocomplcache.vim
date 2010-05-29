@@ -552,6 +552,12 @@ EXAMPLES						*neocomplcache-examples*
 	" <C-h>, <BS>: close popup and delete backword char.
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	
+	" AutoComplPop like behavior.
+	"let g:NeoComplCache_EnableAutoSelect = 1
+	"inoremap <expr><CR>  (pumvisible() ? "\<C-e>":'') . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
+	"inoremap <expr><C-h> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
+	"inoremap <expr><BS> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
@@ -623,6 +629,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed error when NeoComplCacheDisable.
 - Fixed completion length bugs.
 - Refactoringed.
+- Added AutoComplPop like behavior settings.
 
 2010-05-27
 - Caching readonly buffer.
@@ -909,7 +916,7 @@ ChangeLog NeoComplCache 4.00-: {{{
     
    4.01:
     - Added filename pattern.
-    - Fixed in TeX behaviour in filename_complete.
+    - Fixed in TeX behavior in filename_complete.
     - Improved garbage collect.
     - Improved next keyword completion.
     - Supported next keyword completion in filename_complete.

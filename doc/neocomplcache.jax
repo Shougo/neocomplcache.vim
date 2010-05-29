@@ -513,6 +513,12 @@ EXAMPLES						*neocomplcache-examples*
 	" <C-h>, <BS>: close popup and delete backword char.
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	
+	" AutoComplPop like behavior.
+	"let g:NeoComplCache_EnableAutoSelect = 1
+	"inoremap <expr><CR>  (pumvisible() ? "\<C-e>":'') . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
+	"inoremap <expr><C-h> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
+	"inoremap <expr><BS> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
