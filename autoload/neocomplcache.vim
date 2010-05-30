@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 30 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,6 +53,7 @@ function! neocomplcache#enable() "{{{
   let s:prev_numbered_list = []
   let s:cur_text = ''
   let s:old_cur_text = ''
+  let s:moved_cur_text = ''
   let s:changedtick = b:changedtick
   let s:used_match_filter = 0
   "}}}
@@ -998,9 +999,12 @@ function! s:do_complete(is_moved)"{{{
     return
   elseif a:is_moved && g:NeoComplCache_EnableCursorHoldI
         \&& !s:used_match_filter
-    " Dummy cursor move.
-    call feedkeys("\<C-g>u", 'n')
-    return
+    if l:cur_text !=# s:moved_cur_text
+      let s:moved_cur_text = l:cur_text
+      " Dummy cursor move.
+      call feedkeys("\<C-r>\<ESC>", 'n')
+      return
+    endif
   endif
 
   let s:old_cur_text = l:cur_text
