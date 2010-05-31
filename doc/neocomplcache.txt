@@ -624,6 +624,13 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-xx-xx
+- 
+
+ChangeLog NeoComplCache 4.30: {{{
+2010-05-31
+- Marked as ver.4.30.
+
 2010-05-30
 - Improved help file.
 
@@ -749,7 +756,7 @@ CHANGELOG						*neocomplcache-changelog*
 * Implemented CursorHoldI completion.
 * Added g:NeoComplCache_EnableCursorHoldI and g:NeoComplCache_CursorHoldITime options.
 * Deleted g:NeoComplCache_EnableSkipCompletion and g:NeoComplCache_SkipCompletionTime options.
-
+}}}
 ChangeLog NeoComplCache 4.20: {{{
 2010-04-15
     * Changed default value of g:NeoComplCache_IgnoreCase.
