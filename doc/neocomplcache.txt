@@ -636,6 +636,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Changed g:neocomplcache_lock_buffer_name_pattern into g:neocomplcache_lock_buffer_name_pattern.
 - Changed NeoComplCacheCachingDisable into NeoComplCacheDisableCaching.
 - Changed NeoComplCacheCachingEnable into NeoComplCacheEnableCaching.
+- Check obsolute options.
 
 ChangeLog NeoComplCache 4.30: {{{
 2010-05-31

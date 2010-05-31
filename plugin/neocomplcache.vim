@@ -38,6 +38,20 @@ set cpo&vim
 command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
 command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
+" Obsolute options check."{{{
+if exists('g:NeoComplCache_EnableAtStartup')
+    echoerr 'g:NeoComplCache_EnableAtStartup option does not work this version of neocomplcache.'
+endif
+if exists('g:NeoComplCache_KeywordPatterns')
+    echoerr 'g:NeoComplCache_KeywordPatterns option does not work this version of neocomplcache.'
+endif
+if exists('g:NeoComplCache_DictionaryFileTypeLists')
+    echoerr 'g:NeoComplCache_DictionaryFileTypeLists option does not work this version of neocomplcache.'
+endif
+if exists('g:NeoComplCache_KeywordCompletionStartLength')
+    echoerr 'g:NeoComplCache_KeywordCompletionStartLength option does not work this version of neocomplcache.'
+endif
+"}}}
 " Global options definition."{{{
 if !exists('g:neocomplcache_max_list')
     let g:neocomplcache_max_list = 100
