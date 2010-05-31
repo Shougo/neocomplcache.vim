@@ -41,7 +41,7 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   let l:max_split = len(split(l:lines[0], '|||'))
 
   if l:max_lines > 3000
-    if g:NeoComplCache_CachingPercentInStatusline
+    if g:neocomplcache_caching_percent_in_statusline
       let l:statusline_save = &l:statusline
     endif
 
@@ -87,13 +87,13 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   catch /E684:/
     call neocomplcache#print_error(v:exception)
     call neocomplcache#print_error('Error occured while analyzing cache!')
-    let l:cache_dir = g:NeoComplCache_TemporaryDir . '/' . a:cache_dir
+    let l:cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
     call neocomplcache#print_error('Please delete cache directory: ' . l:cache_dir)
     return []
   endtry
 
   if l:max_lines > 3000
-    if g:NeoComplCache_CachingPercentInStatusline
+    if g:neocomplcache_caching_percent_in_statusline
       let &l:statusline = l:statusline_save
     endif
     redraw
@@ -127,7 +127,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   let l:max_lines = len(l:lines)
 
   if l:max_lines > 400
-    if g:NeoComplCache_CachingPercentInStatusline
+    if g:neocomplcache_caching_percent_in_statusline
       let l:statusline_save = &l:statusline
     endif
 
@@ -151,7 +151,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   let l:line_cnt = l:print_cache_percent
 
   let l:line_num = 1
-  let l:menu = printf('[%s] %.' . g:NeoComplCache_MaxFilenameWidth . 's', a:mark, fnamemodify(a:filename, ':t'))
+  let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
   let l:keyword_lists = []
   let l:dup_check = {}
 
@@ -168,7 +168,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
       let l:match_str = matchstr(l:line, a:pattern, l:match)
 
       " Ignore too short keyword.
-      if len(l:match_str) >= g:NeoComplCache_MinKeywordLength
+      if len(l:match_str) >= g:neocomplcache_min_keyword_length
             \&& !has_key(l:dup_check, l:match_str)
         " Append list.
         let l:keyword = {
@@ -188,7 +188,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   endfor"}}}
 
   if l:max_lines > 400
-    if g:NeoComplCache_CachingPercentInStatusline
+    if g:neocomplcache_caching_percent_in_statusline
       let &l:statusline = l:statusline_save
     endif
     redraw
@@ -200,7 +200,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   let l:max_lines = len(a:tags_list)
 
   if l:max_lines > 1000
-    if g:NeoComplCache_CachingPercentInStatusline
+    if g:neocomplcache_caching_percent_in_statusline
       let l:statusline_save = &l:statusline
     endif
 
@@ -223,7 +223,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   endif
   let l:line_cnt = l:print_cache_percent
 
-  let l:menu_pattern = printf('[%s] %%.%ds %%.%ds', a:mark, g:NeoComplCache_MaxFilenameWidth, g:NeoComplCache_MaxFilenameWidth)
+  let l:menu_pattern = printf('[%s] %%.%ds %%.%ds', a:mark, g:neocomplcache_max_filename_width, g:neocomplcache_max_filename_width)
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:line_num = 1
@@ -239,7 +239,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
 
       let l:tag = split(substitute(l:line, "\<CR>", '', 'g'), '\t', 1)
       " Add keywords.
-      if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:NeoComplCache_MinKeywordLength
+      if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:neocomplcache_min_keyword_length
             \&& !has_key(l:dup_check, l:tag[0])
         let l:option = {
               \ 'cmd' : substitute(substitute(l:tag[2], '^\%([/?]\^\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'), 
@@ -291,21 +291,21 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   catch /E684:/
     echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
     echohl WarningMsg | echomsg v:exception | echohl None
-    let l:log_file = g:NeoComplCache_TemporaryDir . '/' . a:cache_dir . '/error_log'
+    let l:log_file = g:neocomplcache_temporary_dir . '/' . a:cache_dir . '/error_log'
     echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
     call writefile(a:tags_list, l:log_file)
     return []
   endtry
 
   if l:max_lines > 1000
-    if g:NeoComplCache_CachingPercentInStatusline
+    if g:neocomplcache_caching_percent_in_statusline
       let &l:statusline = l:statusline_save
     endif
     redraw
   endif
 
-  if a:filetype != '' && has_key(g:NeoComplCache_TagsFilterPatterns, a:filetype)
-    call filter(l:keyword_lists, g:NeoComplCache_TagsFilterPatterns[a:filetype])
+  if a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)
+    call filter(l:keyword_lists, g:neocomplcache_tags_filter_patterns[a:filetype])
   endif
 
   return l:keyword_lists
@@ -358,12 +358,12 @@ function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
   call writefile(a:list, l:cache_name)
 endfunction"}}}
 function! neocomplcache#cache#encode_name(cache_dir, filename)
-  let l:dir = printf('%s/%s/', g:NeoComplCache_TemporaryDir, a:cache_dir) 
+  let l:dir = printf('%s/%s/', g:neocomplcache_temporary_dir, a:cache_dir) 
   return l:dir . s:create_hash(l:dir, a:filename)
 endfunction
 function! neocomplcache#cache#check_dir(cache_dir)"{{{
   " Check cache directory.
-  let l:cache_dir = g:NeoComplCache_TemporaryDir . '/' . a:cache_dir
+  let l:cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
   if !isdirectory(l:cache_dir)
     call mkdir(l:cache_dir, 'p')
   endif

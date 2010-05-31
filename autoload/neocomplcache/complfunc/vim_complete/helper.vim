@@ -49,7 +49,7 @@ function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
 endfunction"}}}
 
 function! s:on_moved_i()
-  if g:NeoComplCache_EnableDispalyParameter
+  if g:neocomplcache_enable_display_parameter
     " Print prototype.
     call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
   endif
@@ -498,7 +498,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   let l:menu_pattern_dict = '[V] dictionary'
   let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
 
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let l:statusline_save = &l:statusline
   endif
   call neocomplcache#print_caching('Caching vim from '. bufname(a:bufnumber) .' ... please wait.')
@@ -510,9 +510,9 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:orig_line = l:line
       let l:word = matchstr(l:line, l:keyword_pattern)
       if l:word != '' && !has_key(l:function_dict, l:word) 
-        if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+        if len(l:line) > g:neocomplcache_max_keyword_width
           let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
-          if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+          if len(l:line) > g:neocomplcache_max_keyword_width
             let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
             let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
           endif
@@ -567,7 +567,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   endfor
 
   call neocomplcache#print_caching('Caching done.')
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let &l:statusline = l:statusline_save
   endif
 
@@ -754,9 +754,9 @@ function! s:get_functionlist()"{{{
       continue
     endif
     
-    if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+    if len(l:line) > g:neocomplcache_max_keyword_width
       let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
-      if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+      if len(l:line) > g:neocomplcache_max_keyword_width
         let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
         let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
       endif

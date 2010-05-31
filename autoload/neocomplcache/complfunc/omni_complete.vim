@@ -26,13 +26,13 @@
 
 function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   " Initialize omni completion pattern."{{{
-  if !exists('g:NeoComplCache_OmniPatterns')
-    let g:NeoComplCache_OmniPatterns = {}
+  if !exists('g:neocomplcache_omni_patterns')
+    let g:neocomplcache_omni_patterns = {}
   endif
   if has('ruby')
     try 
       ruby 1
-      call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'ruby',
+      call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'ruby',
             \'[^. *\t]\.\h\w*\|\h\w*::')
     catch
     endtry
@@ -40,30 +40,30 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   if has('python')
     try 
       python 1
-      call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'python',
+      call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'python',
             \'[^. \t]\.\h\w*')
     catch
     endtry
   endif
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'html,xhtml,xml,markdown',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'html,xhtml,xml,markdown',
         \'<[^>]*')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'css',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'css',
         \'^\s\+\w+\|\w+[):;]?\s\+\|[@!]')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'javascript',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'javascript',
         \'[^. \t]\.\%(\h\w*\)\?')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'actionscript',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'actionscript',
         \'[^. \t][.:]\h\w*')
-  "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'php',
+  "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'php',
         "\'[^. \t]->\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+\|\h\w*::')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'java',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'java',
         \'\%(\h\w*\|)\)\.')
-  "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'perl',
+  "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'perl',
   "\'\%(\h\w*\|)\)->\h\w*\|\h\w*::')
-  "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'c',
+  "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'c',
         "\'\h\w\+\|\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
-  "call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'cpp',
+  "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'cpp',
         "\'\%(\h\w*\|)\)\%(\.\|->\)\h\w*\|\h\w*::')
-  call neocomplcache#set_variable_pattern('g:NeoComplCache_OmniPatterns', 'vimshell',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'vimshell',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
   "}}}
 
@@ -78,10 +78,10 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  if has_key(g:NeoComplCache_OmniPatterns, &l:omnifunc)
-    let l:pattern = g:NeoComplCache_OmniPatterns[&l:omnifunc]
-  elseif &filetype != '' && has_key(g:NeoComplCache_OmniPatterns, &filetype)
-    let l:pattern = g:NeoComplCache_OmniPatterns[&filetype]
+  if has_key(g:neocomplcache_omni_patterns, &l:omnifunc)
+    let l:pattern = g:neocomplcache_omni_patterns[&l:omnifunc]
+  elseif &filetype != '' && has_key(g:neocomplcache_omni_patterns, &filetype)
+    let l:pattern = g:neocomplcache_omni_patterns[&filetype]
   else
     let l:pattern = ''
   endif
@@ -90,7 +90,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_text =~ '\*\w\+$'
+  let l:is_wildcard = g:neocomplcache_enable_wildcard && a:cur_text =~ '\*\w\+$'
         \&& neocomplcache#is_auto_complete()
 
   " Check wildcard.
@@ -135,7 +135,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  let l:is_wildcard = g:NeoComplCache_EnableWildCard && a:cur_keyword_str =~ '\*\w\+$'
+  let l:is_wildcard = g:neocomplcache_enable_wildcard && a:cur_keyword_str =~ '\*\w\+$'
         \&& neocomplcache#is_auto_complete()
 
   let l:pos = getpos('.')

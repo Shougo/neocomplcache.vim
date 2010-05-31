@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2010
+" Last Modified: 31 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,21 +38,21 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
     augroup END
     
     " Initialize include pattern."{{{
-    call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludePattern', 'java,haskell', '^import')
+    call neocomplcache#set_variable_pattern('g:neocomplcache_include_patterns', 'java,haskell', '^import')
     "}}}
     " Initialize expr pattern."{{{
-    call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludeExpr', 'haskell',
+    call neocomplcache#set_variable_pattern('g:neocomplcache_include_exprs', 'haskell',
                 \'substitute(v:fname,''\\.'',''/'',''g'')')
     "}}}
     " Initialize path pattern."{{{
     "}}}
     " Initialize suffixes pattern."{{{
-    call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludeSuffixes', 'haskell', '.hs')
+    call neocomplcache#set_variable_pattern('g:neocomplcache_include_suffixes', 'haskell', '.hs')
     "}}}
     
     " Create cache directory.
-    if !isdirectory(g:NeoComplCache_TemporaryDir . '/include_cache')
-        call mkdir(g:NeoComplCache_TemporaryDir . '/include_cache', 'p')
+    if !isdirectory(g:neocomplcache_temporary_dir . '/include_cache')
+        call mkdir(g:neocomplcache_temporary_dir . '/include_cache', 'p')
     endif
     
     " Add command.
@@ -73,11 +73,11 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
         let l:ft = 'nothing'
     endif
     
-    if has_key(g:NeoComplCache_MemberPrefixPatterns, l:ft) 
-                \&& a:cur_keyword_str =~ g:NeoComplCache_MemberPrefixPatterns[l:ft]
+    if has_key(g:neocomplcache_member_prefix_patternss, l:ft) 
+                \&& a:cur_keyword_str =~ g:neocomplcache_member_prefix_patternss[l:ft]
         let l:use_member_filter = 1
         
-        let l:prefix = matchstr(a:cur_keyword_str, g:NeoComplCache_MemberPrefixPatterns[l:ft])
+        let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patternss[l:ft])
         let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
         
         if len(l:cur_keyword_str) >= s:completion_length
@@ -149,7 +149,7 @@ function! s:check_buffer(bufname)"{{{
     let l:bufname = fnamemodify((a:bufname == '')? a:bufname : bufname('%'), ':p')
     let l:bufnumber = bufnr(l:bufname)
     let s:include_info[l:bufnumber] = {}
-    if (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
+    if (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
                 \&& getbufvar(l:bufnumber, '&readonly') == 0
         let l:filetype = getbufvar(l:bufnumber, '&filetype')
         if l:filetype == ''
@@ -177,36 +177,38 @@ function! s:get_buffer_include_files(bufnumber)"{{{
     endif
     
     if l:filetype == 'python'
-                \&& !has_key(g:NeoComplCache_IncludePath, 'python')
+                \&& !has_key(g:neocomplcache_include_paths, 'python')
                 \&& executable('python')
         " Initialize python path pattern.
-        call neocomplcache#set_variable_pattern('g:NeoComplCache_IncludePath', 'python',
+        call neocomplcache#set_variable_pattern('g:neocomplcache_include_paths', 'python',
                     \neocomplcache#system('python -', 'import sys;sys.stdout.write(",".join(sys.path))'))
     endif
     
-    let l:pattern = has_key(g:NeoComplCache_IncludePattern, l:filetype) ? 
-                \g:NeoComplCache_IncludePattern[l:filetype] : getbufvar(a:bufnumber, '&include')
+    let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ? 
+                \g:neocomplcache_include_patterns[l:filetype] : getbufvar(a:bufnumber, '&include')
     if l:pattern == ''
         return []
     endif
-    let l:path = has_key(g:NeoComplCache_IncludePath, l:filetype) ? 
-                \g:NeoComplCache_IncludePath[l:filetype] : getbufvar(a:bufnumber, '&path')
-    let l:expr = has_key(g:NeoComplCache_IncludeExpr, l:filetype) ? 
-                \g:NeoComplCache_IncludeExpr[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
-    if has_key(g:NeoComplCache_IncludeSuffixes, l:filetype)
+    let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ? 
+                \g:neocomplcache_include_paths[l:filetype] : getbufvar(a:bufnumber, '&path')
+    let l:expr = has_key(g:neocomplcache_include_exprs, l:filetype) ? 
+                \g:neocomplcache_include_exprs[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
+    if has_key(g:neocomplcache_include_suffixes, l:filetype)
         let l:suffixes = &l:suffixesadd
     endif
 
     " Change current directory.
     let l:cwd_save = getcwd()
-    lcd `=fnamemodify(bufname(a:bufnumber), ':p:h')`
+    if isdirectory(fnamemodify(bufname(a:bufnumber), ':p:h'))
+      lcd `=fnamemodify(bufname(a:bufnumber), ':p:h')`
+    endif
 
     let l:include_files = s:get_include_files(0, getbufline(a:bufnumber, 1, 100), l:filetype, l:pattern, l:path, l:expr)
 
     lcd `=l:cwd_save`
     
     " Restore option.
-    if has_key(g:NeoComplCache_IncludeSuffixes, l:filetype)
+    if has_key(g:neocomplcache_include_suffixes, l:filetype)
         let &l:suffixesadd = l:suffixes
     endif
     
@@ -223,7 +225,7 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
             else
                 let l:filename = fnamemodify(findfile(matchstr(l:line[l:match_end :], '\f\+'), a:path), ':p')
             endif
-            if filereadable(l:filename) && getfsize(l:filename) < g:NeoComplCache_CachingLimitFileSize
+            if filereadable(l:filename) && getfsize(l:filename) < g:neocomplcache_caching_limit_file_size
                 call add(l:include_files, l:filename)
                 
                 if (a:filetype == 'c' || a:filetype == 'cpp') && a:nestlevel < 1
@@ -245,15 +247,15 @@ function! s:load_from_tags(filename, filetype)"{{{
         return l:keyword_lists
     endif
 
-    if !executable(g:NeoComplCache_CtagsProgram)
+    if !executable(g:neocomplcache_ctags_program)
         return s:load_from_file(a:filename, a:filetype)
     endif
     
-    let l:args = has_key(g:NeoComplCache_CtagsArgumentsList, a:filetype) ? 
-                \g:NeoComplCache_CtagsArgumentsList[a:filetype] : g:NeoComplCache_CtagsArgumentsList['default']
+    let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ? 
+                \g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
     let l:command = has('win32') || has('win64') ? 
-                \printf('%s -f - %s %s', g:NeoComplCache_CtagsProgram, l:args, fnamemodify(a:filename, ':p:.')) : 
-                \printf('%s -f /dev/stdout 2>/dev/null %s %s', g:NeoComplCache_CtagsProgram, l:args, fnamemodify(a:filename, ':p:.'))
+                \printf('%s -f - %s %s', g:neocomplcache_ctags_program, l:args, fnamemodify(a:filename, ':p:.')) : 
+                \printf('%s -f /dev/stdout 2>/dev/null %s %s', g:neocomplcache_ctags_program, l:args, fnamemodify(a:filename, ':p:.'))
     let l:lines = split(neocomplcache#system(l:command), '\n')
     
     if !empty(l:lines)
@@ -314,17 +316,17 @@ function! s:load_from_cache(filename)"{{{
 endfunction"}}}
 
 " Global options definition."{{{
-if !exists('g:NeoComplCache_IncludePattern')
-    let g:NeoComplCache_IncludePattern = {}
+if !exists('g:neocomplcache_include_patterns')
+    let g:neocomplcache_include_patterns = {}
 endif
-if !exists('g:NeoComplCache_IncludeExpr')
-    let g:NeoComplCache_IncludeExpr = {}
+if !exists('g:neocomplcache_include_exprs')
+    let g:neocomplcache_include_exprs = {}
 endif
-if !exists('g:NeoComplCache_IncludePath')
-    let g:NeoComplCache_IncludePath = {}
+if !exists('g:neocomplcache_include_paths')
+    let g:neocomplcache_include_paths = {}
 endif
-if !exists('g:NeoComplCache_IncludeSuffixes')
-    let g:NeoComplCache_IncludeSuffixes = {}
+if !exists('g:neocomplcache_include_suffixes')
+    let g:neocomplcache_include_suffixes = {}
 endif
 "}}}
 

@@ -36,8 +36,8 @@ function! neocomplcache#plugin#syntax_complete#initialize()"{{{
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheCachingSyntax call s:recaching(<q-args>)
 
   " Create cache directory.
-  if !isdirectory(g:NeoComplCache_TemporaryDir . '/syntax_cache')
-    call mkdir(g:NeoComplCache_TemporaryDir . '/syntax_cache')
+  if !isdirectory(g:neocomplcache_temporary_dir . '/syntax_cache')
+    call mkdir(g:neocomplcache_temporary_dir . '/syntax_cache')
   endif
 endfunction"}}}
 
@@ -67,7 +67,7 @@ function! s:caching()"{{{
         " Caching from cache.
         let s:syntax_list[l:filetype] = l:keyword_lists
       elseif l:filetype == &filetype
-        if g:NeoComplCache_CachingPercentInStatusline
+        if g:neocomplcache_caching_percent_in_statusline
           let l:statusline_save = &l:statusline
         endif
 
@@ -78,7 +78,7 @@ function! s:caching()"{{{
 
         call neocomplcache#print_caching('Caching done.')
 
-        if g:NeoComplCache_CachingPercentInStatusline
+        if g:neocomplcache_caching_percent_in_statusline
           let &l:statusline = l:statusline_save
         endif
       endif
@@ -94,7 +94,7 @@ function! s:recaching(filetype)"{{{
   endif
 
   " Caching.
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let l:statusline_save = &l:statusline
   endif
 
@@ -103,7 +103,7 @@ function! s:recaching(filetype)"{{{
 
   call neocomplcache#print_caching('Caching done.')
 
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let &l:statusline = l:statusline_save
   endif
 endfunction"}}}
@@ -128,7 +128,7 @@ function! s:caching_from_syn()"{{{
   for l:line in split(l:syntax_list, '\n')
     if l:line =~ '^\h\w\+'
       " Change syntax group name.
-      let l:menu = printf('[S] %.'. g:NeoComplCache_MaxFilenameWidth.'s', matchstr(l:line, '^\h\w\+'))
+      let l:menu = printf('[S] %.'. g:neocomplcache_max_filename_width.'s', matchstr(l:line, '^\h\w\+'))
       let l:line = substitute(l:line, '^\h\w\+\s*xxx', '', '')
     endif
 
@@ -154,7 +154,7 @@ function! s:caching_from_syn()"{{{
     let l:match_str = matchstr(l:line, l:keyword_pattern, l:match_num)
     while l:match_str != ''
       " Ignore too short keyword.
-      if len(l:match_str) >= g:NeoComplCache_MinSyntaxLength && !has_key(l:dup_check, l:match_str)
+      if len(l:match_str) >= g:neocomplcache_min_syntax_length && !has_key(l:dup_check, l:match_str)
             \&& l:match_str =~ '^[[:print:]]\+$'
         let l:keyword = {
               \ 'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu, 'icase' : 1
@@ -304,8 +304,8 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
 endfunction"}}}
 
 " Global options definition."{{{
-if !exists('g:NeoComplCache_MinSyntaxLength')
-  let g:NeoComplCache_MinSyntaxLength = 4
+if !exists('g:neocomplcache_min_syntax_length')
+  let g:neocomplcache_min_syntax_length = 4
 endif
 "}}}
 

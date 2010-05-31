@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 31 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.30, for Vim 7.0
+" Version: 5.0, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -38,90 +38,104 @@ set cpo&vim
 command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
 command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
+" Obsolute options check."{{{
+if exists('g:NeoComplCache_EnableAtStartup')
+    echoerr 'g:NeoComplCache_EnableAtStartup option does not work this version of neocomplcache.'
+endif
+if exists('g:NeoComplCache_KeywordPatterns')
+    echoerr 'g:NeoComplCache_KeywordPatterns option does not work this version of neocomplcache.'
+endif
+if exists('g:NeoComplCache_DictionaryFileTypeLists')
+    echoerr 'g:NeoComplCache_DictionaryFileTypeLists option does not work this version of neocomplcache.'
+endif
+if exists('g:NeoComplCache_KeywordCompletionStartLength')
+    echoerr 'g:NeoComplCache_KeywordCompletionStartLength option does not work this version of neocomplcache.'
+endif
+"}}}
 " Global options definition."{{{
-if !exists('g:NeoComplCache_MaxList')
-    let g:NeoComplCache_MaxList = 100
+if !exists('g:neocomplcache_max_list')
+    let g:neocomplcache_max_list = 100
 endif
-if !exists('g:NeoComplCache_MaxKeywordWidth')
-    let g:NeoComplCache_MaxKeywordWidth = 50
+if !exists('g:neocomplcache_max_keyword_width')
+    let g:neocomplcache_max_keyword_width = 50
 endif
-if !exists('g:NeoComplCache_MaxFilenameWidth')
-    let g:NeoComplCache_MaxFilenameWidth = 15
+if !exists('g:neocomplcache_max_filename_width')
+    let g:neocomplcache_max_filename_width = 15
 endif
-if !exists('g:NeoComplCache_KeywordCompletionStartLength')
-    let g:NeoComplCache_KeywordCompletionStartLength = 2
+if !exists('g:neocomplcache_auto_completion_start_length')
+    let g:neocomplcache_auto_completion_start_length = 2
 endif
-if !exists('g:NeoComplCache_ManualCompletionStartLength')
-    let g:NeoComplCache_ManualCompletionStartLength = 2
+if !exists('g:neocomplcache_manual_completion_start_length')
+    let g:neocomplcache_manual_completion_start_length = 2
 endif
-if !exists('g:NeoComplCache_MinKeywordLength')
-    let g:NeoComplCache_MinKeywordLength = 4
+if !exists('g:neocomplcache_min_keyword_length')
+    let g:neocomplcache_min_keyword_length = 4
 endif
-if !exists('g:NeoComplCache_IgnoreCase')
-    let g:NeoComplCache_IgnoreCase = &ignorecase
+if !exists('g:neocomplcache_enable_ignore_case')
+    let g:neocomplcache_enable_ignore_case = &ignorecase
 endif
-if !exists('g:NeoComplCache_SmartCase')
-    let g:NeoComplCache_SmartCase = 0
+if !exists('g:neocomplcache_enable_smart_case')
+    let g:neocomplcache_enable_smart_case = 0
 endif
-if !exists('g:NeoComplCache_AlphabeticalOrder')
-    let g:NeoComplCache_AlphabeticalOrder = 0
+if !exists('g:neocomplcache_enable_alphabetical_order')
+    let g:neocomplcache_enable_alphabetical_order = 0
 endif
-if !exists('g:NeoComplCache_CacheLineCount')
-    let g:NeoComplCache_CacheLineCount = 70
+if !exists('g:neocomplcache_disable_auto_complete')
+    let g:neocomplcache_disable_auto_complete = 0
 endif
-if !exists('g:NeoComplCache_DisableAutoComplete')
-    let g:NeoComplCache_DisableAutoComplete = 0
+if !exists('g:neocomplcache_enable_wildcard')
+    let g:neocomplcache_enable_wildcard = 1
 endif
-if !exists('g:NeoComplCache_EnableWildCard')
-    let g:NeoComplCache_EnableWildCard = 1
+if !exists('g:neocomplcache_enable_quick_match')
+    let g:neocomplcache_enable_quick_match = 1
 endif
-if !exists('g:NeoComplCache_EnableQuickMatch')
-    let g:NeoComplCache_EnableQuickMatch = 1
+if !exists('g:neocomplcache_enable_randomize')
+    let g:neocomplcache_enable_randomize = has('reltime')
 endif
-if !exists('g:NeoComplCache_EnableRandomize')
-    let g:NeoComplCache_EnableRandomize = has('reltime')
+if !exists('g:neocomplcache_enable_camel_case_completion')
+    let g:neocomplcache_enable_camel_case_completion = 0
 endif
-if !exists('g:NeoComplCache_EnableCamelCaseCompletion')
-    let g:NeoComplCache_EnableCamelCaseCompletion = 0
+if !exists('g:neocomplcache_enable_underbar_completion')
+    let g:neocomplcache_enable_underbar_completion = 0
 endif
-if !exists('g:NeoComplCache_EnableUnderbarCompletion')
-    let g:NeoComplCache_EnableUnderbarCompletion = 0
+if !exists('g:neocomplcache_enable_display_parameter')
+    let g:neocomplcache_enable_display_parameter = 1
 endif
-if !exists('g:NeoComplCache_EnableDispalyParameter')
-    let g:NeoComplCache_EnableDispalyParameter = 1
+if !exists('g:neocomplcache_enable_cursor_hold_i')
+    let g:neocomplcache_enable_cursor_hold_i = 0
 endif
-if !exists('g:NeoComplCache_EnableCursorHoldI')
-    let g:NeoComplCache_EnableCursorHoldI = 0
+if !exists('g:neocomplcache_enable_cursor_hold_i_time')
+    let g:neocomplcache_enable_cursor_hold_i_time = 300
 endif
-if !exists('g:NeoComplCache_CursorHoldITime')
-    let g:NeoComplCache_CursorHoldITime = 300
+if !exists('g:neocomplcache_enable_auto_select')
+    let g:neocomplcache_enable_auto_select = 0
 endif
-if !exists('g:NeoComplCache_EnableAutoSelect')
-    let g:NeoComplCache_EnableAutoSelect = 0
+if !exists('g:neocomplcache_caching_limit_file_size')
+    let g:neocomplcache_caching_limit_file_size = 1000000
 endif
-if !exists('g:NeoComplCache_CachingLimitFileSize')
-    let g:NeoComplCache_CachingLimitFileSize = 1000000
+if !exists('g:neocomplcache_disable_caching_buffer_name_pattern')
+    let g:neocomplcache_disable_caching_buffer_name_pattern = ''
 endif
-if !exists('g:NeoComplCache_CachingDisablePattern')
-    let g:NeoComplCache_CachingDisablePattern = ''
+if !exists('g:neocomplcache_lock_buffer_name_pattern')
+    let g:neocomplcache_lock_buffer_name_pattern = ''
 endif
-if !exists('g:NeoComplCache_CachingPercentInStatusline')
-    let g:NeoComplCache_CachingPercentInStatusline = 0
+if !exists('g:neocomplcache_caching_percent_in_statusline')
+    let g:neocomplcache_caching_percent_in_statusline = 0
 endif
-if !exists('g:NeoComplCache_DisablePluginList')
-    let g:NeoComplCache_DisablePluginList = {}
+if !exists('g:neocomplcache_disable_plugin_list')
+    let g:neocomplcache_disable_plugin_list = {}
 endif
-if !exists('g:NeoComplCache_TemporaryDir')
-    let g:NeoComplCache_TemporaryDir = '~/.neocon'
+if !exists('g:neocomplcache_temporary_dir')
+    let g:neocomplcache_temporary_dir = '~/.neocon'
 endif
-if !exists('g:NeoComplCache_CtagsProgram')
-    let g:NeoComplCache_CtagsProgram = 'ctags'
+if !exists('g:neocomplcache_ctags_program')
+    let g:neocomplcache_ctags_program = 'ctags'
 endif
-let g:NeoComplCache_TemporaryDir = expand(g:NeoComplCache_TemporaryDir)
-if !isdirectory(g:NeoComplCache_TemporaryDir)
-    call mkdir(g:NeoComplCache_TemporaryDir, 'p')
+let g:neocomplcache_temporary_dir = expand(g:neocomplcache_temporary_dir)
+if !isdirectory(g:neocomplcache_temporary_dir)
+    call mkdir(g:neocomplcache_temporary_dir, 'p')
 endif
-if exists('g:NeoComplCache_EnableAtStartup') && g:NeoComplCache_EnableAtStartup
+if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
     " Enable startup.
     call neocomplcache#enable()
 endif"}}}

@@ -120,7 +120,7 @@ COMMANDS 						*neocomplcache-commands*
 		[filetype]のスニペット補完ファイルを編集する。 [filetype]を
 		省略すると、カレントバッファのファイルタイプを編集する。
 		[filetype]のスニペット補完ファイルが存在しない場合、新しく生
-		成される。 このコマンドでは、|g:NeoComplCache_SnippetsDir|に
+		成される。 このコマンドでは、|g:neocomplcache_snippets_dir|に
 		あるスニペット補完ファイルを優先的に編集する。 スニペット補
 		完ファイルを保存すると、自動的に再キャッシュされる。
 
@@ -140,7 +140,7 @@ COMMANDS 						*neocomplcache-commands*
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
 
-g:NeoComplCache_EnableAtStartup				*g:NeoComplCache_EnableAtStartup*
+g:neocomplcache_enable_at_startup				*g:neocomplcache_enable_at_startup*
 		Vim起動時にneocomplcacheを有効にするかどうか制御する。 1なら
 		ば自動で有効化する。このオプションは.vimrcで設定するべきであ
 		る。neocomplcacheは|AutoComplPop|と競合するので、同時に使用
@@ -149,98 +149,90 @@ g:NeoComplCache_EnableAtStartup				*g:NeoComplCache_EnableAtStartup*
 		初期値は0なので、手動で有効にしない限りneocomplcacheは使用で
 		きない。
 
-g:NeoComplCache_MaxList					*g:NeoComplCache_MaxList*
+g:neocomplcache_max_list					*g:neocomplcache_max_list*
 		ポップアップメニューで表示される候補の数を制御する。 候補が
 		これを超えた場合は切り詰められる。
 		
 		初期値は100である。
 
-g:NeoComplCache_MaxKeywordWidth				*g:NeoComplCache_MaxKeywordWidth*
+g:neocomplcache_max_keyword_width				*g:neocomplcache_max_keyword_width*
 		ポップアップメニューで表示される候補の表示幅を制御する。 こ
 		れを超えた場合は適当に切り詰められる。
 		
 		初期値は50である。
 
-g:NeoComplCache_MaxFilenameWidth			*g:NeoComplCache_MaxFilenameWidth*
+g:neocomplcache_max_filename_width			*g:neocomplcache_max_filename_width*
 		ポップアップメニューで表示されるファイル名の表示幅を制御する。
 		これを超えた場合は切り詰められる。
 		
 		初期値は15である。
 
-g:NeoComplCache_KeywordCompletionStartLength		*g:NeoComplCache_KeywordCompletionStartLength*
+g:neocomplcache_auto_completion_start_length		*g:neocomplcache_auto_completion_start_length*
 		キー入力時にキーワード補完を行う入力数を制御する。
 		
 		初期値は2である。
 
-g:NeoComplCache_ManualCompletionStartLength		*g:NeoComplCache_ManualCompletionStartLength*
+g:neocomplcache_manual_completion_start_length		*g:neocomplcache_manual_completion_start_length*
 		手動補完時に補完を行う入力数を制御する。 この値を減らすと便
 		利だが、ポップアップ表示時 <C-h> や <BS> などで文字を削除し
 		たときに重くなる可能性がある。
 		
 		初期値は2である。
 
-g:NeoComplCache_MinKeywordLength			*g:NeoComplCache_MinKeywordLength*
+g:neocomplcache_min_keyword_length			*g:neocomplcache_min_keyword_length*
 		バッファや辞書ファイル中で、補完の対象となるキーワードの最小長さを制御する。
 		
 		初期値は4である。
 
-g:NeoComplCache_MinSyntaxLength				*g:NeoComplCache_MinSyntaxLength*
+g:neocomplcache_min_syntax_length				*g:neocomplcache_min_syntax_length*
 		シンタックスファイル中で、補完の対象となるキーワードの最小長さを制御する。
 		
 		初期値は4である。
 
-g:NeoComplCache_IgnoreCase				*g:NeoComplCache_IgnoreCase*
+g:neocomplcache_enable_ignore_case				*g:neocomplcache_enable_ignore_case*
 		補完候補を探すときに、大文字・小文字を無視するかを制御する。
 		1ならば無視する。
 		
 		初期値は'ignorecase'である。
 
-g:NeoComplCache_SmartCase				*g:NeoComplCache_SmartCase*
+g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
 		入力に大文字が含まれている場合は、大文字・小文字を無視しない
 		ようにする。 1ならば有効。
 		
 		初期値は0である。
 
-g:NeoComplCache_AlphabeticalOrder			*g:NeoComplCache_AlphabeticalOrder*
+g:neocomplcache_enable_alphabetical_order			*g:neocomplcache_enable_alphabetical_order*
 		候補をアルファベット順で並び替えるかを制御する。 このオプショ
 		ンを設定すると、neocomplcacheの機能がかなり制限されるが、補
 		完処理は高速化する。 1ならば有効。
 		
 		初期値は0なので、頻度順に並び替える。
 
-g:NeoComplCache_CacheLineCount				*g:NeoComplCache_CacheLineCount*
-		バッファの何行ごとにキャッシュするかを制御する。 Ver.2.31ま
-		でキャッシュラインは固定だったが、一行が長いHTMLやTeXで重い
-		ために可変となった。 これが小さいほど候補の探索は早くなるが、
-		キャッシュするのに時間がかかる。
-		
-		初期値は70である。
-
-g:NeoComplCache_DisableAutoComplete			*g:NeoComplCache_DisableAutoComplete*
+g:neocomplcache_disable_auto_complete			*g:neocomplcache_disable_auto_complete*
 		自動補完を無効にするかどうかを制御する。 1ならば自動補完が無
 		効になるが、 <C-x><C-u> による手動補完は使用できる。
 		
 		初期値は0なので、自動補完が有効になっている。
 
-g:NeoComplCache_EnableWildCard				*g:NeoComplCache_EnableWildCard*
+g:neocomplcache_enable_wildcard				*g:neocomplcache_enable_wildcard*
 		省入力のために、ワイルドカード文字 '*' を容認するかどうかを
 		制御する。 1ならばワイルドカードが使用できる。
 		
 		初期値は1なので、ワイルドカードが有効になっている。
 
-g:NeoComplCache_EnableQuickMatch			*g:NeoComplCache_EnableQuickMatch*
+g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		省入力のために、-を入力すると候補の横に表示される英数字で候
 		補を選択できるようにするかを制御する。 1ならば有効になる。
 		
 		初期値は1なので、有効になっている。
 
-g:NeoComplCache_EnableRandomize				*g:NeoComplCache_EnableRandomize*
+g:neocomplcache_enable_randomize				*g:neocomplcache_enable_randomize*
 		頻度を再計算するときなどに、乱数を使用するかを制御する。 1ならば
 		有効になる。
 		
 		初期値は+reltimeの時に1となる。
 
-g:NeoComplCache_EnableCursorHoldI			*g:NeoComplCache_EnableCursorHoldI*
+g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		候補の計算を|CursorHoldI|イベント時に行うかどうかを制御する。
 		このオプションが設定されなかった場合、|CursorMovedI|イベン
 		トを使用する。このオプションでは無理矢理タイマーイベントを模
@@ -249,21 +241,21 @@ g:NeoComplCache_EnableCursorHoldI			*g:NeoComplCache_EnableCursorHoldI*
 		
 		副作用があるので、初期値は0である。
 
-g:NeoComplCache_EnableAutoSelect			*g:NeoComplCache_EnableAutoSelect*
+g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		補完候補を出すときに、自動的に一番上の候補を選択するかどうか
 		を制御する。 このオプションを有効化すると、|AutoComplPop|と
 		似た補完動作となる。
 		
 		初期値は0である。
 
-g:NeoComplCache_CursorHoldITime				*g:NeoComplCache_CursorHoldITime*
-		|g:NeoComplCache_EnableCursorHoldI|が有効になっている場合、
+g:neocomplcache_enable_cursor_hold_i_time				*g:neocomplcache_enable_cursor_hold_i_time*
+		|g:neocomplcache_enable_cursor_hold_i|が有効になっている場合、
 		自動補完を開始するための計算時間を定義する。このオプションは
 		'updatetime'の値を書き換える。
 		
 		初期値は300である。
 
-g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompletion*
+g:neocomplcache_enable_camel_case_completion		*g:neocomplcache_enable_camel_case_completion*
 		大文字を入力したときに、それを単語の区切りとしてあいまい検索
 		を行うかどうか制御する。 例えば AE と入力したとき、
 		ArgumentsException とマッチするようになる。 1ならば有効にな
@@ -271,32 +263,38 @@ g:NeoComplCache_EnableCamelCaseCompletion		*g:NeoComplCache_EnableCamelCaseCompl
 		
 		副作用があるので、初期値は0となっている。
 
-g:NeoComplCache_EnableUnderbarCompletion		*g:NeoComplCache_EnableUnderbarCompletion*
+g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_completion*
 		_を入力したときに、それを単語の区切りとしてあいまい検索を行
 		うかどうか制御する。 例えば p_h と入力したとき、 public_html
 		とマッチするようになる。 1ならば有効になる。
 		
 		副作用があるので、初期値は0となっている。
 
-g:NeoComplCache_EnableDispalyParameter			*g:NeoComplCache_EnableDispalyParameter*
+g:neocomplcache_enable_display_parameter			*g:neocomplcache_enable_display_parameter*
 		入力中に、関数のプロトタイプをCommand-lineに表示するかを制御
 		する。 現在はvim_completeのみ対応している。
 	
 		初期値は1である。
 
-g:NeoComplCache_CachingLimitFileSize			*g:NeoComplCache_CachingLimitFileSize*
+g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_size*
 		ファイルをキャッシュするファイルサイズを設定する。 開いたファ
 		イルがこのサイズより大きいとキャッシュしない。
 		
 		初期値は1000000となっている。
 
-g:NeoComplCache_CachingDisablePattern			*g:NeoComplCache_CachingDisablePattern*
+g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
+		キャッシュしないバッファ名のパターンを正規表現で設定する。空
+		文字列だと無効になる。
+		
+		初期値は空となっている。
+
+g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_pattern*
 		バッファをキャッシュしないバッファ名のパターンを正規表現で設
 		定する。 空文字列だと無効になる。
 		
 		初期値は空となっている。
 
-g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
+g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。 カ
 		ンマ区切りで複数のディレクトリを設定可能。 ここで指定したディ
 		レクトリが実際に存在しない場合、無視される。 ユーザ定義のス
@@ -305,7 +303,7 @@ g:NeoComplCache_SnippetsDir				*g:NeoComplCache_SnippetsDir*
 		
 		この変数はユーザが自分で定義しない限り存在しない。
 
-g:NeoComplCache_TemporaryDir				*g:NeoComplCache_TemporaryDir*
+g:neocomplcache_temporary_dir				*g:neocomplcache_temporary_dir*
 		neocomplcacheが一時ファイルを書き出すディレクトリを指定する。
 		ここで指定したディレクトリが実際に存在しない場合、作成される。
 		例えばkeyword_complete.vimはキーワードのキャッシュをこの下の
@@ -313,77 +311,77 @@ g:NeoComplCache_TemporaryDir				*g:NeoComplCache_TemporaryDir*
 		
 		初期値は'~/.neocon'である。
 
-g:NeoComplCache_KeywordPatterns				*g:NeoComplCache_KeywordPatterns*
+g:neocomplcache_keyword_patterns				*g:neocomplcache_keyword_patterns*
 		補完するためのキーワードパターンを記録する。 これはファイル
 		タイプ毎に正規表現で指定されている。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_NextKeywordPatterns			*g:NeoComplCache_NextKeywordPatterns*
+g:neocomplcache_next_keyword_patterns			*g:neocomplcache_next_keyword_patterns*
 		カーソルより後のキーワードパターンを認識するための正規表現を記録する。
-		|g:NeoComplCache_KeywordPatterns|と形式は同じである。
+		|g:neocomplcache_keyword_patterns|と形式は同じである。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_OmniPatterns				*g:NeoComplCache_OmniPatterns*
+g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		オムニ補完するためのキーワードパターンを記録する。 これはファ
 		イルタイプ毎に正規表現で指定されている。
 		
 		初期値は複雑なので、
 		autoload/neocomplcache/complfunc/omni_complete.vimを参照せよ。
 
-g:NeoComplCache_TagsFilterPatterns			*g:NeoComplCache_TagsFilterPatterns*
+g:neocomplcache_tags_filter_patterns			*g:neocomplcache_tags_filter_patterns*
 		タグ補完時の候補をフィルタするパターンを記録する。
 		例えば、C/C++のファイルタイプ時に_で始まる候補を除外することができる。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_SameFileTypeLists			*g:NeoComplCache_SameFileTypeLists*
+g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 		ファイルタイプを相互に関連づけるためのディクショナリ。 cと
 		cppを相互参照させるときなどに有効である。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_DictionaryFileTypeLists			*g:NeoComplCache_DictionaryFileTypeLists*
+g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype_lists*
 		ファイルタイプに辞書ファイルを関連づけるためのディクショナリ。
 		キーにファイルタイプ、値に辞書ファイルへのパスを指定する。
 		','区切りで複数の辞書を指定できる。
 		
 		初期値は空である。
 
-g:NeoComplCache_PluginCompletionLength			*g:NeoComplCache_PluginCompletionLength*
+g:neocomplcache_plugin_completion_length_list			*g:neocomplcache_plugin_completion_length_list*
 		補完関数を呼び出す文字数をプラグインごとに指定するディクショ
 		ナリ。 重いプラグインは文字数が多いときにのみ呼び出せるよう
 		にするなどが考えられる。
 		
 		初期値は空である。
 
-g:NeoComplCache_DisableSelectModeMappings		*g:NeoComplCache_DisableSelectModeMappings*
+g:neocomplcache_disable_select_mode_mappings		*g:neocomplcache_disable_select_mode_mappings*
 		snippets_completeが行うSelect modeのKey-mappingsを無効にする
 		かどうかを制御する。 通常は有効にしておいた方がよい。
 		
 		初期値は1である。
 
-g:NeoComplCache_CtagsProgram				*g:NeoComplCache_CtagsProgram*
+g:neocomplcache_ctags_program				*g:neocomplcache_ctags_program*
 		include_completeなどがタグ生成に使用するctagsコマンドへのパスを指定する。
 		
 		初期値は"ctags"である。
 
-g:NeoComplCache_CtagsArgumentsList			*g:NeoComplCache_CtagsArgumentsList*
+g:neocomplcache_ctags_arguments_list			*g:neocomplcache_ctags_arguments_list*
 		include_completeなどがctagsコマンドを使用する際に、コマンドの
 		引数として与える値を設定するための、ファイルタイプをキーと
 		した文字列の辞書である。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_IncludePath				*g:NeoComplCache_IncludePath*
+g:neocomplcache_include_paths				*g:neocomplcache_include_paths*
 		インクルードファイルのpathをファイルタイプごとに列挙する変数
 		である。存在しない場合、&l:pathが使われる。 記述形式は'path'
 		を参照せよ。ファイルタイプをキーとした文字列の辞書である。
 		
 		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimを参照せよ。
 
-g:NeoComplCache_IncludeExpr				*g:NeoComplCache_IncludeExpr*
+g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		インクルードファイル名を取得するために行う行解析の式である。
 		存在しない場合、&l:includeexprが使われる。 記述形式は
 		'includeexpr'を参照せよ。ファイルタイプをキーとした文字列の
@@ -391,14 +389,14 @@ g:NeoComplCache_IncludeExpr				*g:NeoComplCache_IncludeExpr*
 		
 		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimを参照せよ。
 
-g:NeoComplCache_IncludePattern				*g:NeoComplCache_IncludePattern*
+g:neocomplcache_include_patterns				*g:neocomplcache_include_patterns*
 		インクルード命令のパターンを指定する。存在しない場合、
 		&l:includeが使われる。 記述形式は'include'を参照せよ。ファイ
 		ルタイプをキーとした文字列の辞書である。
 		
 		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimを参照せよ。
                 
-g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
+g:neocomplcache_disable_plugin_list			*g:neocomplcache_disable_plugin_list*
 		補完関数やプラグインを無効にするかどうかを指定するディクショ
 		ナリ。 補完関数やプラグイン名をキーにして、値を1にすることで
 		無効になる。 neocomplcacheを初期化するときに参照するので、初
@@ -406,14 +404,14 @@ g:NeoComplCache_DisablePluginList			*g:NeoComplCache_DisablePluginList*
 		
 		初期値は空である。
 
-g:NeoComplCache_MemberPrefixPatterns			*g:NeoComplCache_MemberPrefixPatterns*
+g:neocomplcache_member_prefix_patternss			*g:neocomplcache_member_prefix_patternss*
 		include_completeやtags_completeでメンバ補完するためのキーワー
 		ドパターンを記録する。 これはファイルタイプ毎に正規表現で指
 		定されている。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimを参照せよ。
 
-g:NeoComplCache_QuickMatchPatterns			*g:NeoComplCache_QuickMatchPatterns*
+g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		クイックマッチリストを表示する入力パターンを記録する。 これ
 		はファイルタイプ毎に入力文字列の末尾にマッチする正規表現で指
 		定されている。 defaultを指定すると、通常時の入力パターンを設
@@ -478,28 +476,29 @@ EXAMPLES						*neocomplcache-examples*
 	" Disable AutoComplPop.
 	let g:acp_enableAtStartup = 1
 	" Use neocomplcache.
-	let g:NeoComplCache_EnableAtStartup = 1
+	let g:neocomplcache_enable_at_startup = 1
 	" Use smartcase.
-	let g:NeoComplCache_SmartCase = 1
+	let g:neocomplcache_enable_smart_case = 1
 	" Use camel case completion.
-	let g:NeoComplCache_EnableCamelCaseCompletion = 1
+	let g:neocomplcache_enable_camel_case_completion = 1
 	" Use underbar completion.
-	let g:NeoComplCache_EnableUnderbarCompletion = 1
+	let g:neocomplcache_enable_underbar_completion = 1
 	" Set minimum syntax keyword length.
-	let g:NeoComplCache_MinSyntaxLength = 3
+	let g:neocomplcache_min_syntax_length = 3
+	let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 	
 	" Define dictionary.
-	let g:NeoComplCache_DictionaryFileTypeLists = {
+	let g:neocomplcache_dictionary_filetype_lists = {
 	    \ 'default' : '',
 	    \ 'vimshell' : $HOME.'/.vimshell_hist',
 	    \ 'scheme' : $HOME.'/.gosh_completions'
 	        \ }
 	
 	" Define keyword.
-	if !exists('g:NeoComplCache_KeywordPatterns')
-	    let g:NeoComplCache_KeywordPatterns = {}
+	if !exists('g:neocomplcache_keyword_patterns')
+	    let g:neocomplcache_keyword_patterns = {}
 	endif
-	let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+	let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 	
 	" Plugin key-mappings.
 	imap <C-l>     <Plug>(neocomplcache_snippets_expand)
@@ -517,7 +516,7 @@ EXAMPLES						*neocomplcache-examples*
 	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	
 	" AutoComplPop like behavior.
-	"let g:NeoComplCache_EnableAutoSelect = 1
+	"let g:neocomplcache_enable_auto_select = 1
 	"inoremap <expr><CR>  (pumvisible() ? "\<C-e>":'') . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
 	"inoremap <expr><C-h> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
 	"inoremap <expr><BS> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
@@ -640,9 +639,9 @@ vnoremapやvmap, mapはselect modeでも有効になるので、変なマッピ�
 
 ユーザが定義するスニペットの保存場所は自由に指定できる。
 指定するときは、
-	let g:NeoComplCache_SnippetsDir = $HOME.'/snippets'
+	let g:neocomplcache_snippets_dir = $HOME.'/snippets'
 のように.vimrcに記述する。
-|:NeoComplCacheEditSnippets|では、|g:NeoComplCache_SnippetsDir|を優先して読
+|:NeoComplCacheEditSnippets|では、|g:neocomplcache_snippets_dir|を優先して読
 み込む。
 
 展開可能かどうかを判断する関数として、

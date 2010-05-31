@@ -49,7 +49,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
   let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
 
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
-  if g:NeoComplCache_EnableWildCard
+  if g:neocomplcache_enable_wildcard
     " Check wildcard.
     let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
   endif
@@ -142,14 +142,14 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 
   call sort(l:list, 'neocomplcache#compare_rank')
   " Trunk many items.
-  let l:list = l:list[: g:NeoComplCache_MaxList-1]
+  let l:list = l:list[: g:neocomplcache_max_list-1]
 
   let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
   for keyword in l:list
     let l:abbr = keyword.word
     
-    if len(l:abbr) > g:NeoComplCache_MaxKeywordWidth
-      let l:over_len = len(l:abbr) - g:NeoComplCache_MaxKeywordWidth
+    if len(l:abbr) > g:neocomplcache_max_keyword_width
+      let l:over_len = len(l:abbr) - g:neocomplcache_max_keyword_width
       let l:prefix_len = (l:over_len > 10) ?  10 : l:over_len
       let l:abbr = printf('%s~%s', l:abbr[: l:prefix_len - 1], l:abbr[l:over_len+l:prefix_len :])
     endif
