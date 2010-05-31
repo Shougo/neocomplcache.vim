@@ -442,7 +442,7 @@ inoremap <expr><C-g>     neocomplcache#undo_completion()
 Ver.2.64よりオプションが追加され、キャッシュの制御がやりやすくなりました。
 `g:neocomplcache_caching_limit_file_size`オプションではキャッシュする最大ファイルサイズを設定します。
 これより大きいファイルは自動でキャッシュされません。
-`g:neocomplcache_caching_disable_pattern`オプションではキャッシュしないバッファ名パターンを設定します。
+`g:neocomplcache_disable_caching_buffer_name_pattern`オプションではキャッシュしないバッファ名パターンを設定します。
 正規表現で指定するので、\|で区切れば複数のパターンを指定できます。
 
 プラグインごとに補完開始文字数を設定
@@ -452,9 +452,9 @@ Ver.2.71より、プラグインごとに補完開始文字数を設定できる
 例：
 `
 let g:neocomplcache_auto_completion_start_length = 1
-if !exists('g:neocomplcache_plugin_completion_length')
+if !exists('g:neocomplcache_plugin_completion_length_list')
 endif
-let g:neocomplcache_plugin_completion_length = {
+let g:neocomplcache_plugin_completion_length_list = {
     \'snippets_complete' : 1, 
     \'buffer_complete' : 2, 
     \'syntax_complete' : 2, 

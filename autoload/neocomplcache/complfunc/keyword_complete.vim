@@ -77,8 +77,8 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
   let l:cache_keyword_lists = {}
   let l:is_empty = 1
   for l:plugin in keys(l:loaded_plugins)
-    if has_key(g:neocomplcache_plugin_completion_length, l:plugin)
-          \&& len(a:cur_keyword_str) < g:neocomplcache_plugin_completion_length[l:plugin]
+    if has_key(g:neocomplcache_plugin_completion_length_list, l:plugin)
+          \&& len(a:cur_keyword_str) < g:neocomplcache_plugin_completion_length_list[l:plugin]
       call remove(l:loaded_plugins, l:plugin)
       let l:cache_keyword_lists[l:plugin] = []
     else

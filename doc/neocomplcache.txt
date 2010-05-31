@@ -203,7 +203,7 @@ g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
 	
 		Default value is 0.
 
-g:neocomplcache_alphabetical_order			*g:neocomplcache_alphabetical_order*
+g:neocomplcache_enable_alphabetical_order			*g:neocomplcache_enable_alphabetical_order*
 		This variable controls whether neocomplcache sort a
 		candidate with alphabetical order.  A function of
 		neocomplcache is considerably limited when you set this
@@ -287,10 +287,17 @@ g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_si
 	
 		Default value is 1000000.
 
-g:neocomplcache_caching_disable_pattern			*g:neocomplcache_caching_disable_pattern*
-		This variable set a pattern of the buffer name which does
-		not make a cache of a buffer in regular expression.  When it
-		is an empty character string, it becomes invalid.
+g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
+		This variable set a pattern of the buffer name. If matched it,
+		neocomplcache does not make a cache of the buffer. When it is
+		an empty character string, it becomes invalid.
+	
+		Default value is ''.
+
+g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_pattern*
+		This variable set a pattern of the buffer name. If matched it,
+		neocomplcache does not complete automatically. When it is an
+		empty character string, it becomes invalid.
 	
 		Default value is ''.
 
@@ -358,7 +365,7 @@ g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype
 		
 		Default value is {}.
 
-g:neocomplcache_plugin_completion_length			*g:neocomplcache_plugin_completion_length*
+g:neocomplcache_plugin_completion_length_list			*g:neocomplcache_plugin_completion_length_list*
 		It is a dictionary to control each plugin's completion
 		length.  For example, you can prolong heavy plugin's
 		completion length.
@@ -516,6 +523,7 @@ EXAMPLES						*neocomplcache-examples*
 	let g:neocomplcache_enable_underbar_completion = 1
 	" Set minimum syntax keyword length.
 	let g:neocomplcache_min_syntax_length = 3
+	let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 	
 	" Define dictionary.
 	let g:neocomplcache_dictionary_filetype_lists = {
@@ -622,6 +630,12 @@ CHANGELOG						*neocomplcache-changelog*
 - Changed variables name dramatically.
 - Fixed multibyte problems.
 - Deleted g:neocomplcache_cache_line_count variable.
+- Changed g:neocomplcache_alphabetical_order into g:neocomplcache_enable_alphabetical_order.
+- Changed g:neocomplcache_plugin_completion_length into g:neocomplcache_plugin_completion_length_list.
+- Changed g:neocomplcache_caching_disable_pattern into g:neocomplcache_disable_caching_buffer_name_pattern.
+- Changed g:neocomplcache_lock_buffer_name_pattern into g:neocomplcache_lock_buffer_name_pattern.
+- Changed NeoComplCacheCachingDisable into NeoComplCacheDisableCaching.
+- Changed NeoComplCacheCachingEnable into NeoComplCacheEnableCaching.
 
 ChangeLog NeoComplCache 4.30: {{{
 2010-05-31
@@ -1095,7 +1109,7 @@ ChangeLog NeoComplCache 3.00-: {{{
    3.10:
     - Optimized keyword_complete.
     - Integrated complfuncs.
-    - Complfunc supported g:neocomplcache_plugin_completion_length option.
+    - Complfunc supported g:neocomplcache_plugin_completion_length_list option.
     - Improved omni completion pattern.
     - Improved html's keyword pattern.
     - Fixed manual completion error.
@@ -1274,7 +1288,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Create g:neocomplcache_snippets_dir directory if not exists.
     - Implemented direct expantion in snippet complete.
     - Implemented snippet alias in snippet complete.
-    - Added g:neocomplcache_plugin_completion_length option.
+    - Added g:neocomplcache_plugin_completion_length_list option.
     - Improved get cursour word.
     - Added Objective-C/C++ support.
     - Fixed filename completion bug when environment variable used.
@@ -1331,7 +1345,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Substitute \ -> / in Windows.
     - Improved NeoComplCacheCachingBuffer command.
     - Added g:neocomplcache_caching_limit_file_size option.
-    - Added g:neocomplcache_caching_disable_pattern option.
+    - Added g:neocomplcache_disable_caching_buffer_name_pattern option.
     - Don't caching readonly file.
     - Improved neocomplcache#keyword_complete#caching_percent.
 
@@ -1543,7 +1557,7 @@ ChangeLog NeoComplCache 2.00-2.50: {{{
    2.25:
      - Optimized syntax caching.
      - Fixed ruby and ocaml syntax.
-     - Fixed error when g:neocomplcache_alphabetical_order is set.
+     - Fixed error when g:neocomplcache_enable_alphabetical_order is set.
      - Improved syntax_complete caching event.
 
    2.24:

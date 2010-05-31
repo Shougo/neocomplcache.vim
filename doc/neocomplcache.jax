@@ -201,7 +201,7 @@ g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
 		
 		初期値は0である。
 
-g:neocomplcache_alphabetical_order			*g:neocomplcache_alphabetical_order*
+g:neocomplcache_enable_alphabetical_order			*g:neocomplcache_enable_alphabetical_order*
 		候補をアルファベット順で並び替えるかを制御する。 このオプショ
 		ンを設定すると、neocomplcacheの機能がかなり制限されるが、補
 		完処理は高速化する。 1ならば有効。
@@ -282,7 +282,13 @@ g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_si
 		
 		初期値は1000000となっている。
 
-g:neocomplcache_caching_disable_pattern			*g:neocomplcache_caching_disable_pattern*
+g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
+		キャッシュしないバッファ名のパターンを正規表現で設定する。空
+		文字列だと無効になる。
+		
+		初期値は空となっている。
+
+g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_pattern*
 		バッファをキャッシュしないバッファ名のパターンを正規表現で設
 		定する。 空文字列だと無効になる。
 		
@@ -343,7 +349,7 @@ g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype
 		
 		初期値は空である。
 
-g:neocomplcache_plugin_completion_length			*g:neocomplcache_plugin_completion_length*
+g:neocomplcache_plugin_completion_length_list			*g:neocomplcache_plugin_completion_length_list*
 		補完関数を呼び出す文字数をプラグインごとに指定するディクショ
 		ナリ。 重いプラグインは文字数が多いときにのみ呼び出せるよう
 		にするなどが考えられる。
@@ -479,6 +485,7 @@ EXAMPLES						*neocomplcache-examples*
 	let g:neocomplcache_enable_underbar_completion = 1
 	" Set minimum syntax keyword length.
 	let g:neocomplcache_min_syntax_length = 3
+	let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
 	
 	" Define dictionary.
 	let g:neocomplcache_dictionary_filetype_lists = {

@@ -26,8 +26,8 @@
 
 function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   " Initialize.
-  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length, 'vim_complete') ? 
-        \ g:neocomplcache_plugin_completion_length['vim_complete'] : g:neocomplcache_auto_completion_start_length
+  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length_list, 'vim_complete') ? 
+        \ g:neocomplcache_plugin_completion_length_list['vim_complete'] : g:neocomplcache_auto_completion_start_length
 
   " Set caching event.
   autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()

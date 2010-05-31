@@ -63,8 +63,8 @@ endif
 if !exists('g:neocomplcache_enable_smart_case')
     let g:neocomplcache_enable_smart_case = 0
 endif
-if !exists('g:neocomplcache_alphabetical_order')
-    let g:neocomplcache_alphabetical_order = 0
+if !exists('g:neocomplcache_enable_alphabetical_order')
+    let g:neocomplcache_enable_alphabetical_order = 0
 endif
 if !exists('g:neocomplcache_disable_auto_complete')
     let g:neocomplcache_disable_auto_complete = 0
@@ -99,8 +99,11 @@ endif
 if !exists('g:neocomplcache_caching_limit_file_size')
     let g:neocomplcache_caching_limit_file_size = 1000000
 endif
-if !exists('g:neocomplcache_caching_disable_pattern')
-    let g:neocomplcache_caching_disable_pattern = ''
+if !exists('g:neocomplcache_disable_caching_buffer_name_pattern')
+    let g:neocomplcache_disable_caching_buffer_name_pattern = ''
+endif
+if !exists('g:neocomplcache_lock_buffer_name_pattern')
+    let g:neocomplcache_lock_buffer_name_pattern = ''
 endif
 if !exists('g:neocomplcache_caching_percent_in_statusline')
     let g:neocomplcache_caching_percent_in_statusline = 0

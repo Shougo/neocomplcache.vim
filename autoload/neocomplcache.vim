@@ -239,8 +239,8 @@ function! neocomplcache#enable() "{{{
   "}}}
 
   " Initialize plugin completion length."{{{
-  if !exists('g:neocomplcache_plugin_completion_length')
-    let g:neocomplcache_plugin_completion_length = {}
+  if !exists('g:neocomplcache_plugin_completion_length_list')
+    let g:neocomplcache_plugin_completion_length_list = {}
   endif
   "}}}
 
@@ -570,8 +570,8 @@ function! neocomplcache#get_cur_text()"{{{
   return neocomplcache#is_auto_complete()? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
-  if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
-    return g:neocomplcache_plugin_completion_length[a:plugin_name]
+  if has_key(g:neocomplcache_plugin_completion_length_list, a:plugin_name)
+    return g:neocomplcache_plugin_completion_length_list[a:plugin_name]
   elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
     return 0
   else
@@ -948,6 +948,7 @@ function! s:do_complete(is_moved)"{{{
   endif
 
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
+        \|| (g:neocomplcache_lock_buffer_name_pattern != '' && bufname('%') =~ g:neocomplcache_lock_buffer_name_pattern)
         \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
         \|| g:neocomplcache_disable_auto_complete
         \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
@@ -1113,7 +1114,7 @@ function! s:integrate_completion(complete_result)"{{{
       endfor
     endif
 
-    if !g:neocomplcache_alphabetical_order
+    if !g:neocomplcache_enable_alphabetical_order
       let l:rank = l:result.rank
       for l:keyword in l:result.complete_words
         let l:word = l:keyword.word
@@ -1127,7 +1128,7 @@ function! s:integrate_completion(complete_result)"{{{
 
   " Sort.
   if (has_key(g:neocomplcache_disable_plugin_list, 'buffer_complete') && g:neocomplcache_disable_plugin_list['buffer_complete'])
-        \|| g:neocomplcache_alphabetical_order
+        \|| g:neocomplcache_enable_alphabetical_order
     let l:func = 'neocomplcache#compare_words'
   else
     let l:func = 'neocomplcache#compare_prev_rank'

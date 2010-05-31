@@ -149,7 +149,7 @@ function! s:check_buffer(bufname)"{{{
     let l:bufname = fnamemodify((a:bufname == '')? a:bufname : bufname('%'), ':p')
     let l:bufnumber = bufnr(l:bufname)
     let s:include_info[l:bufnumber] = {}
-    if (g:neocomplcache_caching_disable_pattern == '' || l:bufname !~ g:neocomplcache_caching_disable_pattern)
+    if (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
                 \&& getbufvar(l:bufnumber, '&readonly') == 0
         let l:filetype = getbufvar(l:bufnumber, '&filetype')
         if l:filetype == ''

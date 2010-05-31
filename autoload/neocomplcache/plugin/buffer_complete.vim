@@ -43,7 +43,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   let s:sources = {}
   let s:cache_line_count = 70
   let s:rank_cache_count = 1
-  let s:caching_disable_list = {}
+  let s:disable_caching_list = {}
   let s:completion_length = neocomplcache#get_completion_length('buffer_complete')
   let s:prev_frequencies = {}
   "}}}
@@ -58,8 +58,8 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   command! -nargs=? -complete=buffer NeoComplCachePrintSource call s:print_source(<q-args>)
   command! -nargs=? -complete=buffer NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
   command! -nargs=? -complete=buffer NeoComplCacheSaveCache call s:save_all_cache()
-  command! -nargs=? -complete=buffer NeoComplCacheCachingDisable call s:caching_disable(<q-args>)
-  command! -nargs=? -complete=buffer NeoComplCacheCachingEnable call s:caching_enable(<q-args>)
+  command! -nargs=? -complete=buffer NeoComplCacheDisableCaching call s:disable_caching(<q-args>)
+  command! -nargs=? -complete=buffer NeoComplCacheEnableCaching call s:enable_caching(<q-args>)
   "}}}
 
   " Initialize cache.
@@ -152,7 +152,7 @@ function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
 endfunction"}}}
 
 function! s:calc_frequency(list)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_alphabetical_order
+  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_enable_alphabetical_order
     return
   endif
 
@@ -208,7 +208,7 @@ function! s:calc_frequency(list)"{{{
   endfor
 endfunction"}}}
 function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_alphabetical_order
+  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_enable_alphabetical_order
     return
   endif
 
@@ -522,8 +522,8 @@ function! s:check_source()"{{{
     if bufloaded(l:bufnumber)
       let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
       if (!has_key(s:sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
-            \&& !has_key(s:caching_disable_list, l:bufnumber)
-            \&& (g:neocomplcache_caching_disable_pattern == '' || l:bufname !~ g:neocomplcache_caching_disable_pattern)
+            \&& !has_key(s:disable_caching_list, l:bufnumber)
+            \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
         " Caching.
         call s:word_caching(l:bufnumber)
@@ -547,7 +547,7 @@ function! s:check_deleted_buffer()"{{{
 endfunction"}}}
 
 function! s:caching_cursor_holdi()"{{{
-  if !has_key(s:sources, bufnr('%')) || has_key(s:caching_disable_list, bufnr('%')) || @. == ''
+  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%')) || @. == ''
     return
   endif
 
@@ -656,7 +656,7 @@ function! s:output_keyword(name)"{{{
     silent put=string(keyword)
   endfor
 endfunction "}}}
-function! s:caching_disable(name)"{{{
+function! s:disable_caching(name)"{{{
   if a:number == ''
     let l:number = bufnr('%')
   else
@@ -668,14 +668,14 @@ function! s:caching_disable(name)"{{{
     endif
   endif
 
-  let s:caching_disable_list[l:number] = 1
+  let s:disable_caching_list[l:number] = 1
 
   if has_key(s:sources, l:number)
     " Delete source.
     call remove(s:sources, l:number)
   endif
 endfunction"}}}
-function! s:caching_enable(name)"{{{
+function! s:enable_caching(name)"{{{
   if a:number == ''
     let l:number = bufnr('%')
   else
@@ -687,8 +687,8 @@ function! s:caching_enable(name)"{{{
     endif
   endif
 
-  if has_key(s:caching_disable_list, l:number)
-    call remove(s:caching_disable_list, l:number)
+  if has_key(s:disable_caching_list, l:number)
+    call remove(s:disable_caching_list, l:number)
   endif
 endfunction"}}}
 "}}}
