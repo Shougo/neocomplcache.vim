@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 4.30
+Version: 5.0
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -624,8 +624,8 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
-2010-xx-xx
-- 
+2010-05-31
+- Ver.5 development started.
 
 ChangeLog NeoComplCache 4.30: {{{
 2010-05-31
