@@ -26,8 +26,8 @@
 
 function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   " Initialize.
-  let s:completion_length = has_key(g:NeoComplCache_PluginCompletionLength, 'vim_complete') ? 
-        \ g:NeoComplCache_PluginCompletionLength['vim_complete'] : g:NeoComplCache_KeywordCompletionStartLength
+  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length, 'vim_complete') ? 
+        \ g:neocomplcache_plugin_completion_length['vim_complete'] : g:neocomplcache_auto_completion_start_length
 
   " Set caching event.
   autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()
@@ -63,7 +63,7 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
   
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
 
-  if g:NeoComplCache_EnableWildCard
+  if g:neocomplcache_enable_wildcard
     " Check wildcard.
     let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
   endif

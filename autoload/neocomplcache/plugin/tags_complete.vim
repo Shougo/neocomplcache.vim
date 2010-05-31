@@ -30,8 +30,8 @@ function! neocomplcache#plugin#tags_complete#initialize()"{{{
     let s:completion_length = neocomplcache#get_completion_length('tags_complete')
     
     " Create cache directory.
-    if !isdirectory(g:NeoComplCache_TemporaryDir . '/tags_cache')
-        call mkdir(g:NeoComplCache_TemporaryDir . '/tags_cache', 'p')
+    if !isdirectory(g:neocomplcache_temporary_dir . '/tags_cache')
+        call mkdir(g:neocomplcache_temporary_dir . '/tags_cache', 'p')
     endif
     
     command! -nargs=? -complete=buffer NeoComplCacheCachingTags call s:caching_tags(<q-args>, 1)
@@ -56,9 +56,9 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
         let l:ft = 'nothing'
     endif
     
-    if has_key(g:NeoComplCache_MemberPrefixPatterns, l:ft) && a:cur_keyword_str =~ g:NeoComplCache_MemberPrefixPatterns[l:ft]
+    if has_key(g:neocomplcache_member_prefix_patternss, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patternss[l:ft]
         let l:use_member_filter = 1
-        let l:prefix = matchstr(a:cur_keyword_str, g:NeoComplCache_MemberPrefixPatterns[l:ft])
+        let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patternss[l:ft])
         let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
     else
         let l:use_member_filter = 0
@@ -100,7 +100,7 @@ function! s:caching_tags(bufname, force)"{{{
     for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
         let l:filename = fnamemodify(tags, ':p')
         if filereadable(l:filename)
-                            \&& (a:force || getfsize(l:filename) < g:NeoComplCache_CachingLimitFileSize)
+                            \&& (a:force || getfsize(l:filename) < g:neocomplcache_caching_limit_file_size)
             let s:tags_list[l:bufnumber][l:filename] = s:initialize_tags(l:filename)
         endif
     endfor

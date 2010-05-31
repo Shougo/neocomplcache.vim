@@ -32,8 +32,8 @@ function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
   let l:plugin_list = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/*.vim'), '\n')
   for list in l:plugin_list
     let l:plugin_name = fnamemodify(list, ':t:r')
-    if !has_key(g:NeoComplCache_DisablePluginList, l:plugin_name) || 
-          \ g:NeoComplCache_DisablePluginList[l:plugin_name] == 0
+    if !has_key(g:neocomplcache_disable_plugin_list, l:plugin_name) || 
+          \ g:neocomplcache_disable_plugin_list[l:plugin_name] == 0
       let l:func = 'neocomplcache#plugin#' . l:plugin_name . '#'
       let s:plugins_func_table[l:plugin_name] = l:func
     endif
@@ -54,14 +54,14 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
   let l:pattern = neocomplcache#get_keyword_pattern_end()
 
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
-  if g:NeoComplCache_EnableWildCard
+  if g:neocomplcache_enable_wildcard
     " Check wildcard.
     let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
   endif
   let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
 
   let l:start_length = (&l:completefunc == 'neocomplcache#manual_complete')?  
-        \g:NeoComplCache_ManualCompletionStartLength : g:NeoComplCache_KeywordCompletionStartLength
+        \g:neocomplcache_manual_completion_start_length : g:neocomplcache_auto_completion_start_length
   if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < l:start_length
     return -1
   endif
@@ -77,8 +77,8 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
   let l:cache_keyword_lists = {}
   let l:is_empty = 1
   for l:plugin in keys(l:loaded_plugins)
-    if has_key(g:NeoComplCache_PluginCompletionLength, l:plugin)
-          \&& len(a:cur_keyword_str) < g:NeoComplCache_PluginCompletionLength[l:plugin]
+    if has_key(g:neocomplcache_plugin_completion_length, l:plugin)
+          \&& len(a:cur_keyword_str) < g:neocomplcache_plugin_completion_length[l:plugin]
       call remove(l:loaded_plugins, l:plugin)
       let l:cache_keyword_lists[l:plugin] = []
     else
@@ -117,17 +117,17 @@ function! neocomplcache#complfunc#keyword_complete#get_manual_complete_list(plug
   let l:cur_text = neocomplcache#get_cur_text()
   let l:cur_keyword_pos = neocomplcache#complfunc#keyword_complete#get_keyword_pos(l:cur_text)
   let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-  if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:NeoComplCache_ManualCompletionStartLength
+  if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:neocomplcache_manual_completion_start_length
     return []
   endif
 
   " Save options.
   let l:ignorecase_save = &ignorecase
 
-  if g:NeoComplCache_SmartCase && l:cur_keyword_str =~ '\u'
+  if g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
     let &ignorecase = 0
   else
-    let &ignorecase = g:NeoComplCache_IgnoreCase
+    let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
   let l:plugins_func_save = s:plugins_func_table

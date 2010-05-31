@@ -30,11 +30,11 @@ function! neocomplcache#plugin#dictionary_complete#initialize()"{{{
   let s:completion_length = neocomplcache#get_completion_length('dictionary_complete')
 
   " Initialize dictionary."{{{
-  if !exists('g:NeoComplCache_DictionaryFileTypeLists')
-    let g:NeoComplCache_DictionaryFileTypeLists = {}
+  if !exists('g:neocomplcache_dictionary_filetype_lists')
+    let g:neocomplcache_dictionary_filetype_lists = {}
   endif
-  if !has_key(g:NeoComplCache_DictionaryFileTypeLists, 'default')
-    let g:NeoComplCache_DictionaryFileTypeLists['default'] = ''
+  if !has_key(g:neocomplcache_dictionary_filetype_lists, 'default')
+    let g:neocomplcache_dictionary_filetype_lists['default'] = ''
   endif
   "}}}
 
@@ -45,8 +45,8 @@ function! neocomplcache#plugin#dictionary_complete#initialize()"{{{
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheCachingDictionary call s:recaching(<q-args>)
 
   " Create cache directory.
-  if !isdirectory(g:NeoComplCache_TemporaryDir . '/dictionary_cache')
-    call mkdir(g:NeoComplCache_TemporaryDir . '/dictionary_cache')
+  if !isdirectory(g:neocomplcache_temporary_dir . '/dictionary_cache')
+    call mkdir(g:neocomplcache_temporary_dir . '/dictionary_cache')
   endif
 endfunction"}}}
 
@@ -71,7 +71,7 @@ function! s:caching()"{{{
 
   for l:filetype in keys(neocomplcache#get_source_filetypes(&filetype))
     if !has_key(s:dictionary_list, l:filetype)
-      if g:NeoComplCache_CachingPercentInStatusline
+      if g:neocomplcache_caching_percent_in_statusline
         let l:statusline_save = &l:statusline
       endif
 
@@ -81,7 +81,7 @@ function! s:caching()"{{{
 
       call neocomplcache#print_caching('Caching done.')
 
-      if g:NeoComplCache_CachingPercentInStatusline
+      if g:neocomplcache_caching_percent_in_statusline
         let &l:statusline = l:statusline_save
       endif
     endif
@@ -100,7 +100,7 @@ function! s:recaching(filetype)"{{{
   endif
 
   " Caching.
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let l:statusline_save = &l:statusline
   endif
 
@@ -109,7 +109,7 @@ function! s:recaching(filetype)"{{{
 
   call neocomplcache#print_caching('Caching done.')
 
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let &l:statusline = l:statusline_save
   endif
 endfunction"}}}
@@ -125,13 +125,13 @@ function! s:initialize_dictionary(filetype)"{{{
 endfunction"}}}
 
 function! s:caching_from_dict(filetype)"{{{
-  if !has_key(g:NeoComplCache_DictionaryFileTypeLists, a:filetype)
+  if !has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
     return {}
   endif
 
   let l:keyword_list = []
 
-  for l:dictionary in split(g:NeoComplCache_DictionaryFileTypeLists[a:filetype], ',')
+  for l:dictionary in split(g:neocomplcache_dictionary_filetype_lists[a:filetype], ',')
     if filereadable(l:dictionary)
       let l:keyword_list += neocomplcache#cache#load_from_file(l:dictionary, 
             \neocomplcache#get_keyword_pattern(a:filetype), 'D')

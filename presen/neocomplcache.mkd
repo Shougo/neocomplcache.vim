@@ -30,7 +30,7 @@ Ver.3.00より、ディレクトリ構造が大きく変化しました。
 昔のバージョンのファイルは削除してください。
 
 そして、.vimrcで
-`let g:NeoComplCache_EnableAtStartup = 1`
+`let g:neocomplcache_enable_at_startup = 1`
 と設定すると、Vimの起動時に自動的に有効になります。
 
 手動で有効にしたいときには、
@@ -237,9 +237,6 @@ Visual Studioのように使えるので非常に便利です。是非とも使�
 バッファ全体を一定のキャッシュラインで分割し、キャッシュライン単位でキーワードの収集を行います。
 よって、編集し初めは補完候補の順番がおかしいです。ご了承ください。
 
-キャッシュラインを固定値にすると、一行が多いHTMLやTeXで重いため、
-キャッシュラインは`g:NeoComplCache_CacheLineCount`の値を元に、バッファの行数により決定します。
-
 neocomplcache Ver.4.00より、キャッシュルーチンを見直し、大幅な高速化が図られました。
 特にキャッシュからの読み込みがかなり速くなっています。
 
@@ -279,7 +276,7 @@ Ver.3.11より、ファイル名補完は/を入力しなくても自動的に�
 
 ## SmartCase
 
-これを設定すると、`g:NeoComplCache_IgnoreCase`のとき（デフォルト）、
+これを設定すると、`g:neocomplcache_enable_ignore_case`のとき（デフォルト）、
 `hoge -> hoge,Hoge`にマッチ。
 `Hoge -> Hoge`にマッチ。
 となります。
@@ -287,7 +284,7 @@ Ver.3.11より、ファイル名補完は/を入力しなくても自動的に�
 大文字小文字で意味が変わる、RubyやCのマクロを使うときには便利です。
 
 この機能を使用するには、
-`let g:NeoComplCache_SmartCase = 1`
+`let g:neocomplcache_enable_smart_case = 1`
 とする必要があります。
 
 ## 豊富なカスタマイズ項目
@@ -318,10 +315,10 @@ Rubyで,や.を入力したり、HTMLでタグが補完できます。
 
 無効にしたい場合は.vimrcで
 `
-if !exists('g:NeoComplCache_OmniPatterns')
-    let g:NeoComplCache_OmniPatterns = {}
+if !exists('g:neocomplcache_omni_patterns')
+    let g:neocomplcache_omni_patterns = {}
 endif
-let g:NeoComplCache_OmniPatterns['無効にしたいファイルタイプ'] = ''
+let g:neocomplcache_omni_patterns['無効にしたいファイルタイプ'] = ''
 `
 とすると、無効にできます。
 
@@ -338,8 +335,8 @@ Omni補完でも補完のスキップが動作します。
 しかしこれでは困る場合もあったので（例：C/C++でやりとりするとき）、
 Same filetypeという概念を作り、
 `
-let g:NeoComplCache_SameFileTypeLists['c'] = 'cpp'
-let g:NeoComplCache_SameFileTypeLists['cpp'] = 'c'
+let g:neocomplcache_same_filetype_lists['c'] = 'cpp'
+let g:neocomplcache_same_filetype_lists['cpp'] = 'c'
 `
 というように設定すれば、C/C++間のバッファで補完できるようになります。
 一方だけ設定すれば、相互でない補完も可能です。
@@ -372,7 +369,7 @@ thincaさんの発案により実装。
 Eclipseではこの補完が実装されているようです。
 
 この機能を使用するには、
-`let g:NeoComplCache_EnableCamelCaseCompletion = 1`
+`let g:neocomplcache_enable_camel_case_completion = 1`
 とする必要があります。
 
 ## Underbar補完
@@ -382,7 +379,7 @@ Emacsのcompleter.elに似たような機能があるので実装。
 つまり、`_`を単語の区切りとして認識しています。C言語などの`_`を多用する言語で便利。
 
 この機能を使用するには、
-`let g:NeoComplCache_EnableUnderbarCompletion = 1`
+`let g:neocomplcache_enable_underbar_completion = 1`
 とする必要があります。
 
 ## プラグインで拡張可能
@@ -443,9 +440,9 @@ inoremap <expr><C-g>     neocomplcache#undo_completion()
 自動キャッシュの制御
 
 Ver.2.64よりオプションが追加され、キャッシュの制御がやりやすくなりました。
-`g:NeoComplCache_CachingLimitFileSize`オプションではキャッシュする最大ファイルサイズを設定します。
+`g:neocomplcache_caching_limit_file_size`オプションではキャッシュする最大ファイルサイズを設定します。
 これより大きいファイルは自動でキャッシュされません。
-`g:NeoComplCache_CachingDisablePattern`オプションではキャッシュしないバッファ名パターンを設定します。
+`g:neocomplcache_caching_disable_pattern`オプションではキャッシュしないバッファ名パターンを設定します。
 正規表現で指定するので、\|で区切れば複数のパターンを指定できます。
 
 プラグインごとに補完開始文字数を設定
@@ -454,10 +451,10 @@ Ver.2.71より、プラグインごとに補完開始文字数を設定できる
 
 例：
 `
-let g:NeoComplCache_KeywordCompletionStartLength = 1
-if !exists('g:NeoComplCache_PluginCompletionLength')
+let g:neocomplcache_auto_completion_start_length = 1
+if !exists('g:neocomplcache_plugin_completion_length')
 endif
-let g:NeoComplCache_PluginCompletionLength = {
+let g:neocomplcache_plugin_completion_length = {
     \'snippets_complete' : 1, 
     \'buffer_complete' : 2, 
     \'syntax_complete' : 2, 
@@ -466,15 +463,15 @@ let g:NeoComplCache_PluginCompletionLength = {
 `
 
 この例ではsnippets\_completeのみ1文字で補完、tags\_completeは3文字、他は2文字で補完するようにしています。
-`g:NeoComplCache_KeywordCompletionStartLength`を変更しないと、
-入力文字数が`g:NeoComplCache_KeywordCompletionStartLength`を超えるまで自動補完が呼び出されないので注意してください。
+`g:neocomplcache_auto_completion_start_length`を変更しないと、
+入力文字数が`g:neocomplcache_auto_completion_start_length`を超えるまで自動補完が呼び出されないので注意してください。
 
 ## プラグインの無効化
 
 Ver.3.09より、プラグインや補完関数を無効化できるようになりました。
  
 `
-let g:NeoComplCache_DisablePluginList = {
+let g:neocomplcache_disable_plugin_list = {
     \'tags_complete' : 1, 
     \'omni_complete' : 1, 
 \}
@@ -491,11 +488,11 @@ Ver.3.08で一度削除されましたが、Ver.3.11で復活しました。
 Ver.3.15より、ファイルタイプごとにクイックマッチリストを表示する入力パターンを制御できるようになりました。
 defaultを指定すると、通常時の入力パターンを設定できます。
 `
-let g:NeoComplCache_QuickMatchPatterns['default'] = '\`'           
+let g:neocomplcache_quick_match_patterns['default'] = '\`'           
 `
 とすると、'\`'入力時にクイックマッチリストを表示します。
 `
-let g:NeoComplCache_QuickMatchPatterns['scheme'] = ';'           
+let g:neocomplcache_quick_match_patterns['scheme'] = ';'           
 `
 とすれば、filetypeがschemeの時のみ';'を入力パターンとします。
 初期値の'-'では入力時に不便な場合、変更してください。
@@ -513,30 +510,30 @@ neocomplcacheのオプションはdoc/neocomplcache.jaxに詳しい解説があ�
 
 `
 " Use neocomplcache.
-let g:NeoComplCache_EnableAtStartup = 1
+let g:neocomplcache_enable_at_startup = 1
 " Use smartcase.
-let g:NeoComplCache_SmartCase = 1
+let g:neocomplcache_enable_smart_case = 1
 " Use camel case completion.
-let g:NeoComplCache_EnableCamelCaseCompletion = 1
+let g:neocomplcache_enable_camel_case_completion = 1
 " Use underbar completion.
-let g:NeoComplCache_EnableUnderbarCompletion = 1
+let g:neocomplcache_enable_underbar_completion = 1
 " Set minimum syntax keyword length.
-let g:NeoComplCache_MinSyntaxLength = 3
+let g:neocomplcache_min_syntax_length = 3
 " Set manual completion length.
-let g:NeoComplCache_ManualCompletionStartLength = 0
+let g:neocomplcache_manual_completion_start_length = 0
 
 " Define dictionary.
-let g:NeoComplCache_DictionaryFileTypeLists = {
+let g:neocomplcache_dictionary_filetype_lists = {
             \ 'default' : '',
             \ 'vimshell' : $HOME.'/.vimshell_hist',
             \ 'scheme' : $HOME.'/.gosh_completions'
             \ }
 
 " Define keyword.
-if !exists('g:NeoComplCache_KeywordPatterns')
-    let g:NeoComplCache_KeywordPatterns = {}
+if !exists('g:neocomplcache_keyword_patterns')
+    let g:neocomplcache_keyword_patterns = {}
 endif
-let g:NeoComplCache_KeywordPatterns['default'] = '\h\w*'
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 " Plugin key-mappings.
 imap <C-l>     <Plug>(neocomplcache_snippets_expand)
@@ -609,7 +606,7 @@ Ver.2.50より、起動時に簡単なキャッシュを行うようになりま
 これでVim標準のキーワード補完は完全に必要なくなります。
 ただし巨大なバッファを読み込むと、ある程度時間がかかるので注意。
 
-Ver.2.55より、キャッシュしたファイルを`g:NeoComplCache_TemporaryDir.'/keyword_cache'`ディレクトリに
+Ver.2.55より、キャッシュしたファイルを`g:neocomplcache_temporary_dir.'/keyword_cache'`ディレクトリに
 書き出すようになりました。同じファイルを開く場合は格段に高速化されます。
 ただし、キャッシュを書き出すのは500行以上のファイルのみです。
 

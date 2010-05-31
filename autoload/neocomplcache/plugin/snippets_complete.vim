@@ -122,7 +122,7 @@
 "    - Fixed no new line snippet expand bug.
 "
 "   1.19:
-"    - Create g:NeoComplCache_SnippetsDir directory if not exists.
+"    - Create g:neocomplcache_snippets_dir directory if not exists.
 "    - Implemented direct expantion.
 "    - Implemented snippet alias.
 "    - Fixed expand jump bug.
@@ -131,7 +131,7 @@
 "   1.18:
 "    - Fixed snippet expand bugs.
 "    - Caching snippets when file open.
-"    - g:NeoComplCache_SnippetsDir is comma-separated list.
+"    - g:neocomplcache_snippets_dir is comma-separated list.
 "    - Fixed snippet without default value expand bug.
 "
 "   1.17:
@@ -177,7 +177,7 @@
 "    - Added syntax highlight.
 "    - Implemented neocomplcache#plugin#snippets_complete#expandable().
 "    - Change menu when expandable snippet.
-"    - Implemented g:NeoComplCache_SnippetsDir.
+"    - Implemented g:neocomplcache_snippets_dir.
 "
 "   1.08:
 "    - Fixed place holder's default value bug.
@@ -231,8 +231,8 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
   " Set snippets dir.
   let s:runtime_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete'), '\n')
   let s:snippets_dir = split(globpath(&runtimepath, 'snippets'), '\n') + s:runtime_dir
-  if exists('g:NeoComplCache_SnippetsDir')
-    for l:dir in split(g:NeoComplCache_SnippetsDir, ',')
+  if exists('g:neocomplcache_snippets_dir')
+    for l:dir in split(g:neocomplcache_snippets_dir, ',')
       let l:dir = expand(l:dir)
       if !isdirectory(l:dir)
         call mkdir(l:dir, 'p')
@@ -259,7 +259,7 @@ function! neocomplcache#plugin#snippets_complete#initialize()"{{{
   hi def link NeoComplCacheExpandSnippets Special
 
   " Select mode mappings.
-  if !exists('g:NeoComplCache_DisableSelectModeMappings')
+  if !exists('g:neocomplcache_disable_select_mode_mappings')
     snoremap <CR>     a<BS>
     snoremap <BS> a<BS>
     snoremap <right> <ESC>a
@@ -314,12 +314,12 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
   let l:list = filter(a:list, l:pattern)
 
   " Substitute abbr.
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
   for snippet in l:list
     if snippet.snip =~ '`[^`]*`'
       let snippet.menu = s:eval_snippet(snippet.snip)
 
-      if len(snippet.menu) > g:NeoComplCache_MaxKeywordWidth 
+      if len(snippet.menu) > g:neocomplcache_max_keyword_width 
         let snippet.menu = printf(l:abbr_pattern, snippet.menu, snippet.menu[-8:])
       endif
       let snippet.menu = '`Snip` ' . snippet.menu
@@ -345,8 +345,8 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
   endfor
 
   " Set same filetype.
-  if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-    for l:same_ft in split(g:NeoComplCache_SameFileTypeLists[l:ft], ',')
+  if has_key(g:neocomplcache_same_filetype_lists, l:ft)
+    for l:same_ft in split(g:neocomplcache_same_filetype_lists[l:ft], ',')
       if has_key(s:snippets, l:same_ft)
         call extend(l:snippets, s:snippets[l:same_ft], 'keep')
       endif
@@ -379,14 +379,14 @@ function! s:caching()"{{{
 endfunction"}}}
 
 function! s:set_snippet_pattern(dict)"{{{
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
   let l:word = a:dict.word
   let l:menu_pattern = a:dict.word =~ '\${\d\+\%(:.\{-}\)\?\\\@<!}' ? '<Snip> ' : '[Snip] '
 
   let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : 
         \substitute(a:dict.word, '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+\|<\%(\\n\|\\t\)>\|\s\+', ' ', 'g')
-  let l:abbr = (len(l:abbr) > g:NeoComplCache_MaxKeywordWidth)? 
+  let l:abbr = (len(l:abbr) > g:neocomplcache_max_keyword_width)? 
         \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
 
   let l:dict = {
@@ -482,7 +482,7 @@ endfunction"}}}
 function! s:load_snippets(snippets_file, filetype)"{{{
   let l:snippet = {}
   let l:snippet_pattern = { 'word' : '' }
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:NeoComplCache_MaxKeywordWidth-10)
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
   for line in readfile(a:snippets_file)
     if line =~ '^include'
@@ -501,7 +501,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
             let l:alias_pattern = copy(l:pattern)
             let l:alias_pattern.word = l:alias
 
-            let l:abbr = (len(l:alias) > g:NeoComplCache_MaxKeywordWidth)? 
+            let l:abbr = (len(l:alias) > g:neocomplcache_max_keyword_width)? 
                   \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
             let l:alias_pattern.abbr = l:abbr
 
@@ -552,7 +552,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
         let l:alias_pattern = copy(l:pattern)
         let l:alias_pattern.word = l:alias
 
-        let l:abbr = (len(l:alias) > g:NeoComplCache_MaxKeywordWidth)? 
+        let l:abbr = (len(l:alias) > g:neocomplcache_max_keyword_width)? 
               \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
         let l:alias_pattern.abbr = l:abbr
 
@@ -580,8 +580,8 @@ function! s:snippets_expand(cur_text, col)"{{{
   endfor
 
   " Set same filetype.
-  if has_key(g:NeoComplCache_SameFileTypeLists, l:ft)
-    for l:same_ft in split(g:NeoComplCache_SameFileTypeLists[l:ft], ',')
+  if has_key(g:neocomplcache_same_filetype_lists, l:ft)
+    for l:same_ft in split(g:neocomplcache_same_filetype_lists[l:ft], ',')
       call extend(l:snippets, s:snippets[l:same_ft], 'keep')
     endfor
   endif
