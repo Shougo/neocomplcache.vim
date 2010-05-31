@@ -626,6 +626,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-05-31
 - Ver.5 development started.
+- Fixed include_complete error.
 
 ChangeLog NeoComplCache 4.30: {{{
 2010-05-31
