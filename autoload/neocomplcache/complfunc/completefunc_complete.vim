@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: completefunc_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 01 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,19 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.00, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.00:
-"    - Initial version.
-" }}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
 "=============================================================================
 
 function! neocomplcache#complfunc#completefunc_complete#initialize()"{{{
@@ -94,7 +80,7 @@ function! s:get_completefunc_list(list)"{{{
     " Convert string list.
     for str in filter(copy(a:list), 'type(v:val) == '.type(''))
         let l:dict = {
-                    \'word' : str, 'abbr' : str, 'menu' : '[C]', 'icase' : 1
+                    \'word' : str, 'menu' : '[C]', 'icase' : 1
                     \}
 
         call add(l:comp_list, l:dict)

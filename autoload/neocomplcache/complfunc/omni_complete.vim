@@ -184,7 +184,7 @@ function! s:get_omni_list(list)"{{{
   " Convert string list.
   for str in filter(copy(a:list), 'type(v:val) == '.type(''))
     let l:dict = {
-          \'word' : str, 'abbr' : str, 'menu' : '[O]', 'icase' : 1
+          \'word' : str, 'menu' : '[O]', 'icase' : 1
           \}
 
     call add(l:omni_list, l:dict)

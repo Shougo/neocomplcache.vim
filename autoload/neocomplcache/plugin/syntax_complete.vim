@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 01 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -157,7 +157,7 @@ function! s:caching_from_syn()"{{{
       if len(l:match_str) >= g:neocomplcache_min_syntax_length && !has_key(l:dup_check, l:match_str)
             \&& l:match_str =~ '^[[:print:]]\+$'
         let l:keyword = {
-              \ 'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu, 'icase' : 1
+              \ 'word' : l:match_str, 'menu' : l:menu, 'icase' : 1
               \}
 
         let l:key = tolower(l:keyword.word[: s:completion_length-1])

@@ -609,6 +609,24 @@ vim_complete.vim					*vim_complete*
 		a script variable, a function and the analysis of the
 		command are implemented now.
 
+dictionary_complete.vim					*dictionary_complete*
+		
+
+filename_complete.vim					*filename_complete*
+		
+
+omni_complete.vim					*omni_complete*
+		
+
+completefunc_complete.vim				*completefunc_complete*
+		
+
+spell_complete.vim					*spell_complete*
+		
+
+abbrev_complete.vim					*abbrev_complete*
+		
+
 ==============================================================================
 TODO							*neocomplcache-todo*
 
@@ -623,6 +641,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-06-01
+- Improved abbr check.
+- Added abbrev_complete plugin.
 
 2010-05-31
 - Ver.5 development started.
