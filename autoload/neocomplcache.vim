@@ -1152,6 +1152,9 @@ function! s:integrate_completion(complete_result)"{{{
   " Abbr check.
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
   for l:keyword in l:complete_words
+    if !has_key(l:keyword, 'abbr')
+      let l:keyword.abbr = l:keyword.word
+    endif
     if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
       let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-8:])
     endif

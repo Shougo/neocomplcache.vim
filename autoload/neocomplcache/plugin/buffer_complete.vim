@@ -326,7 +326,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
           if !has_key(l:source.keyword_cache[l:key], l:match_str)
             " Append list.
             let l:source.keyword_cache[l:key][l:match_str] = {
-                  \'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu,
+                  \'word' : l:match_str, 'menu' : l:menu,
                   \'icase' : 1, 'rank' : 1
                   \}
           endif

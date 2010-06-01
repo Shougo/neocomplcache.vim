@@ -525,8 +525,9 @@ EXAMPLES						*neocomplcache-examples*
 PLUGINS							*neocomplcache-plugins*
 
 この項では、neocomplcacheに添付されているプラグインの解説を行う。 自分で作成
-したプラグインは、autoload/neocomplcache/pluginディレクトリに保存することで、
-neocomplcacheにより自動的に読み込まれる。
+したプラグインは、autoload/neocomplcache/pluginディレクトリまたは
+autoload/neocomplcache/complfuncに保存することで、neocomplcacheにより自動的
+に読み込まれる。
 
 keyword_complete.vim					*keyword_complete*
 		バッファやディクショナリからキーワードを収集し、補完に利用す
@@ -566,6 +567,24 @@ vim_complete.vim					*vim_complete*
 		ている補完よりも、高機能なものにすることが目標である。 現在、
 		ローカル変数やスクリプト変数、関数やコマンドの解析が実装され
 		ている。
+
+dictionary_complete.vim					*dictionary_complete*
+		
+
+filename_complete.vim					*filename_complete*
+		
+
+omni_complete.vim					*omni_complete*
+		
+
+completefunc_complete.vim				*completefunc_complete*
+		
+
+spell_complete.vim					*spell_complete*
+		
+
+abbrev_complete.vim					*abbrev_complete*
+		
 
 ==============================================================================
 SNIPPET							*neocomplcache-snippet-completion*
