@@ -645,6 +645,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-06-01
 - Improved abbr check.
 - Added abbrev_complete plugin.
+- Fixed disable AutoComplPop.
 
 2010-05-31
 - Ver.5 development started.
