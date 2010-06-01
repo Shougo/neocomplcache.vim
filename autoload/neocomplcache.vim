@@ -53,6 +53,7 @@ function! neocomplcache#enable() "{{{
   let s:prev_numbered_list = []
   let s:cur_text = ''
   let s:old_cur_text = ''
+  let s:moved_cur_text = ''
   let s:changedtick = b:changedtick
   let s:used_match_filter = 0
   "}}}
@@ -1000,9 +1001,12 @@ function! s:do_complete(is_moved)"{{{
     return
   elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
         \&& !s:used_match_filter
-    " Dummy cursor move.
-    call feedkeys("\<C-g>u", 'n')
-    return
+    if l:cur_text !=# s:moved_cur_text
+      let s:moved_cur_text = l:cur_text
+      " Dummy cursor move.
+      call feedkeys("\<C-r>\<ESC>", 'n')
+      return
+    endif
   endif
 
   let s:old_cur_text = l:cur_text

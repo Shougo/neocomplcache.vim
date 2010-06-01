@@ -644,6 +644,7 @@ ChangeLog NeoComplCache 4.30: {{{
 
 2010-05-30
 - Improved help file.
+- Improved dummy move.
 
 2010-05-29
 * Detect text was changed.
