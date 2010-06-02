@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2010
+" Last Modified: 02 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -960,7 +960,8 @@ function! s:do_complete(is_moved)"{{{
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
   if l:cur_text == ''
-        \ || (exists('&iminsert') && &l:iminsert)
+        \ || l:cur_text[-1] >= 0x80
+        \ || (exists('b:skk_on') && b:skk_on)
         \ || l:cur_text == s:old_cur_text
     let s:complete_words = []
     let s:old_complete_words = []
