@@ -642,6 +642,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-02
+- Fixed save cache error.
+
 2010-06-01
 - Improved abbr check.
 - Added abbrev_complete plugin.

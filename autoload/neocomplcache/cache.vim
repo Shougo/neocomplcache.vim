@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Mar 2010
+" Last Modified: 02 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -172,7 +172,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
             \&& !has_key(l:dup_check, l:match_str)
         " Append list.
         let l:keyword = {
-              \'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu, 'icase' : 1, 'kind' : '', 'class' : ''
+              \'word' : l:match_str, 'menu' : l:menu, 'icase' : 1, 'kind' : '', 'class' : ''
               \}
 
         call add(l:keyword_lists, l:keyword)
@@ -324,6 +324,9 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
     endif
     if !has_key(keyword, 'class')
       let keyword.class = ''
+    endif
+    if !has_key(keyword, 'abbr')
+      let keyword.abbr = keyword.word
     endif
   endfor
 
