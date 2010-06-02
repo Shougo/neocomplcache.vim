@@ -67,20 +67,12 @@ function! s:caching()"{{{
         " Caching from cache.
         let s:syntax_list[l:filetype] = l:keyword_lists
       elseif l:filetype == &filetype
-        if g:neocomplcache_caching_percent_in_statusline
-          let l:statusline_save = &l:statusline
-        endif
-
         call neocomplcache#print_caching('Caching syntax "' . l:filetype . '"... please wait.')
 
         " Caching from syn list.
         let s:syntax_list[l:filetype] = s:caching_from_syn()
 
         call neocomplcache#print_caching('Caching done.')
-
-        if g:neocomplcache_caching_percent_in_statusline
-          let &l:statusline = l:statusline_save
-        endif
       endif
     endif
   endfor
@@ -94,18 +86,10 @@ function! s:recaching(filetype)"{{{
   endif
 
   " Caching.
-  if g:neocomplcache_caching_percent_in_statusline
-    let l:statusline_save = &l:statusline
-  endif
-
   call neocomplcache#print_caching('Caching syntax "' . l:filetype . '"... please wait.')
   let s:syntax_list[l:filetype] = s:caching_from_syn()
 
   call neocomplcache#print_caching('Caching done.')
-
-  if g:neocomplcache_caching_percent_in_statusline
-    let &l:statusline = l:statusline_save
-  endif
 endfunction"}}}
 
 function! s:caching_from_syn()"{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2010
+" Last Modified: 02 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,10 +26,13 @@
 "=============================================================================
 
 if v:version < 700
-    echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
-    finish
+  echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
+  finish
 elseif exists('g:loaded_neocomplcache')
-    finish
+  finish
+elseif !has('reltime')
+  echoerr 'neocomplcache needs reltime future.'
+  finish
 endif
 
 let s:save_cpo = &cpo
@@ -40,104 +43,95 @@ command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
 " Obsolute options check."{{{
 if exists('g:NeoComplCache_EnableAtStartup')
-    echoerr 'g:NeoComplCache_EnableAtStartup option does not work this version of neocomplcache.'
+  echoerr 'g:NeoComplCache_EnableAtStartup option does not work this version of neocomplcache.'
 endif
 if exists('g:NeoComplCache_KeywordPatterns')
-    echoerr 'g:NeoComplCache_KeywordPatterns option does not work this version of neocomplcache.'
+  echoerr 'g:NeoComplCache_KeywordPatterns option does not work this version of neocomplcache.'
 endif
 if exists('g:NeoComplCache_DictionaryFileTypeLists')
-    echoerr 'g:NeoComplCache_DictionaryFileTypeLists option does not work this version of neocomplcache.'
+  echoerr 'g:NeoComplCache_DictionaryFileTypeLists option does not work this version of neocomplcache.'
 endif
 if exists('g:NeoComplCache_KeywordCompletionStartLength')
-    echoerr 'g:NeoComplCache_KeywordCompletionStartLength option does not work this version of neocomplcache.'
+  echoerr 'g:NeoComplCache_KeywordCompletionStartLength option does not work this version of neocomplcache.'
 endif
 "}}}
 " Global options definition."{{{
 if !exists('g:neocomplcache_max_list')
-    let g:neocomplcache_max_list = 100
+  let g:neocomplcache_max_list = 100
 endif
 if !exists('g:neocomplcache_max_keyword_width')
-    let g:neocomplcache_max_keyword_width = 50
+  let g:neocomplcache_max_keyword_width = 50
 endif
 if !exists('g:neocomplcache_max_filename_width')
-    let g:neocomplcache_max_filename_width = 15
+  let g:neocomplcache_max_filename_width = 15
 endif
 if !exists('g:neocomplcache_auto_completion_start_length')
-    let g:neocomplcache_auto_completion_start_length = 2
+  let g:neocomplcache_auto_completion_start_length = 2
 endif
 if !exists('g:neocomplcache_manual_completion_start_length')
-    let g:neocomplcache_manual_completion_start_length = 2
+  let g:neocomplcache_manual_completion_start_length = 2
 endif
 if !exists('g:neocomplcache_min_keyword_length')
-    let g:neocomplcache_min_keyword_length = 4
+  let g:neocomplcache_min_keyword_length = 4
 endif
 if !exists('g:neocomplcache_enable_ignore_case')
-    let g:neocomplcache_enable_ignore_case = &ignorecase
+  let g:neocomplcache_enable_ignore_case = &ignorecase
 endif
 if !exists('g:neocomplcache_enable_smart_case')
-    let g:neocomplcache_enable_smart_case = 0
-endif
-if !exists('g:neocomplcache_enable_alphabetical_order')
-    let g:neocomplcache_enable_alphabetical_order = 0
+  let g:neocomplcache_enable_smart_case = 0
 endif
 if !exists('g:neocomplcache_disable_auto_complete')
-    let g:neocomplcache_disable_auto_complete = 0
+  let g:neocomplcache_disable_auto_complete = 0
 endif
 if !exists('g:neocomplcache_enable_wildcard')
-    let g:neocomplcache_enable_wildcard = 1
+  let g:neocomplcache_enable_wildcard = 1
 endif
 if !exists('g:neocomplcache_enable_quick_match')
-    let g:neocomplcache_enable_quick_match = 1
-endif
-if !exists('g:neocomplcache_enable_randomize')
-    let g:neocomplcache_enable_randomize = has('reltime')
+  let g:neocomplcache_enable_quick_match = 0
 endif
 if !exists('g:neocomplcache_enable_camel_case_completion')
-    let g:neocomplcache_enable_camel_case_completion = 0
+  let g:neocomplcache_enable_camel_case_completion = 0
 endif
 if !exists('g:neocomplcache_enable_underbar_completion')
-    let g:neocomplcache_enable_underbar_completion = 0
+  let g:neocomplcache_enable_underbar_completion = 0
 endif
 if !exists('g:neocomplcache_enable_display_parameter')
-    let g:neocomplcache_enable_display_parameter = 1
+  let g:neocomplcache_enable_display_parameter = 1
 endif
 if !exists('g:neocomplcache_enable_cursor_hold_i')
-    let g:neocomplcache_enable_cursor_hold_i = 0
+  let g:neocomplcache_enable_cursor_hold_i = 0
 endif
 if !exists('g:neocomplcache_enable_cursor_hold_i_time')
-    let g:neocomplcache_enable_cursor_hold_i_time = 300
+  let g:neocomplcache_enable_cursor_hold_i_time = 300
 endif
 if !exists('g:neocomplcache_enable_auto_select')
-    let g:neocomplcache_enable_auto_select = 0
+  let g:neocomplcache_enable_auto_select = 0
 endif
 if !exists('g:neocomplcache_caching_limit_file_size')
-    let g:neocomplcache_caching_limit_file_size = 1000000
+  let g:neocomplcache_caching_limit_file_size = 1000000
 endif
 if !exists('g:neocomplcache_disable_caching_buffer_name_pattern')
-    let g:neocomplcache_disable_caching_buffer_name_pattern = ''
+  let g:neocomplcache_disable_caching_buffer_name_pattern = ''
 endif
 if !exists('g:neocomplcache_lock_buffer_name_pattern')
-    let g:neocomplcache_lock_buffer_name_pattern = ''
-endif
-if !exists('g:neocomplcache_caching_percent_in_statusline')
-    let g:neocomplcache_caching_percent_in_statusline = 0
+  let g:neocomplcache_lock_buffer_name_pattern = ''
 endif
 if !exists('g:neocomplcache_disable_plugin_list')
-    let g:neocomplcache_disable_plugin_list = {}
+  let g:neocomplcache_disable_plugin_list = {}
 endif
 if !exists('g:neocomplcache_temporary_dir')
-    let g:neocomplcache_temporary_dir = '~/.neocon'
+  let g:neocomplcache_temporary_dir = '~/.neocon'
 endif
 if !exists('g:neocomplcache_ctags_program')
-    let g:neocomplcache_ctags_program = 'ctags'
+  let g:neocomplcache_ctags_program = 'ctags'
 endif
 let g:neocomplcache_temporary_dir = expand(g:neocomplcache_temporary_dir)
 if !isdirectory(g:neocomplcache_temporary_dir)
-    call mkdir(g:neocomplcache_temporary_dir, 'p')
+  call mkdir(g:neocomplcache_temporary_dir, 'p')
 endif
 if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
-    " Enable startup.
-    call neocomplcache#enable()
+  " Enable startup.
+  call neocomplcache#enable()
 endif"}}}
 
 let &cpo = s:save_cpo

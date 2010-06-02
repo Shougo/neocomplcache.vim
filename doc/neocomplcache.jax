@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 4.30
+Version: 5.0
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -201,13 +201,6 @@ g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
 		
 		初期値は0である。
 
-g:neocomplcache_enable_alphabetical_order			*g:neocomplcache_enable_alphabetical_order*
-		候補をアルファベット順で並び替えるかを制御する。 このオプショ
-		ンを設定すると、neocomplcacheの機能がかなり制限されるが、補
-		完処理は高速化する。 1ならば有効。
-		
-		初期値は0なので、頻度順に並び替える。
-
 g:neocomplcache_disable_auto_complete			*g:neocomplcache_disable_auto_complete*
 		自動補完を無効にするかどうかを制御する。 1ならば自動補完が無
 		効になるが、 <C-x><C-u> による手動補完は使用できる。
@@ -225,12 +218,6 @@ g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		補を選択できるようにするかを制御する。 1ならば有効になる。
 		
 		初期値は1なので、有効になっている。
-
-g:neocomplcache_enable_randomize				*g:neocomplcache_enable_randomize*
-		頻度を再計算するときなどに、乱数を使用するかを制御する。 1ならば
-		有効になる。
-		
-		初期値は+reltimeの時に1となる。
 
 g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		候補の計算を|CursorHoldI|イベント時に行うかどうかを制御する。

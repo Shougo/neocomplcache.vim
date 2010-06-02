@@ -497,9 +497,6 @@ function! s:get_script_candidates(bufnumber)"{{{
   let l:menu_pattern_dict = '[V] dictionary'
   let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
 
-  if g:neocomplcache_caching_percent_in_statusline
-    let l:statusline_save = &l:statusline
-  endif
   call neocomplcache#print_caching('Caching vim from '. bufname(a:bufnumber) .' ... please wait.')
 
   for l:line in getbufline(a:bufnumber, 1, '$')
@@ -566,10 +563,6 @@ function! s:get_script_candidates(bufnumber)"{{{
   endfor
 
   call neocomplcache#print_caching('Caching done.')
-  if g:neocomplcache_caching_percent_in_statusline
-    let &l:statusline = l:statusline_save
-  endif
-
   return { 'functions' : values(l:function_dict), 'variables' : values(l:variable_dict), 
         \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : values(l:dictionary_variable_dict) }
 endfunction"}}}

@@ -203,14 +203,6 @@ g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
 	
 		Default value is 0.
 
-g:neocomplcache_enable_alphabetical_order			*g:neocomplcache_enable_alphabetical_order*
-		This variable controls whether neocomplcache sort a
-		candidate with alphabetical order.  A function of
-		neocomplcache is considerably limited when you set this
-		option, but the completion processing speeds up.
-	
-		Default value is 0.
-
 g:neocomplcache_disable_auto_complete			*g:neocomplcache_disable_auto_complete*
 		This variable controls whether you invalidate automatic
 		completion.  If it is 1, automatic completion becomes
@@ -231,12 +223,6 @@ g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		neocomplcache will select candidate 'a'.
 	
 		Default value is 1.
-
-g:neocomplcache_enable_randomize				*g:neocomplcache_enable_randomize*
-		When neocomplcache calculate frequency again, this variable
-		controls whether neocomplcache use a random number.
-	
-		Default value is has ('reltime').
 
 g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		This variable controls whether neocomplcache use |CursorHoldI| event
@@ -644,6 +630,11 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-06-02
 - Fixed save cache error.
+- Deleted g:neocomplcache_enable_randomize option.
+- Deleted g:neocomplcache_enable_alphabetical_order option.
+- Deleted g:neocomplcache_caching_percent_in_statusline option.
+- Changed g:neocomplcache_enable_quick_match default value.
+- Fixed abbrev_complete bug.
 
 2010-06-01
 - Improved abbr check.

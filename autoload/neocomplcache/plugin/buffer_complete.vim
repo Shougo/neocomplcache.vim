@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2010
+" Last Modified: 02 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -152,7 +152,7 @@ function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
 endfunction"}}}
 
 function! s:calc_frequency(list)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_enable_alphabetical_order
+  if !neocomplcache#plugin#buffer_complete#exists_current_source()
     return
   endif
 
@@ -200,15 +200,14 @@ function! s:calc_frequency(list)"{{{
       endif
 
       " Reset count.
-      let s:rank_cache_count = (g:neocomplcache_enable_randomize)? 
-            \ neocomplcache#rand(l:calc_cnt) : l:calc_cnt
+      let s:rank_cache_count = neocomplcache#rand(l:calc_cnt)
     endif
 
     let s:rank_cache_count -= 1
   endfor
 endfunction"}}}
 function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_enable_alphabetical_order
+  if !neocomplcache#plugin#buffer_complete#exists_current_source()
     return
   endif
 

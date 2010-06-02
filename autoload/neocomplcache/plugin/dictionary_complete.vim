@@ -71,19 +71,11 @@ function! s:caching()"{{{
 
   for l:filetype in keys(neocomplcache#get_source_filetypes(&filetype))
     if !has_key(s:dictionary_list, l:filetype)
-      if g:neocomplcache_caching_percent_in_statusline
-        let l:statusline_save = &l:statusline
-      endif
-
       call neocomplcache#print_caching('Caching dictionary "' . l:filetype . '"... please wait.')
 
       let s:dictionary_list[l:filetype] = s:initialize_dictionary(l:filetype)
 
       call neocomplcache#print_caching('Caching done.')
-
-      if g:neocomplcache_caching_percent_in_statusline
-        let &l:statusline = l:statusline_save
-      endif
     endif
   endfor
 endfunction"}}}
@@ -100,18 +92,10 @@ function! s:recaching(filetype)"{{{
   endif
 
   " Caching.
-  if g:neocomplcache_caching_percent_in_statusline
-    let l:statusline_save = &l:statusline
-  endif
-
   call neocomplcache#print_caching('Caching dictionary "' . l:filetype . '"... please wait.')
   let s:dictionary_list[l:filetype] = s:caching_from_dict(l:filetype)
 
   call neocomplcache#print_caching('Caching done.')
-
-  if g:neocomplcache_caching_percent_in_statusline
-    let &l:statusline = l:statusline_save
-  endif
 endfunction"}}}
 
 function! s:initialize_dictionary(filetype)"{{{

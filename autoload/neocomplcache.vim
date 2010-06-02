@@ -538,10 +538,6 @@ function! neocomplcache#compare_prev_rank(i1, i2)
   return a:i1.rank+a:i1.prev_rank < a:i2.rank+a:i2.prev_rank ? 1 :
         \a:i1.rank+a:i1.prev_rank == a:i2.rank+a:i2.prev_rank ? 0 : -1
 endfunction"}}}
-" AlphabeticalOrder."{{{
-function! neocomplcache#compare_words(i1, i2)
-  return a:i1.word > a:i2.word ? 1 : a:i1.word == a:i2.word ? 0 : -1
-endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
   let l:time = reltime()[1]
@@ -657,13 +653,8 @@ function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
 endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
-  if g:neocomplcache_caching_percent_in_statusline
-    let &l:statusline = a:string
-    redrawstatus
-  else
-    redraw
-    echo a:string
-  endif
+  redraw
+  echo a:string
 endfunction"}}}
 function! neocomplcache#print_error(string)"{{{
   echohl Error | echo a:string | echohl None
@@ -1118,28 +1109,19 @@ function! s:integrate_completion(complete_result)"{{{
       endfor
     endif
 
-    if !g:neocomplcache_enable_alphabetical_order
-      let l:rank = l:result.rank
-      for l:keyword in l:result.complete_words
-        let l:word = l:keyword.word
-        let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
-        let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:rank * l:prev_frequencies[l:word] : l:rank
-      endfor
-    endif
+    let l:rank = l:result.rank
+    for l:keyword in l:result.complete_words
+      let l:word = l:keyword.word
+      let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
+      let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:rank * l:prev_frequencies[l:word] : l:rank
+    endfor
 
     let l:complete_words += s:remove_next_keyword(l:complfunc_name, l:result.complete_words)
   endfor
 
   " Sort.
-  if (has_key(g:neocomplcache_disable_plugin_list, 'buffer_complete') && g:neocomplcache_disable_plugin_list['buffer_complete'])
-        \|| g:neocomplcache_enable_alphabetical_order
-    let l:func = 'neocomplcache#compare_words'
-  else
-    let l:func = 'neocomplcache#compare_prev_rank'
-  endif
-
   let l:complete_words = sort(filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str)),
-        \ l:func)[: g:neocomplcache_max_list]
+        \ 'neocomplcache#compare_prev_rank')[: g:neocomplcache_max_list]
   
   if !g:neocomplcache_enable_ignore_case || 
         \(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
