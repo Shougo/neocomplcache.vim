@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 01 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,8 +26,8 @@
 
 function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   " Initialize.
-  let s:completion_length = has_key(g:NeoComplCache_PluginCompletionLength, 'vim_complete') ? 
-        \ g:NeoComplCache_PluginCompletionLength['vim_complete'] : g:NeoComplCache_KeywordCompletionStartLength
+  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length_list, 'vim_complete') ? 
+        \ g:neocomplcache_plugin_completion_length_list['vim_complete'] : g:neocomplcache_auto_completion_start_length
 
   " Set caching event.
   autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()
@@ -63,7 +63,7 @@ function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
   
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
 
-  if g:NeoComplCache_EnableWildCard
+  if g:neocomplcache_enable_wildcard
     " Check wildcard.
     let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
   endif
@@ -87,7 +87,6 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     let l:options = deepcopy(neocomplcache#complfunc#vim_complete#helper#option(l:cur_text, a:cur_keyword_str))
     for l:keyword in l:options
       let l:keyword.word = l:prefix . l:keyword.word
-      let l:keyword.abbr = l:prefix . l:keyword.abbr
     endfor
     let l:list = l:options
   elseif l:cur_text =~# '\<has(''\h\w*$'

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 01 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,7 +49,7 @@ function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
 endfunction"}}}
 
 function! s:on_moved_i()
-  if g:NeoComplCache_EnableDispalyParameter
+  if g:neocomplcache_enable_display_parameter
     " Print prototype.
     call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
   endif
@@ -313,7 +313,6 @@ function! neocomplcache#complfunc#vim_complete#helper#option(cur_text, cur_keywo
     
     for l:keyword in deepcopy(s:internal_candidates_list.options)
       let l:keyword.word = 'no' . l:keyword.word
-      let l:keyword.abbr = 'no' . l:keyword.abbr
       call add(s:internal_candidates_list.options, l:keyword)
     endfor
   endif
@@ -378,7 +377,7 @@ function! s:get_local_variables()"{{{
       for l:arg in split(matchstr(l:line, '^[^(]*(\zs[^)]*'), '\s*,\s*')
         let l:word = 'a:' . (l:arg == '...' ?  '000' : l:arg)
         let l:keyword_dict[l:word] = {
-              \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
+              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
               \ 'kind' : (l:arg == '...' ?  '[]' : '')
               \}
 
@@ -388,7 +387,7 @@ function! s:get_local_variables()"{{{
         for l:arg in range(5)
           let l:word = 'a:' . l:arg
           let l:keyword_dict[l:word] = {
-                \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
+                \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
                 \ 'kind' : (l:arg == 0 ?  '0' : '')
                 \}
 
@@ -411,7 +410,7 @@ function! s:get_local_variables()"{{{
       let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
       if !has_key(l:keyword_dict, l:word) 
         let l:keyword_dict[l:word] = {
-              \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
               \ 'kind' : s:get_variable_type(l:expression)
               \}
       elseif l:expression != '' && l:keyword_dict[l:word].kind == ''
@@ -465,7 +464,7 @@ function! s:get_local_dictionary_variables(var_name)"{{{
       
       if !has_key(l:keyword_dict, l:word) 
         let l:keyword_dict[l:word] = {
-              \ 'word' : l:word, 'abbr': l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
               \ 'kind' : l:kind
               \}
       elseif l:kind != '' && l:keyword_dict[l:word].kind == ''
@@ -498,7 +497,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   let l:menu_pattern_dict = '[V] dictionary'
   let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
 
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let l:statusline_save = &l:statusline
   endif
   call neocomplcache#print_caching('Caching vim from '. bufname(a:bufnumber) .' ... please wait.')
@@ -510,9 +509,9 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:orig_line = l:line
       let l:word = matchstr(l:line, l:keyword_pattern)
       if l:word != '' && !has_key(l:function_dict, l:word) 
-        if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+        if len(l:line) > g:neocomplcache_max_keyword_width
           let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
-          if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+          if len(l:line) > g:neocomplcache_max_keyword_width
             let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
             let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
           endif
@@ -529,7 +528,7 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
       if !has_key(l:variable_dict, l:word) 
         let l:variable_dict[l:word] = {
-              \ 'word' : l:word, 'abbr': l:word, 'menu' : l:menu_pattern_var, 'icase' : 1,
+              \ 'word' : l:word, 'menu' : l:menu_pattern_var, 'icase' : 1,
               \ 'kind' : s:get_variable_type(l:expression)
               \}
       elseif l:expression != '' && l:variable_dict[l:word].kind == ''
@@ -556,7 +555,7 @@ function! s:get_script_candidates(bufnumber)"{{{
 
       if !has_key(l:dictionary_variable_dict[l:var_name], l:word) 
         let l:dictionary_variable_dict[l:var_name][l:word] = {
-              \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern_dict, 'icase' : 1,
+              \ 'word' : l:word, 'menu' : l:menu_pattern_dict, 'icase' : 1,
               \ 'kind' : l:kind
               \}
       elseif l:kind != '' && l:dictionary_variable_dict[l:var_name][l:word].kind == ''
@@ -567,7 +566,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   endfor
 
   call neocomplcache#print_caching('Caching done.')
-  if g:NeoComplCache_CachingPercentInStatusline
+  if g:neocomplcache_caching_percent_in_statusline
     let &l:statusline = l:statusline_save
   endif
 
@@ -730,7 +729,7 @@ function! s:get_variablelist()"{{{
       continue
     endif
     call add(l:keyword_list, {
-          \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+          \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
           \ 'kind' : exists(l:word)? l:kind_dict[type(eval(l:word))] : ''
           \})
   endfor
@@ -754,9 +753,9 @@ function! s:get_functionlist()"{{{
       continue
     endif
     
-    if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+    if len(l:line) > g:neocomplcache_max_keyword_width
       let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
-      if len(l:line) > g:NeoComplCache_MaxKeywordWidth
+      if len(l:line) > g:neocomplcache_max_keyword_width
         let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
         let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
       endif
@@ -783,7 +782,7 @@ function! s:get_augrouplist()"{{{
   let l:menu_pattern = '[V] augroup'
   for l:group in split(l:redir . ' END', '\s')
     call add(l:keyword_list, {
-          \ 'word' : l:group, 'abbr' : l:group, 'menu' : l:menu_pattern, 'icase' : 1
+          \ 'word' : l:group, 'menu' : l:menu_pattern, 'icase' : 1
           \})
   endfor
   return l:keyword_list
@@ -802,7 +801,7 @@ function! s:get_mappinglist()"{{{
       continue
     endif
     call add(l:keyword_list, {
-          \ 'word' : l:map, 'abbr' : l:map, 'menu' : l:menu_pattern, 'icase' : 1
+          \ 'word' : l:map, 'menu' : l:menu_pattern, 'icase' : 1
           \})
   endfor
   return l:keyword_list
@@ -815,7 +814,7 @@ function! s:get_envlist()"{{{
   for line in split(system('set'), '\n')
     let l:word = '$' . toupper(matchstr(line, '^\h\w*'))
     call add(l:keyword_list, {
-          \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'e'
+          \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'e'
           \})
   endfor
   return l:keyword_list
@@ -883,7 +882,7 @@ function! s:get_endlist()"{{{
   endwhile
 
   return (l:word == '')? [] : [{
-          \ 'word' : l:word, 'abbr' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'c'
+          \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'c'
           \}]
 endfunction"}}}
 function! s:get_variable_type(expression)"{{{
@@ -908,8 +907,7 @@ endfunction"}}}
 function! s:make_completion_list(list, menu_pattern, kind)"{{{
   let l:list = []
   for l:item in a:list
-    call add(l:list, { 'word' : l:item, 'abbr' : l:item, 
-          \'menu' : a:menu_pattern, 'icase' : 1, 'kind' : a:kind })
+    call add(l:list, { 'word' : l:item, 'menu' : a:menu_pattern, 'icase' : 1, 'kind' : a:kind })
   endfor 
 
   return l:list

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 May 2010
+" Last Modified: 31 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,15 +41,16 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
 
   " Initialize script variables."{{{
   let s:sources = {}
+  let s:cache_line_count = 70
   let s:rank_cache_count = 1
-  let s:caching_disable_list = {}
+  let s:disable_caching_list = {}
   let s:completion_length = neocomplcache#get_completion_length('buffer_complete')
   let s:prev_frequencies = {}
   "}}}
 
   " Create cache directory.
-  if !isdirectory(g:NeoComplCache_TemporaryDir . '/buffer_cache')
-    call mkdir(g:NeoComplCache_TemporaryDir . '/buffer_cache', 'p')
+  if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
+    call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
   endif
 
   " Add commands."{{{
@@ -57,8 +58,8 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   command! -nargs=? -complete=buffer NeoComplCachePrintSource call s:print_source(<q-args>)
   command! -nargs=? -complete=buffer NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
   command! -nargs=? -complete=buffer NeoComplCacheSaveCache call s:save_all_cache()
-  command! -nargs=? -complete=buffer NeoComplCacheCachingDisable call s:caching_disable(<q-args>)
-  command! -nargs=? -complete=buffer NeoComplCacheCachingEnable call s:caching_enable(<q-args>)
+  command! -nargs=? -complete=buffer NeoComplCacheDisableCaching call s:disable_caching(<q-args>)
+  command! -nargs=? -complete=buffer NeoComplCacheEnableCaching call s:enable_caching(<q-args>)
   "}}}
 
   " Initialize cache.
@@ -151,23 +152,23 @@ function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
 endfunction"}}}
 
 function! s:calc_frequency(list)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:NeoComplCache_AlphabeticalOrder
+  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_enable_alphabetical_order
     return
   endif
 
   let l:list_len = len(a:list)
 
-  if l:list_len > g:NeoComplCache_MaxList * 5
+  if l:list_len > g:neocomplcache_max_list * 5
     let l:calc_cnt = 15
-  elseif l:list_len > g:NeoComplCache_MaxList * 3
+  elseif l:list_len > g:neocomplcache_max_list * 3
     let l:calc_cnt = 13
-  elseif l:list_len > g:NeoComplCache_MaxList
+  elseif l:list_len > g:neocomplcache_max_list
     let l:calc_cnt = 10
-  elseif l:list_len > g:NeoComplCache_MaxList / 2
+  elseif l:list_len > g:neocomplcache_max_list / 2
     let l:calc_cnt = 8
-  elseif l:list_len > g:NeoComplCache_MaxList / 3
+  elseif l:list_len > g:neocomplcache_max_list / 3
     let l:calc_cnt = 5
-  elseif l:list_len > g:NeoComplCache_MaxList / 4
+  elseif l:list_len > g:neocomplcache_max_list / 4
     let l:calc_cnt = 4
   else
     let l:calc_cnt = 3
@@ -199,7 +200,7 @@ function! s:calc_frequency(list)"{{{
       endif
 
       " Reset count.
-      let s:rank_cache_count = (g:NeoComplCache_EnableRandomize)? 
+      let s:rank_cache_count = (g:neocomplcache_enable_randomize)? 
             \ neocomplcache#rand(l:calc_cnt) : l:calc_cnt
     endif
 
@@ -207,7 +208,7 @@ function! s:calc_frequency(list)"{{{
   endfor
 endfunction"}}}
 function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:NeoComplCache_AlphabeticalOrder
+  if !neocomplcache#plugin#buffer_complete#exists_current_source() || g:neocomplcache_enable_alphabetical_order
     return
   endif
 
@@ -293,7 +294,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
   let l:source.cache_lines[l:cache_num] = { 'keywords' : {} }
 
   let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
-  let l:menu = printf('[B] %.' . g:NeoComplCache_MaxFilenameWidth . 's', l:filename)
+  let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
   let l:keyword_pattern = l:source.keyword_pattern
 
   let [l:line_cnt, l:max_lines, l:line_num] = [0, len(l:buflines), 0]
@@ -311,7 +312,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
       let l:match_str = matchstr(l:line, l:keyword_pattern, l:match)
 
       " Ignore too short keyword.
-      if len(l:match_str) >= g:NeoComplCache_MinKeywordLength"{{{
+      if len(l:match_str) >= g:neocomplcache_min_keyword_length"{{{
         if !has_key(l:keywords, l:match_str) 
           let l:keywords[l:match_str] = { 'rank' : 1, 'prev_rank' : {} }
           let l:line_keyword = l:keywords[l:match_str]
@@ -325,7 +326,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
           if !has_key(l:source.keyword_cache[l:key], l:match_str)
             " Append list.
             let l:source.keyword_cache[l:key][l:match_str] = {
-                  \'word' : l:match_str, 'abbr' : l:match_str, 'menu' : l:menu,
+                  \'word' : l:match_str, 'menu' : l:menu,
                   \'icase' : 1, 'rank' : 1
                   \}
           endif
@@ -374,26 +375,26 @@ function! s:initialize_source(srcname)"{{{
     endfor
 
     if cnt <= 3000
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount
+      let l:cache_line_cnt = s:cache_line_count
     elseif cnt <= 4000
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount*7 / 10
+      let l:cache_line_cnt = s:cache_line_count*7 / 10
     elseif cnt <= 5000
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 2
+      let l:cache_line_cnt = s:cache_line_count / 2
     elseif cnt <= 7500
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 3
+      let l:cache_line_cnt = s:cache_line_count / 3
     elseif cnt <= 10000
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 5
+      let l:cache_line_cnt = s:cache_line_count / 5
     elseif cnt <= 12000
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 7
+      let l:cache_line_cnt = s:cache_line_count / 7
     elseif cnt <= 14000
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 10
+      let l:cache_line_cnt = s:cache_line_count / 10
     else
-      let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 13
+      let l:cache_line_cnt = s:cache_line_count / 13
     endif
   elseif l:end_line > 100
-    let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 3
+    let l:cache_line_cnt = s:cache_line_count / 3
   else
-    let l:cache_line_cnt = g:NeoComplCache_CacheLineCount / 5
+    let l:cache_line_cnt = s:cache_line_count / 5
   endif
 
   let l:ft = getbufvar(a:srcname, '&filetype')
@@ -521,9 +522,9 @@ function! s:check_source()"{{{
     if bufloaded(l:bufnumber)
       let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
       if (!has_key(s:sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
-            \&& !has_key(s:caching_disable_list, l:bufnumber)
-            \&& (g:NeoComplCache_CachingDisablePattern == '' || l:bufname !~ g:NeoComplCache_CachingDisablePattern)
-            \&& getfsize(l:bufname) < g:NeoComplCache_CachingLimitFileSize
+            \&& !has_key(s:disable_caching_list, l:bufnumber)
+            \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
+            \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
         " Caching.
         call s:word_caching(l:bufnumber)
       endif
@@ -546,7 +547,7 @@ function! s:check_deleted_buffer()"{{{
 endfunction"}}}
 
 function! s:caching_cursor_holdi()"{{{
-  if !has_key(s:sources, bufnr('%')) || has_key(s:caching_disable_list, bufnr('%')) || @. == ''
+  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%')) || @. == ''
     return
   endif
 
@@ -655,7 +656,7 @@ function! s:output_keyword(name)"{{{
     silent put=string(keyword)
   endfor
 endfunction "}}}
-function! s:caching_disable(name)"{{{
+function! s:disable_caching(name)"{{{
   if a:number == ''
     let l:number = bufnr('%')
   else
@@ -667,14 +668,14 @@ function! s:caching_disable(name)"{{{
     endif
   endif
 
-  let s:caching_disable_list[l:number] = 1
+  let s:disable_caching_list[l:number] = 1
 
   if has_key(s:sources, l:number)
     " Delete source.
     call remove(s:sources, l:number)
   endif
 endfunction"}}}
-function! s:caching_enable(name)"{{{
+function! s:enable_caching(name)"{{{
   if a:number == ''
     let l:number = bufnr('%')
   else
@@ -686,8 +687,8 @@ function! s:caching_enable(name)"{{{
     endif
   endif
 
-  if has_key(s:caching_disable_list, l:number)
-    call remove(s:caching_disable_list, l:number)
+  if has_key(s:disable_caching_list, l:number)
+    call remove(s:disable_caching_list, l:number)
   endif
 endfunction"}}}
 "}}}
