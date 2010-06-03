@@ -524,6 +524,7 @@ function! s:check_source()"{{{
             \&& !has_key(s:disable_caching_list, l:bufnumber)
             \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
+            \&& (!getbufvar(l:bufnumber, '&readonly') || getbufvar(l:bufnumber, '&filetype') != 'help')
         " Caching.
         call s:word_caching(l:bufnumber)
       endif

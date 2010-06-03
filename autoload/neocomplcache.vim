@@ -205,12 +205,12 @@ function! neocomplcache#enable() "{{{
   "}}}
 
   " Initialize member prefix patterns."{{{
-  if !exists('g:neocomplcache_member_prefix_patternss')
-    let g:neocomplcache_member_prefix_patternss = {}
+  if !exists('g:neocomplcache_member_prefix_patterns')
+    let g:neocomplcache_member_prefix_patterns = {}
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patternss', 'c,cpp,objc,objcpp', '^\.\|^->')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patternss', 'perl,php', '^->')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patternss', 'java,javascript,d,vim,ruby', '^\.')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'c,cpp,objc,objcpp', '^\.\|^->')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'perl,php', '^->')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'java,javascript,d,vim,ruby', '^\.')
   "}}}
 
   " Initialize ctags arguments."{{{
@@ -461,8 +461,8 @@ function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
     let l:ft = 'nothing'
   endif
 
-  if has_key(g:neocomplcache_member_prefix_patternss, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patternss[l:ft]
-    let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patternss[l:ft])
+  if has_key(g:neocomplcache_member_prefix_patterns, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patterns[l:ft]
+    let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patterns[l:ft])
     let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
 
     let l:ret = deepcopy(neocomplcache#keyword_filter(filter(a:list, 
@@ -995,7 +995,7 @@ function! s:do_complete(is_moved)"{{{
     if l:cur_text !=# s:moved_cur_text
       let s:moved_cur_text = l:cur_text
       " Dummy cursor move.
-      call feedkeys("\<C-r>\<ESC>", 'n')
+      call feedkeys("a\<BS>", 'n')
       return
     endif
   endif
@@ -1146,7 +1146,7 @@ function! s:integrate_completion(complete_result)"{{{
 endfunction"}}}
 function! s:on_insert_enter()"{{{
   let s:update_time_save = &updatetime
-  let &updatetime = g:neocomplcache_enable_cursor_hold_i_time
+  let &updatetime = g:neocomplcache_cursor_hold_i_time
 endfunction"}}}
 function! s:on_insert_leave()"{{{
   let s:cur_keyword_pos = -1

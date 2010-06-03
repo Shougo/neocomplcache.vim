@@ -177,6 +177,6 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
 endfunction"}}}
 
 function! neocomplcache#complfunc#filename_complete#get_rank()"{{{
-  return 10
+  return 3
 endfunction"}}}
 " vim: foldmethod=marker

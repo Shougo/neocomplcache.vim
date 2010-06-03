@@ -56,9 +56,9 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
     let l:ft = 'nothing'
   endif
 
-  if has_key(g:neocomplcache_member_prefix_patternss, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patternss[l:ft]
+  if has_key(g:neocomplcache_member_prefix_patterns, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patterns[l:ft]
     let l:use_member_filter = 1
-    let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patternss[l:ft])
+    let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patterns[l:ft])
     let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
   else
     let l:use_member_filter = 0

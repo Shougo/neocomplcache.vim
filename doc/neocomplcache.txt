@@ -222,7 +222,7 @@ g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		beside a candidate after '-'.  When you input 'ho-a',
 		neocomplcache will select candidate 'a'.
 	
-		Default value is 1.
+		Default value is 0.
 
 g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		This variable controls whether neocomplcache use |CursorHoldI| event
@@ -238,7 +238,7 @@ g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 
 		Default value is 0.
 
-g:neocomplcache_enable_cursor_hold_i_time				*g:neocomplcache_enable_cursor_hold_i_time*
+g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
 		This variable defines time of automatic completion by a milli second unit.
 		
 		Default value is 300.
@@ -311,14 +311,20 @@ g:neocomplcache_keyword_patterns				*g:neocomplcache_keyword_patterns*
 		keyword pattern of the next than a cursor.  The form is the
 		same as|g:neocomplcache_keyword_patterns|.
 	
-		Because it is complicated, refer to
+		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
-
+>
+		" Examples:
+		if !exists('g:neocomplcache_keyword_patterns')
+		  let g:neocomplcache_keyword_patterns = {}
+		endif
+		let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+<
 g:neocomplcache_next_keyword_patterns				*g:neocomplcache_next_keyword_patterns*
 		This dictionary records keyword patterns to completion.
 		This is appointed in regular expression every file type.
 	
-		Because it is complicated, refer to
+		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
@@ -326,22 +332,29 @@ g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		This is appointed in regular expression every file type.
 	
 		Because it is complicated, refer to
+		neocomplcache#complfunc#omni_complete#initialize()
 		autoload/neocomplcache/complfunc/omni_complete.vim for the
 		initial value.
-
+>
+		" Examples:
+		if !exists('g:neocomplcache_omni_patterns')
+		let g:neocomplcache_omni_patterns = {}
+		endif
+		let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+<
 g:neocomplcache_tags_filter_patterns			*g:neocomplcache_tags_filter_patterns*
 		This dictionary records  a pattern to filter a candidate in
 		the tag completion.  For example, it can exclude a candidate
 		beginning in _ in file type of C/C++.
 	
-		Because it is complicated, refer to
+		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 		It is a dictionary to connect file type mutually.  It is
 		effective at time to let you refer to c and cpp mutually.
 	
-		Because it is complicated, refer to
+		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype_lists*
@@ -376,7 +389,7 @@ g:neocomplcache_ctags_arguments_list			*g:neocomplcache_ctags_arguments_list*
 		and include_complete use a ctags command.  The dictionary's
 		key is filetype.
 		
-		Because it is complicated, refer to
+		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_include_paths				*g:neocomplcache_include_paths*
@@ -387,9 +400,10 @@ g:neocomplcache_include_paths				*g:neocomplcache_include_paths*
 		key.
 		
 		Because it is complicated, refer to
+		neocomplcache#plugin#include_complete#initialize() in
 		autoload/neocomplcache/plugin/include_complete.vim for the
 		initial value.
-
+                
 g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		It is the expression string of the line analysis to perform
 		to acquire an include file name.  When there is not it,
@@ -398,9 +412,10 @@ g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		string that assumed file type a key.
 		
 		Because it is complicated, refer to
+		neocomplcache#plugin#include_complete#initialize() in
 		autoload/neocomplcache/plugin/include_complete.vim for the
 		initial value.
-
+                
 g:neocomplcache_include_patterns				*g:neocomplcache_include_patterns*
 		This variable appoints the pattern of the include command.
 		When there is not it, 'include' is used.  Refer to 'include'
@@ -408,6 +423,7 @@ g:neocomplcache_include_patterns				*g:neocomplcache_include_patterns*
 		character string that assumed file type a key.
 		
 		Because it is complicated, refer to
+		neocomplcache#plugin#include_complete#initialize() in
 		autoload/neocomplcache/plugin/include_complete.vim for the
 		initial value.
                 
@@ -421,12 +437,12 @@ g:neocomplcache_disable_plugin_list			*g:neocomplcache_disable_plugin_list*
 		
 		Default value is {}.
 
-g:neocomplcache_member_prefix_patternss			*g:neocomplcache_member_prefix_patternss*
+g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		This variable appoints a keyword pattern to complete a
 		member in include_complete and tags_complete.  This is
 		appointed in regular expression every file type.
 		
-		Because it is complicated, refer to
+		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
@@ -628,6 +644,13 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-03
+- Changed g:neocomplcache_enable_cursor_hold_i_time into g:neocomplcache_cursor_hold_i_time.
+- Improved dummy move.
+- Improved help.
+- Fixed help file caching bug.
+- Fixed filename_complete rank.
+
 2010-06-02
 - Fixed save cache error.
 - Deleted g:neocomplcache_enable_randomize option.
@@ -769,7 +792,7 @@ ChangeLog NeoComplCache 4.30: {{{
 * Enable cache in "[Command line]" buffer.
 
 2010-04-17
-* Improved print prototype behaivior when g:neocomplcache_enable_cursor_hold_i_time.
+* Improved print prototype behaivior when g:neocomplcache_cursor_hold_i_time.
 * Improved redraw.
 * Improved for skk.vim.
 
@@ -783,7 +806,7 @@ ChangeLog NeoComplCache 4.30: {{{
 - Improved filtering.
 * Fixed neocomplcache#complete_common_string() bug.
 * Implemented CursorHoldI completion.
-* Added g:neocomplcache_enable_cursor_hold_i and g:neocomplcache_enable_cursor_hold_i_time options.
+* Added g:neocomplcache_enable_cursor_hold_i and g:neocomplcache_cursor_hold_i_time options.
 * Deleted g:NeoComplCache_EnableSkipCompletion and g:NeoComplCache_SkipCompletionTime options.
 }}}
 ChangeLog NeoComplCache 4.20: {{{

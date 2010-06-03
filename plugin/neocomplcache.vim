@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2010
+" Last Modified: 03 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,8 +101,8 @@ endif
 if !exists('g:neocomplcache_enable_cursor_hold_i')
   let g:neocomplcache_enable_cursor_hold_i = 0
 endif
-if !exists('g:neocomplcache_enable_cursor_hold_i_time')
-  let g:neocomplcache_enable_cursor_hold_i_time = 300
+if !exists('g:neocomplcache_cursor_hold_i_time')
+  let g:neocomplcache_cursor_hold_i_time = 300
 endif
 if !exists('g:neocomplcache_enable_auto_select')
   let g:neocomplcache_enable_auto_select = 0

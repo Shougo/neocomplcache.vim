@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2010
+" Last Modified: 03 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -139,6 +139,5 @@ function! neocomplcache#complfunc#keyword_complete#get_manual_complete_list(plug
 
   return l:complete_words
 endfunction"}}}
-
 
 " vim: foldmethod=marker
