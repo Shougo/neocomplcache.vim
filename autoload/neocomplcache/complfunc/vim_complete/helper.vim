@@ -199,7 +199,7 @@ function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_
   let l:ret = []
   let l:paths = map(split(&cdpath, ','), 'substitute(v:val, "\\\\", "/", "g")')
   for keyword in keys(l:check)
-    let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : '[V] directory', 'icase' : &ignorecase }
+    let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : '[V] directory', }
     " Path search.
     for path in l:paths
       if path != '' && neocomplcache#head_match(l:dict.word, path . '/')
@@ -377,7 +377,7 @@ function! s:get_local_variables()"{{{
       for l:arg in split(matchstr(l:line, '^[^(]*(\zs[^)]*'), '\s*,\s*')
         let l:word = 'a:' . (l:arg == '...' ?  '000' : l:arg)
         let l:keyword_dict[l:word] = {
-              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
+              \ 'word' : l:word, 'menu' : l:menu_pattern,
               \ 'kind' : (l:arg == '...' ?  '[]' : '')
               \}
 
@@ -387,7 +387,7 @@ function! s:get_local_variables()"{{{
         for l:arg in range(5)
           let l:word = 'a:' . l:arg
           let l:keyword_dict[l:word] = {
-                \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 
+                \ 'word' : l:word, 'menu' : l:menu_pattern,
                 \ 'kind' : (l:arg == 0 ?  '0' : '')
                 \}
 
@@ -410,7 +410,7 @@ function! s:get_local_variables()"{{{
       let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
       if !has_key(l:keyword_dict, l:word) 
         let l:keyword_dict[l:word] = {
-              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+              \ 'word' : l:word, 'menu' : l:menu_pattern,
               \ 'kind' : s:get_variable_type(l:expression)
               \}
       elseif l:expression != '' && l:keyword_dict[l:word].kind == ''
@@ -463,10 +463,7 @@ function! s:get_local_dictionary_variables(var_name)"{{{
       endif
       
       if !has_key(l:keyword_dict, l:word) 
-        let l:keyword_dict[l:word] = {
-              \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
-              \ 'kind' : l:kind
-              \}
+        let l:keyword_dict[l:word] = { 'word' : l:word, 'menu' : l:menu_pattern,  'kind' : l:kind }
       elseif l:kind != '' && l:keyword_dict[l:word].kind == ''
         " Update kind.
         let l:keyword_dict[l:word].kind = l:kind
@@ -515,7 +512,7 @@ function! s:get_script_candidates(bufnumber)"{{{
         endif
         
         let l:function_dict[l:word] = {
-              \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern_func, 'icase' : 1, 'kind' : 'f'
+              \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern_func, 'kind' : 'f'
               \}
         let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
       endif
@@ -525,7 +522,7 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
       if !has_key(l:variable_dict, l:word) 
         let l:variable_dict[l:word] = {
-              \ 'word' : l:word, 'menu' : l:menu_pattern_var, 'icase' : 1,
+              \ 'word' : l:word, 'menu' : l:menu_pattern_var, 
               \ 'kind' : s:get_variable_type(l:expression)
               \}
       elseif l:expression != '' && l:variable_dict[l:word].kind == ''
@@ -552,8 +549,7 @@ function! s:get_script_candidates(bufnumber)"{{{
 
       if !has_key(l:dictionary_variable_dict[l:var_name], l:word) 
         let l:dictionary_variable_dict[l:var_name][l:word] = {
-              \ 'word' : l:word, 'menu' : l:menu_pattern_dict, 'icase' : 1,
-              \ 'kind' : l:kind
+              \ 'word' : l:word, 'menu' : l:menu_pattern_dict, 'kind' : l:kind
               \}
       elseif l:kind != '' && l:dictionary_variable_dict[l:var_name][l:word].kind == ''
         " Update kind.
@@ -580,8 +576,7 @@ function! s:caching_from_dict(dict_name, kind)"{{{
   for line in readfile(l:dict_files[0])
     call add(l:keyword_list, {
           \ 'word' : substitute(matchstr(line, l:keyword_pattern), '[\[\]]', '', 'g'), 
-          \ 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : a:kind, 
-          \ 'abbr' : l:line
+          \ 'menu' : l:menu_pattern, 'kind' : a:kind, 'abbr' : l:line
           \})
   endfor
 
@@ -696,8 +691,7 @@ function! s:get_cmdlist()"{{{
     let l:prototype = l:command_prototypes[l:word]
     
     call add(l:keyword_list, {
-          \ 'word' : l:word, 'abbr' : l:word . l:prototype, 'menu' : l:menu_pattern, 'icase' : 1, 
-          \ 'kind' : 'c'
+          \ 'word' : l:word, 'abbr' : l:word . l:prototype, 'menu' : l:menu_pattern, 'kind' : 'c'
           \})
   endfor
   let s:global_candidates_list.command_prototypes = l:command_prototypes
@@ -722,7 +716,7 @@ function! s:get_variablelist()"{{{
       continue
     endif
     call add(l:keyword_list, {
-          \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1,
+          \ 'word' : l:word, 'menu' : l:menu_pattern,
           \ 'kind' : exists(l:word)? l:kind_dict[type(eval(l:word))] : ''
           \})
   endfor
@@ -755,7 +749,7 @@ function! s:get_functionlist()"{{{
     endif
 
     call add(l:keyword_list, {
-          \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern, 'icase' : 1
+          \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern,
           \})
 
     let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
@@ -774,9 +768,7 @@ function! s:get_augrouplist()"{{{
   let l:keyword_list = []
   let l:menu_pattern = '[V] augroup'
   for l:group in split(l:redir . ' END', '\s')
-    call add(l:keyword_list, {
-          \ 'word' : l:group, 'menu' : l:menu_pattern, 'icase' : 1
-          \})
+    call add(l:keyword_list, { 'word' : l:group, 'menu' : l:menu_pattern})
   endfor
   return l:keyword_list
 endfunction"}}}
@@ -793,9 +785,7 @@ function! s:get_mappinglist()"{{{
     if l:map !~ '^<' || l:map =~ '^<SNR>'
       continue
     endif
-    call add(l:keyword_list, {
-          \ 'word' : l:map, 'menu' : l:menu_pattern, 'icase' : 1
-          \})
+    call add(l:keyword_list, { 'word' : l:map, 'menu' : l:menu_pattern })
   endfor
   return l:keyword_list
 endfunction"}}}
@@ -806,9 +796,7 @@ function! s:get_envlist()"{{{
   let l:menu_pattern = '[V] environment'
   for line in split(system('set'), '\n')
     let l:word = '$' . toupper(matchstr(line, '^\h\w*'))
-    call add(l:keyword_list, {
-          \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'e'
-          \})
+    call add(l:keyword_list, { 'word' : l:word, 'menu' : l:menu_pattern, 'kind' : 'e' })
   endfor
   return l:keyword_list
 endfunction"}}}
@@ -874,9 +862,7 @@ function! s:get_endlist()"{{{
     let l:line_num -= 1
   endwhile
 
-  return (l:word == '')? [] : [{
-          \ 'word' : l:word, 'menu' : l:menu_pattern, 'icase' : 1, 'kind' : 'c'
-          \}]
+  return (l:word == '')? [] : [{'word' : l:word, 'menu' : l:menu_pattern, 'kind' : 'c'}]
 endfunction"}}}
 function! s:get_variable_type(expression)"{{{
   " Analyze variable type.
@@ -900,7 +886,7 @@ endfunction"}}}
 function! s:make_completion_list(list, menu_pattern, kind)"{{{
   let l:list = []
   for l:item in a:list
-    call add(l:list, { 'word' : l:item, 'menu' : a:menu_pattern, 'icase' : 1, 'kind' : a:kind })
+    call add(l:list, { 'word' : l:item, 'menu' : a:menu_pattern, 'kind' : a:kind })
   endfor 
 
   return l:list

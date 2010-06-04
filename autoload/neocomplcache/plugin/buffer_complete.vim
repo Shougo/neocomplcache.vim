@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -72,8 +72,8 @@ function! neocomplcache#plugin#buffer_complete#finalize()"{{{
   delcommand NeoComplCachePrintSource
   delcommand NeoComplCacheOutputKeyword
   delcommand NeoComplCacheSaveCache
-  delcommand NeoComplCacheCachingDisable
-  delcommand NeoComplCacheCachingEnable
+  delcommand NeoComplCacheDisableCaching
+  delcommand NeoComplCacheEnableCaching
 
   call s:save_all_cache()
 
@@ -136,12 +136,8 @@ function! neocomplcache#plugin#buffer_complete#exists_current_source()"{{{
   return has_key(s:sources, bufnr('%'))
 endfunction"}}}
 
-function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
-  if a:number == ''
-    let l:number = bufnr('%')
-  else
-    let l:number = a:number
-  endif
+function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
+  let l:number = bufnr('%')
   if !has_key(s:sources, l:number)
     return '-'
   elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
@@ -324,10 +320,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
           if !has_key(l:source.keyword_cache[l:key], l:match_str)
             " Append list.
-            let l:source.keyword_cache[l:key][l:match_str] = {
-                  \'word' : l:match_str, 'menu' : l:menu,
-                  \'icase' : 1, 'rank' : 1
-                  \}
+            let l:source.keyword_cache[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
           endif
         else
           let l:line_keyword = l:keywords[l:match_str]
@@ -349,10 +342,8 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
         endif
       endif"}}}
 
-      let l:match_num = l:match + len(l:match_str)
-
       " Next match.
-      let [l:prev_word, l:match] = [l:match_str, match(l:line, l:keyword_pattern, l:match_num)]
+      let [l:prev_word, l:match] = [l:match_str, match(l:line, l:keyword_pattern, l:match + len(l:match_str))]
     endwhile"}}}
 
     let l:line_num += 1
@@ -415,24 +406,24 @@ function! s:word_caching(srcname)"{{{
   " Initialize source.
   call s:initialize_source(a:srcname)
 
-  if fnamemodify(bufname(str2nr(a:srcname)), ':t') ==# '[Command Line]'
-    " Ignore caching.
-    return
-  endif
-
   if s:caching_from_cache(a:srcname) == 0
     " Caching from cache.
     return
   endif
 
-  let l:source = s:sources[a:srcname]
+  let l:bufname = bufname(str2nr(a:srcname))
+  if fnamemodify(l:bufname, ':t') ==# '[Command Line]'
+    " Ignore caching.
+    return
+  endif
 
-  for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), l:source.keyword_pattern, 'B')
+  let l:keyword_cache = s:sources[a:srcname].keyword_cache
+  for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), s:sources[a:srcname].keyword_pattern, 'B')
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:source.keyword_cache, l:key)
-      let l:source.keyword_cache[l:key] = {}
+    if !has_key(l:keyword_cache, l:key)
+      let l:keyword_cache[l:key] = {}
     endif
-    let l:source.keyword_cache[l:key][l:keyword.word] = l:keyword
+    let l:keyword_cache[l:key][l:keyword.word] = l:keyword
   endfor
 endfunction"}}}
 
@@ -524,7 +515,7 @@ function! s:check_source()"{{{
             \&& !has_key(s:disable_caching_list, l:bufnumber)
             \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
-            \&& (!getbufvar(l:bufnumber, '&readonly') || getbufvar(l:bufnumber, '&filetype') != 'help')
+            \&& getbufvar(l:bufnumber, '&buftype') !~# 'help'
         " Caching.
         call s:word_caching(l:bufnumber)
       endif
@@ -615,7 +606,7 @@ function! s:caching_buffer(name)"{{{
   let s:sources[l:number].cached_last_line = s:sources[l:number].end_line+1
 endfunction"}}}
 function! s:print_source(name)"{{{
-  if a:namame == ''
+  if a:name == ''
     let l:number = bufnr('%')
   else
     let l:number = bufnr(a:name)

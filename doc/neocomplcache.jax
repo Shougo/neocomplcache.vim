@@ -91,12 +91,12 @@ COMMANDS 						*neocomplcache-commands*
 		レントバッファのファイルタイプを指定したことになる。 これを
 		実行しなければ、tags_completeは動作しない。
 
-:NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
+:NeoComplCacheDisableCaching [bufname]			*:NeoComplCacheDisableCaching*
 		[bufname]で示されるバッファをキャッシュしないようにする。 バッ
 		ファのキャッシュは削除されるので注意。 [bufname]を省略すると、
 		カレントバッファを指定したことになる。
 
-:NeoComplCacheCachingEnable [bufname]			*:NeoComplCacheCachingEnable*
+:NeoComplCacheEnableCaching [bufname]			*:NeoComplCacheEnableCaching*
 		[bufname]で示されるバッファをキャッシュできるようにする。
 		[bufname]を省略すると、カレントバッファを指定したことになる。
 
@@ -265,9 +265,9 @@ g:neocomplcache_enable_display_parameter			*g:neocomplcache_enable_display_param
 
 g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_size*
 		ファイルをキャッシュするファイルサイズを設定する。 開いたファ
-		イルがこのサイズより大きいとキャッシュしない。
+		イルがこのサイズより大きいと自動キャッシュしない。
 		
-		初期値は1000000となっている。
+		初期値は500000となっている。
 
 g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
 		キャッシュしないバッファ名のパターンを正規表現で設定する。空

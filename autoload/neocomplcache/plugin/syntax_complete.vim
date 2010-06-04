@@ -140,9 +140,7 @@ function! s:caching_from_syn()"{{{
       " Ignore too short keyword.
       if len(l:match_str) >= g:neocomplcache_min_syntax_length && !has_key(l:dup_check, l:match_str)
             \&& l:match_str =~ '^[[:print:]]\+$'
-        let l:keyword = {
-              \ 'word' : l:match_str, 'menu' : l:menu, 'icase' : 1
-              \}
+        let l:keyword = { 'word' : l:match_str, 'menu' : l:menu }
 
         let l:key = tolower(l:keyword.word[: s:completion_length-1])
         if !has_key(l:keyword_lists, l:key)

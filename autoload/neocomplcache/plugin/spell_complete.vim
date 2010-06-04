@@ -38,7 +38,7 @@ function! neocomplcache#plugin#spell_complete#get_keyword_list(cur_keyword_str)"
 
   let l:list = []
   for l:keyword in spellsuggest(a:cur_keyword_str)
-    call add(l:list, { 'word' : l:keyword, 'menu' : '[Spell]', 'icase' : 1 })
+    call add(l:list, { 'word' : l:keyword, 'menu' : '[Spell]' })
   end
 
   return l:list
