@@ -168,7 +168,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     endfor
   endif
 
-  return has_key(l:snippets, matchstr(l:cur_text, '\S\+$')) || 
+  return has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$')) || 
         \search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
