@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -168,13 +168,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     endfor
   endif
 
-  let l:cur_text = s:get_cur_text()
-  let l:cur_word = neocomplcache#match_word(l:cur_text)
-  if !has_key(l:snippets, l:cur_word)
-    let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
-  endif
-
-  return has_key(l:snippets, l:cur_word) || 
+  return has_key(l:snippets, matchstr(l:cur_text, '\S\+$')) || 
         \search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
@@ -326,15 +320,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
         let l:snippet_pattern = { 'word' : '' }
       endif
 
-      let l:name = matchstr(line, '^snippet\s\+\zs.*\ze\s*$')
-      if l:name !~ '^\%('.neocomplcache#get_keyword_pattern(a:filetype).'\m\)$'
-            \&& l:name !~ '^\h\w*[^[:alnum:][:space:]]*$'
-        " Substitute pattern.
-        let l:snippet_pattern.abbr = l:name
-        let l:name = substitute(l:name, '[^[:alnum:]]', '_', 'g')
-      endif
-
-      let l:snippet_pattern.name = l:name
+      let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*\ze\s*$')
     elseif line =~ '^abbr\s'
       let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze\s*$')
     elseif line =~ '^alias\s'
@@ -401,19 +387,14 @@ function! s:snippets_expand(cur_text, col)"{{{
     endfor
   endif
 
-  let l:cur_text = a:cur_text
-  let l:cur_word = neocomplcache#match_word(l:cur_text)
-  if !has_key(l:snippets, l:cur_word)
-    let l:cur_word = matchstr(l:cur_text, '\h\w*[^[:alnum:][:space:]]*$')
-  endif
-  
+  let l:cur_word = matchstr(a:cur_text, '\S\+$')
   if !has_key(l:snippets, l:cur_word)
     call s:snippets_jump(a:cur_text, a:col)
     return
   endif
   
   let l:snippet = l:snippets[l:cur_word]
-  let l:cur_text = l:cur_text[: -1-len(l:cur_word)]
+  let l:cur_text = a:cur_text[: -1-len(l:cur_word)]
 
   let l:snip_word = l:snippet.snip
   if l:snip_word =~ '`.\{-}`'
