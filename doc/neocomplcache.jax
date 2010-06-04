@@ -695,10 +695,8 @@ alias hoge hogera hogehoge
 	snippet ${1:trigger} ${2:description}
 	${3}
 <
-で表される、snipMateのmulti snippetにも対応。 ただし英数字でないスニペット名
-は、_に変換される。
-
-スニペット補完はSame filetypeや、最後に記号を含むスニペットにも対応している。
+で表される、snipMateのmulti snippetにも対応。
+スニペット補完はSame filetypeにも対応している。
 >
 	snippet div
 	<div ${1:id="${2:someid\}"}>${3}</div>${4}
