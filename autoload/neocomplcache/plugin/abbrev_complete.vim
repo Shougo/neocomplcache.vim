@@ -36,13 +36,16 @@ function! neocomplcache#plugin#abbrev_complete#get_keyword_list(cur_keyword_str)
   redir => l:abbrev_list
   silent! iabbrev
   redir END
-  if l:abbrev_list =~# 'No abbreviation found'
-    return []
-  endif
 
   let l:list = []
   for l:line in split(l:abbrev_list, '\n')
     let l:abbrev = split(l:line)
+
+    if l:abbrev[0] !~ '^[!ac]$'
+      " No abbreviation found.
+      return []
+    endif
+
     call add(l:list, { 'word' : l:abbrev[1],
           \ 'menu' : printf('[A] %.'. g:neocomplcache_max_filename_width.'s', l:abbrev[2]),
           \ 'icase' : 1 })
