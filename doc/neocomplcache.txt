@@ -650,6 +650,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved icase.
 - Fixed obsolute settings.
 - Changed g:neocomplcache_caching_limit_file_size default value.
+- Optimized completion.
 
 2010-06-03
 - Changed g:neocomplcache_enable_cursor_hold_i_time into g:neocomplcache_cursor_hold_i_time.

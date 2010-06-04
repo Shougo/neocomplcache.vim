@@ -72,8 +72,8 @@ function! neocomplcache#plugin#buffer_complete#finalize()"{{{
   delcommand NeoComplCachePrintSource
   delcommand NeoComplCacheOutputKeyword
   delcommand NeoComplCacheSaveCache
-  delcommand NeoComplCacheCachingDisable
-  delcommand NeoComplCacheCachingEnable
+  delcommand NeoComplCacheDisableCaching
+  delcommand NeoComplCacheEnableCaching
 
   call s:save_all_cache()
 
@@ -136,12 +136,8 @@ function! neocomplcache#plugin#buffer_complete#exists_current_source()"{{{
   return has_key(s:sources, bufnr('%'))
 endfunction"}}}
 
-function! neocomplcache#plugin#buffer_complete#caching_percent(number)"{{{
-  if a:number == ''
-    let l:number = bufnr('%')
-  else
-    let l:number = a:number
-  endif
+function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
+  let l:number = bufnr('%')
   if !has_key(s:sources, l:number)
     return '-'
   elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
@@ -346,10 +342,8 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
         endif
       endif"}}}
 
-      let l:match_num = l:match + len(l:match_str)
-
       " Next match.
-      let [l:prev_word, l:match] = [l:match_str, match(l:line, l:keyword_pattern, l:match_num)]
+      let [l:prev_word, l:match] = [l:match_str, match(l:line, l:keyword_pattern, l:match + len(l:match_str))]
     endwhile"}}}
 
     let l:line_num += 1
@@ -422,14 +416,14 @@ function! s:word_caching(srcname)"{{{
     return
   endif
 
-  let l:source = s:sources[a:srcname]
+  let l:keyword_cache = s:sources[a:srcname].keyword_cache
 
-  for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), l:source.keyword_pattern, 'B')
+  for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), s:sources[a:srcname].keyword_pattern, 'B')
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:source.keyword_cache, l:key)
-      let l:source.keyword_cache[l:key] = {}
+    if !has_key(l:keyword_cache, l:key)
+      let l:keyword_cache[l:key] = {}
     endif
-    let l:source.keyword_cache[l:key][l:keyword.word] = l:keyword
+    let l:keyword_cache[l:key][l:keyword.word] = l:keyword
   endfor
 endfunction"}}}
 

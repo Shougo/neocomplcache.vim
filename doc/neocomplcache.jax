@@ -91,12 +91,12 @@ COMMANDS 						*neocomplcache-commands*
 		レントバッファのファイルタイプを指定したことになる。 これを
 		実行しなければ、tags_completeは動作しない。
 
-:NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
+:NeoComplCacheDisableCaching [bufname]			*:NeoComplCacheDisableCaching*
 		[bufname]で示されるバッファをキャッシュしないようにする。 バッ
 		ファのキャッシュは削除されるので注意。 [bufname]を省略すると、
 		カレントバッファを指定したことになる。
 
-:NeoComplCacheCachingEnable [bufname]			*:NeoComplCacheCachingEnable*
+:NeoComplCacheEnableCaching [bufname]			*:NeoComplCacheEnableCaching*
 		[bufname]で示されるバッファをキャッシュできるようにする。
 		[bufname]を省略すると、カレントバッファを指定したことになる。
 

@@ -402,15 +402,7 @@ endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
   let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
 
-  let l:cur_max = len(l:cur_keyword) - 1
-  let l:ret = []
-  for keyword in a:list
-    if l:cur_keyword == keyword.word[: l:cur_max] 
-      call add(l:ret, keyword)
-    endif
-  endfor
-
-  return ret
+  return filter(a:list, printf("v:val.word[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let l:ret = []
@@ -533,11 +525,6 @@ endfunction"}}}
 function! neocomplcache#compare_rank(i1, i2)
   return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
 endfunction"}}}
-" PreviousRankOrder."{{{
-function! neocomplcache#compare_prev_rank(i1, i2)
-  return a:i1.rank+a:i1.prev_rank < a:i2.rank+a:i2.prev_rank ? 1 :
-        \a:i1.rank+a:i1.prev_rank == a:i2.rank+a:i2.prev_rank ? 0 : -1
-endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
   let l:time = reltime()[1]
@@ -559,7 +546,7 @@ function! neocomplcache#system(str, ...)"{{{
 endfunction"}}}
 
 function! neocomplcache#caching_percent()"{{{
-  return neocomplcache#plugin#buffer_complete#caching_percent('')
+  return neocomplcache#plugin#buffer_complete#caching_percent()
 endfunction"}}}
 
 function! neocomplcache#get_cur_text()"{{{
@@ -1027,7 +1014,7 @@ function! s:do_complete(is_moved)"{{{
   endif
 
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-        \[l:cur_keyword_pos, l:cur_keyword_str, filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))]
+        \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   " Start auto complete.
   if g:neocomplcache_enable_auto_select
@@ -1114,16 +1101,16 @@ function! s:integrate_completion(complete_result)"{{{
     let l:rank = l:result.rank
     for l:keyword in l:result.complete_words
       let l:word = l:keyword.word
-      let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
-      let l:keyword.prev_rank = has_key(l:prev_frequencies, l:word)? l:rank * l:prev_frequencies[l:word] : l:rank
+      let l:keyword.rank = (has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank)
+            \+ (has_key(l:prev_frequencies, l:word)? l:rank * l:prev_frequencies[l:word] : l:rank)
     endfor
 
     let l:complete_words += s:remove_next_keyword(l:complfunc_name, l:result.complete_words)
   endfor
 
   " Sort.
-  let l:complete_words = sort(filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str)),
-        \ 'neocomplcache#compare_prev_rank')[: g:neocomplcache_max_list]
+  let l:complete_words = sort(l:complete_words, 'neocomplcache#compare_rank')[: g:neocomplcache_max_list]
+  call filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))
   
   " Abbr check.
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
