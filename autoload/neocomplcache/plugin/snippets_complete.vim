@@ -205,10 +205,8 @@ function! s:set_snippet_pattern(dict)"{{{
         \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
 
   let l:dict = {
-        \'word' : a:dict.name, 'snip' : l:word,
-        \'abbr' : a:dict.name, 
-        \'menu' : l:menu_pattern . l:abbr, 
-        \'icase' : 1, 'dup' : 1
+        \'word' : a:dict.name, 'snip' : l:word, 'abbr' : a:dict.name, 
+        \'menu' : l:menu_pattern . l:abbr, 'dup' : 1
         \}
   if has_key(a:dict, 'prev_word')
     let l:dict.prev_word = a:dict.prev_word

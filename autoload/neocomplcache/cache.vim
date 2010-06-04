@@ -66,8 +66,7 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
 
       let l:cache = split(l:line, '|||', 1)
       let l:keyword = {
-            \ 'word' : l:cache[0], 'icase' : 1, 'dup' : 0,
-            \ 'abbr' : l:cache[1], 'menu' : l:cache[2]
+            \ 'word' : l:cache[0], 'abbr' : l:cache[1], 'menu' : l:cache[2]
             \}
       if l:max_split >= 4
         let l:keyword.kind = l:cache[3]
@@ -161,7 +160,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
             \&& !has_key(l:dup_check, l:match_str)
         " Append list.
         let l:keyword = {
-              \'word' : l:match_str, 'menu' : l:menu, 'icase' : 1, 'kind' : '', 'class' : ''
+              \'word' : l:match_str, 'menu' : l:menu
               \}
 
         call add(l:keyword_lists, l:keyword)
@@ -247,8 +246,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
 
         let l:abbr = (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
         let l:keyword = {
-              \ 'word' : l:tag[0], 'rank' : 5, 'prev_rank' : 0, 'prepre_rank' : 0, 'icase' : 1, 'dup' : 1,
-              \ 'abbr' : l:abbr, 'kind' : l:option['kind']
+              \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind']
               \}
         if has_key(l:option, 'struct')
           let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)

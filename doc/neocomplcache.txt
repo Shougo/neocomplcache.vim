@@ -271,7 +271,7 @@ g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_si
 		open file is bigger than this size, neocomplcache do not
 		make a cache.
 	
-		Default value is 1000000.
+		Default value is 500000.
 
 g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
 		This variable set a pattern of the buffer name. If matched it,
@@ -646,6 +646,10 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-06-04
 - Fixed abbrev_complete check.
+- Fixed icase bug.
+- Improved icase.
+- Fixed obsolute settings.
+- Changed g:neocomplcache_caching_limit_file_size default value.
 
 2010-06-03
 - Changed g:neocomplcache_enable_cursor_hold_i_time into g:neocomplcache_cursor_hold_i_time.

@@ -324,10 +324,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
           if !has_key(l:source.keyword_cache[l:key], l:match_str)
             " Append list.
-            let l:source.keyword_cache[l:key][l:match_str] = {
-                  \'word' : l:match_str, 'menu' : l:menu,
-                  \'icase' : 1, 'rank' : 1
-                  \}
+            let l:source.keyword_cache[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
           endif
         else
           let l:line_keyword = l:keywords[l:match_str]
@@ -524,7 +521,7 @@ function! s:check_source()"{{{
             \&& !has_key(s:disable_caching_list, l:bufnumber)
             \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
-            \&& (!getbufvar(l:bufnumber, '&readonly') || getbufvar(l:bufnumber, '&filetype') != 'help')
+            \&& (!getbufvar(l:bufnumber, '&readonly') || getbufvar(l:bufnumber, '&filetype') !=# 'help')
         " Caching.
         call s:word_caching(l:bufnumber)
       endif
@@ -615,7 +612,7 @@ function! s:caching_buffer(name)"{{{
   let s:sources[l:number].cached_last_line = s:sources[l:number].end_line+1
 endfunction"}}}
 function! s:print_source(name)"{{{
-  if a:namame == ''
+  if a:name == ''
     let l:number = bufnr('%')
   else
     let l:number = bufnr(a:name)

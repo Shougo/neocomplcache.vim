@@ -108,7 +108,7 @@ if !exists('g:neocomplcache_enable_auto_select')
   let g:neocomplcache_enable_auto_select = 0
 endif
 if !exists('g:neocomplcache_caching_limit_file_size')
-  let g:neocomplcache_caching_limit_file_size = 1000000
+  let g:neocomplcache_caching_limit_file_size = 500000
 endif
 if !exists('g:neocomplcache_disable_caching_buffer_name_pattern')
   let g:neocomplcache_disable_caching_buffer_name_pattern = ''

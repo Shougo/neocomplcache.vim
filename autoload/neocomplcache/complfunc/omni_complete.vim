@@ -183,18 +183,15 @@ function! s:get_omni_list(list)"{{{
 
   " Convert string list.
   for str in filter(copy(a:list), 'type(v:val) == '.type(''))
-    let l:dict = {
-          \'word' : str, 'menu' : '[O]', 'icase' : 1
-          \}
+    let l:dict = { 'word' : str, 'menu' : '[O]' }
 
     call add(l:omni_list, l:dict)
   endfor
 
   for l:omni in filter(a:list, 'type(v:val) != '.type(''))
     let l:dict = {
-          \'word' : l:omni.word,
+          \'word' : l:omni.word, 'menu' : '[O]',
           \'abbr' : has_key(l:omni, 'abbr')? l:omni.abbr : l:omni.word,
-          \'menu' : '[O]', 'icase' : 1
           \}
 
     if has_key(l:omni, 'kind')

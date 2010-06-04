@@ -265,9 +265,9 @@ g:neocomplcache_enable_display_parameter			*g:neocomplcache_enable_display_param
 
 g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_size*
 		ファイルをキャッシュするファイルサイズを設定する。 開いたファ
-		イルがこのサイズより大きいとキャッシュしない。
+		イルがこのサイズより大きいと自動キャッシュしない。
 		
-		初期値は1000000となっている。
+		初期値は500000となっている。
 
 g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
 		キャッシュしないバッファ名のパターンを正規表現で設定する。空

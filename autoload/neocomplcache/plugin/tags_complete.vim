@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -84,14 +84,6 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
   endif
 
   return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
-endfunction"}}}
-
-" Dummy function.
-function! neocomplcache#plugin#tags_complete#calc_rank(cache_keyword_buffer_list)"{{{
-endfunction"}}}
-
-" Dummy function.
-function! neocomplcache#plugin#tags_complete#calc_prev_rank(cache_keyword_buffer_list, prev_word, prepre_word)"{{{
 endfunction"}}}
 
 function! s:caching_tags(bufname, force)"{{{

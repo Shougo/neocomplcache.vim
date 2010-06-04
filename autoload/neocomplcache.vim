@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -896,6 +896,8 @@ function! neocomplcache#complete_common_string()"{{{
 
   let l:complete_words = neocomplcache#keyword_filter(copy(s:old_complete_words), l:cur_keyword_str)
   if empty(l:complete_words)
+    let &ignorecase = l:ignorecase_save
+
     return ''
   endif
 
@@ -1123,17 +1125,10 @@ function! s:integrate_completion(complete_result)"{{{
   let l:complete_words = sort(filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str)),
         \ 'neocomplcache#compare_prev_rank')[: g:neocomplcache_max_list]
   
-  if !g:neocomplcache_enable_ignore_case || 
-        \(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
-    " Set no-icase.
-    for l:keyword in l:complete_words
-      let l:keyword.icase = 0
-    endfor
-  endif
-  
   " Abbr check.
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
   for l:keyword in l:complete_words
+    let l:keyword.icase = 1
     if !has_key(l:keyword, 'abbr')
       let l:keyword.abbr = l:keyword.word
     endif
@@ -1141,7 +1136,15 @@ function! s:integrate_completion(complete_result)"{{{
       let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-8:])
     endif
   endfor
-  
+
+  if !g:neocomplcache_enable_ignore_case || 
+        \(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
+    " Set no-icase.
+    for l:keyword in l:complete_words
+      let l:keyword.icase = 0
+    endfor
+  endif
+
   return [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 endfunction"}}}
 function! s:on_insert_enter()"{{{

@@ -79,18 +79,15 @@ function! s:get_completefunc_list(list)"{{{
 
     " Convert string list.
     for str in filter(copy(a:list), 'type(v:val) == '.type(''))
-        let l:dict = {
-                    \'word' : str, 'menu' : '[C]', 'icase' : 1
-                    \}
+        let l:dict = { 'word' : str, 'menu' : '[C]' }
 
         call add(l:comp_list, l:dict)
     endfor
 
     for l:comp in filter(a:list, 'type(v:val) != '.type(''))
         let l:dict = {
-                    \'word' : l:comp.word, 
-                    \'abbr' : has_key(l:comp, 'abbr')? l:comp.abbr : l:comp.word,
-                    \'menu' : '[C]', 'icase' : 1
+                    \'word' : l:comp.word, 'menu' : '[C]', 
+                    \'abbr' : has_key(l:comp, 'abbr')? l:comp.abbr : l:comp.word
                     \}
 
         if has_key(l:comp, 'kind')

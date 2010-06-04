@@ -46,9 +46,8 @@ function! neocomplcache#plugin#abbrev_complete#get_keyword_list(cur_keyword_str)
       return []
     endif
 
-    call add(l:list, { 'word' : l:abbrev[1],
-          \ 'menu' : printf('[A] %.'. g:neocomplcache_max_filename_width.'s', l:abbrev[2]),
-          \ 'icase' : 1 })
+    call add(l:list, 
+          \{ 'word' : l:abbrev[1], 'menu' : printf('[A] %.'. g:neocomplcache_max_filename_width.'s', l:abbrev[2]) })
   endfor
 
   return l:list

@@ -117,9 +117,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
   let l:paths = map(split(&path, ','), 'substitute(v:val, "\\\\", "/", "g")')
   for word in l:files
-    let l:dict = {
-          \'word' : word, 'menu' : '[F]', 'icase' : 1, 'rank' : 6
-          \}
+    let l:dict = { 'word' : word, 'menu' : '[F]' }
 
       let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
       let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
