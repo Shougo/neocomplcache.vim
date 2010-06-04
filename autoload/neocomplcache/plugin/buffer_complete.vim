@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -406,18 +406,18 @@ function! s:word_caching(srcname)"{{{
   " Initialize source.
   call s:initialize_source(a:srcname)
 
-  if fnamemodify(bufname(str2nr(a:srcname)), ':t') ==# '[Command Line]'
-    " Ignore caching.
-    return
-  endif
-
   if s:caching_from_cache(a:srcname) == 0
     " Caching from cache.
     return
   endif
 
-  let l:keyword_cache = s:sources[a:srcname].keyword_cache
+  let l:bufname = bufname(str2nr(a:srcname))
+  if fnamemodify(l:bufname, ':t') ==# '[Command Line]'
+    " Ignore caching.
+    return
+  endif
 
+  let l:keyword_cache = s:sources[a:srcname].keyword_cache
   for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), s:sources[a:srcname].keyword_pattern, 'B')
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
     if !has_key(l:keyword_cache, l:key)
@@ -515,7 +515,7 @@ function! s:check_source()"{{{
             \&& !has_key(s:disable_caching_list, l:bufnumber)
             \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
-            \&& (!getbufvar(l:bufnumber, '&readonly') || getbufvar(l:bufnumber, '&filetype') !=# 'help')
+            \&& getbufvar(l:bufnumber, '&buftype') !~# 'help'
         " Caching.
         call s:word_caching(l:bufnumber)
       endif
