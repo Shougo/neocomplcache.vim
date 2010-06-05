@@ -378,8 +378,9 @@ function! s:word_caching_cache_line(srcname, start_line, end_cache_cnt)"{{{
   let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
   let l:keywords = l:source.keyword_cache
 
-  let l:line_num = l:start_line
-  while l:line_num < l:end_line
+  let l:line_num = 0
+  let l:line_max = l:start_line - l:end_line
+  while l:line_num < l:line_max
     let l:line = buflines[l:line_num]
     let l:match = match(l:line, l:keyword_pattern)
 
