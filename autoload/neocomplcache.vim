@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1071,6 +1071,11 @@ function! s:get_complete_result(cur_text)"{{{
 endfunction"}}}
 function! s:integrate_completion(complete_result)"{{{
   if empty(a:complete_result)
+    if neocomplcache#get_cur_text() =~ '\s\+$'
+      " Caching current cache line.
+      call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
+    endif
+    
     return [-1, '', []]
   endif
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -138,6 +138,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
   let l:keyword_lists = []
   let l:dup_check = {}
+  let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
 
   for l:line in l:lines"{{{
     " Percentage check."{{{
@@ -154,7 +155,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
 
     let [l:match_num, l:match] = [0, match(l:line, a:pattern)]
     while l:match >= 0"{{{
-      let l:match_str = matchstr(l:line, a:pattern, l:match)
+      let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
 
       " Ignore too short keyword.
       if !has_key(l:dup_check, l:match_str) && len(l:match_str) >= g:neocomplcache_min_keyword_length

@@ -644,6 +644,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-05
+- Improved cache timing.
+
 2010-06-04
 - Fixed abbrev_complete check.
 - Fixed icase bug.

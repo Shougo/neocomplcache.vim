@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,8 +34,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     " Caching events
     autocmd FileType,BufWritePost * call s:check_source()
     autocmd BufWritePost,CursorHold * call s:update_source()
-    " Caching current buffer events
-    autocmd CursorHoldI * call s:caching_cursor_holdi()
+    autocmd CursorHold * call s:on_hold()
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
@@ -145,6 +144,15 @@ function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
   else
     return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
   endif
+endfunction"}}}
+
+function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
+  if has_key(s:disable_caching_list, bufnr('%'))
+    return
+  endif
+
+  " Current line caching.
+  call s:word_caching_cache_line(bufnr('%'), line('.'), 1)
 endfunction"}}}
 
 function! s:calc_frequency(list)"{{{
@@ -291,6 +299,7 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
   let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
   let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
   let l:keyword_pattern = l:source.keyword_pattern
+  let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
 
   let [l:line_cnt, l:max_lines, l:line_num] = [0, len(l:buflines), 0]
   while l:line_num < l:max_lines
@@ -301,10 +310,10 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
     endif
 
     let [l:line, l:keywords] = [buflines[l:line_num], l:source.cache_lines[l:cache_num].keywords]
-    let [l:match_num, l:prev_word, l:match] = [0, '^', match(l:line, l:keyword_pattern)]
+    let [l:prev_word, l:match] = ['^', match(l:line, l:keyword_pattern)]
 
     while l:match >= 0"{{{
-      let l:match_str = matchstr(l:line, l:keyword_pattern, l:match)
+      let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
 
       " Ignore too short keyword.
       if len(l:match_str) >= g:neocomplcache_min_keyword_length"{{{
@@ -348,6 +357,53 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
     let l:line_num += 1
     let l:line_cnt += 1
+  endwhile
+endfunction"}}}
+function! s:word_caching_cache_line(srcname, start_line, end_cache_cnt)"{{{
+  " Check exists s:sources.
+  if !has_key(s:sources, a:srcname)
+    call s:word_caching(a:srcname)
+  endif
+
+  let l:source = s:sources[a:srcname]
+  let l:filename = fnamemodify(l:source.name, ':t')
+
+  let l:start_line = (a:start_line-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
+  let l:end_line = (a:end_cache_cnt < 0)? '$' : 
+        \ (l:start_line + a:end_cache_cnt * l:source.cache_line_cnt-1)
+
+  let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
+  let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
+  let l:keyword_pattern = l:source.keyword_pattern
+  let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
+  let l:keywords = l:source.keyword_cache
+
+  let l:line_num = l:start_line
+  while l:line_num < l:end_line
+    let l:line = buflines[l:line_num]
+    let l:match = match(l:line, l:keyword_pattern)
+
+    while l:match >= 0"{{{
+      let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
+
+      " Ignore too short keyword.
+      if len(l:match_str) >= g:neocomplcache_min_keyword_length"{{{
+        " Check dup.
+        let l:key = tolower(l:match_str[: s:completion_length-1])
+        if !has_key(l:source.keyword_cache, l:key)
+          let l:keywords[l:key] = {}
+        endif
+        if !has_key(l:keywords[l:key], l:match_str)
+          " Append list.
+          let l:keywords[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
+        endif
+      endif"}}}
+
+      " Next match.
+      let l:match = match(l:line, l:keyword_pattern, l:match + len(l:match_str))
+    endwhile"}}}
+
+    let l:line_num += 1
   endwhile
 endfunction"}}}
 
@@ -502,6 +558,15 @@ function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
   return 0
 endfunction"}}}
 
+function! s:on_hold()"{{{
+  if has_key(s:disable_caching_list, bufnr('%'))
+    return
+  endif
+
+  " Current line caching.
+  call s:caching(bufnr('%'), line('.'), 1)
+endfunction"}}}
+
 function! s:check_source()"{{{
   call s:check_deleted_buffer()
 
@@ -535,15 +600,6 @@ function! s:check_deleted_buffer()"{{{
       call remove(s:sources, key)
     endif
   endfor
-endfunction"}}}
-
-function! s:caching_cursor_holdi()"{{{
-  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%')) || @. == ''
-    return
-  endif
-
-  " Full caching.
-  call s:caching(bufnr('%'), line('.'), 1)
 endfunction"}}}
 
 function! s:save_cache(srcname)"{{{
