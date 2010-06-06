@@ -138,7 +138,7 @@ endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
   let l:number = bufnr('%')
-  if !has_key(s:sources, l:number)
+  if !neocomplcache#plugin#buffer_complete#exists_current_source()
     return '-'
   elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
     return 100
@@ -150,12 +150,11 @@ endfunction"}}}
 function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
   " Current line caching.
   
-  let l:srcname = bufnr('%')
-  if !has_key(s:sources, l:srcname) || has_key(s:disable_caching_list, l:srcname)
+  if !neocomplcache#plugin#buffer_complete#exists_current_source() || has_key(s:disable_caching_list, bufnr('%'))
     return
   endif
 
-  let l:source = s:sources[l:srcname]
+  let l:source = s:sources[bufnr('%')]
   let l:filename = fnamemodify(l:source.name, ':t')
   let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
   let l:keyword_pattern = l:source.keyword_pattern
@@ -537,7 +536,7 @@ function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
 endfunction"}}}
 
 function! s:on_hold()"{{{
-  if has_key(s:disable_caching_list, bufnr('%'))
+  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%'))
     return
   endif
 

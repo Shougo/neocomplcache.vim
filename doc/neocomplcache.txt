@@ -646,6 +646,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-06-07
 - Fixed delete cache bug.
+- Refixed help caching bug.
 
 2010-06-06
 - Optimized cache.
