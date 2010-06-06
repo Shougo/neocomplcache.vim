@@ -113,6 +113,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   endif
   
   let l:max_lines = len(l:lines)
+  let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
 
   if l:max_lines > 400
     call neocomplcache#print_caching('Caching from file "' . a:filename . '"... please wait.')
@@ -130,12 +131,11 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   elseif l:max_lines > 1000
     let l:print_cache_percent = l:max_lines / 2
   else
-    let l:print_cache_percent = -1
+    return s:load_from_file_fast(l:lines, a:pattern, l:menu)
   endif
   let l:line_cnt = l:print_cache_percent
 
   let l:line_num = 1
-  let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
@@ -153,7 +153,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
     endif
     "}}}
 
-    let [l:match_num, l:match] = [0, match(l:line, a:pattern)]
+    let l:match = match(l:line, a:pattern)
     while l:match >= 0"{{{
       let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
 
@@ -169,9 +169,33 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
     endwhile"}}}
   endfor"}}}
 
-  if l:max_lines > 400
+  if l:max_lines > 1000
     redraw
   endif
+
+  return l:keyword_lists
+endfunction"}}}
+function! s:load_from_file_fast(lines, pattern, menu)"{{{
+  let l:line_num = 1
+  let l:keyword_lists = []
+  let l:dup_check = {}
+  let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
+  let l:line = join(a:lines)
+
+  let l:match = match(l:line, a:pattern)
+  while l:match >= 0"{{{
+    let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
+
+    " Ignore too short keyword.
+    if !has_key(l:dup_check, l:match_str) && len(l:match_str) >= g:neocomplcache_min_keyword_length
+      " Append list.
+      call add(l:keyword_lists, { 'word' : l:match_str, 'menu' : a:menu })
+
+      let l:dup_check[l:match_str] = 1
+    endif
+
+    let l:match = match(l:line, a:pattern, l:match + len(l:match_str))
+  endwhile"}}}
 
   return l:keyword_lists
 endfunction"}}}

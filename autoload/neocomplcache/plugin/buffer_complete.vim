@@ -35,6 +35,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     autocmd FileType,BufWritePost * call s:check_source()
     autocmd BufWritePost,CursorHold * call s:update_source()
     autocmd CursorHold * call s:on_hold()
+    autocmd InsertLeave * call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
@@ -147,12 +148,47 @@ function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
-  if has_key(s:disable_caching_list, bufnr('%'))
+  " Current line caching.
+  
+  let l:srcname = bufnr('%')
+  if !has_key(s:sources, l:srcname) || has_key(s:disable_caching_list, l:srcname)
     return
   endif
 
-  " Current line caching.
-  call s:word_caching_cache_line(bufnr('%'), line('.'), 1)
+  let l:source = s:sources[l:srcname]
+  let l:filename = fnamemodify(l:source.name, ':t')
+  let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
+  let l:keyword_pattern = l:source.keyword_pattern
+  let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
+  let l:keywords = l:source.keyword_cache
+
+  let l:start_line = line('.') - 1
+  if l:start_line <= 0
+    let l:start_line = 1
+  endif
+
+  let l:line = join(getline(l:start_line, line('.') + 1))
+  let l:match = match(l:line, l:keyword_pattern)
+  while l:match >= 0"{{{
+    let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
+
+    " Ignore too short keyword.
+    if len(l:match_str) >= g:neocomplcache_min_keyword_length"{{{
+      " Check dup.
+      let l:key = tolower(l:match_str[: s:completion_length-1])
+      if !has_key(l:keywords, l:key)
+        let l:keywords[l:key] = {}
+      endif
+      if !has_key(l:keywords[l:key], l:match_str)
+        " Append list.
+        let l:keywords[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
+      endif
+    endif"}}}
+
+    " Next match.
+    let l:match = match(l:line, l:keyword_pattern, l:match + len(l:match_str))
+  endwhile"}}}
+
 endfunction"}}}
 
 function! s:calc_frequency(list)"{{{
@@ -357,54 +393,6 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
 
     let l:line_num += 1
     let l:line_cnt += 1
-  endwhile
-endfunction"}}}
-function! s:word_caching_cache_line(srcname, start_line, end_cache_cnt)"{{{
-  " Check exists s:sources.
-  if !has_key(s:sources, a:srcname)
-    call s:word_caching(a:srcname)
-  endif
-
-  let l:source = s:sources[a:srcname]
-  let l:filename = fnamemodify(l:source.name, ':t')
-
-  let l:start_line = (a:start_line-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
-  let l:end_line = (a:end_cache_cnt < 0)? '$' : 
-        \ (l:start_line + a:end_cache_cnt * l:source.cache_line_cnt-1)
-
-  let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
-  let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
-  let l:keyword_pattern = l:source.keyword_pattern
-  let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
-  let l:keywords = l:source.keyword_cache
-
-  let l:line_num = 0
-  let l:line_max = l:start_line - l:end_line
-  while l:line_num < l:line_max
-    let l:line = buflines[l:line_num]
-    let l:match = match(l:line, l:keyword_pattern)
-
-    while l:match >= 0"{{{
-      let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
-
-      " Ignore too short keyword.
-      if len(l:match_str) >= g:neocomplcache_min_keyword_length"{{{
-        " Check dup.
-        let l:key = tolower(l:match_str[: s:completion_length-1])
-        if !has_key(l:source.keyword_cache, l:key)
-          let l:keywords[l:key] = {}
-        endif
-        if !has_key(l:keywords[l:key], l:match_str)
-          " Append list.
-          let l:keywords[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
-        endif
-      endif"}}}
-
-      " Next match.
-      let l:match = match(l:line, l:keyword_pattern, l:match + len(l:match_str))
-    endwhile"}}}
-
-    let l:line_num += 1
   endwhile
 endfunction"}}}
 
