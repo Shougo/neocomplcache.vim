@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2010
+" Last Modified: 07 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -188,7 +188,6 @@ function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
     " Next match.
     let l:match = match(l:line, l:keyword_pattern, l:match + len(l:match_str))
   endwhile"}}}
-
 endfunction"}}}
 
 function! s:calc_frequency(list)"{{{
@@ -220,7 +219,6 @@ function! s:calc_frequency(list)"{{{
     let l:word = keyword.word
     if s:rank_cache_count <= 0
           \|| !has_key(l:frequencies, l:word)
-          \|| l:frequencies[l:word] <= 1
       
       " Set rank.
       let l:frequencies[l:word] = 0
@@ -229,15 +227,6 @@ function! s:calc_frequency(list)"{{{
           let l:frequencies[l:word] += cache_lines.keywords[l:word].rank
         endif
       endfor
-      if l:frequencies[l:word] == 0
-        " Delete.
-        let l:key = tolower(l:word[: s:completion_length-1])
-        "echomsg l:word
-        if has_key(l:source.keyword_cache[l:key], l:word)
-          call remove(l:source.keyword_cache[l:key], l:word)
-        endif
-        call remove(l:source.frequencies, l:word)
-      endif
 
       " Reset count.
       let s:rank_cache_count = neocomplcache#rand(l:calc_cnt)
@@ -554,6 +543,21 @@ function! s:on_hold()"{{{
 
   " Current line caching.
   call s:caching(bufnr('%'), line('.'), 1)
+
+  " Garbage collect.
+  let l:source = s:sources[bufnr('%')]
+  if l:source.cached_last_line >= l:source.end_line
+    for [l:word, l:frequency] in items(l:source.frequencies)
+      if l:frequency == 0
+        " Delete.
+        let l:key = tolower(l:word[: s:completion_length-1])
+        if has_key(l:source.keyword_cache[l:key], l:word)
+          call remove(l:source.keyword_cache[l:key], l:word)
+        endif
+        call remove(l:source.frequencies, l:word)
+      endif
+    endfor
+  endif
 endfunction"}}}
 
 function! s:check_source()"{{{

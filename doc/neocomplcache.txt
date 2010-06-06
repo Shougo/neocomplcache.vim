@@ -644,6 +644,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-07
+- Fixed delete cache bug.
+
 2010-06-06
 - Optimized cache.
 - Fixed vim_complete freeze.
