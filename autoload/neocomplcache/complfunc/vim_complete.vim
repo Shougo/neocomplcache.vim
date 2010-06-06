@@ -141,9 +141,11 @@ endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#get_cur_text()"{{{
   let l:cur_text = neocomplcache#get_cur_text()
   let l:line = line('.')
-  while l:cur_text =~ '^\s*\\' && l:line > 1
+  let l:cnt = 0
+  while l:cur_text =~ '^\s*\\' && l:line > 1 && l:cnt < 5
     let l:cur_text = getline(l:line - 1) . substitute(l:cur_text, '^\s*\\', '', '')
     let l:line -= 1
+    let l:cnt += 1
   endwhile
 
   return split(l:cur_text, '\s\+|\s\+\|<bar>', 1)[-1]

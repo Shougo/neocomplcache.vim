@@ -646,6 +646,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-06-06
 - Optimized cache.
+- Fixed vim_complete freeze.
 
 2010-06-05
 - Improved cache timing.
