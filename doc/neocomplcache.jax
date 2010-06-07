@@ -344,7 +344,8 @@ g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype_lists*
 		ファイルタイプに辞書ファイルを関連づけるためのディクショナリ。
 		キーにファイルタイプ、値に辞書ファイルへのパスを指定する。
-		','区切りで複数の辞書を指定できる。
+		','区切りで複数の辞書を指定できる。もしこの変数が空の場合、
+		neocomplcacheは'dictionary'を代わりに使用する。
 		
 		初期値は空である。
 

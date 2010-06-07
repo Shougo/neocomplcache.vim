@@ -360,7 +360,8 @@ g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype_lists*
 		It is a dictionary to connect a dictionary file with file
 		type.  The dictionary's key is filetype and comma-separated
-		multiple value is a path to a dictionary file.
+		multiple value is a path to a dictionary file.  If this
+		variable is empty, neocomplcache use 'dictionary' option.
 		
 		Default value is {}.
 
@@ -647,6 +648,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-06-07
 - Fixed delete cache bug.
 - Refixed help caching bug.
+- dictionary_complete use dictionary option.
 
 2010-06-06
 - Optimized cache.

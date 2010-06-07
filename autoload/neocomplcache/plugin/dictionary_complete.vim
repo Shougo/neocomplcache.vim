@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2010
+" Last Modified: 07 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,13 +109,17 @@ function! s:initialize_dictionary(filetype)"{{{
 endfunction"}}}
 
 function! s:caching_from_dict(filetype)"{{{
-  if !has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
+  if has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
+    let l:dictionaries = g:neocomplcache_dictionary_filetype_lists[a:filetype]
+  elseif &l:dictionary == ''
     return {}
+  else
+    let l:dictionaries = &l:dictionary
   endif
 
   let l:keyword_list = []
 
-  for l:dictionary in split(g:neocomplcache_dictionary_filetype_lists[a:filetype], ',')
+  for l:dictionary in split(l:dictionaries, ',')
     if filereadable(l:dictionary)
       let l:keyword_list += neocomplcache#cache#load_from_file(l:dictionary, 
             \neocomplcache#get_keyword_pattern(a:filetype), 'D')
