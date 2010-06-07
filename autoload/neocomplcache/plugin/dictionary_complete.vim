@@ -111,7 +111,7 @@ endfunction"}}}
 function! s:caching_from_dict(filetype)"{{{
   if has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
     let l:dictionaries = g:neocomplcache_dictionary_filetype_lists[a:filetype]
-  elseif &l:dictionary == ''
+  elseif a:filetype != &filetype || &l:dictionary == ''
     return {}
   else
     let l:dictionaries = &l:dictionary
