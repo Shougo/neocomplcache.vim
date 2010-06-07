@@ -56,6 +56,7 @@ function! neocomplcache#enable() "{{{
   let s:moved_cur_text = ''
   let s:changedtick = b:changedtick
   let s:used_match_filter = 0
+  let s:context_filetype = 'nothing'
   "}}}
 
   " Initialize complfuncs table."{{{
@@ -138,11 +139,13 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'tags',
         \'\v^[^!][^/[:blank:]]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'pic',
-        \'\v^\s*#\h\w*|\h\w*')
+        \'^\s*#\h\w*\|\h\w*')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'asmh8300',
+        \'[[:alpha:]_.][[:alnum:]_.]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'masm',
-        \'\v\.\h\w*|[[:alpha:]_@?$][[:alnum:]_@?$]*')
+        \'\.\h\w*\|[[:alpha:]_@?$][[:alnum:]_@?$]*\|\h\w*:\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'nasm',
-        \'\v^\s*\[\h\w*|[%.]?\h\w*|%(\.\.\@?|\%[%$!])%(\h\w*)?')
+        \'^\s*\[\h\w*\|[%.]\?\h\w*\|\%(\.\.\@\?\|%[%$!]\)\%(\h\w*\)\?\|\h\w*:\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'asm',
         \'\v[%$.]?\h\w*%(\$\h\w*)?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'make',
@@ -204,6 +207,14 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-sml,int-smlsharp', 'sml')
   "}}}
 
+  " Initialize include filetype lists."{{{
+  if !exists('g:neocomplcache_filetype_include_lists')
+    let g:neocomplcache_filetype_include_lists = {}
+  endif
+  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'perl6', 
+        \ [{'filetype' : 'parrot', 'start' : 'Q:PIR\s*{', 'end' : '}'}])
+  "}}}
+  
   " Initialize member prefix patterns."{{{
   if !exists('g:neocomplcache_member_prefix_patterns')
     let g:neocomplcache_member_prefix_patterns = {}
@@ -448,7 +459,7 @@ function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   return ret
 endfunction"}}}
 function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
-  let l:ft = &filetype
+  let l:ft = neocomplcache#get_context_filetype()
   if l:ft == ''
     let l:ft = 'nothing'
   endif
@@ -564,7 +575,7 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...)"{{{
   if a:0 == 0
-    let l:filetype = (&filetype == '')?  'nothing' : &filetype
+    let l:filetype = (neocomplcache#get_context_filetype() == '')?  'nothing' : neocomplcache#get_context_filetype()
   else
     let l:filetype = a:000[0]
   endif
@@ -579,7 +590,7 @@ function! neocomplcache#get_keyword_pattern(...)"{{{
 endfunction"}}}
 function! neocomplcache#get_next_keyword_pattern(...)"{{{
   if empty(a:000)
-    let l:filetype = (&filetype == '')?  'nothing' : &filetype
+    let l:filetype = (neocomplcache#get_context_filetype() == '')?  'nothing' : neocomplcache#get_context_filetype()
   else
     let l:filetype = a:000[0]
   endif
@@ -592,7 +603,7 @@ function! neocomplcache#get_next_keyword_pattern(...)"{{{
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern_end(...)"{{{
   if empty(a:000)
-    let l:filetype = (&filetype == '')?  'nothing' : &filetype
+    let l:filetype = (neocomplcache#get_context_filetype() == '')?  'nothing' : neocomplcache#get_context_filetype()
   else
     let l:filetype = a:000[0]
   endif
@@ -690,6 +701,13 @@ endfunction"}}}
 function! neocomplcache#escape_match(str)"{{{
   return escape(a:str, '~" \.^$[]')
 endfunction"}}}
+function! neocomplcache#get_context_filetype()"{{{
+  if s:context_filetype ==# 'nothing'
+    call s:set_context_filetype()
+  endif
+  
+  return s:context_filetype
+endfunction"}}}
 
 " Set pattern helper.
 function! neocomplcache#set_variable_pattern(variable, filetype, pattern)"{{{
@@ -786,6 +804,9 @@ endfunction"}}}
 
 " Manual complete wrapper.
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
+  " Set context filetype.
+  call s:set_context_filetype()
+  
   let l:cur_text = s:get_cur_text()
   
   " Clear flag.
@@ -1025,6 +1046,9 @@ function! s:do_complete(is_moved)"{{{
   let s:changedtick = b:changedtick
 endfunction"}}}
 function! s:get_complete_result(cur_text)"{{{
+  " Set context filetype.
+  call s:set_context_filetype()
+  
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
@@ -1149,6 +1173,7 @@ function! s:on_insert_leave()"{{{
   let s:complete_words = []
   let &updatetime = s:update_time_save
   let s:used_match_filter = 0
+  let s:context_filetype = 'nothing'
 endfunction"}}}
 function! s:remove_next_keyword(plugin_name, list)"{{{
   let l:list = a:list
@@ -1240,7 +1265,7 @@ function! s:select_quickmatch_list(key)"{{{
   return []
 endfunction"}}}
 function! s:get_quickmatch_pattern()"{{{
-  let l:filetype = (&filetype == '')?   'nothing' : &filetype
+  let l:filetype = (neocomplcache#get_context_filetype() == '')?   'nothing' : neocomplcache#get_context_filetype()
 
   let l:pattern = has_key(g:neocomplcache_quick_match_patterns, l:filetype)?  
         \ g:neocomplcache_quick_match_patterns[l:filetype] : g:neocomplcache_quick_match_patterns['default']
@@ -1270,6 +1295,39 @@ function! s:get_cur_text()"{{{
   " Save cur_text.
   let s:cur_text = l:cur_text
   return l:cur_text
+endfunction"}}}
+function! s:set_context_filetype()"{{{
+  if !has_key(g:neocomplcache_filetype_include_lists, &filetype)
+        \|| empty(g:neocomplcache_filetype_include_lists[&filetype])
+    let s:context_filetype = &filetype
+    return
+  endif
+
+  for l:include in g:neocomplcache_filetype_include_lists[&filetype]
+    let l:start_backward = searchpos(l:include.start, 'bnW')
+    let l:end_forward = searchpos(l:include.end, 'nW')
+
+    " Check start <= line <= end.
+    if l:start_backward[0] > 0 && (l:start_backward[0] < line('.') || l:start_backward[1] <= col('.'))
+          \&& l:end_forward[0] > 0 && (l:end_forward[0] > line('.') || l:end_forward[1] >= col('.'))
+      let l:start_forward = searchpos(l:include.start, 'nW')
+      let l:end_backward = searchpos(l:include.end, 'bnW')
+
+      "echomsg string(l:start_backward)
+      "echomsg string(l:end_forward)
+      "echomsg string(l:start_forward)
+      "echomsg string(l:end_backward)
+      
+      if !(l:start_backward[0] <= l:end_backward[0] && l:end_backward[0] <= line('.'))
+            \&& !(line('.') <= l:start_forward[0] && l:start_forward[0] <= l:end_forward[0])
+        let s:context_filetype = l:include.filetype
+        return 
+      endif
+    endif
+  endfor
+
+  let s:context_filetype = &filetype
+  return
 endfunction"}}}
 
 " vim: foldmethod=marker

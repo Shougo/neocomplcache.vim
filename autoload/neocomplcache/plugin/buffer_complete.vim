@@ -281,9 +281,9 @@ endfunction"}}}
 function! s:get_sources_list()"{{{
   let l:sources_list = []
 
-  let l:filetypes = neocomplcache#get_source_filetypes(&filetype)
+  let l:filetypes = neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype())
   for key in keys(s:sources)
-    if has_key(l:filetypes, s:sources[key].filetype)
+    if has_key(l:filetypes, s:sources[key].filetype) || bufnr('%') == key
       call add(l:sources_list, key)
     endif
   endfor

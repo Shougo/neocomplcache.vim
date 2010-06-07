@@ -68,7 +68,7 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
     return []
   endif
 
-  let l:ft = &filetype
+  let l:ft = neocomplcache#get_context_filetype()
   if l:ft == ''
     let l:ft = 'nothing'
   endif

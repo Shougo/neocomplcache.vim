@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 07 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,6 +66,12 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'vimshell',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
   "}}}
+  
+  " Initialize omni function list."{{{
+  if !exists('g:neocomplcache_omni_function_list')
+    let g:neocomplcache_omni_function_list = {}
+  endif
+  "}}}
 
   let s:keyword_cache = {}
   let s:completion_length = neocomplcache#get_completion_length('omni_complete')
@@ -74,14 +80,24 @@ function! neocomplcache#complfunc#omni_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
-  if &l:omnifunc == ''
+  let l:filetype = neocomplcache#get_context_filetype()
+  if has_key(g:neocomplcache_omni_function_list, l:filetype)
+    let l:omnifunc = g:neocomplcache_omni_function_list[l:filetype]
+  elseif &filetype == l:filetype
+    let l:omnifunc = &l:omnifunc
+  else
+    " &omnifunc is irregal.
     return -1
   endif
 
-  if has_key(g:neocomplcache_omni_patterns, &l:omnifunc)
-    let l:pattern = g:neocomplcache_omni_patterns[&l:omnifunc]
-  elseif &filetype != '' && has_key(g:neocomplcache_omni_patterns, &filetype)
-    let l:pattern = g:neocomplcache_omni_patterns[&filetype]
+  if l:omnifunc == ''
+    return -1
+  endif
+  
+  if has_key(g:neocomplcache_omni_patterns, l:omnifunc)
+    let l:pattern = g:neocomplcache_omni_patterns[l:omnifunc]
+  elseif l:filetype != '' && has_key(g:neocomplcache_omni_patterns, l:filetype)
+    let l:pattern = g:neocomplcache_omni_patterns[l:filetype]
   else
     let l:pattern = ''
   endif
@@ -115,7 +131,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
   endif
 
   try
-    let l:cur_keyword_pos = call(&l:omnifunc, [1, ''])
+    let l:cur_keyword_pos = call(l:omnifunc, [1, ''])
   catch
     let l:cur_keyword_pos = -1
   endtry
@@ -138,6 +154,13 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
   let l:is_wildcard = g:neocomplcache_enable_wildcard && a:cur_keyword_str =~ '\*\w\+$'
         \&& neocomplcache#is_auto_complete()
 
+  let l:filetype = neocomplcache#get_context_filetype()
+  if has_key(g:neocomplcache_omni_function_list, l:filetype)
+    let l:omnifunc = g:neocomplcache_omni_function_list[l:filetype]
+  elseif &filetype == l:filetype
+    let l:omnifunc = &l:omnifunc
+  endif
+
   let l:pos = getpos('.')
   if l:is_wildcard
     " Check wildcard.
@@ -147,15 +170,15 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
   endif
 
   try
-    if &filetype == 'ruby' && l:is_wildcard
+    if l:filetype == 'ruby' && l:is_wildcard
       let l:line = getline('.')
       let l:cur_text = neocomplcache#get_cur_text()
       call setline('.', l:cur_text[: match(l:cur_text, '\%(\*\w\+\)\+$') - 1])
     endif
 
-    let l:list = call(&l:omnifunc, [0, (&filetype == 'ruby')? '' : l:cur_keyword_str])
+    let l:list = call(l:omnifunc, [0, (l:filetype == 'ruby')? '' : l:cur_keyword_str])
 
-    if &filetype == 'ruby' && l:is_wildcard
+    if l:filetype == 'ruby' && l:is_wildcard
       call setline('.', l:line)
     endif
   catch

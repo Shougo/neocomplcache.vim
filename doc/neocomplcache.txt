@@ -135,21 +135,21 @@ COMMANDS 						*neocomplcache-commands*
 ------------------------------------------------------------------------------
 VARIABLES 						*neocomplcache-variables*
 
-g:neocomplcache_enable_at_startup				*g:neocomplcache_enable_at_startup*
+g:neocomplcache_enable_at_startup			*g:neocomplcache_enable_at_startup*
 		This variable controls whether I validate neocomplcache at
 		the time of Vim start.  This option should set it in .vimrc.
 	
 		Because default value is 0, you cannot use neocomplcache
 		unless you validate it by manual operation.
 
-g:neocomplcache_max_list					*g:neocomplcache_max_list*
+g:neocomplcache_max_list				*g:neocomplcache_max_list*
 		This variable controls the number of candidates displayed in
 		a pop-up menu.  The case beyond this value is cut down a
 		candidate.
 	
 		Default value is 100.
 
-g:neocomplcache_max_keyword_width				*g:neocomplcache_max_keyword_width*
+g:neocomplcache_max_keyword_width			*g:neocomplcache_max_keyword_width*
 		This variable controls the indication width of a candidate
 		displayed in a pop-up menu.  The case beyond this value is
 		cut down properly.
@@ -184,20 +184,20 @@ g:neocomplcache_min_keyword_length			*g:neocomplcache_min_keyword_length*
 	
 		Default value is 4.
 
-g:neocomplcache_min_syntax_length				*g:neocomplcache_min_syntax_length*
+g:neocomplcache_min_syntax_length			*g:neocomplcache_min_syntax_length*
 		In syntax files, this variable controls length of keyword
 		becoming the object of the completion at the minimum.
 	
 		Default value is 4.
 
-g:neocomplcache_enable_ignore_case				*g:neocomplcache_enable_ignore_case*
+g:neocomplcache_enable_ignore_case			*g:neocomplcache_enable_ignore_case*
 		When neocomplcache looks for candidate completion, this
 		variable controls whether neocomplcache ignores the upper-
 		and lowercase.  If it is 1, neocomplcache ignores case.
 	
 		Default value is 'ignorecase'.
 
-g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
+g:neocomplcache_enable_smart_case			*g:neocomplcache_enable_smart_case*
 		When a capital letter is included in input, neocomplcache do
 		not ignore the upper- and lowercase.
 	
@@ -259,7 +259,7 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 	
 		Default value is 0.
 
-g:neocomplcache_enable_display_parameter			*g:neocomplcache_enable_display_parameter*
+g:neocomplcache_enable_display_parameter		*g:neocomplcache_enable_display_parameter*
 		When you input, this variable controls whether neocomplcache
 		displays the prototype of the function in Command-line.
 		Only vim_complete supports now.
@@ -306,7 +306,7 @@ g:neocomplcache_temporary_dir				*g:neocomplcache_temporary_dir*
 	
 		Default value is '~/.neocon'.
 
-g:neocomplcache_keyword_patterns				*g:neocomplcache_keyword_patterns*
+g:neocomplcache_keyword_patterns			*g:neocomplcache_keyword_patterns*
 		This dictionary records regular expression to recognize a
 		keyword pattern of the next than a cursor.  The form is the
 		same as|g:neocomplcache_keyword_patterns|.
@@ -320,7 +320,7 @@ g:neocomplcache_keyword_patterns				*g:neocomplcache_keyword_patterns*
 		endif
 		let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 <
-g:neocomplcache_next_keyword_patterns				*g:neocomplcache_next_keyword_patterns*
+g:neocomplcache_next_keyword_patterns			*g:neocomplcache_next_keyword_patterns*
 		This dictionary records keyword patterns to completion.
 		This is appointed in regular expression every file type.
 	
@@ -357,7 +357,7 @@ g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
-g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype_lists*
+g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_lists*
 		It is a dictionary to connect a dictionary file with file
 		type.  The dictionary's key is filetype and comma-separated
 		multiple value is a path to a dictionary file.  If this
@@ -365,7 +365,13 @@ g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype
 		
 		Default value is {}.
 
-g:neocomplcache_plugin_completion_length_list			*g:neocomplcache_plugin_completion_length_list*
+g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists*
+		It is a dictionary
+		
+		Because it is complicated, refer to neocomplcache#enable() in
+		autoload/neocomplcache.vim for the initial value.
+
+g:neocomplcache_plugin_completion_length_list		*g:neocomplcache_plugin_completion_length_list*
 		It is a dictionary to control each plugin's completion
 		length.  For example, you can prolong heavy plugin's
 		completion length.
@@ -417,7 +423,7 @@ g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		autoload/neocomplcache/plugin/include_complete.vim for the
 		initial value.
                 
-g:neocomplcache_include_patterns				*g:neocomplcache_include_patterns*
+g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		This variable appoints the pattern of the include command.
 		When there is not it, 'include' is used.  Refer to 'include'
 		for the description form. It is the dictionary of the
@@ -454,6 +460,10 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		'default'.
 		
 		Default value is { 'default' : '-' }.
+
+g:neocomplcache_omni_function_list			*g:neocomplcache_omni_function_list*
+		
+		Default value is {}.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
@@ -649,6 +659,10 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed delete cache bug.
 - Refixed help caching bug.
 - dictionary_complete use dictionary option.
+- Improved masm and nasm keyword pattern.
+- Supported H8-300 keyword pattern.
+- Added g:neocomplcache_filetype_include_lists option.
+- Added g:neocomplcache_omni_function_list option.
 
 2010-06-06
 - Optimized cache.

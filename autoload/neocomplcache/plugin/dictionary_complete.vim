@@ -57,7 +57,7 @@ endfunction"}}}
 function! neocomplcache#plugin#dictionary_complete#get_keyword_list(cur_keyword_str)"{{{
   let l:list = []
 
-  for l:source in neocomplcache#get_sources_list(s:dictionary_list, &filetype)
+  for l:source in neocomplcache#get_sources_list(s:dictionary_list, neocomplcache#get_context_filetype())
     let l:list += neocomplcache#dictionary_filter(l:source, a:cur_keyword_str, s:completion_length)
   endfor
 
@@ -69,7 +69,7 @@ function! s:caching()"{{{
     return
   endif
 
-  for l:filetype in keys(neocomplcache#get_source_filetypes(&filetype))
+  for l:filetype in keys(neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype()))
     if !has_key(s:dictionary_list, l:filetype)
       call neocomplcache#print_caching('Caching dictionary "' . l:filetype . '"... please wait.')
 
@@ -82,8 +82,8 @@ endfunction"}}}
 
 function! s:recaching(filetype)"{{{
   if a:filetype == ''
-    if &filetype != ''
-      let l:filetype = &filetype
+    if neocomplcache#get_context_filetype() != ''
+      let l:filetype = neocomplcache#get_context_filetype()
     else
       let l:filetype = 'nothing'
     endif
@@ -137,7 +137,7 @@ function! s:caching_from_dict(filetype)"{{{
   endfor 
 
   " Save dictionary cache.
-  call neocomplcache#cache#save_cache('dictionary_cache', &filetype, neocomplcache#unpack_dictionary(l:keyword_dict))
+  call neocomplcache#cache#save_cache('dictionary_cache', a:filetype, neocomplcache#unpack_dictionary(l:keyword_dict))
 
   return l:keyword_dict
 endfunction"}}}

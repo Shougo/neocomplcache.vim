@@ -41,7 +41,7 @@ function! neocomplcache#complfunc#vim_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
-  if &filetype != 'vim'
+  if neocomplcache#get_context_filetype() != 'vim'
     return -1
   endif
 

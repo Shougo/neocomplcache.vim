@@ -168,6 +168,7 @@ function! neocomplcache#complfunc#vim_complete#helper#command(cur_text, cur_keyw
   endif
   
   let l:list = s:internal_candidates_list.commands + s:global_candidates_list.commands
+  echomsg a:cur_keyword_str
   if bufname('%') !=# '[Command Line]'
     let l:list = neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
   endif

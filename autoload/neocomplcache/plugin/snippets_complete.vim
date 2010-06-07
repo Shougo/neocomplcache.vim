@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 07 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -107,7 +107,11 @@ function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_st
   endif
   let l:snippets = values(s:snippets['_'])
 
-  for l:source in neocomplcache#get_sources_list(s:snippets, &filetype)
+  if !has_key(s:snippets, neocomplcache#get_context_filetype())
+    " Caching snippets.
+    call s:caching_snippets(neocomplcache#get_context_filetype())
+  endif
+  for l:source in neocomplcache#get_sources_list(s:snippets, neocomplcache#get_context_filetype())
     let l:snippets += values(l:source)
   endfor
 
@@ -146,10 +150,10 @@ endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#expandable()"{{{
   " Set buffer filetype.
-  if &filetype == ''
+  if neocomplcache#get_context_filetype() == ''
     let l:ft = 'nothing'
   else
-    let l:ft = &filetype
+    let l:ft = neocomplcache#get_context_filetype()
   endif
 
   let l:snippets = copy(s:snippets['_'])
@@ -180,7 +184,7 @@ function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
 endfunction"}}}
 
 function! s:caching()"{{{
-  for l:filetype in keys(neocomplcache#get_source_filetypes(&filetype))
+  for l:filetype in keys(neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype()))
     if !has_key(s:snippets, l:filetype)
       call s:caching_snippets(l:filetype)
     endif
@@ -210,12 +214,12 @@ endfunction"}}}
 
 function! s:edit_snippets(filetype, isruntime)"{{{
   if a:filetype == ''
-    if &filetype == ''
+    if neocomplcache#get_context_filetype() == ''
       call neocomplcache#print_error('Filetype required')
       return
     endif
 
-    let l:filetype = &filetype
+    let l:filetype = neocomplcache#get_context_filetype()
   else
     let l:filetype = a:filetype
   endif
@@ -253,7 +257,7 @@ endfunction"}}}
 function! s:print_snippets(filetype)"{{{
   let l:list = values(s:snippets['_'])
 
-  let l:filetype = (a:filetype != '')?    a:filetype : &filetype
+  let l:filetype = (a:filetype != '')?    a:filetype : neocomplcache#get_context_filetype()
 
   if l:filetype != ''
     if !has_key(s:snippets, l:filetype)
@@ -365,10 +369,10 @@ endfunction"}}}
 
 function! s:snippets_expand(cur_text, col)"{{{
   " Set buffer filetype.
-  if &filetype == ''
+  if neocomplcache#get_context_filetype() == ''
     let l:ft = 'nothing'
   else
-    let l:ft = &filetype
+    let l:ft = neocomplcache#get_context_filetype()
   endif
 
   let l:snippets = copy(s:snippets['_'])

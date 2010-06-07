@@ -138,9 +138,9 @@ COMMANDS 						*neocomplcache-commands*
 		スニペットの名前を忘れてしまったときに便利であろう。
 
 ------------------------------------------------------------------------------
-VARIABLES 					*neocomplcache-variables*
+VARIABLES 						*neocomplcache-variables*
 
-g:neocomplcache_enable_at_startup				*g:neocomplcache_enable_at_startup*
+g:neocomplcache_enable_at_startup			*g:neocomplcache_enable_at_startup*
 		Vim起動時にneocomplcacheを有効にするかどうか制御する。 1なら
 		ば自動で有効化する。このオプションは.vimrcで設定するべきであ
 		る。neocomplcacheは|AutoComplPop|と競合するので、同時に使用
@@ -149,13 +149,13 @@ g:neocomplcache_enable_at_startup				*g:neocomplcache_enable_at_startup*
 		初期値は0なので、手動で有効にしない限りneocomplcacheは使用で
 		きない。
 
-g:neocomplcache_max_list					*g:neocomplcache_max_list*
+g:neocomplcache_max_list				*g:neocomplcache_max_list*
 		ポップアップメニューで表示される候補の数を制御する。 候補が
 		これを超えた場合は切り詰められる。
 		
 		初期値は100である。
 
-g:neocomplcache_max_keyword_width				*g:neocomplcache_max_keyword_width*
+g:neocomplcache_max_keyword_width			*g:neocomplcache_max_keyword_width*
 		ポップアップメニューで表示される候補の表示幅を制御する。 こ
 		れを超えた場合は適当に切り詰められる。
 		
@@ -184,18 +184,18 @@ g:neocomplcache_min_keyword_length			*g:neocomplcache_min_keyword_length*
 		
 		初期値は4である。
 
-g:neocomplcache_min_syntax_length				*g:neocomplcache_min_syntax_length*
+g:neocomplcache_min_syntax_length			*g:neocomplcache_min_syntax_length*
 		シンタックスファイル中で、補完の対象となるキーワードの最小長さを制御する。
 		
 		初期値は4である。
 
-g:neocomplcache_enable_ignore_case				*g:neocomplcache_enable_ignore_case*
+g:neocomplcache_enable_ignore_case			*g:neocomplcache_enable_ignore_case*
 		補完候補を探すときに、大文字・小文字を無視するかを制御する。
 		1ならば無視する。
 		
 		初期値は'ignorecase'である。
 
-g:neocomplcache_enable_smart_case				*g:neocomplcache_enable_smart_case*
+g:neocomplcache_enable_smart_case			*g:neocomplcache_enable_smart_case*
 		入力に大文字が含まれている場合は、大文字・小文字を無視しない
 		ようにする。 1ならば有効。
 		
@@ -235,7 +235,7 @@ g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		
 		初期値は0である。
 
-g:neocomplcache_cursor_hold_i_time				*g:neocomplcache_cursor_hold_i_time*
+g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
 		|g:neocomplcache_enable_cursor_hold_i|が有効になっている場合、
 		自動補完を開始するための計算時間を定義する。このオプションは
 		'updatetime'の値を書き換える。
@@ -257,7 +257,7 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 		
 		副作用があるので、初期値は0となっている。
 
-g:neocomplcache_enable_display_parameter			*g:neocomplcache_enable_display_parameter*
+g:neocomplcache_enable_display_parameter		*g:neocomplcache_enable_display_parameter*
 		入力中に、関数のプロトタイプをCommand-lineに表示するかを制御
 		する。 現在はvim_completeのみ対応している。
 	
@@ -298,7 +298,7 @@ g:neocomplcache_temporary_dir				*g:neocomplcache_temporary_dir*
 		
 		初期値は'~/.neocon'である。
 
-g:neocomplcache_keyword_patterns				*g:neocomplcache_keyword_patterns*
+g:neocomplcache_keyword_patterns			*g:neocomplcache_keyword_patterns*
 		補完するためのキーワードパターンを記録する。 これはファイル
 		タイプ毎に正規表現で指定されている。
 		
@@ -341,7 +341,7 @@ g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 		
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
 
-g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype_lists*
+g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_lists*
 		ファイルタイプに辞書ファイルを関連づけるためのディクショナリ。
 		キーにファイルタイプ、値に辞書ファイルへのパスを指定する。
 		','区切りで複数の辞書を指定できる。もしこの変数が空の場合、
@@ -349,7 +349,12 @@ g:neocomplcache_dictionary_filetype_lists			*g:neocomplcache_dictionary_filetype
 		
 		初期値は空である。
 
-g:neocomplcache_plugin_completion_length_list			*g:neocomplcache_plugin_completion_length_list*
+g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists*
+		It is a dictionary
+		
+		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
+
+g:neocomplcache_plugin_completion_length_list		*g:neocomplcache_plugin_completion_length_list*
 		補完関数を呼び出す文字数をプラグインごとに指定するディクショ
 		ナリ。 重いプラグインは文字数が多いときにのみ呼び出せるよう
 		にするなどが考えられる。
@@ -391,7 +396,7 @@ g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimの
 		neocomplcache#plugin#include_complete#initialize()を参照せよ。
 
-g:neocomplcache_include_patterns				*g:neocomplcache_include_patterns*
+g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		インクルード命令のパターンを指定する。存在しない場合、
 		&l:includeが使われる。 記述形式は'include'を参照せよ。ファイ
 		ルタイプをキーとした文字列の辞書である。
@@ -421,6 +426,10 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		定できる。
 		
 		初期値は { 'default' : '-' } である。
+
+g:neocomplcache_omni_function_list			*g:neocomplcache_omni_function_list*
+		
+		初期値は空である。
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
