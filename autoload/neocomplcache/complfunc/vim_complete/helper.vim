@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2010
+" Last Modified: 07 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -168,7 +168,6 @@ function! neocomplcache#complfunc#vim_complete#helper#command(cur_text, cur_keyw
   endif
   
   let l:list = s:internal_candidates_list.commands + s:global_candidates_list.commands
-  echomsg a:cur_keyword_str
   if bufname('%') !=# '[Command Line]'
     let l:list = neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
   endif
