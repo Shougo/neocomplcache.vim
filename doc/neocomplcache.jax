@@ -350,8 +350,18 @@ g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_
 		初期値は空である。
 
 g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists*
-		It is a dictionary
-		
+		ファイルタイプに内包される別のファイルタイプを定義する。
+		中身はディクショナリのリストであり、次の内容を持つ。
+		"filetype" : 内包されるファイルタイプ名
+		"start" : ファイルタイプが初まるパターン
+		"end" : ファイルタイプが終わるパターン
+>
+		" Examples:
+		if !exists('g:neocomplcache_filetype_include_lists')
+		let g:neocomplcache_filetype_include_lists= {}
+		endif
+		let g:neocomplcache_filetype_include_lists.perl6 = [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
+<
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
 
 g:neocomplcache_plugin_completion_length_list		*g:neocomplcache_plugin_completion_length_list*
@@ -428,6 +438,10 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		初期値は { 'default' : '-' } である。
 
 g:neocomplcache_omni_function_list			*g:neocomplcache_omni_function_list*
+		|&filetype|をキーとしたディクショナリであり、|omni_complete|
+		が呼び出すオムニ補完関数を定義する。 |&filetype|に対応する関
+		数が定義されていないとき、|omni_complete|は|omnifunc|を呼び
+		出す。
 		
 		初期値は空である。
 

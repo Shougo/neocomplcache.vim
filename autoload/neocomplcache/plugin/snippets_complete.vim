@@ -258,7 +258,7 @@ function! s:print_snippets(filetype)"{{{
     let l:list += values(s:snippets[l:filetype])
   endif
 
-  for snip in sort(l:list, 'neocomplcache#compare_words')
+  for snip in sort(l:list, 's:compare_words')
     echohl String
     echo snip.word
     echohl Special
@@ -322,13 +322,13 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
     elseif line =~ '^\s'
       if l:snippet_pattern.word == ''
-        let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*\ze\s*$')
+        let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
       elseif line =~ '^\t'
         let line = substitute(line, '^\s', '', '')
         let l:snippet_pattern.word .= '<\n>' . 
               \substitute(line, '^\t\+', repeat('<\\t>', matchend(line, '^\t\+')), '')
       else
-        let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*\ze\s*$')
+        let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
       endif
     elseif line =~ '^delete\s'
       let l:name = matchstr(line, '^delete\s\+\zs.*\ze\s*$')
@@ -434,10 +434,8 @@ function! s:expand_newline()"{{{
     silent! s/<\\n>//
 
     " Return.
-    call setpos('.', [0, line('.'), l:match, 0])
-    silent execute "normal! a\<CR>"
-    let l:pos = len(l:end) + 1
-    call setpos('.', [0, line('.'), l:pos, 0])
+    call setpos('.', [0, line('.'), l:match+1, 0])
+    silent execute "normal! i\<CR>"
 
     " Next match.
     let l:match = match(getline('.'), '<\\n>')

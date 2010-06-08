@@ -366,7 +366,18 @@ g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_
 		Default value is {}.
 
 g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists*
-		It is a dictionary
+		It is a dictionary to define a filetype which includes another filetype.
+		The item is a list of dictionary. The keys and values are below.
+		"filetype" : includes filetype.
+		"start" : filetype start pattern.
+		"end" : filetype end pattern.
+>
+		" Examples:
+		if !exists('g:neocomplcache_filetype_include_lists')
+		let g:neocomplcache_filetype_include_lists= {}
+		endif
+		let g:neocomplcache_filetype_include_lists.perl6 = [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
+<
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
@@ -462,6 +473,10 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		Default value is { 'default' : '-' }.
 
 g:neocomplcache_omni_function_list			*g:neocomplcache_omni_function_list*
+		This dictionary which appoints |omni_complete| call
+		function.  The key is |&filetype|. If
+		g:neocomplcache_omni_function_list[|&filetype|] is
+		undefined, |omni_complete| calls |omnifunc|.
 		
 		Default value is {}.
 
@@ -663,6 +678,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved vim_complete.
 - Added pasm and pir support.
 - Fixed nested snippet bug.
+- Fixed expand a snippet contained blank line bug.
+- Improved help.
 
 2010-06-07
 - Fixed delete cache bug.
