@@ -96,6 +96,10 @@ function! neocomplcache#enable() "{{{
         \'<\h\w*>\?\|[$@%&*]\h\w*\|\h\w*\%(::\h\w*\)*\%(\s*()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'perl6,int-perl6',
         \'<\h\w*>\?\|[$@%&][!.*?]\?\h\w*\|\h\w*\%(::\h\w*\)*\%(\s*()\?\)\?')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'pir',
+        \'[$@%.=]\?\h\w*')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'pasm',
+        \'[=]\?\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'vim,help',
         \'\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<\h[[:alnum:]_-]*>\?\|\.\h\w*\%(()\?\)\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'tex',
@@ -213,7 +217,7 @@ function! neocomplcache#enable() "{{{
     let g:neocomplcache_filetype_include_lists = {}
   endif
   call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'perl6', 
-        \ [{'filetype' : 'parrot', 'start' : 'Q:PIR\s*{', 'end' : '}'}])
+        \ [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}])
   "}}}
   
   " Initialize member prefix patterns."{{{

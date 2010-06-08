@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -544,7 +544,7 @@ function! s:search_outof_range(col)"{{{
   call s:substitute_marker(1, 0)
 
   let l:pattern = '\${\d\+\%(:.\{-}\)\?\\\@<!}'
-  if search(l:pattern, 'nw') > 0
+  if search(l:pattern, 'w') > 0
     let l:line = line('.')
     let l:match = match(getline(l:line), l:pattern)
     let l:pattern2 = '\${\d\+:\zs.\{-}\ze\\\@<!}'
@@ -556,19 +556,19 @@ function! s:search_outof_range(col)"{{{
     if search('\$'.l:cnt.'\d\@!', 'nw') > 0
       let l:pattern = '\${' . l:cnt . '\%(:.\{-}\)\?\\\@<!}'
       call setline(l:line, substitute(getline(l:line), l:pattern, '\$<'.s:snippet_holder_cnt.':'.escape(l:default, '\').'>', ''))
-      call setpos('.', [0, l:line, l:match+1 + len('$<'.l:cnt.':'), 0])
+      call setpos('.', [bufnr('.'), l:line, l:match+1 + len('$<'.l:cnt.':'), 0])
       let l:pos = l:match+1 + len('$<'.l:cnt.':')
     else
       " Substitute holder.
       call setline(l:line, substitute(getline(l:line), l:pattern, escape(l:default, '\'), ''))
-      call setpos('.', [0, l:line, l:match+1, 0])
+      call setpos('.', [bufnr('.'), l:line, l:match+1, 0])
       let l:pos = l:match+1
     endif
 
     if l:match_len2 > 0
       " Select default value.
       let l:len = l:match_len2-1
-      if &l:selection == "exclusive"
+      if &l:selection == 'exclusive'
         let l:len += 1
       endif
 
@@ -583,7 +583,7 @@ function! s:search_outof_range(col)"{{{
       startinsert!
     endif
   elseif a:col == 1
-    call setpos('.', [0, line('.'), 1, 0])
+    call setpos('.', [bufnr('.'), line('.'), 1, 0])
     startinsert
   elseif a:col == col('$')
     startinsert!

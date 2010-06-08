@@ -661,6 +661,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved caching message.
 - Improved keyword patterns.
 - Improved vim_complete.
+- Added pasm and pir support.
+- Fixed nested snippet bug.
 
 2010-06-07
 - Fixed delete cache bug.
