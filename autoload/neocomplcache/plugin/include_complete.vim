@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -68,61 +68,24 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
     return []
   endif
 
-  let l:ft = neocomplcache#get_context_filetype()
-  if l:ft == ''
-    let l:ft = 'nothing'
-  endif
-
-  if has_key(g:neocomplcache_member_prefix_patterns, l:ft) 
-        \&& a:cur_keyword_str =~ g:neocomplcache_member_prefix_patterns[l:ft]
-    let l:use_member_filter = 1
-
-    let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patterns[l:ft])
-    let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
-
-    if len(l:cur_keyword_str) >= s:completion_length
-      let l:use_member_filter = 0
-      let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
-      for l:include in s:include_info[bufnr('%')].include_files
-        if has_key(s:include_cache[l:include], l:key)
-          let l:use_member_filter = 1
-          break
-        endif
-      endfor
-
-      if !l:use_member_filter
-        let l:cur_keyword_str = a:cur_keyword_str
-      endif
-    endif
-  else
-    let l:use_member_filter = 0
-    let l:cur_keyword_str = a:cur_keyword_str
-  endif
-
   let l:keyword_list = []
-  if len(l:cur_keyword_str) < s:completion_length ||
-        \neocomplcache#check_match_filter(l:cur_keyword_str, s:completion_length)
+  if len(a:cur_keyword_str) < s:completion_length ||
+        \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
     for l:include in s:include_info[bufnr('%')].include_files
       if !bufloaded(l:include)
         let l:keyword_list += neocomplcache#unpack_dictionary(s:include_cache[l:include])
       endif
     endfor
-
-    let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
   else
-    let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
+    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
     for l:include in s:include_info[bufnr('%')].include_files
       if !bufloaded(l:include) && has_key(s:include_cache[l:include], l:key)
         let l:keyword_list += s:include_cache[l:include][l:key]
       endif
     endfor
-
-    if len(a:cur_keyword_str) != s:completion_length || !&ignorecase
-      let l:keyword_list = neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
-    endif
   endif
 
-  return l:keyword_list
+  return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#plugin#include_complete#get_include_files(bufnumber)"{{{

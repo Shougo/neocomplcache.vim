@@ -655,6 +655,13 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-08
+- Added objc omni completion support.
+- Improved context filetype.
+- Improved caching message.
+- Improved keyword patterns.
+- Improved vim_complete.
+
 2010-06-07
 - Fixed delete cache bug.
 - Refixed help caching bug.

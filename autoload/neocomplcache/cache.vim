@@ -84,7 +84,7 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   endtry
 
   if l:max_lines > 3000
-    redraw
+    call neocomplcache#print_caching('Caching done.')
   endif
 
   return l:keyword_lists
@@ -170,7 +170,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   endfor"}}}
 
   if l:max_lines > 1000
-    redraw
+    call neocomplcache#print_caching('Caching done.')
   endif
 
   return l:keyword_lists
@@ -295,8 +295,8 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
     return []
   endtry
 
-  if l:max_lines > 1000
-    redraw
+  if l:max_lines > 500
+    call neocomplcache#print_caching('Caching done.')
   endif
 
   if a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)

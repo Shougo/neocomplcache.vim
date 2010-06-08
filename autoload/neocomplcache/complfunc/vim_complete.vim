@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -87,6 +87,7 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     let l:options = deepcopy(neocomplcache#complfunc#vim_complete#helper#option(l:cur_text, a:cur_keyword_str))
     for l:keyword in l:options
       let l:keyword.word = l:prefix . l:keyword.word
+      let l:keyword.abbr = l:prefix . l:keyword.abbr
     endfor
     let l:list = l:options
   elseif l:cur_text =~# '\<has(''\h\w*$'

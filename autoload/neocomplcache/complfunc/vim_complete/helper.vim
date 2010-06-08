@@ -313,6 +313,7 @@ function! neocomplcache#complfunc#vim_complete#helper#option(cur_text, cur_keywo
     
     for l:keyword in deepcopy(s:internal_candidates_list.options)
       let l:keyword.word = 'no' . l:keyword.word
+      let l:keyword.abbr = 'no' . l:keyword.abbr
       call add(s:internal_candidates_list.options, l:keyword)
     endfor
   endif

@@ -99,10 +99,7 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
     let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
     for src in s:get_sources_list()
       if has_key(s:sources[src].keyword_cache, l:key)
-        let l:keyword_cache = values(s:sources[src].keyword_cache[l:key])
-        if len(a:cur_keyword_str) != s:completion_length || !&ignorecase
-          let l:keyword_cache = neocomplcache#keyword_filter(l:keyword_cache, a:cur_keyword_str)
-        endif
+        let l:keyword_cache = neocomplcache#keyword_filter(values(s:sources[src].keyword_cache[l:key]), a:cur_keyword_str)
 
         if src == l:current
           call s:calc_frequency(l:keyword_cache)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -82,11 +82,7 @@ endfunction"}}}
 
 function! s:recaching(filetype)"{{{
   if a:filetype == ''
-    if neocomplcache#get_context_filetype() != ''
-      let l:filetype = neocomplcache#get_context_filetype()
-    else
-      let l:filetype = 'nothing'
-    endif
+    let l:filetype = neocomplcache#get_context_filetype()
   else
     let l:filetype = a:filetype
   endif

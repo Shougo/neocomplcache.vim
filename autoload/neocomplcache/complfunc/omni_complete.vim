@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,13 +58,15 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'java',
         \'\%(\h\w*\|)\)\.')
   "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'perl',
-  "\'\%(\h\w*\|)\)->\h\w*\|\h\w*::')
+  "\'\h\w*->\h\w*\|\h\w*::')
   "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'c',
         "\'\h\w\+\|\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
   "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'cpp',
-        "\'\%(\h\w*\|)\)\%(\.\|->\)\h\w*\|\h\w*::')
+        "\'\h\w*\%(\.\|->\)\h\w*\|\h\w*::')
   call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'vimshell',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'objc',
+        \'\h\w\+\|\h\w*\%(\.\|->\)\h\w*')
   "}}}
   
   " Initialize omni function list."{{{

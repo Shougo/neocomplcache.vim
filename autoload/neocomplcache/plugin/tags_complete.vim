@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,23 +51,9 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
   endif
   let l:tags_list = s:tags_list[bufnr('%')]
 
-  let l:ft = &filetype
-  if l:ft == ''
-    let l:ft = 'nothing'
-  endif
-
-  if has_key(g:neocomplcache_member_prefix_patterns, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patterns[l:ft]
-    let l:use_member_filter = 1
-    let l:prefix = matchstr(a:cur_keyword_str, g:neocomplcache_member_prefix_patterns[l:ft])
-    let l:cur_keyword_str = a:cur_keyword_str[len(l:prefix) :]
-  else
-    let l:use_member_filter = 0
-    let l:cur_keyword_str = a:cur_keyword_str
-  endif
-
   let l:keyword_list = []
-  let l:key = tolower(l:cur_keyword_str[: s:completion_length-1])
-  if len(l:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
+  let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
+  if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
     for tags in values(l:tags_list)
       let l:keyword_list += neocomplcache#unpack_dictionary(tags)
     endfor
@@ -77,10 +63,6 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
         let l:keyword_list += tags[l:key]
       endif
     endfor
-
-    if len(l:cur_keyword_str) == s:completion_length && !l:use_member_filter && &ignorecase
-      return l:keyword_list
-    endif
   endif
 
   return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)

@@ -150,11 +150,7 @@ endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#expandable()"{{{
   " Set buffer filetype.
-  if neocomplcache#get_context_filetype() == ''
-    let l:ft = 'nothing'
-  else
-    let l:ft = neocomplcache#get_context_filetype()
-  endif
+  let l:ft = neocomplcache#get_context_filetype()
 
   let l:snippets = copy(s:snippets['_'])
   for l:t in split(l:ft, '\.')
@@ -214,11 +210,6 @@ endfunction"}}}
 
 function! s:edit_snippets(filetype, isruntime)"{{{
   if a:filetype == ''
-    if neocomplcache#get_context_filetype() == ''
-      call neocomplcache#print_error('Filetype required')
-      return
-    endif
-
     let l:filetype = neocomplcache#get_context_filetype()
   else
     let l:filetype = a:filetype
@@ -369,11 +360,7 @@ endfunction"}}}
 
 function! s:snippets_expand(cur_text, col)"{{{
   " Set buffer filetype.
-  if neocomplcache#get_context_filetype() == ''
-    let l:ft = 'nothing'
-  else
-    let l:ft = neocomplcache#get_context_filetype()
-  endif
+  let l:ft = neocomplcache#get_context_filetype()
 
   let l:snippets = copy(s:snippets['_'])
   for l:t in split(l:ft, '\.')
