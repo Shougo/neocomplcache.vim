@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 10 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,6 +57,7 @@ function! neocomplcache#enable() "{{{
   let s:changedtick = b:changedtick
   let s:used_match_filter = 0
   let s:context_filetype = ''
+  let s:skip_next_complete = 0
   "}}}
 
   " Initialize complfuncs table."{{{
@@ -144,6 +145,8 @@ function! neocomplcache#enable() "{{{
         \'\v^[^!][^/[:blank:]]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'pic',
         \'^\s*#\h\w*\|\h\w*')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'arm',
+        \'\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'asmh8300',
         \'[[:alpha:]_.][[:alnum:]_.]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'masm',
@@ -529,7 +532,7 @@ endfunction"}}}
 
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
+  return a:i1.rank - a:i2.rank
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
@@ -779,12 +782,15 @@ endfunction"}}}
 " Key mapping functions."{{{
 " Obsolute.
 function! neocomplcache#close_popup()"{{{
+  if !pumvisible()
+    return ''
+  endif
+
+  let s:skip_next_complete = 1
+  
   return "\<C-y>"
 endfunction
 "}}}
-function! neocomplcache#cancel_popup()"{{{
-  return "\<C-e>"
-endfunction"}}}
 
 " Wrapper functions.
 function! neocomplcache#manual_filename_complete()"{{{
@@ -1006,6 +1012,10 @@ function! s:do_complete(is_moved)"{{{
   endif
 
   let s:old_cur_text = l:cur_text
+  if s:skip_next_complete
+    let s:skip_next_complete = 0
+    return
+  endif
   
   " Clear flag.
   let s:used_match_filter = 0
@@ -1169,6 +1179,7 @@ function! s:on_insert_leave()"{{{
   let &updatetime = s:update_time_save
   let s:used_match_filter = 0
   let s:context_filetype = ''
+  let s:skip_next_complete = 0
 endfunction"}}}
 function! s:remove_next_keyword(plugin_name, list)"{{{
   let l:list = a:list

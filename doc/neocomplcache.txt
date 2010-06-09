@@ -517,11 +517,10 @@ neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 
 neocomplcache#close_popup				*neocomplcache#close_popup*
-		This function is obsolute.
-
-neocomplcache#cancel_popup				*neocomplcache#cancel_popup*
-		This function is obsolute.
-
+		Close popup menu for neocomplcache.
+>
+		inoremap <expr><C-y>  neocomplcache#close_popup()
+<
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		Use this function on inoremap <expr>.  Undo inputed
 		candidate.  Because there is not mechanism to cancel
@@ -580,6 +579,7 @@ EXAMPLES						*neocomplcache-examples*
 	" <C-h>, <BS>: close popup and delete backword char.
 	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
 	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	inoremap <expr><C-y>  neocomplcache#close_popup()
 	
 	" AutoComplPop like behavior.
 	"let g:neocomplcache_enable_auto_select = 1
@@ -669,6 +669,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-06-10
+- Optimized sort.
+- Deleted neocomplcache#cancel_popup().
+- Reimplemented neocomplcache#close_popup().
 
 2010-06-08
 - Added objc omni completion support.
