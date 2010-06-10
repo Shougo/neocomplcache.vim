@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jun 2010
+" Last Modified: 10 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -169,6 +169,7 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
   endif
 
   return has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$')) || 
+        \has_key(l:snippets, matchstr(s:get_cur_text(), '\h\w*$')) || 
         \search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
@@ -377,6 +378,9 @@ function! s:snippets_expand(cur_text, col)"{{{
   endif
 
   let l:cur_word = matchstr(a:cur_text, '\S\+$')
+  if !has_key(l:snippets, l:cur_word)
+    let l:cur_word = matchstr(a:cur_text, '\h\w*$')
+  endif
   if !has_key(l:snippets, l:cur_word)
     call s:snippets_jump(a:cur_text, a:col)
     return

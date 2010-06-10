@@ -674,6 +674,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Optimized sort.
 - Deleted neocomplcache#cancel_popup().
 - Reimplemented neocomplcache#close_popup().
+- Improved snippets expand.
 
 2010-06-08
 - Added objc omni completion support.
