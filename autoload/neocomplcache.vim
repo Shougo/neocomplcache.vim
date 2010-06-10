@@ -532,7 +532,11 @@ endfunction"}}}
 
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  return a:i1.rank - a:i2.rank
+  return a:i2.rank - a:i1.rank
+endfunction"}}}
+" RankOrder."{{{
+function! s:compare_pos(i1, i2)
+  return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[1]
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
@@ -1303,42 +1307,38 @@ function! s:get_cur_text()"{{{
   return l:cur_text
 endfunction"}}}
 function! s:set_context_filetype()"{{{
-  if !has_key(g:neocomplcache_filetype_include_lists, &filetype)
-        \|| empty(g:neocomplcache_filetype_include_lists[&filetype])
-    let s:context_filetype = &filetype
-    if s:context_filetype == ''
-      let s:context_filetype = 'nothing'
-    endif
+  let l:filetype = &filetype
+  if l:filetype == ''
+    let l:filetype = 'nothing'
+  endif
+  
+  if !has_key(g:neocomplcache_filetype_include_lists, l:filetype)
+        \|| empty(g:neocomplcache_filetype_include_lists[l:filetype])
+    let s:context_filetype = l:filetype
     return
   endif
 
-  for l:include in g:neocomplcache_filetype_include_lists[&filetype]
+  let l:pos = [line('.'), col('.')]
+  for l:include in g:neocomplcache_filetype_include_lists[l:filetype]
     let l:start_backward = searchpos(l:include.start, 'bnW')
     let l:end_forward = searchpos(l:include.end, 'nW')
 
     " Check start <= line <= end.
-    if l:start_backward[0] > 0 && (l:start_backward[0] < line('.') || l:start_backward[1] <= col('.'))
-          \&& l:end_forward[0] > 0 && (l:end_forward[0] > line('.') || l:end_forward[1] >= col('.'))
-      let l:start_forward = searchpos(l:include.start, 'nW')
-      let l:end_backward = searchpos(l:include.end, 'bnW')
+    if l:start_backward[0] > 0 && s:compare_pos(l:start_backward, l:pos) < 0
+      if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward[0]) > 0
+        let l:end_backward = searchpos(l:include.end, 'bnW')
 
-      "echomsg string(l:start_backward)
-      "echomsg string(l:end_forward)
-      "echomsg string(l:start_forward)
-      "echomsg string(l:end_backward)
+        "echomsg string(l:end_backward)
       
-      if !(l:start_backward[0] <= l:end_backward[0] && l:end_backward[0] <= line('.'))
-            \&& !(line('.') <= l:start_forward[0] && l:start_forward[0] <= l:end_forward[0])
-        let s:context_filetype = l:include.filetype
-        return 
+        if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) < 0
+          let s:context_filetype = l:include.filetype
+          return 
+        endif
       endif
     endif
   endfor
 
-  let s:context_filetype = &filetype
-  if s:context_filetype == ''
-    let s:context_filetype = 'nothing'
-  endif
+  let s:context_filetype = l:filetype
 endfunction"}}}
 
 " vim: foldmethod=marker
