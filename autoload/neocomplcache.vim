@@ -576,11 +576,7 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
   endif
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...)"{{{
-  if a:0 == 0
-    let l:filetype = neocomplcache#get_context_filetype()
-  else
-    let l:filetype = a:000[0]
-  endif
+  let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
   let l:keyword_patterns = []
   for l:ft in split(l:filetype, '\.')
@@ -591,11 +587,7 @@ function! neocomplcache#get_keyword_pattern(...)"{{{
   return join(l:keyword_patterns, '\m\|')
 endfunction"}}}
 function! neocomplcache#get_next_keyword_pattern(...)"{{{
-  if empty(a:000)
-    let l:filetype = neocomplcache#get_context_filetype()
-  else
-    let l:filetype = a:000[0]
-  endif
+  let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
   if has_key(g:neocomplcache_next_keyword_patterns, l:filetype)
     return g:neocomplcache_next_keyword_patterns[l:filetype] . '\m\|' . neocomplcache#get_keyword_pattern(l:filetype)
@@ -604,11 +596,7 @@ function! neocomplcache#get_next_keyword_pattern(...)"{{{
   endif
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern_end(...)"{{{
-  if empty(a:000)
-    let l:filetype = neocomplcache#get_context_filetype()
-  else
-    let l:filetype = a:000[0]
-  endif
+  let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
   return '\%('.neocomplcache#get_keyword_pattern(l:filetype).'\m\)$'
 endfunction"}}}

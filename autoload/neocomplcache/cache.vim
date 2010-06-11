@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2010
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,7 +115,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   let l:max_lines = len(l:lines)
   let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
 
-  if l:max_lines > 400
+  if l:max_lines > 1000
     call neocomplcache#print_caching('Caching from file "' . a:filename . '"... please wait.')
   endif
   if l:max_lines > 10000
@@ -207,15 +207,15 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   endif
   if l:max_lines > 10000
     let l:print_cache_percent = l:max_lines / 9
-  elseif l:max_lines > 5000
+  elseif l:max_lines > 7000
     let l:print_cache_percent = l:max_lines / 6
-  elseif l:max_lines > 3000
+  elseif l:max_lines > 5000
     let l:print_cache_percent = l:max_lines / 5
-  elseif l:max_lines > 2000
+  elseif l:max_lines > 3000
     let l:print_cache_percent = l:max_lines / 4
-  elseif l:max_lines > 1000
+  elseif l:max_lines > 2000
     let l:print_cache_percent = l:max_lines / 3
-  elseif l:max_lines > 500
+  elseif l:max_lines > 1000
     let l:print_cache_percent = l:max_lines / 2
   else
     let l:print_cache_percent = -1
@@ -295,7 +295,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
     return []
   endtry
 
-  if l:max_lines > 500
+  if l:max_lines > 1000
     call neocomplcache#print_caching('Caching done.')
   endif
 

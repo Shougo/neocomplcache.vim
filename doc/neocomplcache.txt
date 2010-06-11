@@ -670,6 +670,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-11
+- Improved caching message.
+- Improved expand snippet.
+
 2010-06-10
 - Optimized sort.
 - Deleted neocomplcache#cancel_popup().

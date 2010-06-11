@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2010
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -168,9 +168,9 @@ function! neocomplcache#plugin#snippets_complete#expandable()"{{{
     endfor
   endif
 
-  return has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$')) || 
-        \has_key(l:snippets, matchstr(s:get_cur_text(), '\h\w*$')) || 
-        \search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
+  return has_key(l:snippets, matchstr(s:get_cur_text(), neocomplcache#get_keyword_pattern_end()))
+        \ || has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$'))
+        \ || search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
 endfunction"}}}
 function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
   if mode() ==# 'i'
@@ -377,9 +377,9 @@ function! s:snippets_expand(cur_text, col)"{{{
     endfor
   endif
 
-  let l:cur_word = matchstr(a:cur_text, '\S\+$')
+  let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
   if !has_key(l:snippets, l:cur_word)
-    let l:cur_word = matchstr(a:cur_text, '\h\w*$')
+    let l:cur_word = matchstr(a:cur_text, '\S\+$')
   endif
   if !has_key(l:snippets, l:cur_word)
     call s:snippets_jump(a:cur_text, a:col)
@@ -439,7 +439,7 @@ function! s:expand_newline()"{{{
 
     " Return.
     call setpos('.', [0, line('.'), l:match+1, 0])
-    silent execute "normal! i\<CR>"
+    silent execute 'normal!' (l:match+1 >= col('$')? 'a' : 'i')."\<CR>"
 
     " Next match.
     let l:match = match(getline('.'), '<\\n>')
