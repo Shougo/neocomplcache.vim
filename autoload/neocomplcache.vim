@@ -780,7 +780,6 @@ endfunction"}}}
 "}}}
 
 " Key mapping functions."{{{
-" Obsolute.
 function! neocomplcache#close_popup()"{{{
   if !pumvisible()
     return ''
@@ -789,6 +788,16 @@ function! neocomplcache#close_popup()"{{{
   let s:skip_next_complete = 1
   
   return "\<C-y>"
+endfunction
+"}}}
+function! neocomplcache#cancel_popup()"{{{
+  if !pumvisible()
+    return ''
+  endif
+
+  let s:skip_next_complete = 1
+  
+  return "\<C-e>"
 endfunction
 "}}}
 

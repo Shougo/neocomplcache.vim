@@ -520,9 +520,14 @@ neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 
 neocomplcache#close_popup				*neocomplcache#close_popup*
-		Close popup menu for neocomplcache.
+		Inset candidate and close popup menu for neocomplcache.
 >
 		inoremap <expr><C-y>  neocomplcache#close_popup()
+<
+neocomplcache#cancel_popup()				*neocomplcache#cancel_popup()*
+		cancel completion menu for neocomplcache.
+>
+		inoremap <expr><C-e>  neocomplcache#cancel_popup()
 <
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		Use this function on inoremap <expr>.  Undo inputed
@@ -580,15 +585,16 @@ EXAMPLES						*neocomplcache-examples*
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 	" <C-h>, <BS>: close popup and delete backword char.
-	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
+	inoremap <expr><C-h> pumvisible() ? neocomplcache#close_popup()."\<C-h>" : "\<C-h>"
+	inoremap <expr><BS> pumvisible() ? neocomplcache#close_popup()."\<C-h>" : "\<C-h>"
 	inoremap <expr><C-y>  neocomplcache#close_popup()
+	inoremap <expr><C-e>  neocomplcache#cancel_popup()
 	
 	" AutoComplPop like behavior.
 	"let g:neocomplcache_enable_auto_select = 1
 	"inoremap <expr><CR>  (pumvisible() ? "\<C-e>":'') . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
-	"inoremap <expr><C-h> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
-	"inoremap <expr><BS> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
+	"inoremap <expr><C-h> pumvisible() ? neocomplcache#cancel_popup()."\<C-h>" : "\<C-h>"
+	"inoremap <expr><BS> pumvisible() ? neocomplcache#cancel_popup()."\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
@@ -677,6 +683,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved context filetype.
 - Improved syntax_complete.
 - Fixed eruby and ruby pattern.
+- Added neocomplcache#cancel_popup().
 
 2010-06-11
 - Improved caching message.

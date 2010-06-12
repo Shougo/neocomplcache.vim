@@ -503,51 +503,6 @@ VimScriptを解析し、その場に応じた候補を出します。
 たとえば、行頭ならコマンド名、setの後はオプション名、などです。
 ローカル変数や関数の引数、endの対応関係も解析するので、かなり優れた補完候補です。
 
-## 私の設定
-
-参考までに、私が使用しているneocomplcacheの設定を紹介しておきます。
-neocomplcacheのオプションはdoc/neocomplcache.jaxに詳しい解説があるので、そこを参照してください。
-
-`
-" Use neocomplcache.
-let g:neocomplcache_enable_at_startup = 1
-" Use smartcase.
-let g:neocomplcache_enable_smart_case = 1
-" Use camel case completion.
-let g:neocomplcache_enable_camel_case_completion = 1
-" Use underbar completion.
-let g:neocomplcache_enable_underbar_completion = 1
-" Set minimum syntax keyword length.
-let g:neocomplcache_min_syntax_length = 3
-" Set manual completion length.
-let g:neocomplcache_manual_completion_start_length = 0
-
-" Define dictionary.
-let g:neocomplcache_dictionary_filetype_lists = {
-            \ 'default' : '',
-            \ 'vimshell' : $HOME.'/.vimshell_hist',
-            \ 'scheme' : $HOME.'/.gosh_completions'
-            \ }
-
-" Define keyword.
-if !exists('g:neocomplcache_keyword_patterns')
-    let g:neocomplcache_keyword_patterns = {}
-endif
-let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-imap <C-l>     <Plug>(neocomplcache_snippets_expand)
-smap <C-l>     <Plug>(neocomplcache_snippets_expand)
-inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-inoremap <expr><C-g>     neocomplcache#undo_completion()
-`
-
-neocomplcache自体が標準で自分好みの設定になっているので、あまり凝った設定はしていません。
-むしろ皆さんが使用するときは存分にカスタマイズすることを推奨します。
-使用頻度を計算しないようにすれば、かなり高速化します。
-vimshellの履歴ファイルを辞書として登録するのは便利なのでオススメです。
-日本語が候補に出てくると煩わしいため、私はデフォルトで日本語を除外しています。
-
 ## 知名度
 
 autocomplpop: 79,600件

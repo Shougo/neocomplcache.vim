@@ -481,10 +481,16 @@ neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 <
 neocomplcache#close_popup				*neocomplcache#close_popup*
-		neocomplcacheのポップアップメニューを閉じる。<C-y>の代わりに
-		使うと良いだろう。
+		neocomplcacheの補完を選択し、ポップアップメニューを閉じる。
+		<C-y>の代わりに 使うと良いだろう。
 >
 		inoremap <expr><C-y>  neocomplcache#close_popup()
+<
+neocomplcache#cancel_popup()				*neocomplcache#cancel_popup()*
+		neocomplcacheの補完をキャンセルし、ポップアップメニューを閉
+		じる。<C-e>の代わりに 使うと良いだろう。
+>
+		inoremap <expr><C-e>  neocomplcache#close_popup()
 <
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		inoremap <expr>上で使用する。neocomplcacheによって補完した候
@@ -501,56 +507,9 @@ neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()
 <
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
->
-	" Disable AutoComplPop.
-	let g:acp_enableAtStartup = 0
-	" Use neocomplcache.
-	let g:neocomplcache_enable_at_startup = 1
-	" Use smartcase.
-	let g:neocomplcache_enable_smart_case = 1
-	" Use camel case completion.
-	let g:neocomplcache_enable_camel_case_completion = 1
-	" Use underbar completion.
-	let g:neocomplcache_enable_underbar_completion = 1
-	" Set minimum syntax keyword length.
-	let g:neocomplcache_min_syntax_length = 3
-	let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-	
-	" Define dictionary.
-	let g:neocomplcache_dictionary_filetype_lists = {
-	    \ 'default' : '',
-	    \ 'vimshell' : $HOME.'/.vimshell_hist',
-	    \ 'scheme' : $HOME.'/.gosh_completions'
-	        \ }
-	
-	" Define keyword.
-	if !exists('g:neocomplcache_keyword_patterns')
-	    let g:neocomplcache_keyword_patterns = {}
-	endif
-	let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-	
-	" Plugin key-mappings.
-	imap <C-l>     <Plug>(neocomplcache_snippets_expand)
-	smap <C-l>     <Plug>(neocomplcache_snippets_expand)
-	inoremap <expr><C-g>     neocomplcache#undo_completion()
-	inoremap <expr><C-l>     neocomplcache#complete_common_string()
-	
-	" Recommended key-mappings.
-	" <CR>: close popup and save indent.
-	inoremap <expr><CR>  (pumvisible() ? "\<C-y>":'') . "\<C-f>\<CR>X\<BS>"
-	" <TAB>: completion.
-	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-	" <C-h>, <BS>: close popup and delete backword char.
-	inoremap <expr><C-h> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-	inoremap <expr><BS> pumvisible() ? "\<C-y>\<C-h>" : "\<C-h>"
-	inoremap <expr><C-y>  neocomplcache#close_popup()
-	
-	" AutoComplPop like behavior.
-	"let g:neocomplcache_enable_auto_select = 1
-	"inoremap <expr><CR>  (pumvisible() ? "\<C-e>":'') . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
-	"inoremap <expr><C-h> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
-	"inoremap <expr><BS> pumvisible() ? "\<C-e>\<C-h>" : "\<C-h>"
-<
+
+doc/neocomplcache.txtを参照せよ。
+
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
 
