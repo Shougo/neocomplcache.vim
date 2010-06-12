@@ -370,13 +370,16 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 		The item is a list of dictionary. The keys and values are below.
 		"filetype" : includes filetype.
 		"start" : filetype start pattern.
-		"end" : filetype end pattern.
+		"end" : filetype end pattern. You can use \1 to refer start's
+			matched pattern.
 >
 		" Examples:
 		if !exists('g:neocomplcache_filetype_include_lists')
 		let g:neocomplcache_filetype_include_lists= {}
 		endif
 		let g:neocomplcache_filetype_include_lists.perl6 = [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
+		let g:neocomplcache_filetype_include_lists.vim = 
+		\[{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
 		
 		Because it is complicated, refer to neocomplcache#enable() in
@@ -669,6 +672,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-06-12
+- Improved context filetype.
+- Improved syntax_complete.
+- Fixed eruby and ruby pattern.
 
 2010-06-11
 - Improved caching message.

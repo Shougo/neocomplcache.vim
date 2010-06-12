@@ -49,7 +49,7 @@ function! neocomplcache#complfunc#vim_complete#helper#on_filetype()"{{{
 endfunction"}}}
 
 function! s:on_moved_i()
-  if g:neocomplcache_enable_display_parameter
+  if g:neocomplcache_enable_display_parameter && neocomplcache#get_context_filetype() ==# 'vim'
     " Print prototype.
     call neocomplcache#complfunc#vim_complete#helper#print_prototype(neocomplcache#complfunc#vim_complete#get_cur_text())
   endif

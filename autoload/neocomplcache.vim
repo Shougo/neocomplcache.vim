@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -88,9 +88,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'lisp,scheme,clojure,int-gosh,int-clisp,int-clojure', 
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ruby,int-irb',
-        \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*\%(\%(()\)\?\s*\%(do\|{\)\%(\s*|\)\?\|()\?\)\)\?')
+        \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*()\?\|\s*\%(do\|{\)\s*\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'eruby',
-        \'\v\</?%([[:alnum:]_-]+\s*)?%(/?\>)?|%(\@\@|[:$@])\h\w*|%(\h\w*::)*?\h\w*[!?]?%(\s*%(%(\(\))?\s*%(do|\{)%(\s*\|)?|\(\)?))?')
+        \'\</\?\%([[:alnum:]_-]+\s*\)\?\%(/?\>\)\?\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*()\?\|\s*\%(do\|{\)\s*\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\%(\h\w*::\)*\h\w*\%(\s*()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'perl,int-perlsh',
@@ -219,8 +219,16 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_filetype_include_lists')
     let g:neocomplcache_filetype_include_lists = {}
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'perl6', 
-        \ [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'perl6', [
+        \ {'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'},
+        \])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'vimshell', [
+        \ {'filetype' : 'vim', 'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
+        \])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'vim', [
+        \ {'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \])
   "}}}
   
   " Initialize member prefix patterns."{{{
@@ -1309,19 +1317,25 @@ function! s:set_context_filetype()"{{{
   let l:pos = [line('.'), col('.')]
   for l:include in g:neocomplcache_filetype_include_lists[l:filetype]
     let l:start_backward = searchpos(l:include.start, 'bnW')
-    let l:end_forward = searchpos(l:include.end, 'nW')
 
     " Check start <= line <= end.
-    if l:start_backward[0] > 0 && s:compare_pos(l:start_backward, l:pos) < 0
-      if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward[0]) > 0
-        let l:end_backward = searchpos(l:include.end, 'bnW')
+    if l:start_backward[0] == 0 || s:compare_pos(l:start_backward, l:pos) >= 0
+      continue
+    endif
+    
+    let l:end_pattern = l:include.end
+    if l:end_pattern =~ '\\1'
+      let l:match_list = matchlist(getline(l:start_backward[0]), l:include.start)
+      let l:end_pattern = substitute(l:end_pattern, '\\1', '\=l:match_list[1]', 'g')
+    endif
+    let l:end_forward = searchpos(l:end_pattern, 'nW')
 
-        "echomsg string(l:end_backward)
-      
-        if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) < 0
-          let s:context_filetype = l:include.filetype
-          return 
-        endif
+    if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward[0]) > 0
+      let l:end_backward = searchpos(l:end_pattern, 'bnW')
+
+      if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) < 0
+        let s:context_filetype = l:include.filetype
+        return 
       endif
     endif
   endfor

@@ -354,13 +354,16 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 		中身はディクショナリのリストであり、次の内容を持つ。
 		"filetype" : 内包されるファイルタイプ名
 		"start" : ファイルタイプが初まるパターン
-		"end" : ファイルタイプが終わるパターン
+		"end" : ファイルタイプが終わるパターン。startのマッチパター
+			ンを参照するために、\1を使うことができる。
 >
 		" Examples:
 		if !exists('g:neocomplcache_filetype_include_lists')
 		let g:neocomplcache_filetype_include_lists= {}
 		endif
 		let g:neocomplcache_filetype_include_lists.perl6 = [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
+		let g:neocomplcache_filetype_include_lists.vim = 
+		\[{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
 
