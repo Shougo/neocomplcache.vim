@@ -49,7 +49,7 @@ function! neocomplcache#enable() "{{{
   let s:old_cur_keyword_pos = -1
   let s:quickmatch_keywordpos = -1
   let s:old_complete_words = []
-  let s:update_time = &updatetime
+  let s:update_time_save = &updatetime
   let s:prev_numbered_list = []
   let s:cur_text = ''
   let s:old_cur_text = ''
