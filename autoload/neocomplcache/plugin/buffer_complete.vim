@@ -33,7 +33,6 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
     autocmd FileType,BufWritePost * call s:check_source()
-    "autocmd BufWritePost,CursorHold * call s:update_source()
     autocmd CursorHold * call s:on_hold()
     autocmd CursorMoved * call s:on_moved()
     autocmd InsertLeave * call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
@@ -273,20 +272,6 @@ function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
   endfor
 endfunction"}}}
 
-function! s:update_source()"{{{
-  let l:caching_num = 0
-  for source_name in keys(s:sources)
-    " Lazy caching.
-    if s:caching_source(str2nr(source_name), '^', 2) == 0
-      let l:caching_num += 2
-
-      if l:caching_num >= 6
-        break
-      endif
-    endif
-  endfor
-endfunction"}}}
-
 function! s:get_sources_list()"{{{
   let l:sources_list = []
 
@@ -439,7 +424,7 @@ function! s:initialize_source(srcname)"{{{
   let s:sources[a:srcname] = {
         \'keyword_cache' : {}, 'cache_lines' : {}, 'next_word_list' : {}, 
         \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
-        \'end_line' : l:end_line , 'cached_last_line' : 1, 'cache_line_cnt' : l:cache_line_cnt, 
+        \'end_line' : l:end_line , 'cache_line_cnt' : l:cache_line_cnt, 
         \'frequencies' : {}, 'check_sum' : len(join(l:buflines[:4], '\n'))
         \}
 endfunction"}}}
@@ -493,55 +478,25 @@ function! s:caching_from_cache(srcname)"{{{
   return 0
 endfunction"}}}
 
-function! s:check_changed_buffer(bufname)"{{{
-  let l:ft = getbufvar(a:bufname, '&filetype')
-  if l:ft == ''
-    let l:ft = 'nothing'
-  endif
-
-  return s:sources[a:bufname].name != fnamemodify(bufname(a:bufname), ':t')
-        \ || s:sources[a:bufname].filetype != l:ft
-endfunction"}}}
-
-function! s:caching_source(srcname, start_line, end_cache_cnt)"{{{
-  if !has_key(s:sources, a:srcname)
-    return 1
-  endif
-
-  let l:source = s:sources[a:srcname]
-
-  if getbufvar(a:srcname, '&buftype') =~ 'nofile'
+function! s:check_changed_buffer(bufnumber)"{{{
+  let l:source = s:sources[a:bufnumber]
+  
+  if getbufvar(a:bufnumber, '&buftype') =~ 'nofile'
     " Check buffer changed.
-    let l:check_sum = len(join(getbufline(a:srcname, 1, 5), '\n'))
+    let l:check_sum = len(join(getbufline(a:bufnumber, 1, 5), '\n'))
     if l:check_sum != l:source.check_sum
       " Recaching.
-      call s:word_caching(a:srcname)
       return 1
     endif
   endif
 
-  if a:start_line == '^'
-    let l:start_line = l:source.cached_last_line
-
-    " Check overflow.
-    if a:srcname == bufnr('%')
-      " Update endline.
-      let l:source.end_line = line('$')
-    endif
-
-    if l:start_line > l:source.end_line && !s:check_changed_buffer(a:srcname)
-      " Caching end.
-      return -1
-    endif
-
-    let l:source.cached_last_line += a:end_cache_cnt * l:source.cache_line_cnt
-  else
-    let l:start_line = a:start_line
+  let l:ft = getbufvar(a:bufnumber, '&filetype')
+  if l:ft == ''
+    let l:ft = 'nothing'
   endif
 
-  call s:caching(a:srcname, l:start_line, a:end_cache_cnt)
-
-  return 0
+  return s:sources[a:bufnumber].name != fnamemodify(bufname(a:bufnumber), ':t')
+        \ || s:sources[a:bufnumber].filetype != l:ft
 endfunction"}}}
 
 function! s:on_hold()"{{{
@@ -642,23 +597,8 @@ function! s:caching_buffer(name)"{{{
     endif
   endif
 
-  if !has_key(s:sources, l:number)
-    if bufloaded(l:number)
-      " Word caching.
-      call s:word_caching(l:number)
-    endif
-
-    return
-  elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
-    " Word recaching.
-    call s:word_caching(l:number)
-    return
-  endif
-
-  call s:caching_source(l:number, s:sources[l:number].cached_last_line, -1)
-
-  " Disable auto caching.
-  let s:sources[l:number].cached_last_line = s:sources[l:number].end_line+1
+  " Word recaching.
+  call s:word_caching(l:number)
 endfunction"}}}
 function! s:print_source(name)"{{{
   if a:name == ''

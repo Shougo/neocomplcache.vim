@@ -686,6 +686,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved garbage collect and calc rank.
 - Improved caching timing.
 - Deleted neocomplcache#caching_percent().
+- Optimized caching.
 
 2010-06-12
 - Improved context filetype.
