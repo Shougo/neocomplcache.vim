@@ -33,8 +33,8 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
     autocmd FileType,BufWritePost * call s:check_source()
-    autocmd CursorHold * call s:on_hold()
-    autocmd CursorMoved * call s:on_moved()
+    autocmd CursorHold * call s:rank_caching_current_cache_line(1)
+    autocmd CursorMoved * call s:rank_caching_current_cache_line(0)
     autocmd InsertLeave * call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
@@ -147,12 +147,7 @@ function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
   let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
   let l:keywords = l:source.keyword_cache
 
-  let l:start_line = line('.') - 1
-  if l:start_line <= 0
-    let l:start_line = 1
-  endif
-
-  let l:line = join(getline(l:start_line, line('.') + 1))
+  let l:line = join(getline(line('.')-1, line('.')+1))
   let l:match = match(l:line, l:keyword_pattern)
   while l:match >= 0"{{{
     let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
@@ -285,48 +280,35 @@ function! s:get_sources_list()"{{{
   return l:sources_list
 endfunction"}}}
 
-function! s:caching(srcname, start_line, end_cache_cnt)"{{{
-  " Check exists s:sources.
-  if !has_key(s:sources, a:srcname)
-    call s:word_caching(a:srcname)
+function! s:rank_caching_current_cache_line(is_force)"{{{
+  if !neocomplcache#plugin#buffer_complete#exists_current_source() || has_key(s:disable_caching_list, bufnr('%'))
+    return
   endif
 
-  let l:source = s:sources[a:srcname]
+  let l:source = s:sources[bufnr('%')]
   let l:filename = fnamemodify(l:source.name, ':t')
 
-  let l:start_line = (a:start_line-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
-  let l:end_line = (a:end_cache_cnt < 0)? '$' : 
-        \ (l:start_line + a:end_cache_cnt * l:source.cache_line_cnt-1)
-  " For debugging.
-  "if l:end_line == '$'
-  "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:source.end_line)
-  "else
-  "echomsg printf("%s: start=%d, end=%d", l:filename, l:start_line, l:end_line)
-  "endif
-
-  if a:start_line == 1 && a:end_cache_cnt < 0
-    " Cache clear if whole buffer.
-    let l:source.keyword_cache = {}
-    let l:source.cache_lines = {}
-  endif
-
-  " Clear cache line.
+  let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
+  let l:end_line = l:start_line + l:source.cache_line_cnt-1
   let l:cache_num = (l:start_line-1) / l:source.cache_line_cnt
+
+  " For debugging.
+  "echomsg printf("start=%d, end=%d", l:start_line, l:end_line)
+
+  if !a:is_force && has_key(l:source.cache_lines, l:cache_num)
+    return
+  endif
+  
+  " Clear cache line.
   let l:source.cache_lines[l:cache_num] = { 'keywords' : {} }
 
-  let l:buflines = getbufline(a:srcname, l:start_line, l:end_line)
+  let l:buflines = getline(l:start_line, l:end_line)
   let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
   let l:keyword_pattern = l:source.keyword_pattern
   let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
 
-  let [l:line_cnt, l:max_lines, l:line_num] = [0, len(l:buflines), 0]
+  let [l:line_num, l:max_lines] = [0, len(l:buflines)]
   while l:line_num < l:max_lines
-    if l:line_cnt >= l:source.cache_line_cnt
-      " Next cache line.
-      let l:cache_num += 1
-      let [l:source.cache_lines[l:cache_num], l:line_cnt] = [{ 'keywords' : {} }, 0]
-    endif
-
     let [l:line, l:keywords] = [buflines[l:line_num], l:source.cache_lines[l:cache_num].keywords]
     let [l:prev_word, l:match] = ['^', match(l:line, l:keyword_pattern)]
 
@@ -338,17 +320,6 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
         if !has_key(l:keywords, l:match_str) 
           let l:keywords[l:match_str] = { 'rank' : 1, 'prev_rank' : {} }
           let l:line_keyword = l:keywords[l:match_str]
-
-          " Check dup.
-          let l:key = tolower(l:match_str[: s:completion_length-1])
-          if !has_key(l:source.keyword_cache, l:key)
-            let l:source.keyword_cache[l:key] = {}
-          endif
-
-          if !has_key(l:source.keyword_cache[l:key], l:match_str)
-            " Append list.
-            let l:source.keyword_cache[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
-          endif
         else
           let l:line_keyword = l:keywords[l:match_str]
           let l:line_keyword.rank += 1
@@ -374,7 +345,6 @@ function! s:caching(srcname, start_line, end_cache_cnt)"{{{
     endwhile"}}}
 
     let l:line_num += 1
-    let l:line_cnt += 1
   endwhile
 endfunction"}}}
 
@@ -497,28 +467,6 @@ function! s:check_changed_buffer(bufnumber)"{{{
 
   return s:sources[a:bufnumber].name != fnamemodify(bufname(a:bufnumber), ':t')
         \ || s:sources[a:bufnumber].filetype != l:ft
-endfunction"}}}
-
-function! s:on_hold()"{{{
-  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%'))
-    return
-  endif
-
-  " Current line caching.
-  call s:caching(bufnr('%'), line('.'), 1)
-endfunction"}}}
-function! s:on_moved()"{{{
-  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%'))
-    return
-  endif
-
-  let l:source = s:sources[bufnr('%')]
-  let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
-  let l:cache_num = (l:start_line-1) / l:source.cache_line_cnt
-  if !has_key(l:source.cache_lines, l:cache_num)
-    " Current line caching.
-    call s:caching(bufnr('%'), line('.'), 1)
-  endif
 endfunction"}}}
 
 function! s:check_source()"{{{

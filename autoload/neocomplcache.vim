@@ -1207,7 +1207,7 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
     let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
     " No ignorecase.
-    let l:save_ignorecase = &ignorecase
+    let l:ignorecase_save = &ignorecase
     let &ignorecase = 0
 
     for r in l:list
@@ -1216,7 +1216,7 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
       endif
     endfor
 
-    let &ignorecase = l:save_ignorecase
+    let &ignorecase = l:ignorecase_save
   endif"}}}
 
   return l:list
