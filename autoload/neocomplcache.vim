@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -697,7 +697,7 @@ function! neocomplcache#get_sources_list(dictionary, filetype)"{{{
   return l:list
 endfunction"}}}
 function! neocomplcache#escape_match(str)"{{{
-  return escape(a:str, '~" \.^$[]')
+  return escape(a:str, '~"*\.^$[]')
 endfunction"}}}
 function! neocomplcache#get_context_filetype()"{{{
   if s:context_filetype == ''
@@ -1178,17 +1178,24 @@ function! s:integrate_completion(complete_result)"{{{
   return [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 endfunction"}}}
 function! s:on_insert_enter()"{{{
-  let s:update_time_save = &updatetime
-  let &updatetime = g:neocomplcache_cursor_hold_i_time
+  if &updatetime > g:neocomplcache_cursor_hold_i_time
+        \&& g:neocomplcache_enable_cursor_hold_i
+    let s:update_time_save = &updatetime
+    let &updatetime = g:neocomplcache_cursor_hold_i_time
+  endif
 endfunction"}}}
 function! s:on_insert_leave()"{{{
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
-  let &updatetime = s:update_time_save
   let s:used_match_filter = 0
   let s:context_filetype = ''
   let s:skip_next_complete = 0
+
+  if &updatetime < s:update_time_save
+        \&& g:neocomplcache_enable_cursor_hold_i
+    let &updatetime = s:update_time_save
+  endif
 endfunction"}}}
 function! s:remove_next_keyword(plugin_name, list)"{{{
   let l:list = a:list

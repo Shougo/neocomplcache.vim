@@ -574,8 +574,8 @@ EXAMPLES						*neocomplcache-examples*
 	let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 	
 	" Plugin key-mappings.
-	imap <C-l>     <Plug>(neocomplcache_snippets_expand)
-	smap <C-l>     <Plug>(neocomplcache_snippets_expand)
+	imap <C-k>     <Plug>(neocomplcache_snippets_expand)
+	smap <C-k>     <Plug>(neocomplcache_snippets_expand)
 	inoremap <expr><C-g>     neocomplcache#undo_completion()
 	inoremap <expr><C-l>     neocomplcache#complete_common_string()
 	
@@ -678,6 +678,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-06-15
+- Fixed examples.
+- Optimized memory when loaded cache.
+- Fixed g:neocomplcache_enable_cursor_hold_i bug.
+- Improved garbage collect and calc rank.
 
 2010-06-12
 - Improved context filetype.

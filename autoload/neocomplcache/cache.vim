@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,8 +70,13 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
       let l:cache = split(l:line, '|||', 1)
       let l:keyword = {
             \ 'word' : l:cache[0], 'abbr' : l:cache[1], 'menu' : l:cache[2],
-            \ 'kind' : l:cache[3], 'class' : l:cache[4]
             \}
+      if l:cache[3] != ''
+        let l:keyword.kind = l:cache[3]
+      endif
+      if l:cache[4] != ''
+        let l:keyword.class = l:cache[4]
+      endif
 
       call add(l:keyword_lists, l:keyword)
     endfor"}}}

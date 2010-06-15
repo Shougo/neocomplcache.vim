@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
     autocmd FileType,BufWritePost * call s:check_source()
-    autocmd BufWritePost,CursorHold * call s:update_source()
+    "autocmd BufWritePost,CursorHold * call s:update_source()
     autocmd CursorHold * call s:on_hold()
     autocmd InsertLeave * call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
     autocmd VimLeavePre * call s:save_all_cache()
@@ -134,14 +134,15 @@ function! neocomplcache#plugin#buffer_complete#exists_current_source()"{{{
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
-  let l:number = bufnr('%')
-  if !neocomplcache#plugin#buffer_complete#exists_current_source()
-    return '-'
-  elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
-    return 100
-  else
-    return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
-  endif
+  return 0
+  "let l:number = bufnr('%')
+  "if !neocomplcache#plugin#buffer_complete#exists_current_source()
+    "return '-'
+  "elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
+    "return 100
+  "else
+    "return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
+  "endif
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
@@ -212,17 +213,39 @@ function! s:calc_frequency(list)"{{{
   let l:source = s:sources[bufnr('%')]
   let l:frequencies = l:source.frequencies
   for keyword in a:list
-    let l:word = keyword.word
     if s:rank_cache_count <= 0
-          \|| !has_key(l:frequencies, l:word)
-      
       " Set rank.
-      let l:frequencies[l:word] = 0
+      
+      let l:word = keyword.word
+      let l:frequency = 0
       for cache_lines in values(l:source.cache_lines)
         if has_key(cache_lines.keywords, l:word)
-          let l:frequencies[l:word] += cache_lines.keywords[l:word].rank
+          let l:frequency += cache_lines.keywords[l:word].rank
         endif
       endfor
+      
+      if l:frequency == 0
+        " Garbage collect
+        let l:ignorecase_save = &ignorecase
+        let &ignorecase = 0
+        let l:pos = searchpos(neocomplcache#escape_match(l:word), 'ncw', 0, 300)
+        let &ignorecase = l:ignorecase_save
+        
+        if l:pos[0] == 0
+          " Delete.
+          let l:key = tolower(l:word[: s:completion_length-1])
+          if has_key(l:source.keyword_cache[l:key], l:word)
+            call remove(l:source.keyword_cache[l:key], l:word)
+          endif
+          if has_key(l:source.frequencies, l:word)
+            call remove(l:source.frequencies, l:word)
+          endif
+        else
+          let l:frequencies[l:word] = 1
+        endif
+      else
+        let l:frequencies[l:word] = l:frequency
+      endif
 
       " Reset count.
       let s:rank_cache_count = neocomplcache#rand(l:calc_cnt)
@@ -249,14 +272,14 @@ function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
     let l:word = keyword.word
     if has_key(l:source_next, l:word)
       " Set prev rank.
-      let s:prev_frequencies[l:word] = 0
+      let l:prev_frequency = 0
       for cache_lines in values(l:source.cache_lines)
         if has_key(cache_lines.keywords, l:word)
               \&& has_key(cache_lines.keywords[l:word].prev_rank, l:prev_word)
-          let s:prev_frequencies[l:word] += cache_lines.keywords[l:word].prev_rank[l:prev_word]
+          let l:prev_frequency += cache_lines.keywords[l:word].prev_rank[l:prev_word]
         endif
       endfor
-      let s:prev_frequencies[l:word] = s:prev_frequencies[l:word] * 20
+      let s:prev_frequencies[l:word] = l:prev_frequency
     endif
   endfor
 endfunction"}}}
@@ -539,21 +562,6 @@ function! s:on_hold()"{{{
 
   " Current line caching.
   call s:caching(bufnr('%'), line('.'), 1)
-
-  " Garbage collect.
-  let l:source = s:sources[bufnr('%')]
-  if l:source.cached_last_line >= l:source.end_line
-    for [l:word, l:frequency] in items(l:source.frequencies)
-      if l:frequency == 0
-        " Delete.
-        let l:key = tolower(l:word[: s:completion_length-1])
-        if has_key(l:source.keyword_cache[l:key], l:word)
-          call remove(l:source.keyword_cache[l:key], l:word)
-        endif
-        call remove(l:source.frequencies, l:word)
-      endif
-    endfor
-  endif
 endfunction"}}}
 
 function! s:check_source()"{{{
