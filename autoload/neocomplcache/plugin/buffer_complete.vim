@@ -35,6 +35,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
     autocmd FileType,BufWritePost * call s:check_source()
     "autocmd BufWritePost,CursorHold * call s:update_source()
     autocmd CursorHold * call s:on_hold()
+    autocmd CursorMoved * call s:on_moved()
     autocmd InsertLeave * call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
@@ -131,18 +132,6 @@ endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#exists_current_source()"{{{
   return has_key(s:sources, bufnr('%'))
-endfunction"}}}
-
-function! neocomplcache#plugin#buffer_complete#caching_percent()"{{{
-  return 0
-  "let l:number = bufnr('%')
-  "if !neocomplcache#plugin#buffer_complete#exists_current_source()
-    "return '-'
-  "elseif s:sources[l:number].cached_last_line >= s:sources[l:number].end_line
-    "return 100
-  "else
-    "return s:sources[l:number].cached_last_line*100 / s:sources[l:number].end_line
-  "endif
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
@@ -562,6 +551,19 @@ function! s:on_hold()"{{{
 
   " Current line caching.
   call s:caching(bufnr('%'), line('.'), 1)
+endfunction"}}}
+function! s:on_moved()"{{{
+  if !has_key(s:sources, bufnr('%')) || has_key(s:disable_caching_list, bufnr('%'))
+    return
+  endif
+
+  let l:source = s:sources[bufnr('%')]
+  let l:start_line = (line('.')-1)/l:source.cache_line_cnt*l:source.cache_line_cnt+1
+  let l:cache_num = (l:start_line-1) / l:source.cache_line_cnt
+  if !has_key(l:source.cache_lines, l:cache_num)
+    " Current line caching.
+    call s:caching(bufnr('%'), line('.'), 1)
+  endif
 endfunction"}}}
 
 function! s:check_source()"{{{

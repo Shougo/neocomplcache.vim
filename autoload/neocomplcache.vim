@@ -566,10 +566,6 @@ function! neocomplcache#system(str, ...)"{{{
   return l:output
 endfunction"}}}
 
-function! neocomplcache#caching_percent()"{{{
-  return neocomplcache#plugin#buffer_complete#caching_percent()
-endfunction"}}}
-
 function! neocomplcache#get_cur_text()"{{{
   " Return cached text.
   return neocomplcache#is_auto_complete()? s:cur_text : s:get_cur_text()
