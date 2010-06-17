@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2010
+" Last Modified: 17 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,13 +58,6 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
     " Check wildcard.
     let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
   endif
-  let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-
-  let l:start_length = (&l:completefunc == 'neocomplcache#manual_complete')?  
-        \g:neocomplcache_manual_completion_start_length : g:neocomplcache_auto_completion_start_length
-  if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < l:start_length
-    return -1
-  endif
 
   return l:cur_keyword_pos
 endfunction"}}}
@@ -104,40 +97,6 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#keyword_complete#get_rank()"{{{
   return 5
-endfunction"}}}
-
-function! neocomplcache#complfunc#keyword_complete#get_manual_complete_list(plugin_name)"{{{
-  if !has_key(s:plugins_func_table, a:plugin_name)
-    return []
-  endif
-
-  " Set function.
-  let &l:completefunc = 'neocomplcache#manual_complete'
-
-  let l:cur_text = neocomplcache#get_cur_text()
-  let l:cur_keyword_pos = neocomplcache#complfunc#keyword_complete#get_keyword_pos(l:cur_text)
-  let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-  if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:neocomplcache_manual_completion_start_length
-    return []
-  endif
-
-  " Save options.
-  let l:ignorecase_save = &ignorecase
-
-  if g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
-    let &ignorecase = 0
-  else
-    let &ignorecase = g:neocomplcache_enable_ignore_case
-  endif
-
-  let l:plugins_func_save = s:plugins_func_table
-  let s:plugins_func_table = { a:plugin_name : 'neocomplcache#plugin#' . a:plugin_name . '#' }
-  let l:complete_words = neocomplcache#complfunc#keyword_complete#get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
-  let s:plugins_func_table = l:plugins_func_save
-
-  let &ignorecase = l:ignorecase_save
-
-  return l:complete_words
 endfunction"}}}
 
 " vim: foldmethod=marker

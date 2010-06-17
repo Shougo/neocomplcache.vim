@@ -679,6 +679,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-17
+- Fixed manual completion freeze bug.
+- Refactoringed neocomplcache#start_manual_complete().
+
 2010-06-15
 - Fixed examples.
 - Optimized memory when loaded cache.

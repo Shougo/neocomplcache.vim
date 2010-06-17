@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 17 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -575,8 +575,10 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
     return g:neocomplcache_plugin_completion_length_list[a:plugin_name]
   elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
     return 0
-  else
+  elseif neocomplcache#is_auto_complete()
     return g:neocomplcache_auto_completion_start_length
+  else
+    return g:neocomplcache_manual_completion_start_length
   endif
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...)"{{{
@@ -810,10 +812,10 @@ endfunction"}}}
 
 " Manual complete wrapper.
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
-  " Set context filetype.
-  call s:set_context_filetype()
-  
-  let l:cur_text = s:get_cur_text()
+  if !has_key(s:global_complfuncs, a:complfunc_name)
+    echoerr printf("Invalid completefunc name %s is given.", a:complfunc_name)
+    return ''
+  endif
   
   " Clear flag.
   let s:used_match_filter = 0
@@ -821,48 +823,16 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   " Set function.
   let &l:completefunc = 'neocomplcache#manual_complete'
 
-  if !has_key(s:global_complfuncs, a:complfunc_name)
-    let l:cur_keyword_pos = neocomplcache#complfunc#keyword_complete#get_keyword_pos(l:cur_text)
-    let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-    let l:complete_words = neocomplcache#complfunc#keyword_complete#get_manual_complete_list(a:complfunc_name)
-
-    if empty(l:complete_words)
-      return ''
-    endif
-  else
-    let l:complfunc = s:global_complfuncs[a:complfunc_name]
-
-    let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text])
-    if l:cur_keyword_pos < 0
-      " Try append 'a'.
-      let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [l:cur_text.'a'])
-    endif
-
-    let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-    if l:cur_keyword_pos < 0 || len(l:cur_keyword_str) < g:neocomplcache_manual_completion_start_length
-      return ''
-    endif
-
-    " Save options.
-    let l:ignorecase_save = &ignorecase
-
-    if g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
-      let &ignorecase = 0
-    else
-      let &ignorecase = g:neocomplcache_enable_ignore_case
-    endif
-
-    let l:complete_words = s:remove_next_keyword(a:complfunc_name, deepcopy(
-          \call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])[: g:neocomplcache_max_list]))
-
-    let &ignorecase = l:ignorecase_save
-  endif
-
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-        \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
-
-  " Set function.
+  let l:dict = {}
+  let l:dict[a:complfunc_name] = s:global_complfuncs[a:complfunc_name]
+  " Get complete result.
+  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = 
+        \ s:integrate_completion(s:get_complete_result(s:get_cur_text(), l:dict))
+  
+  " Restore function.
   let &l:completefunc = 'neocomplcache#auto_complete'
+
+  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   " Start complete.
   return "\<C-x>\<C-u>\<C-p>"
@@ -1055,20 +1025,17 @@ function! s:do_complete(is_moved)"{{{
   endif
   let s:changedtick = b:changedtick
 endfunction"}}}
-function! s:get_complete_result(cur_text)"{{{
+function! s:get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
   
+  let l:complfuncs = a:0 == 0 ? s:global_complfuncs : a:1
+  
   " Try complfuncs completion."{{{
   let l:complete_result = {}
-  for [l:complfunc_name, l:complfunc] in items(s:global_complfuncs)
+  for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
     let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [a:cur_text])
 
-    if !neocomplcache#is_auto_complete() && l:cur_keyword_pos < 0
-      " Try append 'a'.
-      let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [a:cur_text.'a'])
-    endif
-    
     if l:cur_keyword_pos >= 0
       let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
       if len(l:cur_keyword_str) < neocomplcache#get_completion_length(l:complfunc_name)
