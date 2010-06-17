@@ -427,9 +427,22 @@ g:neocomplcache_disable_plugin_list			*g:neocomplcache_disable_plugin_list*
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		include_completeやtags_completeでメンバ補完するためのキーワー
-		ドパターンを記録する。 これはファイルタイプ毎に正規表現で指
-		定されている。
+		ドパターンを記録する。これはファイルタイプ毎に正規表現で指定
+		されている。
 		
+		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
+
+g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
+		関数をスマートに補完するための区切り文字パターンを定義する。
+		これはファイルタイプ毎に正規表現のリストで指定されている。
+>
+		" Examples:
+		if !exists('g:neocomplcache_delimiter_patterns')
+		let g:neocomplcache_delimiter_patterns= {}
+		endif
+		let g:neocomplcache_delimiter_patterns.vim = ['java']
+		let g:neocomplcache_delimiter_patterns.cpp = ['::']
+<
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
 
 g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*

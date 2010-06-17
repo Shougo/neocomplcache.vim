@@ -466,6 +466,14 @@ g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
+g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
+		This variable appoints a delimiter pattern to smart complete a
+		function.  This is appointed in regular expression's string
+		list every file type.
+		
+		Because it is complicated, refer to neocomplcache#enable() in
+		autoload/neocomplcache.vim for the initial value.
+
 g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		This option records an input pattern to display a quick
 		match list.  This is appointed in regular expression to
@@ -684,6 +692,9 @@ CHANGELOG						*neocomplcache-changelog*
 - Refactoringed neocomplcache#start_manual_complete().
 - Improved erlang keyword pattern.
 - Improved d and java keyword patterns.
+- Added g:neocomplcache_delimiter_patterns option.
+- Implemented delemiter completion.
+- Improved abbr.
 
 2010-06-15
 - Fixed examples.

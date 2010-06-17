@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 17 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -504,14 +504,6 @@ function! s:get_script_candidates(bufnumber)"{{{
       let l:orig_line = l:line
       let l:word = matchstr(l:line, l:keyword_pattern)
       if l:word != '' && !has_key(l:function_dict, l:word) 
-        if len(l:line) > g:neocomplcache_max_keyword_width
-          let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
-          if len(l:line) > g:neocomplcache_max_keyword_width
-            let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
-            let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
-          endif
-        endif
-        
         let l:function_dict[l:word] = {
               \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern_func, 'kind' : 'f'
               \}
@@ -741,14 +733,6 @@ function! s:get_functionlist()"{{{
       continue
     endif
     
-    if len(l:line) > g:neocomplcache_max_keyword_width
-      let l:line = substitute(l:line, '\(\h\)\w*#', '\1#', 'g')
-      if len(l:line) > g:neocomplcache_max_keyword_width
-        let l:args = split(matchstr(l:line, '(\zs[^)]*\ze)'), '\s*,\s*')
-        let l:line = substitute(l:line, '(\zs[^)]*\ze)', join(map(l:args, 'v:val[:3]'), ','), '')
-      endif
-    endif
-
     call add(l:keyword_list, {
           \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern,
           \})

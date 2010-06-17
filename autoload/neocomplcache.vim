@@ -240,6 +240,20 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'java,javascript,d,vim,ruby', '^\.')
   "}}}
 
+  " Initialize delimiter patterns."{{{
+  if !exists('g:neocomplcache_delimiter_patterns')
+    let g:neocomplcache_delimiter_patterns = {}
+  endif
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'vim',
+        \['#'])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'erlang',
+        \[':'])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'perl,cpp',
+        \['::'])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'java,d',
+        \['\.'])
+  "}}}
+  
   " Initialize ctags arguments."{{{
   if !exists('g:neocomplcache_ctags_arguments_list')
     let g:neocomplcache_ctags_arguments_list = {}
@@ -410,16 +424,26 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   return l:keyword_escape
 endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
-  if a:cur_keyword_str == ''
+  let l:cur_keyword_str = a:cur_keyword_str
+
+  " Delimiter check.
+  let l:filetype = neocomplcache#get_context_filetype()
+  if has_key(g:neocomplcache_delimiter_patterns, l:filetype)"{{{
+    for l:delimiter in g:neocomplcache_delimiter_patterns[l:filetype]
+      let l:cur_keyword_str = substitute(l:cur_keyword_str, l:delimiter, '*' . l:delimiter, 'g')
+    endfor
+  endif"}}}
+  
+  if l:cur_keyword_str == ''
     return a:list
-  elseif neocomplcache#check_match_filter(a:cur_keyword_str)
+  elseif neocomplcache#check_match_filter(l:cur_keyword_str)
     let s:used_match_filter = 1
     " Match filter.
     return filter(a:list, printf("v:val.word =~ %s", 
-          \string('^' . neocomplcache#keyword_escape(a:cur_keyword_str))))
+          \string('^' . neocomplcache#keyword_escape(l:cur_keyword_str))))
   else
     " Use fast filter.
-    return neocomplcache#head_filter(a:list, a:cur_keyword_str)
+    return neocomplcache#head_filter(a:list, l:cur_keyword_str)
   endif
 endfunction"}}}
 function! neocomplcache#check_match_filter(cur_keyword_str, ...)"{{{
@@ -1127,25 +1151,51 @@ function! s:integrate_completion(complete_result)"{{{
   let l:complete_words = sort(l:complete_words, 'neocomplcache#compare_rank')[: g:neocomplcache_max_list]
   call filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))
   
-  " Abbr check.
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
+  let l:icase = g:neocomplcache_enable_ignore_case && 
+        \!(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
   for l:keyword in l:complete_words
-    let l:keyword.icase = 1
+    let l:keyword.icase = l:icase
     if !has_key(l:keyword, 'abbr')
       let l:keyword.abbr = l:keyword.word
     endif
+  endfor
+
+  " Delimiter check.
+  let l:filetype = neocomplcache#get_context_filetype()
+  if has_key(g:neocomplcache_delimiter_patterns, l:filetype)"{{{
+    for l:delimiter in g:neocomplcache_delimiter_patterns[l:filetype]
+      " Count match.
+      let l:delim_cnt = 0
+      let l:matchend = matchend(l:cur_keyword_str, l:delimiter)
+      while l:matchend >= 0
+        let l:matchend = matchend(l:cur_keyword_str, l:delimiter, l:matchend)
+        let l:delim_cnt += 1
+      endwhile
+
+      for l:keyword in l:complete_words
+        let l:split_list = split(l:keyword.word, l:delimiter)
+        if len(l:split_list) > 1
+          let l:keyword.word = join(l:split_list[ : l:delim_cnt], l:delimiter)
+          let l:keyword.abbr = join(split(l:keyword.abbr, l:delimiter)[ : l:delim_cnt], l:delimiter)
+
+          if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
+            let l:keyword.abbr = substitute(l:keyword.abbr, '\(\h\)\w*'.l:delimiter, '\1'.l:delimiter, 'g')
+          endif
+          if l:delim_cnt+1 < len(l:split_list)
+            let l:keyword.abbr .= l:delimiter . '~'
+          endif
+        endif
+      endfor
+    endfor
+  endif"}}}
+  
+  " Abbr check.
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
+  for l:keyword in l:complete_words
     if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
       let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-8:])
     endif
   endfor
-
-  if !g:neocomplcache_enable_ignore_case || 
-        \(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
-    " Set no-icase.
-    for l:keyword in l:complete_words
-      let l:keyword.icase = 0
-    endfor
-  endif
 
   return [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 endfunction"}}}
