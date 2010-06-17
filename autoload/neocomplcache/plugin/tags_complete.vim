@@ -27,7 +27,7 @@
 function! neocomplcache#plugin#tags_complete#initialize()"{{{
   " Initialize
   let s:tags_list = {}
-  let s:completion_length = neocomplcache#get_completion_length('tags_complete')
+  let s:completion_length = neocomplcache#get_auto_completion_length('tags_complete')
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/tags_cache')

@@ -30,7 +30,7 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
   let s:include_info = {}
   let s:include_cache = {}
   let s:cached_pattern = {}
-  let s:completion_length = neocomplcache#get_completion_length('include_complete')
+  let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
 
   augroup neocomplcache
     " Caching events

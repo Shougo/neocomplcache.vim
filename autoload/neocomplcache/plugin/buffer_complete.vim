@@ -44,7 +44,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   let s:cache_line_count = 70
   let s:rank_cache_count = 1
   let s:disable_caching_list = {}
-  let s:completion_length = neocomplcache#get_completion_length('buffer_complete')
+  let s:completion_length = neocomplcache#get_auto_completion_length('buffer_complete')
   let s:prev_frequencies = {}
   "}}}
 

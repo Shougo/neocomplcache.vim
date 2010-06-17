@@ -27,7 +27,7 @@
 function! neocomplcache#complfunc#filename_complete#initialize()"{{{
   " Initialize.
   let s:skip_dir = {}
-  let s:completion_length = neocomplcache#get_completion_length('filename_complete')
+  let s:completion_length = neocomplcache#get_auto_completion_length('filename_complete')
 endfunction"}}}
 function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}

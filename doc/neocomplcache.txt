@@ -682,6 +682,8 @@ CHANGELOG						*neocomplcache-changelog*
 2010-06-17
 - Fixed manual completion freeze bug.
 - Refactoringed neocomplcache#start_manual_complete().
+- Improved erlang keyword pattern.
+- Improved d and java keyword patterns.
 
 2010-06-15
 - Fixed examples.

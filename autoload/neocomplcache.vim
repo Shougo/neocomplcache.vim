@@ -120,13 +120,13 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'objcpp',
         \'\v^\s*#\s*\h\w*|%(\h\w*::)*\h\w*%(\s*\(\)?|\<\>?|:)?|\@\h\w*%(\s*\(\)?)?|\(\s*\h\w*\s*\*?\s*\)?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'd',
-        \'\v\h\w*%(!?\s*\(\)?)?')
+        \'\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|\h\w*\%(!\?\s*()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'python,int-python,int-ipython',
         \'\v\h\w*%(\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'cs',
         \'\v\h\w*%(\s*%(\(\)?|\<))?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'java',
-        \'\v[@]?\h\w*%(\s*%(\(\)?|\<))?')
+        \'\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|[@]\?\h\w*\%(\s*()\?\|<\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'javascript,actionscript',
         \'\v\h\w*%(\s*\(\)?)?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'awk',
@@ -136,7 +136,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ml,ocaml,int-ocaml,int-sml,int-smlsharp',
         \'[''`#.]\?\h[[:alnum:]_'']*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'erlang,int-erl',
-        \'\v^\s*-\h\w*[(]?|\h\w*%(:\h\w*)*%(\.|\(\)?)?')
+        \'^\s*-\h\w*()?\|\%(\h\w*:\)*\h\w()\?\|\h[[:alnum:]_@]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'html,xhtml,xml,markdown',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'css',
@@ -579,6 +579,15 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
     return g:neocomplcache_auto_completion_start_length
   else
     return g:neocomplcache_manual_completion_start_length
+  endif
+endfunction"}}}
+function! neocomplcache#get_auto_completion_length(plugin_name)"{{{
+  if has_key(g:neocomplcache_plugin_completion_length_list, a:plugin_name)
+    return g:neocomplcache_plugin_completion_length_list[a:plugin_name]
+  elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
+    return 0
+  else
+    return g:neocomplcache_auto_completion_start_length
   endif
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...)"{{{

@@ -27,7 +27,7 @@
 function! neocomplcache#plugin#dictionary_complete#initialize()"{{{
   " Initialize.
   let s:dictionary_list = {}
-  let s:completion_length = neocomplcache#get_completion_length('dictionary_complete')
+  let s:completion_length = neocomplcache#get_auto_completion_length('dictionary_complete')
 
   " Initialize dictionary."{{{
   if !exists('g:neocomplcache_dictionary_filetype_lists')

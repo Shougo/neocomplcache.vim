@@ -76,7 +76,7 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   "}}}
 
   let s:keyword_cache = {}
-  let s:completion_length = neocomplcache#get_completion_length('omni_complete')
+  let s:completion_length = neocomplcache#get_auto_completion_length('omni_complete')
 endfunction"}}}
 function! neocomplcache#complfunc#omni_complete#finalize()"{{{
 endfunction"}}}
