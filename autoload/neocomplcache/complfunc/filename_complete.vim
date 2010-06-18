@@ -96,7 +96,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
-  let l:path = (a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
+  let l:path = (a:cur_keyword_str !~ '^\.\.\?/' && !neocomplcache#is_auto_complete())? &path : ','
   try
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
     let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
@@ -109,8 +109,11 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   catch
     return []
   endtry
-  if empty(l:files) || len(l:files) > g:neocomplcache_max_list
+  if empty(l:files)
     return []
+  elseif len(l:files) > g:neocomplcache_max_list
+    " Trunk items.
+    let l:files = l:files[: g:neocomplcache_max_list - 1]
   endif
 
   let l:list = []
