@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,10 +106,10 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
       let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
       let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
     endif
-  catch /.*/
+  catch
     return []
   endtry
-  if empty(l:files)
+  if empty(l:files) || len(l:files) > g:neocomplcache_max_list
     return []
   endif
 

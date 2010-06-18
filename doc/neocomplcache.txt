@@ -687,6 +687,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-18
+- Improved clojure support.
+- Fixed dup problem in snippets_complete.
+- Improved abbr.
+- Improved filename_complete.
+
 2010-06-17
 - Fixed manual completion freeze bug.
 - Refactoringed neocomplcache#start_manual_complete().

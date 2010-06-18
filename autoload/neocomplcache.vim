@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -85,12 +85,12 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'filename',
           \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/._+#$%~-]\)\+')
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'lisp,scheme,clojure,int-gosh,int-clisp,int-clojure', 
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'lisp,scheme,clojure,int-gosh,int-clisp,int-clj', 
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ruby,int-irb',
-        \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*()\?\|\s*\%(do\|{\)\s*\)\?')
+        \'\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*()\?\|\s*\%(do\|{\)\s*\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'eruby',
-        \'\</\?\%([[:alnum:]_-]+\s*\)\?\%(/?\>\)\?\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*()\?\|\s*\%(do\|{\)\s*\)\?')
+        \'\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|\</\?\%([[:alnum:]_-]+\s*\)\?\%(/?\>\)\?\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s*()\?\|\s*\%(do\|{\)\s*\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\%(\h\w*::\)*\h\w*\%(\s*()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'perl,int-perlsh',
@@ -211,7 +211,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-perlsh', 'perl')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-perl6', 'perl6')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-ocaml', 'ocaml')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-clojure', 'clojure')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-clj', 'clojure')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-sml,int-smlsharp', 'sml')
   "}}}
 
@@ -445,6 +445,16 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     " Use fast filter.
     return neocomplcache#head_filter(a:list, l:cur_keyword_str)
   endif
+endfunction"}}}
+function! neocomplcache#dup_filter(list)"{{{
+  let l:dict = {}
+  for l:keyword in a:list
+    if !has_key(l:dict, l:keyword.word)
+      let l:dict[l:keyword.word] = l:keyword
+    endif
+  endfor
+
+  return values(l:dict)
 endfunction"}}}
 function! neocomplcache#check_match_filter(cur_keyword_str, ...)"{{{
   return neocomplcache#keyword_escape(
@@ -1190,10 +1200,10 @@ function! s:integrate_completion(complete_result)"{{{
   endif"}}}
   
   " Abbr check.
-  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
+  let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-15)
   for l:keyword in l:complete_words
     if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
-      let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-8:])
+      let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-13:])
     endif
   endfor
 

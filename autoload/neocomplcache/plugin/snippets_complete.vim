@@ -115,7 +115,7 @@ function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_st
     let l:snippets += values(l:source)
   endfor
 
-  return s:keyword_filter(l:snippets, a:cur_keyword_str)
+  return s:keyword_filter(neocomplcache#dup_filter(l:snippets), a:cur_keyword_str)
 endfunction"}}}
 
 function! s:compare_words(i1, i2)
