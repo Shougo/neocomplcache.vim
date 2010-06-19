@@ -495,6 +495,13 @@ g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
 		This dictionary which appoints |vim_complete| call function
 		when completes custom and customlist command.  The key is
 		command name. The value is function name.
+>
+		" Examples:
+		if !exists('g:neocomplcache_vim_completefuncs')
+		  let g:neocomplcache_vim_completefuncs = {}
+		endif
+		let g:neocomplcache_vim_completefuncs.Ref = 'ref#complete'
+<
 		
 		Default value is {}.
 

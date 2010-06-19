@@ -466,6 +466,13 @@ g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
 		数である。 |vim_complete|において、
 		|command-completion-custom|や|command-completion-customlist|
 		のコマンド引数を補完するために使用される。
+>
+		" Examples:
+		if !exists('g:neocomplcache_vim_completefuncs')
+		  let g:neocomplcache_vim_completefuncs = {}
+		endif
+		let g:neocomplcache_vim_completefuncs.Ref = 'ref#complete'
+<
 		
 		初期値は空である。
 
