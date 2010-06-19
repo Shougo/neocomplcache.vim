@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -195,7 +195,7 @@ function! neocomplcache#complfunc#vim_complete#helper#custom(command_name, cur_t
   endif
 
   return s:make_completion_list(split(call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_text, getline('.'), len(a:cur_text)]), '\n'), '[V] custom', '')
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '\n'), '[V] custom', '')
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#customlist(command_name, cur_text, cur_keyword_str)"{{{
   if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
@@ -203,7 +203,7 @@ function! neocomplcache#complfunc#vim_complete#helper#customlist(command_name, c
   endif
   
   return s:make_completion_list(call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_text, getline('.'), len(a:cur_text)]), '[V] customlist', '')
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '[V] customlist', '')
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
   " Check dup.
