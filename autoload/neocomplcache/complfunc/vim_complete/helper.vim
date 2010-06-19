@@ -113,7 +113,9 @@ function! neocomplcache#complfunc#vim_complete#helper#get_command_completion(com
     return []
   endif
   
-  return call('neocomplcache#complfunc#vim_complete#helper#'.l:completion_name, [a:cur_text, a:cur_keyword_str])
+  let l:args = (l:completion_name ==# 'custom' || l:completion_name ==# 'customlist')?
+        \ [a:command_name, a:cur_text, a:cur_keyword_str] : [a:cur_text, a:cur_keyword_str]
+  return call('neocomplcache#complfunc#vim_complete#helper#'.l:completion_name, l:args)
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#get_completion_name(command_name)"{{{
   if !has_key(s:internal_candidates_list, 'command_completions')
@@ -186,6 +188,22 @@ function! neocomplcache#complfunc#vim_complete#helper#command_args(cur_text, cur
   endif
   
   return s:internal_candidates_list.command_args + s:internal_candidates_list.command_replaces
+endfunction"}}}
+function! neocomplcache#complfunc#vim_complete#helper#custom(command_name, cur_text, cur_keyword_str)"{{{
+  if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
+    return []
+  endif
+
+  return s:make_completion_list(split(call(g:neocomplcache_vim_completefuncs[a:command_name],
+        \ [a:cur_text, getline('.'), len(a:cur_text)]), '\n'), '[V] custom', '')
+endfunction"}}}
+function! neocomplcache#complfunc#vim_complete#helper#customlist(command_name, cur_text, cur_keyword_str)"{{{
+  if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
+    return []
+  endif
+  
+  return s:make_completion_list(call(g:neocomplcache_vim_completefuncs[a:command_name],
+        \ [a:cur_text, getline('.'), len(a:cur_text)]), '[V] customlist', '')
 endfunction"}}}
 function! neocomplcache#complfunc#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
   " Check dup.

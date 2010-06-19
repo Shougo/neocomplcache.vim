@@ -483,11 +483,18 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		
 		Default value is { 'default' : '-' }.
 
-g:neocomplcache_omni_function_list			*g:neocomplcache_omni_function_list*
+g:neocomplcache_omni_functions				*g:neocomplcache_omni_functions*
 		This dictionary which appoints |omni_complete| call
 		function.  The key is |&filetype|. If
 		g:neocomplcache_omni_function_list[|&filetype|] is
 		undefined, |omni_complete| calls |omnifunc|.
+		
+		Default value is {}.
+
+g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
+		This dictionary which appoints |vim_complete| call function
+		when completes custom and customlist command.  The key is
+		command name. The value is function name.
 		
 		Default value is {}.
 
@@ -691,6 +698,9 @@ CHANGELOG						*neocomplcache-changelog*
 - Optimized frequencies.
 - Improved keyword pattern.
 - Improved cur_text.
+- Changed g:neocomplcache_omni_function_list as g:neocomplcache_omni_functions.
+- Added g:neocomplcache_vim_completefuncs option.
+- Implemented customlist completion in vim_complete.
 
 2010-06-18
 - Improved clojure support.

@@ -228,7 +228,7 @@ function! s:calc_frequency(list)"{{{
             call remove(l:source.frequencies, l:word)
           endif
           if l:filetype_frequencies[l:word] == 0
-            call remove(:filetype_frequencies.frequencies, l:word)
+            call remove(l:filetype_frequencies, l:word)
           endif
         else
           let l:frequencies[l:word] = 1

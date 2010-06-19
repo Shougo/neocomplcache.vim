@@ -70,8 +70,8 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   "}}}
   
   " Initialize omni function list."{{{
-  if !exists('g:neocomplcache_omni_function_list')
-    let g:neocomplcache_omni_function_list = {}
+  if !exists('g:neocomplcache_omni_functions')
+    let g:neocomplcache_omni_functions = {}
   endif
   "}}}
 
@@ -83,8 +83,8 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
   let l:filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_omni_function_list, l:filetype)
-    let l:omnifunc = g:neocomplcache_omni_function_list[l:filetype]
+  if has_key(g:neocomplcache_omni_functions, l:filetype)
+    let l:omnifunc = g:neocomplcache_omni_functions[l:filetype]
   elseif &filetype == l:filetype
     let l:omnifunc = &l:omnifunc
   else
@@ -157,8 +157,8 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
         \&& neocomplcache#is_auto_complete()
 
   let l:filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_omni_function_list, l:filetype)
-    let l:omnifunc = g:neocomplcache_omni_function_list[l:filetype]
+  if has_key(g:neocomplcache_omni_functions, l:filetype)
+    let l:omnifunc = g:neocomplcache_omni_functions[l:filetype]
   elseif &filetype == l:filetype
     let l:omnifunc = &l:omnifunc
   endif

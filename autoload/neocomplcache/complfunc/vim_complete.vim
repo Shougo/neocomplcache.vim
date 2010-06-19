@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,12 @@ function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   " Initialize.
   let s:completion_length = has_key(g:neocomplcache_plugin_completion_length_list, 'vim_complete') ? 
         \ g:neocomplcache_plugin_completion_length_list['vim_complete'] : g:neocomplcache_auto_completion_start_length
+
+  " Initialize complete function list."{{{
+  if !exists('g:neocomplcache_vim_completefuncs')
+    let g:neocomplcache_vim_completefuncs = {}
+  endif
+  "}}}
 
   " Set caching event.
   autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()

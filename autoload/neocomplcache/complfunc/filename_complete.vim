@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,7 +96,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
-  let l:path = (a:cur_keyword_str !~ '^\.\.\?/' && !neocomplcache#is_auto_complete())? &path : ','
+  let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
   try
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
     let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
@@ -128,7 +128,7 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
       let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
-    elseif a:cur_keyword_str !~ '^\.\.\?/'
+    elseif !neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/'
       " Path search.
       for path in l:paths
         if path != '' && neocomplcache#head_match(word, path . '/')
