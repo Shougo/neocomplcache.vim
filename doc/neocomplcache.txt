@@ -687,6 +687,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-19
+- Optimized frequencies.
+- Improved keyword pattern.
+- Improved cur_text.
+
 2010-06-18
 - Improved clojure support.
 - Fixed dup problem in snippets_complete.

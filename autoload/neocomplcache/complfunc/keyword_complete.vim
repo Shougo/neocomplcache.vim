@@ -69,13 +69,13 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
   " Get keyword list.
   let l:cache_keyword_lists = {}
   let l:is_empty = 1
-  for l:plugin in keys(l:loaded_plugins)
+  for [l:plugin, l:funcname] in reverse(items(l:loaded_plugins))
     if has_key(g:neocomplcache_plugin_completion_length_list, l:plugin)
           \&& len(a:cur_keyword_str) < g:neocomplcache_plugin_completion_length_list[l:plugin]
       call remove(l:loaded_plugins, l:plugin)
       let l:cache_keyword_lists[l:plugin] = []
     else
-      let l:cache_keyword_lists[l:plugin] = call(l:loaded_plugins[l:plugin] . 'get_keyword_list', [a:cur_keyword_str])
+      let l:cache_keyword_lists[l:plugin] = call(l:funcname . 'get_keyword_list', [a:cur_keyword_str])
     endif
 
     if !empty(l:cache_keyword_lists[l:plugin])

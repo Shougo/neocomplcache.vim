@@ -41,11 +41,11 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
 
   " Initialize script variables."{{{
   let s:sources = {}
+  let s:filetype_frequencies = {}
   let s:cache_line_count = 70
   let s:rank_cache_count = 1
   let s:disable_caching_list = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('buffer_complete')
-  let s:prev_frequencies = {}
   "}}}
 
   " Create cache directory.
@@ -91,7 +91,6 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
             \neocomplcache#unpack_dictionary_dictionary(s:sources[src].keyword_cache), a:cur_keyword_str)
       if src == l:current
         call s:calc_frequency(l:keyword_cache)
-        call s:calc_prev_frequencies(l:keyword_cache, a:cur_keyword_str)
       endif
       let l:keyword_list += l:keyword_cache
     endfor
@@ -103,7 +102,6 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
 
         if src == l:current
           call s:calc_frequency(l:keyword_cache)
-          call s:calc_prev_frequencies(l:keyword_cache, a:cur_keyword_str)
         endif
 
         let l:keyword_list += l:keyword_cache
@@ -115,18 +113,12 @@ function! neocomplcache#plugin#buffer_complete#get_keyword_list(cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#get_frequencies()"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source()
+  let l:filetype = neocomplcache#get_context_filetype()
+  if !has_key(s:filetype_frequencies, l:filetype)
     return {}
   endif
 
-  return s:sources[bufnr('%')].frequencies
-endfunction"}}}
-function! neocomplcache#plugin#buffer_complete#get_prev_frequencies()"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source()
-    return {}
-  endif
-
-  return s:prev_frequencies
+  return s:filetype_frequencies[l:filetype]
 endfunction"}}}
 
 function! neocomplcache#plugin#buffer_complete#exists_current_source()"{{{
@@ -161,7 +153,7 @@ function! neocomplcache#plugin#buffer_complete#caching_current_cache_line()"{{{
       endif
       if !has_key(l:keywords[l:key], l:match_str)
         " Append list.
-        let l:keywords[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu, 'rank' : 1 }
+        let l:keywords[l:key][l:match_str] = { 'word' : l:match_str, 'menu' : l:menu }
       endif
     endif"}}}
 
@@ -195,18 +187,30 @@ function! s:calc_frequency(list)"{{{
 
   let l:source = s:sources[bufnr('%')]
   let l:frequencies = l:source.frequencies
+  let l:filetype = neocomplcache#get_context_filetype()
+  if !has_key(s:filetype_frequencies, l:filetype)
+    let s:filetype_frequencies[l:filetype] = {}
+  endif
+  let l:filetype_frequencies = s:filetype_frequencies[l:filetype]
+  
   for keyword in a:list
     if s:rank_cache_count <= 0
       " Set rank.
       
       let l:word = keyword.word
       let l:frequency = 0
-      for cache_lines in values(l:source.cache_lines)
-        if has_key(cache_lines.keywords, l:word)
-          let l:frequency += cache_lines.keywords[l:word].rank
+      for rank_lines in values(l:source.rank_lines)
+        if has_key(rank_lines, l:word)
+          let l:frequency += rank_lines[l:word]
         endif
       endfor
       
+      if !has_key(l:filetype_frequencies, l:word)
+        let l:filetype_frequencies[l:word] = 0
+      endif
+      if has_key(l:frequencies, l:word)
+        let l:filetype_frequencies[l:word] -= l:frequencies[l:word]
+      endif
       if l:frequency == 0
         " Garbage collect
         let l:ignorecase_save = &ignorecase
@@ -223,11 +227,16 @@ function! s:calc_frequency(list)"{{{
           if has_key(l:source.frequencies, l:word)
             call remove(l:source.frequencies, l:word)
           endif
+          if l:filetype_frequencies[l:word] == 0
+            call remove(:filetype_frequencies.frequencies, l:word)
+          endif
         else
           let l:frequencies[l:word] = 1
+          let l:filetype_frequencies[l:word] += 1
         endif
       else
         let l:frequencies[l:word] = l:frequency
+        let l:filetype_frequencies[l:word] += l:frequency
       endif
 
       " Reset count.
@@ -235,35 +244,6 @@ function! s:calc_frequency(list)"{{{
     endif
 
     let s:rank_cache_count -= 1
-  endfor
-endfunction"}}}
-function! s:calc_prev_frequencies(list, cur_keyword_str)"{{{
-  if !neocomplcache#plugin#buffer_complete#exists_current_source()
-    return
-  endif
-
-  let l:prev_word = neocomplcache#get_prev_word(a:cur_keyword_str)
-
-  " Get next keyword list.
-  let l:source = s:sources[bufnr('%')]
-  let l:source_next = has_key(l:source.next_word_list, l:prev_word)? 
-        \ l:source.next_word_list[l:prev_word] : {}
-
-  let s:prev_frequencies = {}
-  " Calc previous rank.
-  for keyword in a:list
-    let l:word = keyword.word
-    if has_key(l:source_next, l:word)
-      " Set prev rank.
-      let l:prev_frequency = 0
-      for cache_lines in values(l:source.cache_lines)
-        if has_key(cache_lines.keywords, l:word)
-              \&& has_key(cache_lines.keywords[l:word].prev_rank, l:prev_word)
-          let l:prev_frequency += cache_lines.keywords[l:word].prev_rank[l:prev_word]
-        endif
-      endfor
-      let s:prev_frequencies[l:word] = l:prev_frequency
-    endif
   endfor
 endfunction"}}}
 
@@ -295,12 +275,13 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
   " For debugging.
   "echomsg printf("start=%d, end=%d", l:start_line, l:end_line)
 
-  if !a:is_force && has_key(l:source.cache_lines, l:cache_num)
+  if !a:is_force && has_key(l:source.rank_lines, l:cache_num)
     return
   endif
   
   " Clear cache line.
-  let l:source.cache_lines[l:cache_num] = { 'keywords' : {} }
+  let l:source.rank_lines[l:cache_num] = {}
+  let l:rank_lines = l:source.rank_lines[l:cache_num]
 
   let l:buflines = getline(l:start_line, l:end_line)
   let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
@@ -309,39 +290,23 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
   let [l:line_num, l:max_lines] = [0, len(l:buflines)]
   while l:line_num < l:max_lines
-    let [l:line, l:keywords] = [buflines[l:line_num], l:source.cache_lines[l:cache_num].keywords]
-    let [l:prev_word, l:match] = ['^', match(l:line, l:keyword_pattern)]
+    let l:line = buflines[l:line_num]
+    let l:match = match(l:line, l:keyword_pattern)
 
     while l:match >= 0"{{{
       let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
 
       " Ignore too short keyword.
       if len(l:match_str) >= g:neocomplcache_min_keyword_length"{{{
-        if !has_key(l:keywords, l:match_str) 
-          let l:keywords[l:match_str] = { 'rank' : 1, 'prev_rank' : {} }
-          let l:line_keyword = l:keywords[l:match_str]
+        if !has_key(l:rank_lines, l:match_str)
+          let l:rank_lines[l:match_str] = 1
         else
-          let l:line_keyword = l:keywords[l:match_str]
-          let l:line_keyword.rank += 1
-        endif
-
-        " Calc previous keyword rank.
-        if !has_key(l:source.next_word_list, l:prev_word)
-          let l:source.next_word_list[l:prev_word] = {}
-          let l:source.next_word_list[l:prev_word][l:match_str] = 1
-        elseif !has_key(l:source.next_word_list[l:prev_word], l:match_str)
-          let l:source.next_word_list[l:prev_word][l:match_str] = 1
-        endif
-
-        if has_key(l:line_keyword.prev_rank, l:prev_word)
-          let l:line_keyword.prev_rank[l:prev_word] += 1
-        else
-          let l:line_keyword.prev_rank[l:prev_word] = 1
+          let l:rank_lines[l:match_str] += 1
         endif
       endif"}}}
 
       " Next match.
-      let [l:prev_word, l:match] = [l:match_str, match(l:line, l:keyword_pattern, l:match + len(l:match_str))]
+      let l:match = match(l:line, l:keyword_pattern, l:match + len(l:match_str))
     endwhile"}}}
 
     let l:line_num += 1
@@ -392,7 +357,7 @@ function! s:initialize_source(srcname)"{{{
   let l:keyword_pattern = neocomplcache#get_keyword_pattern(l:ft)
 
   let s:sources[a:srcname] = {
-        \'keyword_cache' : {}, 'cache_lines' : {}, 'next_word_list' : {}, 
+        \'keyword_cache' : {}, 'rank_lines' : {},
         \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
         \'end_line' : l:end_line , 'cache_line_cnt' : l:cache_line_cnt, 
         \'frequencies' : {}, 'check_sum' : len(join(l:buflines[:4], '\n'))
