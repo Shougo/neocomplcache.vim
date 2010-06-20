@@ -701,6 +701,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-20
+- Improved keyword patterns.
+
 2010-06-19
 - Optimized frequencies.
 - Improved keyword pattern.

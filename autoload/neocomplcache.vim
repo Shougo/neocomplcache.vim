@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 20 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,19 +106,19 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'tex',
         \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:]*\*\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'sh,zsh,int-zsh,int-bash,int-sh',
-        \'\v\$\w+|[[:alpha:]_.-][[:alnum:]_.-]*%(\s\?\[|\s*\(\)?)?')
+        \'\$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*\%(\s\?\[|\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'vimshell',
-        \'\v\$\$?\w*|[[:alpha:]_.-][[:alnum:]_.-]*|\d+%(\.\d+)+')
+        \'\$\$\?\w*\|[[:alpha:]_.-][[:alnum:]_.-]*\|\d\+\%(\.\d\+\)\+')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ps1,int-powershell',
-        \'\v\[\h%([[:alnum:]_.]*\]::)?|[$%@.]?[[:alpha:]_.:-][[:alnum:]_.:-]*%(\s?\(\)?)?')
+        \'\[\h\%([[:alnum:]_.]*\]::\)\?\|[$%@.]\?[[:alpha:]_.:-][[:alnum:]_.:-]*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'c',
         \'^\s*#\s*\h\w*\|\h\w*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'cpp',
         \'^\s*#\s*\h\w*\|\%(\h\w*::\)*\h\w*\%(\s\?()\?\|<>\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'objc',
-        \'\v^\s*#\s*\h\w*|\h\w*%(\s?\(\)?|\<\>?|:)?|\@\h\w*%(\s?\(\)?)?|\(\h\w*\s*\*?\)?')
+        \'^\s*#\s*\h\w*\|\h\w*\%(\s\?()\?\|<>\?\|:\)\?\|@\h\w*\%(\s\?()\?\)\?\|(\h\w*\s*\*\?)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'objcpp',
-        \'\v^\s*#\s*\h\w*|%(\h\w*::)*\h\w*%(\s*\(\)?|\<\>?|:)?|\@\h\w*%(\s*\(\)?)?|\(\s*\h\w*\s*\*?\s*\)?')
+        \'^\s*#\s*\h\w*\|\%(\h\w*::\)*\h\w*\%(\s\?()\?\|<>\?\|:\)\?\|@\h\w*\%(\s\?()\?\)\?\|(\s*\h\w*\s*\*\?\s*)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'd',
         \'\<\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|\h\w*\%(!\?\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'python,int-python,int-ipython',
@@ -140,9 +140,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'html,xhtml,xml,markdown',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'css',
-        \'\v[[:alpha:]_-][[:alnum:]_-]*[:(]?|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
+        \'[[:alpha:]_-][[:alnum:]_-]*[:(]\?\|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'tags',
-        \'\v^[^!][^/[:blank:]]*')
+        \'^[^!][^/[:blank:]]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'pic',
         \'^\s*#\h\w*\|\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'arm',
@@ -154,9 +154,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'nasm',
         \'^\s*\[\h\w*\|[%.]\?\h\w*\|\%(\.\.\@\?\|%[%$!]\)\%(\h\w*\)\?\|\h\w*:\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'asm',
-        \'\v[%$.]?\h\w*%(\$\h\w*)?')
+        \'[%$.]\?\h\w*\%(\$\h\w*\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'make',
-        \'\v[[:alpha:]_.-][[:alnum:]_.-]*')
+        \'[[:alpha:]_.-][[:alnum:]_.-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'scala',
         \'\h\w*\%(\s\?()\?\|\[\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'int-termtter',
@@ -244,7 +244,7 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_delimiter_patterns')
     let g:neocomplcache_delimiter_patterns = {}
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'vim',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'vim,help',
         \['#'])
   call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'erlang',
         \[':'])
