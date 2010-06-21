@@ -26,7 +26,7 @@
 "=============================================================================
 
 " Check vimproc.
-let s:is_vimproc = exists('*vimproc#system')
+let s:exists_vimproc = exists('*vimproc#system')
 
 function! neocomplcache#enable() "{{{
   augroup neocomplcache "{{{
@@ -592,7 +592,7 @@ function! neocomplcache#system(str, ...)"{{{
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
-  let l:output = s:is_vimproc ? (a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input))
+  let l:output = s:exists_vimproc ? (a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input))
         \: (a:0 == 0 ? system(l:command) : system(l:command, l:input))
   if &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)
