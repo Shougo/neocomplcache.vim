@@ -705,6 +705,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added eskk omni completion support.
 - Improved filter.
 - Improved eskk support.
+- Fixed presentation file.
 
 2010-06-20
 - Improved keyword patterns.
