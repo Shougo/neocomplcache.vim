@@ -146,7 +146,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
   endif
   call setpos('.', l:pos)
 
-  if neocomplcache#is_auto_complete() && col('.') - l:cur_keyword_pos < s:completion_length 
+  if !neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete() && col('.') - l:cur_keyword_pos < s:completion_length 
     " Too short completion length.
     return -1
   endif
@@ -159,7 +159,9 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
         \&& neocomplcache#is_auto_complete()
 
   let l:filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_omni_functions, l:filetype)
+  if neocomplcache#is_eskk_enabled()
+    let l:omnifunc = &l:omnifunc
+  elseif has_key(g:neocomplcache_omni_functions, l:filetype)
     let l:omnifunc = g:neocomplcache_omni_functions[l:filetype]
   elseif &filetype == l:filetype
     let l:omnifunc = &l:omnifunc
