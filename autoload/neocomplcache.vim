@@ -1160,8 +1160,10 @@ function! s:integrate_completion(complete_result)"{{{
   endfor
 
   " Sort.
-  let l:complete_words = sort(l:complete_words, 'neocomplcache#compare_rank')[: g:neocomplcache_max_list]
-  call filter(l:complete_words, 'v:val.word !=# '.string(l:cur_keyword_str))
+  if !neocomplcache#is_eskk_enabled()
+    call sort(l:complete_words, 'neocomplcache#compare_rank')
+  endif
+  let l:complete_words = filter(l:complete_words[: g:neocomplcache_max_list], 'v:val.word !=# '.string(l:cur_keyword_str))
   
   let l:icase = g:neocomplcache_enable_ignore_case && 
         \!(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
