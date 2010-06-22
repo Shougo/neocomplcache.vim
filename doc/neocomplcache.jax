@@ -518,7 +518,7 @@ neocomplcache#cancel_popup()				*neocomplcache#cancel_popup()*
 		neocomplcacheの補完をキャンセルし、ポップアップメニューを閉
 		じる。<C-e>の代わりに 使うと良いだろう。
 >
-		inoremap <expr><C-e>  neocomplcache#close_popup()
+		inoremap <expr><C-e>  neocomplcache#cancel_popup()
 <
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		inoremap <expr>上で使用する。neocomplcacheによって補完した候
