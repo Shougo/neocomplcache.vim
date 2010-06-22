@@ -674,6 +674,9 @@ function! neocomplcache#match_word(cur_text)"{{{
 endfunction"}}}
 function! neocomplcache#match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
   let l:cur_keyword_pos = a:cur_keyword_pos
+  if neocomplcache#is_eskk_enabled()
+    return l:cur_keyword_pos
+  endif
 
   while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] == '*'
     let l:left_text = a:cur_text[: l:cur_keyword_pos - 2]
@@ -688,6 +691,9 @@ function! neocomplcache#match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
 endfunction"}}}
 function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
+endfunction"}}}
+function! neocomplcache#is_eskk_enabled()"{{{
+  return exists('*eskk#is_enabled') && eskk#is_enabled()
 endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
   redraw
@@ -980,10 +986,8 @@ function! s:do_complete(is_moved)"{{{
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
   " Not complete multi byte character for ATOK X3.
-  if l:cur_text == ''
-        \ || l:cur_text[-1] >= 0x80
-        \ || (exists('b:skk_on') && b:skk_on)
-        \ || l:cur_text == s:old_cur_text
+  if l:cur_text == '' || l:cur_text == s:old_cur_text
+        \|| (!neocomplcache#is_eskk_enabled() && (l:cur_text[-1] >= 0x80  || (exists('b:skk_on') && b:skk_on)))
     let s:complete_words = []
     let s:old_complete_words = []
     return

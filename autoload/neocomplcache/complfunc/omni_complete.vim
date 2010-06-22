@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,7 +83,9 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
   let l:filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_omni_functions, l:filetype)
+  if neocomplcache#is_eskk_enabled()
+    let l:omnifunc = &l:omnifunc
+  elseif has_key(g:neocomplcache_omni_functions, l:filetype)
     let l:omnifunc = g:neocomplcache_omni_functions[l:filetype]
   elseif &filetype == l:filetype
     let l:omnifunc = &l:omnifunc
@@ -104,7 +106,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     let l:pattern = ''
   endif
 
-  if neocomplcache#is_auto_complete() && l:pattern == ''
+  if !neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete() && l:pattern == ''
     return -1
   endif
 
