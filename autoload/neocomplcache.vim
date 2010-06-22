@@ -1161,7 +1161,7 @@ function! s:integrate_completion(complete_result)"{{{
 
   " Sort.
   let l:complete_words = sort(l:complete_words, 'neocomplcache#compare_rank')[: g:neocomplcache_max_list]
-  call filter(l:complete_words, 'len(v:val.word) > '.len(l:cur_keyword_str))
+  call filter(l:complete_words, 'v:val.word !=# '.string(l:cur_keyword_str))
   
   let l:icase = g:neocomplcache_enable_ignore_case && 
         \!(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')

@@ -156,7 +156,7 @@ endfunction"}}}
 
 function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let l:is_wildcard = g:neocomplcache_enable_wildcard && a:cur_keyword_str =~ '\*\w\+$'
-        \&& neocomplcache#is_auto_complete()
+        \&& neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete()
 
   let l:filetype = neocomplcache#get_context_filetype()
   if neocomplcache#is_eskk_enabled()
