@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2010
+" Last Modified: 23 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -88,9 +88,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'lisp,scheme,clojure,int-gosh,int-clisp,int-clj', 
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ruby,int-irb',
-        \'\<\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s\?()\?\|\s\?\%(do\|{\)\s\?\)\?')
+        \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s\?()\?\|\s\?\%(do\|{\)\s\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'eruby',
-        \'\<\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|\</\?\%([[:alnum:]_-]+\s*\)\?\%(/?\>\)\?\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s\?()\?\|\s\?\%(do\|{\)\s\?\)\?')
+        \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|\</\?\%([[:alnum:]_-]+\s*\)\?\%(/?\>\)\?\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s\?()\?\|\s\?\%(do\|{\)\s\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\%(\h\w*::\)*\h\w*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'perl,int-perlsh',
@@ -120,13 +120,13 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'objcpp',
         \'^\s*#\s*\h\w*\|\%(\h\w*::\)*\h\w*\%(\s\?()\?\|<>\?\|:\)\?\|@\h\w*\%(\s\?()\?\)\?\|(\s*\h\w*\s*\*\?\s*)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'd',
-        \'\<\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|\h\w*\%(!\?\s\?()\?\)\?')
+        \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|\h\w*\%(!\?\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'python,int-python,int-ipython',
         \'\h\w*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'cs',
         \'\h\w*\%(\s\?()\?\|<\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'java',
-        \'\<\u\w*\%(\.\h\w*\%(()\?\)\?\)*\|[@]\?\h\w*\%(\s\?()\?\|<\)\?')
+        \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|[@]\?\h\w*\%(\s\?()\?\|<\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'javascript,actionscript',
         \'\h\w*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'awk',
@@ -1189,14 +1189,15 @@ function! s:integrate_completion(complete_result)"{{{
       for l:keyword in l:complete_words
         let l:split_list = split(l:keyword.word, l:delimiter)
         if len(l:split_list) > 1
-          let l:keyword.word = join(l:split_list[ : l:delim_cnt], l:delimiter)
-          let l:keyword.abbr = join(split(l:keyword.abbr, l:delimiter)[ : l:delim_cnt], l:delimiter)
+          let l:delimiter_sub = substitute(l:delimiter, '\\\([.^$]\)', '\1', 'g')
+          let l:keyword.word = join(l:split_list[ : l:delim_cnt], l:delimiter_sub)
+          let l:keyword.abbr = join(split(l:keyword.abbr, l:delimiter)[ : l:delim_cnt], l:delimiter_sub)
 
           if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
-            let l:keyword.abbr = substitute(l:keyword.abbr, '\(\h\)\w*'.l:delimiter, '\1'.l:delimiter, 'g')
+            let l:keyword.abbr = substitute(l:keyword.abbr, '\(\h\)\w*'.l:delimiter, '\1'.l:delimiter_sub, 'g')
           endif
           if l:delim_cnt+1 < len(l:split_list)
-            let l:keyword.abbr .= l:delimiter . '~'
+            let l:keyword.abbr .= l:delimiter_sub . '~'
           endif
         endif
       endfor
