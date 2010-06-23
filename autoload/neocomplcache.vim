@@ -572,7 +572,7 @@ function! neocomplcache#compare_rank(i1, i2)
 endfunction"}}}
 " PosOrder."{{{
 function! s:compare_pos(i1, i2)
-  return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[1]
+  return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
@@ -740,8 +740,8 @@ endfunction"}}}
 function! neocomplcache#escape_match(str)"{{{
   return escape(a:str, '~"*\.^$[]')
 endfunction"}}}
-function! neocomplcache#get_context_filetype()"{{{
-  if s:context_filetype == ''
+function! neocomplcache#get_context_filetype(...)"{{{
+  if a:0 != 0 || s:context_filetype == ''
     call s:set_context_filetype()
   endif
   
@@ -1350,7 +1350,7 @@ function! s:set_context_filetype()"{{{
     let l:start_backward = searchpos(l:include.start, 'bnW')
 
     " Check start <= line <= end.
-    if l:start_backward[0] == 0 || s:compare_pos(l:start_backward, l:pos) >= 0
+    if l:start_backward[0] == 0 || s:compare_pos(l:start_backward, l:pos) > 0
       continue
     endif
     
@@ -1361,10 +1361,10 @@ function! s:set_context_filetype()"{{{
     endif
     let l:end_forward = searchpos(l:end_pattern, 'nW')
 
-    if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward[0]) > 0
+    if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward) < 0
       let l:end_backward = searchpos(l:end_pattern, 'bnW')
 
-      if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) < 0
+      if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) > 0
         let s:context_filetype = l:include.filetype
         return 
       endif

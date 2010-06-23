@@ -720,6 +720,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Refactoringed keyword_complete.
 - Added g:neocomplcache_plugin_rank option.
 - Introduced thinca's script.
+- Fixed context filetype.
 
 2010-06-22
 - Added eskk omni completion support.
