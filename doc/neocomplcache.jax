@@ -42,6 +42,12 @@ INTRODUCTION						*neocomplcache-introduction*
 完を行う。 Vim組み込みのキーワード補完とは違い、自前で実装しているため、柔軟
 なカスタマイズが可能である。 ただし他のプラグインよりメモリを大量に消費する。
 
+							*neocomplcache-version5*
+
+neocomplcache Ver.5では、かなりの変数名が変更されているため、後方互換性がなくな
+っている。移行の際には、thinca氏の作成した次のスクリプトを利用すると良いだろう。
+http://gist.github.com/422503
+
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
 

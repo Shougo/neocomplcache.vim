@@ -45,6 +45,12 @@ completion including the Vim composing type, neocomplcache can be customized
 flexibly. Unfortunately neocomplcache may use more memory than other
 plugins.
 
+							*neocomplcache-version5*
+Because all variable names are changed in neocomplcache Ver.5, there is not
+backward compatibility. In the case of the upgrade, you should use the next
+script which Mr.thinca made.
+http://gist.github.com/422503
+
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
 
@@ -713,6 +719,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Renamed g:neocomplcache_plugin_completion_length_list as g:neocomplcache_plugin_completion_length.
 - Refactoringed keyword_complete.
 - Added g:neocomplcache_plugin_rank option.
+- Introduced thinca's script.
 
 2010-06-22
 - Added eskk omni completion support.
