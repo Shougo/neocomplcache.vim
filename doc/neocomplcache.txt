@@ -721,6 +721,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added g:neocomplcache_plugin_rank option.
 - Introduced thinca's script.
 - Fixed context filetype.
+- Fixed rank bug.
 
 2010-06-22
 - Added eskk omni completion support.

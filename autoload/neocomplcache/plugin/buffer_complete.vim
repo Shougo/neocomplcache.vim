@@ -49,7 +49,7 @@ function! neocomplcache#plugin#buffer_complete#initialize()"{{{
   "}}}
   
   " Set rank.
-  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'syntax_complete', 3)
+  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'buffer_complete', 4)
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
