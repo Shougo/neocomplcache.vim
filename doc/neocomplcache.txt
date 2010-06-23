@@ -722,6 +722,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Introduced thinca's script.
 - Fixed context filetype.
 - Fixed rank bug.
+- Fixed command line window error.
 
 2010-06-22
 - Added eskk omni completion support.

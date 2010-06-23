@@ -126,6 +126,11 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
         endfor
         call neocomplcache#used_match_filter()
 
+        " Set rank.
+        let l:rank = g:neocomplcache_plugin_rank['vim_complete']
+        for l:keyword in l:ret
+          let l:keyword.rank = l:rank
+        endfor
         return l:ret
       endif
     else
