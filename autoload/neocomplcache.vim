@@ -65,8 +65,8 @@ function! neocomplcache#enable() "{{{
   let l:func_list = split(globpath(&runtimepath, 'autoload/neocomplcache/complfunc/*.vim'), '\n')
   for list in l:func_list
     let l:func_name = fnamemodify(list, ':t:r')
-    if !has_key(g:neocomplcache_disable_plugin_list, l:func_name) || 
-          \ g:neocomplcache_disable_plugin_list[l:func_name] == 0
+    if !has_key(g:neocomplcache_plugin_disable, l:func_name) || 
+          \ g:neocomplcache_plugin_disable[l:func_name] == 0
       let s:global_complfuncs[l:func_name] = 'neocomplcache#complfunc#' . l:func_name . '#'
     endif
   endfor
@@ -246,11 +246,11 @@ function! neocomplcache#enable() "{{{
   endif
   call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'vim,help',
         \['#'])
-  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'erlang',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'erlang,lisp,int-clisp',
         \[':'])
   call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'perl,cpp',
         \['::'])
-  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'java,d',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_delimiter_patterns', 'java,d,javascript,actionscript,ruby,eruby',
         \['\.'])
   "}}}
   
@@ -278,12 +278,6 @@ function! neocomplcache#enable() "{{{
   endif
   call neocomplcache#set_variable_pattern('g:neocomplcache_tags_filter_patterns', 'c,cpp', 
         \'v:val.word !~ ''^[~_]''')
-  "}}}
-
-  " Initialize plugin completion length."{{{
-  if !exists('g:neocomplcache_plugin_completion_length_list')
-    let g:neocomplcache_plugin_completion_length_list = {}
-  endif
   "}}}
 
   " Add commands."{{{
@@ -576,7 +570,7 @@ endfunction"}}}
 function! neocomplcache#compare_rank(i1, i2)
   return a:i2.rank - a:i1.rank
 endfunction"}}}
-" RankOrder."{{{
+" PosOrder."{{{
 function! s:compare_pos(i1, i2)
   return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[1]
 endfunction"}}}
@@ -605,8 +599,8 @@ function! neocomplcache#get_cur_text()"{{{
   return neocomplcache#is_auto_complete()? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
-  if has_key(g:neocomplcache_plugin_completion_length_list, a:plugin_name)
-    return g:neocomplcache_plugin_completion_length_list[a:plugin_name]
+  if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
+    return g:neocomplcache_plugin_completion_length[a:plugin_name]
   elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
     return 0
   elseif neocomplcache#is_auto_complete()
@@ -616,8 +610,8 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
   endif
 endfunction"}}}
 function! neocomplcache#get_auto_completion_length(plugin_name)"{{{
-  if has_key(g:neocomplcache_plugin_completion_length_list, a:plugin_name)
-    return g:neocomplcache_plugin_completion_length_list[a:plugin_name]
+  if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
+    return g:neocomplcache_plugin_completion_length[a:plugin_name]
   elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
     return 0
   else
@@ -1108,7 +1102,6 @@ function! s:get_complete_result(cur_text, ...)"{{{
               \'complete_words' : l:words, 
               \'cur_keyword_pos' : l:cur_keyword_pos, 
               \'cur_keyword_str' : l:cur_keyword_str, 
-              \'rank' : call(l:complfunc . 'get_rank', [])
               \}
       endif
     endif
@@ -1150,10 +1143,11 @@ function! s:integrate_completion(complete_result)"{{{
       endfor
     endif
 
-    let l:rank = l:result.rank
     for l:keyword in l:result.complete_words
       let l:word = l:keyword.word
-      let l:keyword.rank = has_key(l:frequencies, l:word)? l:rank * l:frequencies[l:word] : l:rank
+      if has_key(l:frequencies, l:word)
+        let l:keyword.rank = l:keyword.rank * l:frequencies[l:word]
+      endif
     endfor
 
     let l:complete_words += s:remove_next_keyword(l:complfunc_name, l:result.complete_words)

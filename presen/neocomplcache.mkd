@@ -406,9 +406,9 @@ Ver.2.71より、プラグインごとに補完開始文字数を設定できる
 例：
 `
 let g:neocomplcache_auto_completion_start_length = 1
-if !exists('g:neocomplcache_plugin_completion_length_list')
+if !exists('g:neocomplcache_plugin_completion_length')
 endif
-let g:neocomplcache_plugin_completion_length_list = {
+let g:neocomplcache_plugin_completion_length = {
     \'snippets_complete' : 1, 
     \'buffer_complete' : 2, 
     \'syntax_complete' : 2, 
@@ -425,7 +425,7 @@ let g:neocomplcache_plugin_completion_length_list = {
 Ver.3.09より、プラグインや補完関数を無効化できるようになりました。
  
 `
-let g:neocomplcache_disable_plugin_list = {
+let g:neocomplcache_plugin_disable = {
     \'tags_complete' : 1, 
     \'omni_complete' : 1, 
 \}

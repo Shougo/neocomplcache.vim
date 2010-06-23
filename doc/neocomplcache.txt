@@ -385,13 +385,6 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
-g:neocomplcache_plugin_completion_length_list		*g:neocomplcache_plugin_completion_length_list*
-		It is a dictionary to control each plugin's completion
-		length.  For example, you can prolong heavy plugin's
-		completion length.
-		
-		Default value is {}.
-
 g:neocomplcache_disable_select_mode_mappings		*g:neocomplcache_disable_select_mode_mappings*
 		This variable control whether you invalidate Key-mappings of
 		Select-mode which snippets_complete performs.  You had
@@ -447,16 +440,6 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		neocomplcache#plugin#include_complete#initialize() in
 		autoload/neocomplcache/plugin/include_complete.vim for the
 		initial value.
-                
-g:neocomplcache_disable_plugin_list			*g:neocomplcache_disable_plugin_list*
-		The dictionary which appoints whether you invalidate a
-		complete function and plugin.  With a complete function and
-		plugin name as a key, it becomes invalid by making a value
-		1.  Because neocomplcache refer this option when
-		neocomplcache initialize, it is necessary to appoint it
-		before initialization.
-		
-		Default value is {}.
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		This variable appoints a keyword pattern to complete a
@@ -504,6 +487,29 @@ g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
 <
 		
 		Default value is {}.
+                
+g:neocomplcache_plugin_disable				*g:neocomplcache_plugin_disable*
+		The dictionary which appoints whether you invalidate a
+		complete function and plugin.  With a complete function and
+		plugin name as a key, it becomes invalid by making a value
+		1.  Because neocomplcache refer this option when
+		neocomplcache initialize, it is necessary to appoint it
+		before initialization.
+		
+		Default value is {}.
+
+g:neocomplcache_plugin_completion_length		*g:neocomplcache_plugin_completion_length*
+		It is a dictionary to control each plugin's completion
+		length.  For example, you can prolong heavy plugin's
+		completion length.
+		
+		Default value is {}.
+
+g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
+		It is a dictionary to control each plugin's completion
+		priority.
+		
+		Default value is set by each plugins.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
@@ -703,6 +709,10 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-06-23
 - Improved keyword pattern.
+- Renamed g:neocomplcache_disable_plugin_list as g:neocomplcache_plugin_disable.
+- Renamed g:neocomplcache_plugin_completion_length_list as g:neocomplcache_plugin_completion_length.
+- Refactoringed keyword_complete.
+- Added g:neocomplcache_plugin_rank option.
 
 2010-06-22
 - Added eskk omni completion support.
@@ -827,7 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed multibyte problems.
 - Deleted g:neocomplcache_cache_line_count variable.
 - Changed g:neocomplcache_alphabetical_order into g:neocomplcache_enable_alphabetical_order.
-- Changed g:neocomplcache_plugin_completion_length into g:neocomplcache_plugin_completion_length_list.
+- Changed g:neocomplcache_plugin_completion_length into g:neocomplcache_plugin_completion_length.
 - Changed g:neocomplcache_caching_disable_pattern into g:neocomplcache_disable_caching_buffer_name_pattern.
 - Changed g:neocomplcache_lock_buffer_name_pattern into g:neocomplcache_lock_buffer_name_pattern.
 - Changed NeoComplCacheCachingDisable into NeoComplCacheDisableCaching.
@@ -1307,7 +1317,7 @@ ChangeLog NeoComplCache 3.00-: {{{
    3.10:
     - Optimized keyword_complete.
     - Integrated complfuncs.
-    - Complfunc supported g:neocomplcache_plugin_completion_length_list option.
+    - Complfunc supported g:neocomplcache_plugin_completion_length option.
     - Improved omni completion pattern.
     - Improved html's keyword pattern.
     - Fixed manual completion error.
@@ -1318,7 +1328,7 @@ ChangeLog NeoComplCache 3.00-: {{{
    3.09:
     - Improved wildcard behaivior.
     - Disabled partial match.
-    - Added g:neocomplcache_disable_plugin_list option.
+    - Added g:neocomplcache_plugin_disable option.
     - Fixed wildcard bug.
     - Implemented fast search.
     - Fixed manual omni_complete error.
@@ -1486,7 +1496,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Create g:neocomplcache_snippets_dir directory if not exists.
     - Implemented direct expantion in snippet complete.
     - Implemented snippet alias in snippet complete.
-    - Added g:neocomplcache_plugin_completion_length_list option.
+    - Added g:neocomplcache_plugin_completion_length option.
     - Improved get cursour word.
     - Added Objective-C/C++ support.
     - Fixed filename completion bug when environment variable used.

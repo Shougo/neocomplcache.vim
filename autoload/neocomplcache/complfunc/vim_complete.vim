@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,8 +26,8 @@
 
 function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   " Initialize.
-  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length_list, 'vim_complete') ? 
-        \ g:neocomplcache_plugin_completion_length_list['vim_complete'] : g:neocomplcache_auto_completion_start_length
+  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length, 'vim_complete') ? 
+        \ g:neocomplcache_plugin_completion_length['vim_complete'] : g:neocomplcache_auto_completion_start_length
 
   " Initialize complete function list."{{{
   if !exists('g:neocomplcache_vim_completefuncs')
@@ -35,6 +35,9 @@ function! neocomplcache#complfunc#vim_complete#initialize()"{{{
   endif
   "}}}
 
+  " Set rank.
+  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'vim_complete', 100)
+  
   " Set caching event.
   autocmd neocomplcache FileType vim call neocomplcache#complfunc#vim_complete#helper#on_filetype()
 
@@ -138,11 +141,15 @@ function! neocomplcache#complfunc#vim_complete#get_complete_words(cur_keyword_po
     endif
   endif
 
-  return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
-endfunction"}}}
+  let l:list = neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 
-function! neocomplcache#complfunc#vim_complete#get_rank()"{{{
-  return 100
+  " Set rank.
+  let l:rank = g:neocomplcache_plugin_rank['vim_complete']
+  for l:keyword in l:list
+    let l:keyword.rank = l:rank
+  endfor
+
+  return l:list
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_cur_text()"{{{

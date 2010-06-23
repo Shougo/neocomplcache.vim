@@ -116,14 +116,20 @@ endif
 if !exists('g:neocomplcache_lock_buffer_name_pattern')
   let g:neocomplcache_lock_buffer_name_pattern = ''
 endif
-if !exists('g:neocomplcache_disable_plugin_list')
-  let g:neocomplcache_disable_plugin_list = {}
-endif
 if !exists('g:neocomplcache_temporary_dir')
   let g:neocomplcache_temporary_dir = '~/.neocon'
 endif
 if !exists('g:neocomplcache_ctags_program')
   let g:neocomplcache_ctags_program = 'ctags'
+endif
+if !exists('g:neocomplcache_plugin_disable')
+  let g:neocomplcache_plugin_disable = {}
+endif
+if !exists('g:neocomplcache_plugin_completion_length')
+  let g:neocomplcache_plugin_completion_length = {}
+endif
+if !exists('g:neocomplcache_plugin_rank')
+  let g:neocomplcache_plugin_rank = {}
 endif
 let g:neocomplcache_temporary_dir = expand(g:neocomplcache_temporary_dir)
 if !isdirectory(g:neocomplcache_temporary_dir)

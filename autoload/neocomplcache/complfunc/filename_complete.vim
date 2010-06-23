@@ -28,6 +28,9 @@ function! neocomplcache#complfunc#filename_complete#initialize()"{{{
   " Initialize.
   let s:skip_dir = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('filename_complete')
+  
+  " Set rank.
+  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'filename_complete', 3)
 endfunction"}}}
 function! neocomplcache#complfunc#filename_complete#finalize()"{{{
 endfunction"}}}
@@ -169,15 +172,15 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
     let keyword.abbr = l:abbr
   endfor
 
-  " Escape word.
+  " Set rank.
+  let l:rank = g:neocomplcache_plugin_rank['filename_complete']
   for keyword in l:list
+    " Escape word.
     let keyword.word = escape(keyword.word, ' *?[]"={}')
+    let l:keyword.rank = l:rank
   endfor
 
   return l:list
 endfunction"}}}
 
-function! neocomplcache#complfunc#filename_complete#get_rank()"{{{
-  return 3
-endfunction"}}}
 " vim: foldmethod=marker

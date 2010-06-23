@@ -75,6 +75,9 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   endif
   "}}}
 
+  " Set rank.
+  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'omni_complete', 100)
+  
   let s:keyword_cache = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('omni_complete')
 endfunction"}}}
@@ -197,14 +200,18 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
   endif
 
   if l:is_wildcard
-    return neocomplcache#keyword_filter(s:get_omni_list(l:list), a:cur_keyword_str)
+    let l:list = neocomplcache#keyword_filter(s:get_omni_list(l:list), a:cur_keyword_str)
   else
-    return s:get_omni_list(l:list)
+    let l:list = s:get_omni_list(l:list)
   endif
-endfunction"}}}
 
-function! neocomplcache#complfunc#omni_complete#get_rank()"{{{
-  return 100
+  " Set rank.
+  let l:rank = g:neocomplcache_plugin_rank['omni_complete']
+  for l:keyword in l:list
+    let l:keyword.rank = l:rank
+  endfor
+
+  return l:list
 endfunction"}}}
 
 function! s:get_omni_list(list)"{{{

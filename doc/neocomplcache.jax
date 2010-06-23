@@ -367,13 +367,6 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 <
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
 
-g:neocomplcache_plugin_completion_length_list		*g:neocomplcache_plugin_completion_length_list*
-		補完関数を呼び出す文字数をプラグインごとに指定するディクショ
-		ナリ。 重いプラグインは文字数が多いときにのみ呼び出せるよう
-		にするなどが考えられる。
-		
-		初期値は空である。
-
 g:neocomplcache_disable_select_mode_mappings		*g:neocomplcache_disable_select_mode_mappings*
 		snippets_completeが行うSelect modeのKey-mappingsを無効にする
 		かどうかを制御する。 通常は有効にしておいた方がよい。
@@ -417,14 +410,6 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimの
 		neocomplcache#plugin#include_complete#initialize()を参照せよ。
                 
-g:neocomplcache_disable_plugin_list			*g:neocomplcache_disable_plugin_list*
-		補完関数やプラグインを無効にするかどうかを指定するディクショ
-		ナリ。 補完関数やプラグイン名をキーにして、値を1にすることで
-		無効になる。 neocomplcacheを初期化するときに参照するので、初
-		期化前に指定する必要がある。
-		
-		初期値は空である。
-
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		include_completeやtags_completeでメンバ補完するためのキーワー
 		ドパターンを記録する。これはファイルタイプ毎に正規表現で指定
@@ -475,6 +460,26 @@ g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
 <
 		
 		初期値は空である。
+
+g:neocomplcache_plugin_disable				*g:neocomplcache_plugin_disable*
+		補完関数やプラグインを無効にするかどうかを指定するディクショ
+		ナリ。 補完関数やプラグイン名をキーにして、値を1にすることで
+		無効になる。 neocomplcacheを初期化するときに参照されるので、
+		初期化前に指定する必要がある。
+		
+		初期値は空である。
+
+g:neocomplcache_plugin_completion_length		*g:neocomplcache_plugin_completion_length*
+		補完関数を呼び出す文字数をプラグインごとに指定するディクショ
+		ナリ。 重いプラグインは文字数が多いときにのみ呼び出せるよう
+		にするなどが考えられる。
+		
+		初期値は空である。
+
+g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
+		補完関数の優先度をプラグインごとに指定するディクショナリ。
+		
+		初期値はそれぞれのプラグインによってセットされる。
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
