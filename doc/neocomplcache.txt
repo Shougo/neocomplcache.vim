@@ -713,6 +713,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-24
+- Improved eruby support.
+
 2010-06-23
 - Improved keyword pattern.
 - Renamed g:neocomplcache_disable_plugin_list as g:neocomplcache_plugin_disable.

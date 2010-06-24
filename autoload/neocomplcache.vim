@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jun 2010
+" Last Modified: 24 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -89,8 +89,6 @@ function! neocomplcache#enable() "{{{
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ruby,int-irb',
         \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s\?()\?\|\s\?\%(do\|{\)\s\?\)\?')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'eruby',
-        \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|\</\?\%([[:alnum:]_-]+\s*\)\?\%(/?\>\)\?\|\%(@@\|[:$@]\)\h\w*\|\%(\h\w*::\)*\h\w*[!?]\?\%(\s\?()\?\|\s\?\%(do\|{\)\s\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\%(\h\w*::\)*\h\w*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'perl,int-perlsh',
@@ -137,7 +135,7 @@ function! neocomplcache#enable() "{{{
         \'[''`#.]\?\h[[:alnum:]_'']*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'erlang,int-erl',
         \'^\s*-\h\w*()?\|\%(\h\w*:\)*\h\w()\?\|\h[[:alnum:]_@]*')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'html,xhtml,xml,markdown',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'html,xhtml,xml,markdown,eruby',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'css',
         \'[[:alpha:]_-][[:alnum:]_-]*[:(]\?\|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
@@ -224,6 +222,9 @@ function! neocomplcache#enable() "{{{
         \])
   call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'vimshell', [
         \ {'filetype' : 'vim', 'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
+        \])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'eruby', [
+        \ {'filetype' : 'ruby', 'start' : '<%[=#]\?', 'end' : '%>'},
         \])
   call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'vim', [
         \ {'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'},
