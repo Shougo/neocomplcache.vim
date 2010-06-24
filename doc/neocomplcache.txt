@@ -715,6 +715,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-06-24
 - Improved eruby support.
+- Improved ruby keyword.
 
 2010-06-23
 - Improved keyword pattern.
