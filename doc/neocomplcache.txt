@@ -713,6 +713,7 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+ChangeLog NeoComplCache 5.0: {{{
 2010-06-24
 - Improved eruby support.
 - Improved ruby keyword.
@@ -858,6 +859,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Changed NeoComplCacheCachingEnable into NeoComplCacheEnableCaching.
 - Check obsolute options.
 
+}}}
 ChangeLog NeoComplCache 4.30: {{{
 2010-05-31
 - Marked as ver.4.30.
