@@ -730,6 +730,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved snippet alias pattern.
 - Implemented text mode.
 - Added g:neocomplcache_text_mode_filetypes option.
+- Added "nothing" in text mode filetype.
 
 ChangeLog NeoComplCache 5.0: {{{
 2010-06-24

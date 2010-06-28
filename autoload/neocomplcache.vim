@@ -271,7 +271,7 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_text_mode_filetypes')
     let g:neocomplcache_text_mode_filetypes = {}
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_text_mode_filetypes', 'text,help,gitcommit', 1)
+  call neocomplcache#set_variable_pattern('g:neocomplcache_text_mode_filetypes', 'text,help,gitcommit,nothing', 1)
   "}}}
 
   " Initialize quick match patterns."{{{
