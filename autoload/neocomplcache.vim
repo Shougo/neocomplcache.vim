@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.0, for Vim 7.0
+" Version: 5.1, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -347,7 +347,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     " Clear flag.
     let s:used_match_filter = 0
     
-    let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(s:get_cur_text()))
+    let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(s:get_cur_text()), 1)
     if empty(l:complete_words)
       return -1
     endif
@@ -871,7 +871,7 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   let l:dict[a:complfunc_name] = s:global_complfuncs[a:complfunc_name]
   " Get complete result.
   let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = 
-        \ s:integrate_completion(s:get_complete_result(s:get_cur_text(), l:dict))
+        \ s:integrate_completion(s:get_complete_result(s:get_cur_text(), l:dict), 0)
   
   " Restore function.
   let &l:completefunc = 'neocomplcache#auto_complete'
@@ -1047,7 +1047,7 @@ function! s:do_complete(is_moved)"{{{
   let &l:completefunc = 'neocomplcache#auto_complete'
 
   " Get complete result.
-  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(l:cur_text))
+  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(l:cur_text), 1)
 
   if empty(l:complete_words)
     let &l:completefunc = 'neocomplcache#manual_complete'
@@ -1111,7 +1111,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
   
   return l:complete_result
 endfunction"}}}
-function! s:integrate_completion(complete_result)"{{{
+function! s:integrate_completion(complete_result, is_sort)"{{{
   if empty(a:complete_result)
     if neocomplcache#get_cur_text() =~ '\s\+$'
       " Caching current cache line.
@@ -1155,7 +1155,7 @@ function! s:integrate_completion(complete_result)"{{{
   endfor
 
   " Sort.
-  if !neocomplcache#is_eskk_enabled()
+  if !neocomplcache#is_eskk_enabled() && a:is_sort
     call sort(l:complete_words, 'neocomplcache#compare_rank')
   endif
   let l:complete_words = filter(l:complete_words[: g:neocomplcache_max_list], 'v:val.word !=# '.string(l:cur_keyword_str))

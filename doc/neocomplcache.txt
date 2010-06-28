@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 5.0
+Version: 5.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -713,6 +713,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-06-28
+- Ver.5.1 development started.
+- Improved integrated completion.
+- Improved snippet alias pattern.
+
 ChangeLog NeoComplCache 5.0: {{{
 2010-06-24
 - Improved eruby support.
@@ -858,7 +863,6 @@ ChangeLog NeoComplCache 5.0: {{{
 - Changed NeoComplCacheCachingDisable into NeoComplCacheDisableCaching.
 - Changed NeoComplCacheCachingEnable into NeoComplCacheEnableCaching.
 - Check obsolute options.
-
 }}}
 ChangeLog NeoComplCache 4.30: {{{
 2010-05-31

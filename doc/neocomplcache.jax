@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 5.0
+Version: 5.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -706,7 +706,7 @@ vnoremapやvmap, mapはselect modeでも有効になるので、変なマッピ�
 さらに、snipMate形式のスニペットファイルもそのまま読み込めます。
 
 alias hoge hogera hogehoge
-のように空白で区切って指定すると、スニペットの別名定義ができる。
+のように空白もしくは, で区切って指定すると、スニペットの別名定義ができる。
 スニペット名を直接入力するときに、覚えることが簡単になるので便利である。
 
 プレースホルダの同期も実装されている。 ${1}は$1のプレースホルダに同期さ

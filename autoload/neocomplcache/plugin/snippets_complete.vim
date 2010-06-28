@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -318,7 +318,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
     elseif line =~ '^abbr\s'
       let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze\s*$')
     elseif line =~ '^alias\s'
-      let l:snippet_pattern.alias = split(substitute(matchstr(line, '^alias\s\+\zs.*\ze\s*$'), '\s', '', 'g'), ',')
+      let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*\ze\s*$'), '[,[:space:]]\+')
     elseif line =~ '^prev_word\s'
       let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
     elseif line =~ '^\s'
