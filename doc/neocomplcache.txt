@@ -368,6 +368,8 @@ g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_
 		type.  The dictionary's key is filetype and comma-separated
 		multiple value is a path to a dictionary file.  If this
 		variable is empty, neocomplcache use 'dictionary' option.
+		When you set "text" key, you will appoint dictionary files in
+		text mode.
 		
 		Default value is {}.
 
@@ -387,6 +389,15 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 		let g:neocomplcache_filetype_include_lists.vim = 
 		\[{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
+		
+		Because it is complicated, refer to neocomplcache#enable() in
+		autoload/neocomplcache.vim for the initial value.
+
+g:neocomplcache_text_mode_filetypes			*g:neocomplcache_text_mode_filetypes*
+		It is a dictionary to define text mode filetypes. The
+		dictionary's key is filetype and value is number.  If the value
+		is non-zero, this filetype is text mode.  In text mode,
+		neocomplcache supports writing English.
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
@@ -717,6 +728,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Ver.5.1 development started.
 - Improved integrated completion.
 - Improved snippet alias pattern.
+- Implemented text mode.
+- Added g:neocomplcache_text_mode_filetypes option.
 
 ChangeLog NeoComplCache 5.0: {{{
 2010-06-24

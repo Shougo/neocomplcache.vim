@@ -46,7 +46,7 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
     call s:caching_tags(bufnr('%'), 0)
   endif
 
-  if empty(s:tags_list[bufnr('%')])
+  if empty(s:tags_list[bufnr('%')]) || neocomplcache#is_text_mode()
     return []
   endif
   let l:tags_list = s:tags_list[bufnr('%')]

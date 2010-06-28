@@ -57,6 +57,7 @@ function! neocomplcache#enable() "{{{
   let s:changedtick = b:changedtick
   let s:used_match_filter = 0
   let s:context_filetype = ''
+  let s:is_text_mode = 0
   let s:skip_next_complete = 0
   "}}}
 
@@ -265,6 +266,13 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_ctags_arguments_list', 'cpp',
         \'--c++-kinds=+p --fields=+iaS --extra=+q')
   "}}}
+  
+  " Initialize text mode filetypes."{{{
+  if !exists('g:neocomplcache_text_mode_filetypes')
+    let g:neocomplcache_text_mode_filetypes = {}
+  endif
+  call neocomplcache#set_variable_pattern('g:neocomplcache_text_mode_filetypes', 'text,help,gitcommit', 1)
+  "}}}
 
   " Initialize quick match patterns."{{{
   if !exists('g:neocomplcache_quick_match_patterns')
@@ -286,7 +294,7 @@ function! neocomplcache#enable() "{{{
   command! -nargs=0 Neco call s:display_neco()
   command! -nargs=0 NeoComplCacheLock call s:lock()
   command! -nargs=0 NeoComplCacheUnlock call s:unlock()
-  command! -nargs=0 NeoComplCacheToggle call s:toggle()
+  command! -nargs=0 NeoComplCacheToggle call s:toggle_lock()
   command! -nargs=1 NeoComplCacheAutoCompletionLength let g:neocomplcache_auto_completion_start_length = <args>
   "}}}
 
@@ -690,6 +698,9 @@ endfunction"}}}
 function! neocomplcache#is_eskk_enabled()"{{{
   return exists('*eskk#is_enabled') && eskk#is_enabled()
 endfunction"}}}
+function! neocomplcache#is_text_mode()"{{{
+  return s:is_text_mode
+endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
   redraw
   echo a:string
@@ -785,7 +796,7 @@ endfunction"}}}
 "}}}
 
 " Command functions."{{{
-function! s:toggle()"{{{
+function! s:toggle_lock()"{{{
   if !has_key(s:complete_lock, bufnr('%')) || !s:complete_lock[bufnr('%')]
     call s:lock()
   else
@@ -916,7 +927,9 @@ function! neocomplcache#complete_common_string()"{{{
   " Save options.
   let l:ignorecase_save = &ignorecase
 
-  if g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
+  if neocomplcache#is_text_mode()
+    let &ignorecase = 1
+  elseif g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
     let &ignorecase = 0
   else
     let &ignorecase = g:neocomplcache_enable_ignore_case
@@ -1088,7 +1101,9 @@ function! s:get_complete_result(cur_text, ...)"{{{
       " Save options.
       let l:ignorecase_save = &ignorecase
 
-      if g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
+      if neocomplcache#is_text_mode()
+        let &ignorecase = 1
+      elseif g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
         let &ignorecase = 0
       else
         let &ignorecase = g:neocomplcache_enable_ignore_case
@@ -1199,6 +1214,26 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
     endfor
   endif"}}}
   
+  " Convert words.
+  if neocomplcache#is_text_mode()"{{{
+    if l:cur_keyword_str =~ '^\l\+$'
+      for l:keyword in l:complete_words
+        let l:keyword.word = tolower(l:keyword.word)
+        let l:keyword.abbr = tolower(l:keyword.abbr)
+      endfor
+    elseif l:cur_keyword_str =~ '^\u\+$'
+      for l:keyword in l:complete_words
+        let l:keyword.word = toupper(l:keyword.word)
+        let l:keyword.abbr = toupper(l:keyword.abbr)
+      endfor
+    elseif l:cur_keyword_str =~ '^\u\l\+$'
+      for l:keyword in l:complete_words
+        let l:keyword.word = toupper(l:keyword.word[0]).tolower(l:keyword.word[1:])
+        let l:keyword.abbr = toupper(l:keyword.abbr[0]).tolower(l:keyword.abbr[1:])
+      endfor
+    endif
+  endif"}}}
+
   " Abbr check.
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-15)
   for l:keyword in l:complete_words
@@ -1222,6 +1257,7 @@ function! s:on_insert_leave()"{{{
   let s:complete_words = []
   let s:used_match_filter = 0
   let s:context_filetype = ''
+  let s:is_text_mode = 0
   let s:skip_next_complete = 0
 
   if &updatetime < s:update_time_save
@@ -1278,7 +1314,9 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
   " Save options.
   let l:ignorecase_save = &ignorecase
 
-  if g:neocomplcache_enable_smart_case && a:cur_keyword_str =~ '\u'
+  if neocomplcache#is_text_mode()
+    let &ignorecase = 1
+  elseif g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
     let &ignorecase = 0
   else
     let &ignorecase = g:neocomplcache_enable_ignore_case
@@ -1373,6 +1411,12 @@ function! s:set_context_filetype()"{{{
   endfor
 
   let s:context_filetype = l:filetype
+
+  " Set text mode or not.
+  let l:attr = synIDattr(synIDtrans(synID(line('.'), col('.')-1, 1)), 'name')
+  let s:is_text_mode = 
+        \ (has_key(g:neocomplcache_text_mode_filetypes, l:filetype) && g:neocomplcache_text_mode_filetypes[l:filetype])
+        \ || l:attr ==# 'Comment' || l:attr ==# 'Constant'
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -352,6 +352,7 @@ g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_
 		キーにファイルタイプ、値に辞書ファイルへのパスを指定する。
 		','区切りで複数の辞書を指定できる。もしこの変数が空の場合、
 		neocomplcacheは'dictionary'を代わりに使用する。
+		キーに"text"を指定すると、text mode時の辞書を指定することとなる。
 		
 		初期値は空である。
 
@@ -371,6 +372,13 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 		let g:neocomplcache_filetype_include_lists.vim = 
 		\[{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
+		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
+
+g:neocomplcache_text_mode_filetypes			*g:neocomplcache_text_mode_filetypes*
+		自動的にテキストモードとなるファイルタイプをキーとした
+		ディクショナリである。neocomplcacheがテキストモードのとき、
+		英語を書き易くするための支援機能が有効となる。
+		
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
 
 g:neocomplcache_disable_select_mode_mappings		*g:neocomplcache_disable_select_mode_mappings*
