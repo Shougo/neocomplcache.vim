@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jun 2010
+" Last Modified: 01 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! neocomplcache#plugin#tags_complete#get_keyword_list(cur_keyword_str)"{
     call s:caching_tags(bufnr('%'), 0)
   endif
 
-  if empty(s:tags_list[bufnr('%')]) || neocomplcache#is_text_mode()
+  if empty(s:tags_list[bufnr('%')]) || neocomplcache#within_comment()
     return []
   endif
   let l:tags_list = s:tags_list[bufnr('%')]

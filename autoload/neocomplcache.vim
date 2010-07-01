@@ -58,6 +58,7 @@ function! neocomplcache#enable() "{{{
   let s:used_match_filter = 0
   let s:context_filetype = ''
   let s:is_text_mode = 0
+  let s:within_comment = 0
   let s:skip_next_complete = 0
   "}}}
 
@@ -271,7 +272,7 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_text_mode_filetypes')
     let g:neocomplcache_text_mode_filetypes = {}
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_text_mode_filetypes', 'text,help,gitcommit,nothing', 1)
+  call neocomplcache#set_variable_pattern('g:neocomplcache_text_mode_filetypes', 'text,help,tex,gitcommit,nothing', 1)
   "}}}
 
   " Initialize quick match patterns."{{{
@@ -699,7 +700,10 @@ function! neocomplcache#is_eskk_enabled()"{{{
   return exists('*eskk#is_enabled') && eskk#is_enabled()
 endfunction"}}}
 function! neocomplcache#is_text_mode()"{{{
-  return s:is_text_mode
+  return s:is_text_mode || s:within_comment
+endfunction"}}}
+function! neocomplcache#within_comment()"{{{
+  return s:within_comment
 endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
   redraw
@@ -1378,45 +1382,43 @@ function! s:set_context_filetype()"{{{
     let l:filetype = 'nothing'
   endif
   
-  if !has_key(g:neocomplcache_filetype_include_lists, l:filetype)
-        \|| empty(g:neocomplcache_filetype_include_lists[l:filetype])
-    let s:context_filetype = l:filetype
-    return
-  endif
-
-  let l:pos = [line('.'), col('.')]
-  for l:include in g:neocomplcache_filetype_include_lists[l:filetype]
-    let l:start_backward = searchpos(l:include.start, 'bnW')
-
-    " Check start <= line <= end.
-    if l:start_backward[0] == 0 || s:compare_pos(l:start_backward, l:pos) > 0
-      continue
-    endif
-    
-    let l:end_pattern = l:include.end
-    if l:end_pattern =~ '\\1'
-      let l:match_list = matchlist(getline(l:start_backward[0]), l:include.start)
-      let l:end_pattern = substitute(l:end_pattern, '\\1', '\=l:match_list[1]', 'g')
-    endif
-    let l:end_forward = searchpos(l:end_pattern, 'nW')
-
-    if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward) < 0
-      let l:end_backward = searchpos(l:end_pattern, 'bnW')
-
-      if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) > 0
-        let s:context_filetype = l:include.filetype
-        return 
-      endif
-    endif
-  endfor
-
+  " Default.
   let s:context_filetype = l:filetype
+  if has_key(g:neocomplcache_filetype_include_lists, l:filetype)
+        \ && !empty(g:neocomplcache_filetype_include_lists[l:filetype])
+
+    let l:pos = [line('.'), col('.')]
+    for l:include in g:neocomplcache_filetype_include_lists[l:filetype]
+      let l:start_backward = searchpos(l:include.start, 'bnW')
+
+      " Check start <= line <= end.
+      if l:start_backward[0] == 0 || s:compare_pos(l:start_backward, l:pos) > 0
+        continue
+      endif
+
+      let l:end_pattern = l:include.end
+      if l:end_pattern =~ '\\1'
+        let l:match_list = matchlist(getline(l:start_backward[0]), l:include.start)
+        let l:end_pattern = substitute(l:end_pattern, '\\1', '\=l:match_list[1]', 'g')
+      endif
+      let l:end_forward = searchpos(l:end_pattern, 'nW')
+
+      if l:end_forward[0] == 0 || s:compare_pos(l:pos, l:end_forward) < 0
+        let l:end_backward = searchpos(l:end_pattern, 'bnW')
+
+        if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) > 0
+          let s:context_filetype = l:include.filetype
+          break 
+        endif
+      endif
+    endfor
+  endif
 
   " Set text mode or not.
   let l:attr = synIDattr(synIDtrans(synID(line('.'), col('.')-1, 1)), 'name')
-  let s:is_text_mode = 
-        \ (has_key(g:neocomplcache_text_mode_filetypes, l:filetype) && g:neocomplcache_text_mode_filetypes[l:filetype])
-        \ || l:attr ==# 'Comment' || l:attr ==# 'Constant'
+  let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
+        \ || l:attr ==# 'Constant'
+  let s:within_comment = (l:attr ==# 'Comment')
 endfunction"}}}
 
 " vim: foldmethod=marker

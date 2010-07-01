@@ -724,6 +724,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-01
+- Fixed context filetype bug.
+- Added tex in text mode filetypes.
+- Improved text mode.
+
 2010-06-28
 - Ver.5.1 development started.
 - Improved integrated completion.

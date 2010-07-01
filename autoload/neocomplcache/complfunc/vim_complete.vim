@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jun 2010
+" Last Modified: 01 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ function! neocomplcache#complfunc#vim_complete#finalize()"{{{
 endfunction"}}}
 
 function! neocomplcache#complfunc#vim_complete#get_keyword_pos(cur_text)"{{{
-  if neocomplcache#get_context_filetype() !=# 'vim' || neocomplcache#is_text_mode()
+  if neocomplcache#get_context_filetype() !=# 'vim' || neocomplcache#within_comment()
     return -1
   endif
 
