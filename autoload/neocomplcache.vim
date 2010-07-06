@@ -1077,7 +1077,7 @@ function! s:do_complete(is_moved)"{{{
         \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   " Start auto complete.
-  if g:neocomplcache_enable_auto_select
+  if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
     call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
   else
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -1418,6 +1418,7 @@ function! s:set_context_filetype()"{{{
   let l:attr = synIDattr(synIDtrans(synID(line('.'), col('.')-1, 1)), 'name')
   let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
         \ || l:attr ==# 'Constant'
+        \ || (exists('eskk#get_mode') && eskk#get_mode() ==# 'ascii')
   let s:within_comment = (l:attr ==# 'Comment')
 endfunction"}}}
 
