@@ -128,7 +128,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
     let l:cur_text = a:cur_text
   endif
 
-  if neocomplcache#is_auto_complete() &&
+  if !neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete() &&
         \l:cur_text !~ '\%(' . l:pattern . '\m\)$'
     return -1
   endif
