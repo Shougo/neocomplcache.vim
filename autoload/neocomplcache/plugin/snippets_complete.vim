@@ -107,11 +107,12 @@ function! neocomplcache#plugin#snippets_complete#get_keyword_list(cur_keyword_st
   endif
   let l:snippets = values(s:snippets['_'])
 
-  if !has_key(s:snippets, neocomplcache#get_context_filetype())
+  let l:filetype = neocomplcache#get_context_filetype()
+  if !has_key(s:snippets, l:filetype)
     " Caching snippets.
-    call s:caching_snippets(neocomplcache#get_context_filetype())
+    call s:caching_snippets(l:filetype)
   endif
-  for l:source in neocomplcache#get_sources_list(s:snippets, neocomplcache#get_context_filetype())
+  for l:source in neocomplcache#get_sources_list(s:snippets, l:filetype)
     let l:snippets += values(l:source)
   endfor
 
@@ -150,7 +151,7 @@ endfunction"}}}
 
 function! neocomplcache#plugin#snippets_complete#expandable()"{{{
   " Set buffer filetype.
-  let l:ft = neocomplcache#get_context_filetype()
+  let l:ft = neocomplcache#get_context_filetype(1)
 
   let l:snippets = copy(s:snippets['_'])
   for l:t in split(l:ft, '\.')
@@ -181,7 +182,7 @@ function! neocomplcache#plugin#snippets_complete#get_cur_text()"{{{
 endfunction"}}}
 
 function! s:caching()"{{{
-  for l:filetype in keys(neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype()))
+  for l:filetype in keys(neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype(1)))
     if !has_key(s:snippets, l:filetype)
       call s:caching_snippets(l:filetype)
     endif
@@ -211,7 +212,7 @@ endfunction"}}}
 
 function! s:edit_snippets(filetype, isruntime)"{{{
   if a:filetype == ''
-    let l:filetype = neocomplcache#get_context_filetype()
+    let l:filetype = neocomplcache#get_context_filetype(1)
   else
     let l:filetype = a:filetype
   endif
@@ -249,7 +250,7 @@ endfunction"}}}
 function! s:print_snippets(filetype)"{{{
   let l:list = values(s:snippets['_'])
 
-  let l:filetype = (a:filetype != '')?    a:filetype : neocomplcache#get_context_filetype()
+  let l:filetype = (a:filetype != '')?    a:filetype : neocomplcache#get_context_filetype(1)
 
   if l:filetype != ''
     if !has_key(s:snippets, l:filetype)
@@ -361,7 +362,7 @@ endfunction"}}}
 
 function! s:snippets_expand(cur_text, col)"{{{
   " Set buffer filetype.
-  let l:ft = neocomplcache#get_context_filetype()
+  let l:ft = neocomplcache#get_context_filetype(1)
 
   let l:snippets = copy(s:snippets['_'])
   for l:t in split(l:ft, '\.')

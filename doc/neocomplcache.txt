@@ -724,6 +724,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-08
+- Fixed get filetype timing in snippets_complete.
+
 2010-07-07
 - Fixed eskk omni completion bug.
 
