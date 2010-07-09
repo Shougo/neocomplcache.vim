@@ -728,6 +728,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved eskk check.
 - Improved javascript support.
 - Improved css keyword pattern.
+- Fixed quickmatch error.
+- Fixed neocomplcache#complete_common_string() bug.
 
 2010-07-08
 - Fixed get filetype timing in snippets_complete.

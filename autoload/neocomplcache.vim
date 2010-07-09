@@ -358,6 +358,8 @@ endfunction"}}}
 
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
+    let s:old_complete_words = []
+    
     " Clear flag.
     let s:used_match_filter = 0
     
@@ -369,6 +371,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
     return l:cur_keyword_pos
   else
+    let s:old_complete_words = s:complete_words
     return s:complete_words
   endif
 endfunction"}}}
@@ -1325,7 +1328,7 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
 
   if neocomplcache#is_text_mode()
     let &ignorecase = 1
-  elseif g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
+  elseif g:neocomplcache_enable_smart_case && a:cur_keyword_str =~ '\u'
     let &ignorecase = 0
   else
     let &ignorecase = g:neocomplcache_enable_ignore_case
