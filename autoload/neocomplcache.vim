@@ -213,6 +213,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-ocaml', 'ocaml')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-clj', 'clojure')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-sml,int-smlsharp', 'sml')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-js,int-kjs', 'javascript')
   "}}}
 
   " Initialize include filetype lists."{{{
@@ -231,6 +232,10 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'vim', [
         \ {'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'},
         \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \])
+  call neocomplcache#set_variable_pattern('g:neocomplcache_filetype_include_lists', 'html,xhtml', [
+        \ {'filetype' : 'javascript', 'start' : '<script type="text/javascript">', 'end' : '</script>'},
+        \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},  
         \])
   "}}}
   
