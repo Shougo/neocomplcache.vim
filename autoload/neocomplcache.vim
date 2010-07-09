@@ -140,7 +140,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'html,xhtml,xml,markdown,eruby',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'css',
-        \'[[:alpha:]_-][[:alnum:]_-]*[:(]\?\|[@#:.][[:alpha:]_-][[:alnum:]_-]*')
+        \'[@#.]\?[[:alpha:]_:-][[:alnum:]_:-]*(\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'tags',
         \'^[^!][^/[:blank:]]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'pic',

@@ -727,6 +727,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-07-09
 - Improved eskk check.
 - Improved javascript support.
+- Improved css keyword pattern.
 
 2010-07-08
 - Fixed get filetype timing in snippets_complete.
