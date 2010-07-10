@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: completefunc_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jun 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,22 +24,31 @@
 " }}}
 "=============================================================================
 
-function! neocomplcache#complfunc#completefunc_complete#initialize()"{{{
+let s:source = {
+      \ 'name' : 'completefunc_complete',
+      \ 'kind' : 'complfunc',
+      \}
+
+function! s:source.initialize()"{{{
   " Set rank.
   call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'completefunc_complete', 5)
 endfunction"}}}
-function! neocomplcache#complfunc#completefunc_complete#finalize()"{{{
+function! s:source.finalize()"{{{
 endfunction"}}}
 
-function! neocomplcache#complfunc#completefunc_complete#get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text)"{{{
   return -1
 endfunction"}}}
 
-function! neocomplcache#complfunc#completefunc_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   return []
 endfunction"}}}
 
-function! neocomplcache#complfunc#completefunc_complete#call_completefunc(funcname)"{{{
+function! neocomplcache#sources#completefunc_complete#define()"{{{
+  return s:source
+endfunction"}}}
+
+function! neocomplcache#sources#completefunc_complete#call_completefunc(funcname)"{{{
   let l:cur_text = neocomplcache#get_cur_text()
 
   " Save pos.

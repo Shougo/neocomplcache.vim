@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: abbrev_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2010
+" Last Modified: 10 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,14 +24,19 @@
 " }}}
 "=============================================================================
 
-function! neocomplcache#plugin#abbrev_complete#initialize()"{{{
+let s:source = {
+      \ 'name' : 'abbrev_complete',
+      \ 'kind' : 'plugin',
+      \}
+
+function! s:source.initialize()"{{{
   " Initialize.
 endfunction"}}}
 
-function! neocomplcache#plugin#abbrev_complete#finalize()"{{{
+function! s:source.finalize()"{{{
 endfunction"}}}
 
-function! neocomplcache#plugin#abbrev_complete#get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str)"{{{
   " Get current abbrev list.
   redir => l:abbrev_list
   silent! iabbrev
@@ -53,4 +58,7 @@ function! neocomplcache#plugin#abbrev_complete#get_keyword_list(cur_keyword_str)
   return l:list
 endfunction"}}}
 
+function! neocomplcache#sources#abbrev_complete#define()"{{{
+  return s:source
+endfunction"}}}
 " vim: foldmethod=marker

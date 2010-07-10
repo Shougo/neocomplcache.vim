@@ -326,8 +326,8 @@ g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		オムニ補完するためのキーワードパターンを記録する。 これはファ
 		イルタイプ毎に正規表現で指定されている。
 		
-		初期値は複雑なので、autoload/neocomplcache/complfunc/omni_complete.vimの
-		neocomplcache#complfunc#omni_complete#initialize()を参照せよ。
+		初期値は複雑なので、autoload/neocomplcache/sources/omni_complete.vimの
+		s:source.initialize()を参照せよ。
 >
 		" Examples:
 		if !exists('g:neocomplcache_omni_patterns')
@@ -404,8 +404,8 @@ g:neocomplcache_include_paths				*g:neocomplcache_include_paths*
 		である。存在しない場合、&l:pathが使われる。 記述形式は'path'
 		を参照せよ。ファイルタイプをキーとした文字列の辞書である。
 		
-		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimの
-		neocomplcache#plugin#include_complete#initialize()を参照せよ。
+		初期値は複雑なので、autoload/neocomplcache/sources/include_complete.vimの
+		neocomplcache#sources#include_complete#initialize()を参照せよ。
 
 g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		インクルードファイル名を取得するために行う行解析の式である。
@@ -413,16 +413,16 @@ g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		'includeexpr'を参照せよ。ファイルタイプをキーとした文字列の
 		辞書である。
 		
-		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimの
-		neocomplcache#plugin#include_complete#initialize()を参照せよ。
+		初期値は複雑なので、autoload/neocomplcache/sources/include_complete.vimの
+		s:source.initialize()を参照せよ。
 
 g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		インクルード命令のパターンを指定する。存在しない場合、
 		&l:includeが使われる。 記述形式は'include'を参照せよ。ファイ
 		ルタイプをキーとした文字列の辞書である。
 		
-		初期値は複雑なので、autoload/neocomplcache/plugin/include_complete.vimの
-		neocomplcache#plugin#include_complete#initialize()を参照せよ。
+		初期値は複雑なので、autoload/neocomplcache/sources/include_complete.vimの
+		s:source.initialize()を参照せよ。
                 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		include_completeやtags_completeでメンバ補完するためのキーワー
@@ -561,9 +561,8 @@ doc/neocomplcache.txtを参照せよ。
 PLUGINS							*neocomplcache-plugins*
 
 この項では、neocomplcacheに添付されているプラグインの解説を行う。 自分で作成
-したプラグインは、autoload/neocomplcache/pluginディレクトリまたは
-autoload/neocomplcache/complfuncに保存することで、neocomplcacheにより自動的
-に読み込まれる。
+したプラグインは、autoload/neocomplcache/sourcesに保存することで、
+neocomplcacheにより自動的に読み込まれる。
 
 keyword_complete.vim					*keyword_complete*
 		バッファやディクショナリからキーワードを収集し、補完に利用す
@@ -614,9 +613,6 @@ omni_complete.vim					*omni_complete*
 		
 
 completefunc_complete.vim				*completefunc_complete*
-		
-
-spell_complete.vim					*spell_complete*
 		
 
 abbrev_complete.vim					*abbrev_complete*

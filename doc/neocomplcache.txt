@@ -338,9 +338,8 @@ g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		This is appointed in regular expression every file type.
 	
 		Because it is complicated, refer to
-		neocomplcache#complfunc#omni_complete#initialize()
-		autoload/neocomplcache/complfunc/omni_complete.vim for the
-		initial value.
+		s:source.initialize() autoload/neocomplcache/sources/omni_complete.vim
+		for the initial value.
 >
 		" Examples:
 		if !exists('g:neocomplcache_omni_patterns')
@@ -430,9 +429,8 @@ g:neocomplcache_include_paths				*g:neocomplcache_include_paths*
 		dictionary of the character string that assumed file type a
 		key.
 		
-		Because it is complicated, refer to
-		neocomplcache#plugin#include_complete#initialize() in
-		autoload/neocomplcache/plugin/include_complete.vim for the
+		Because it is complicated, refer to s:source.initialize() in
+		autoload/neocomplcache/sources/include_complete.vim for the
 		initial value.
                 
 g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
@@ -442,9 +440,8 @@ g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		description form. It is the dictionary of the character
 		string that assumed file type a key.
 		
-		Because it is complicated, refer to
-		neocomplcache#plugin#include_complete#initialize() in
-		autoload/neocomplcache/plugin/include_complete.vim for the
+		Because it is complicated, refer to s:source.initialize() in
+		autoload/neocomplcache/sources/include_complete.vim for the
 		initial value.
                 
 g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
@@ -453,9 +450,8 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		for the description form. It is the dictionary of the
 		character string that assumed file type a key.
 		
-		Because it is complicated, refer to
-		neocomplcache#plugin#include_complete#initialize() in
-		autoload/neocomplcache/plugin/include_complete.vim for the
+		Because it is complicated, refer to s:source.initialize() in
+		autoload/neocomplcache/sources/include_complete.vim for the
 		initial value.
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
@@ -646,7 +642,7 @@ PLUGINS							*neocomplcache-plugins*
 
 In this clause, I comment on plug in attached to neocomplcache.
 Neocomplcache reads automatically the plugin saved in an
-autoload/neocomplcache/plugin directory.
+autoload/neocomplcache/sources directory.
 
 buffer_complete.vim					*buffer_complete*
 		This plugin will collect keywords from buffers and
@@ -703,9 +699,6 @@ omni_complete.vim					*omni_complete*
 completefunc_complete.vim				*completefunc_complete*
 		
 
-spell_complete.vim					*spell_complete*
-		
-
 abbrev_complete.vim					*abbrev_complete*
 		
 
@@ -723,6 +716,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-07-10
+- Deleted spell_complete.
+- Implemented dictionary plugins.
+- Deleted obsolute functions.
 
 2010-07-09
 - Improved eskk check.

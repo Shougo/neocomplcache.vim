@@ -361,8 +361,8 @@ Emacsのcompleter.elに似たような機能があるので実装。
 Ver.2.10にて、複雑だったソースコードを分割し、ついに補完をプラグインで拡張できるようになりました。
 他のプラグインを読み込む部分も実装したので、夢が広がります。
 プラグインの作り方については、今後ドキュメントを用意する予定ですが、
-やる気があるならば`autoload/neocomplcache/plugin/syntax_complete.vim`などを読んでみてください。
-autoload/neocomplcache/pluginディレクトリにプラグインファイルをおいておけば、補完時に自動で読み込まれます。
+やる気があるならば`autoload/neocomplcache/sources/syntax_complete.vim`などを読んでみてください。
+autoload/neocomplcache/sourcesディレクトリにプラグインファイルをおいておけば、補完時に自動で読み込まれます。
 
 Ver.3.00より、プラグインを配置するディレクトリが変更されたので注意してください。
 
@@ -372,8 +372,8 @@ Ver.3.00より、プラグインを配置するディレクトリが変更され
 ## 補完関数
 
 Ver.3.00にて、オムニ補完とファイル名補完を分離し、補完関数として実装し直しました。
-やる気があるならば`autoload/neocomplcache/complfunc/filename_complete.vim`などを読んでみてください。
-autoload/neocomplcache/complfuncディレクトリにファイルをおいておけば、自動で読み込まれます。
+やる気があるならば`autoload/neocomplcache/sources/filename_complete.vim`などを読んでみてください。
+autoload/neocomplcache/sourcesディレクトリにファイルをおいておけば、自動で読み込まれます。
 
 プラグインと補完関数の違いは、プラグインはカーソル前のキーワードに反応しますが、
 補完関数は独自に補完位置を決められるということです。

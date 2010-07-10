@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,13 @@
 "=============================================================================
 
 let s:include_info = {}
-function! neocomplcache#plugin#include_complete#initialize()"{{{
+
+let s:source = {
+      \ 'name' : 'include_complete',
+      \ 'kind' : 'plugin',
+      \}
+
+function! s:source.initialize()"{{{
   " Initialize
   let s:include_info = {}
   let s:include_cache = {}
@@ -59,11 +65,11 @@ function! neocomplcache#plugin#include_complete#initialize()"{{{
   command! -nargs=? -complete=buffer NeoComplCacheCachingInclude call s:check_buffer(<q-args>)
 endfunction"}}}
 
-function! neocomplcache#plugin#include_complete#finalize()"{{{
+function! s:source.finalize()"{{{
   delcommand NeoComplCacheCachingInclude
 endfunction"}}}
 
-function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if !has_key(s:include_info, bufnr('%')) || neocomplcache#within_comment()
     return []
   endif
@@ -88,7 +94,11 @@ function! neocomplcache#plugin#include_complete#get_keyword_list(cur_keyword_str
   return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
-function! neocomplcache#plugin#include_complete#get_include_files(bufnumber)"{{{
+function! neocomplcache#sources#include_complete#define()"{{{
+  return s:source
+endfunction"}}}
+
+function! neocomplcache#sources#include_complete#get_include_files(bufnumber)"{{{
   if has_key(s:include_info, a:bufnumber)
     return s:include_info[a:bufnumber].include_files
   else

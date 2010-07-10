@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,12 @@
 " }}}
 "=============================================================================
 
-function! neocomplcache#plugin#dictionary_complete#initialize()"{{{
+let s:source = {
+      \ 'name' : 'dictionary_complete',
+      \ 'kind' : 'plugin',
+      \}
+
+function! s:source.initialize()"{{{
   " Initialize.
   let s:dictionary_list = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('dictionary_complete')
@@ -50,11 +55,11 @@ function! neocomplcache#plugin#dictionary_complete#initialize()"{{{
   endif
 endfunction"}}}
 
-function! neocomplcache#plugin#dictionary_complete#finalize()"{{{
+function! s:source.finalize()"{{{
   delcommand NeoComplCacheCachingDictionary
 endfunction"}}}
 
-function! neocomplcache#plugin#dictionary_complete#get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str)"{{{
   let l:list = []
 
   let l:key = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
@@ -68,6 +73,10 @@ function! neocomplcache#plugin#dictionary_complete#get_keyword_list(cur_keyword_
   endfor
 
   return l:list
+endfunction"}}}
+
+function! neocomplcache#sources#dictionary_complete#define()"{{{
+  return s:source
 endfunction"}}}
 
 function! s:caching()"{{{

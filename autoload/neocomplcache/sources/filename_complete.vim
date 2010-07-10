@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,12 @@
 " }}}
 "=============================================================================
 
-function! neocomplcache#complfunc#filename_complete#initialize()"{{{
+let s:source = {
+      \ 'name' : 'filename_complete',
+      \ 'kind' : 'complfunc',
+      \}
+
+function! s:source.initialize()"{{{
   " Initialize.
   let s:skip_dir = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('filename_complete')
@@ -32,10 +37,10 @@ function! neocomplcache#complfunc#filename_complete#initialize()"{{{
   " Set rank.
   call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'filename_complete', 2)
 endfunction"}}}
-function! neocomplcache#complfunc#filename_complete#finalize()"{{{
+function! s:source.finalize()"{{{
 endfunction"}}}
 
-function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text)"{{{
   if &filetype ==# 'vimshell' || neocomplcache#within_comment()
     return -1
   endif
@@ -77,7 +82,7 @@ function! neocomplcache#complfunc#filename_complete#get_keyword_pos(cur_text)"{{
   return l:cur_keyword_pos
 endfunction"}}}
 
-function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
   let l:is_win = has('win32') || has('win64')
@@ -125,8 +130,8 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   for word in l:files
     let l:dict = { 'word' : word, 'menu' : '[F]' , 'rank': 1 }
 
-      let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
-      let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
+    let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
+    let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
@@ -181,6 +186,10 @@ function! neocomplcache#complfunc#filename_complete#get_complete_words(cur_keywo
   endfor
 
   return l:list
+endfunction"}}}
+
+function! neocomplcache#sources#filename_complete#define()"{{{
+  return s:source
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -40,9 +40,9 @@ function! neocomplcache#enable() "{{{
   augroup END "}}}
 
   " Initialize"{{{
+  let s:complfunc_sources = {}
+  let s:plugin_sources = {}
   let s:complete_lock = {}
-  let s:complfuncs_func_table = []
-  let s:global_complfuncs = {}
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
@@ -62,14 +62,18 @@ function! neocomplcache#enable() "{{{
   let s:skip_next_complete = 0
   "}}}
 
-  " Initialize complfuncs table."{{{
+  " Initialize sources table."{{{
   " Search autoload.
-  let l:func_list = split(globpath(&runtimepath, 'autoload/neocomplcache/complfunc/*.vim'), '\n')
-  for list in l:func_list
-    let l:func_name = fnamemodify(list, ':t:r')
-    if !has_key(g:neocomplcache_plugin_disable, l:func_name) || 
-          \ g:neocomplcache_plugin_disable[l:func_name] == 0
-      let s:global_complfuncs[l:func_name] = 'neocomplcache#complfunc#' . l:func_name . '#'
+  for file in split(globpath(&runtimepath, 'autoload/neocomplcache/sources/*.vim'), '\n')
+    let l:source_name = fnamemodify(file, ':t:r')
+    if !has_key(g:neocomplcache_plugin_disable, l:source_name) || 
+          \ g:neocomplcache_plugin_disable[l:source_name] == 0
+      let l:source = call('neocomplcache#sources#' . l:source_name . '#define', [])
+      if l:source.kind ==# 'complfunc'
+        let s:complfunc_sources[l:source_name] = l:source
+      elseif l:source.kind ==# 'plugin'
+        let s:plugin_sources[l:source_name] = l:source
+      endif
     endif
   endfor
   "}}}
@@ -330,8 +334,8 @@ function! neocomplcache#enable() "{{{
   set vb t_vb=
   
   " Initialize.
-  for l:complfunc_name in keys(s:global_complfuncs)
-    call call(s:global_complfuncs[l:complfunc_name] . 'initialize', [])
+  for l:complfunc in values(neocomplcache#available_complfuncs())
+    call l:complfunc.initialize()
   endfor
 endfunction"}}}
 
@@ -351,8 +355,8 @@ function! neocomplcache#disable()"{{{
   delcommand NeoComplCacheToggle
   delcommand NeoComplCacheAutoCompletionLength
 
-  for l:complfunc_name in keys(s:global_complfuncs)
-    call call(s:global_complfuncs[l:complfunc_name] . 'finalize', [])
+  for l:complfunc in values(neocomplcache#available_complfuncs())
+    call l:complfunc.finalize()
   endfor
 endfunction"}}}
 
@@ -406,6 +410,15 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 endfunction"}}}
 
 " Plugin helper."{{{
+function! neocomplcache#available_complfuncs()"{{{
+  return s:complfunc_sources
+endfunction"}}}
+function! neocomplcache#available_plugins()"{{{
+  return s:plugin_sources
+endfunction"}}}
+function! neocomplcache#available_sources()"{{{
+  return extend(s:complfunc_sources, s:plugin_sources)
+endfunction"}}}
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Escape."{{{
   let l:keyword_escape = escape(a:cur_keyword_str, '~" \.^$[]')
@@ -784,7 +797,7 @@ endfunction"}}}
 " Complete filetype helper.
 function! neocomplcache#filetype_complete(arglead, cmdline, cursorpos)"{{{
   let l:list = split(globpath(&runtimepath, 'snippets/*.snip*'), '\n') +
-        \split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/snippets_complete/*.snip*'), '\n')
+        \split(globpath(&runtimepath, 'autoload/neocomplcache/sources/snippets_complete/*.snip*'), '\n')
   if exists('g:neocomplcache_snippets_dir')
     for l:dir in split(g:neocomplcache_snippets_dir, ',')
       let l:dir = expand(l:dir)
@@ -879,7 +892,8 @@ endfunction"}}}
 
 " Manual complete wrapper.
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
-  if !has_key(s:global_complfuncs, a:complfunc_name)
+  let l:sources = neocomplcache#available_sources()
+  if !has_key(l:sources, a:complfunc_name)
     echoerr printf("Invalid completefunc name %s is given.", a:complfunc_name)
     return ''
   endif
@@ -890,9 +904,9 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   " Set function.
   let &l:completefunc = 'neocomplcache#manual_complete'
 
-  let l:dict = {}
-  let l:dict[a:complfunc_name] = s:global_complfuncs[a:complfunc_name]
   " Get complete result.
+  let l:dict = {}
+  let l:dict[a:complfunc_name] = l:sources[a:complfunc_name]
   let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = 
         \ s:integrate_completion(s:get_complete_result(s:get_cur_text(), l:dict), 0)
   
@@ -1096,12 +1110,12 @@ function! s:get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
   
-  let l:complfuncs = a:0 == 0 ? s:global_complfuncs : a:1
+  let l:complfuncs = a:0 == 0 ? neocomplcache#available_complfuncs() : a:1
   
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
-    let l:cur_keyword_pos = call(l:complfunc . 'get_keyword_pos', [a:cur_text])
+    let l:cur_keyword_pos = l:complfunc.get_keyword_pos(a:cur_text)
 
     if l:cur_keyword_pos >= 0
       let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
@@ -1121,7 +1135,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
         let &ignorecase = g:neocomplcache_enable_ignore_case
       endif
 
-      let l:words = call(l:complfunc . 'get_complete_words', [l:cur_keyword_pos, l:cur_keyword_str])
+      let l:words = l:complfunc.get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
 
       let &ignorecase = l:ignorecase_save
 
@@ -1142,7 +1156,7 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
   if empty(a:complete_result)
     if neocomplcache#get_cur_text() =~ '\s\+$'
       " Caching current cache line.
-      call neocomplcache#plugin#buffer_complete#caching_current_cache_line()
+      call neocomplcache#sources#buffer_complete#caching_current_cache_line()
     endif
     
     return [-1, '', []]
@@ -1157,7 +1171,7 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
   let l:cur_text = neocomplcache#get_cur_text()
   let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
 
-  let l:frequencies = neocomplcache#plugin#buffer_complete#get_frequencies()
+  let l:frequencies = neocomplcache#sources#buffer_complete#get_frequencies()
 
   " Append prefix.
   let l:complete_words = []

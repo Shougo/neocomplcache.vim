@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jul 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,36 +24,27 @@
 " }}}
 "=============================================================================
 
-function! neocomplcache#complfunc#keyword_complete#initialize()"{{{
-  let s:plugins_func_table = {}
+let s:source = {
+      \ 'name' : 'keyword_complete',
+      \ 'kind' : 'complfunc',
+      \}
 
-  " Initialize plugins table."{{{
-  " Search autoload.
-  let l:plugin_list = split(globpath(&runtimepath, 'autoload/neocomplcache/plugin/*.vim'), '\n')
-  for list in l:plugin_list
-    let l:plugin_name = fnamemodify(list, ':t:r')
-    if !has_key(g:neocomplcache_plugin_disable, l:plugin_name) || 
-          \ g:neocomplcache_plugin_disable[l:plugin_name] == 0
-      let l:func = 'neocomplcache#plugin#' . l:plugin_name . '#'
-      let s:plugins_func_table[l:plugin_name] = l:func
-    endif
-  endfor"}}}
-
+function! s:source.initialize()"{{{
   " Set rank.
   call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'keyword_complete', 5)
   
   " Initialize.
-  for l:plugin in values(s:plugins_func_table)
-    call call(l:plugin . 'initialize', [])
+  for l:plugin in values(neocomplcache#available_plugins())
+    call l:plugin.initialize()
   endfor
 endfunction"}}}
-function! neocomplcache#complfunc#keyword_complete#finalize()"{{{
-  for l:plugin in values(s:plugins_func_table)
-    call call(l:plugin . 'finalize', [])
+function! s:source.finalize()"{{{
+  for l:plugin in values(neocomplcache#available_plugins())
+    call l:plugin.finalize()
   endfor
 endfunction"}}}
 
-function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text)"{{{
   let l:pattern = neocomplcache#get_keyword_pattern_end()
 
   let l:cur_keyword_pos = match(a:cur_text, l:pattern)
@@ -65,20 +56,20 @@ function! neocomplcache#complfunc#keyword_complete#get_keyword_pos(cur_text)"{{{
   return l:cur_keyword_pos
 endfunction"}}}
 
-function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   if neocomplcache#is_eskk_enabled() && !neocomplcache#is_text_mode()
     return []
   endif
   
   " Get keyword list.
   let l:cache_keyword_list = []
-  for [l:plugin, l:funcname] in items(s:plugins_func_table)
-    if !has_key(g:neocomplcache_plugin_completion_length, l:plugin)
+  for [l:name, l:plugin] in items(neocomplcache#available_plugins())
+    if !has_key(g:neocomplcache_plugin_completion_length, l:name)
           \|| !neocomplcache#is_auto_complete()
-          \|| len(a:cur_keyword_str) >= g:neocomplcache_plugin_completion_length[l:plugin]
-      let l:list = call(l:funcname . 'get_keyword_list', [a:cur_keyword_str])
-      let l:rank = has_key(g:neocomplcache_plugin_rank, l:plugin)? 
-              \ g:neocomplcache_plugin_rank[l:plugin] : g:neocomplcache_plugin_rank['keyword_complete']
+          \|| len(a:cur_keyword_str) >= g:neocomplcache_plugin_completion_length[l:name]
+      let l:list = l:plugin.get_keyword_list(a:cur_keyword_str)
+      let l:rank = has_key(g:neocomplcache_plugin_rank, l:name)? 
+              \ g:neocomplcache_plugin_rank[l:name] : g:neocomplcache_plugin_rank['keyword_complete']
       for l:keyword in l:list
         let l:keyword.rank = l:rank
       endfor
@@ -87,6 +78,10 @@ function! neocomplcache#complfunc#keyword_complete#get_complete_words(cur_keywor
   endfor
 
   return l:cache_keyword_list
+endfunction"}}}
+
+function! neocomplcache#sources#keyword_complete#define()"{{{
+  return s:source
 endfunction"}}}
 
 " vim: foldmethod=marker

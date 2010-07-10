@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,12 @@
 " }}}
 "=============================================================================
 
-function! neocomplcache#complfunc#omni_complete#initialize()"{{{
+let s:source = {
+      \ 'name' : 'omni_complete',
+      \ 'kind' : 'complfunc',
+      \}
+
+function! s:source.initialize()"{{{
   " Initialize omni completion pattern."{{{
   if !exists('g:neocomplcache_omni_patterns')
     let g:neocomplcache_omni_patterns = {}
@@ -81,10 +86,10 @@ function! neocomplcache#complfunc#omni_complete#initialize()"{{{
   let s:keyword_cache = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('omni_complete')
 endfunction"}}}
-function! neocomplcache#complfunc#omni_complete#finalize()"{{{
+function! s:source.finalize()"{{{
 endfunction"}}}
 
-function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text)"{{{
   if neocomplcache#within_comment()
     return -1
   endif
@@ -161,7 +166,7 @@ function! neocomplcache#complfunc#omni_complete#get_keyword_pos(cur_text)"{{{
   return l:cur_keyword_pos
 endfunction"}}}
 
-function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let l:is_wildcard = g:neocomplcache_enable_wildcard && a:cur_keyword_str =~ '\*\w\+$'
         \&& neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete()
 
@@ -216,6 +221,10 @@ function! neocomplcache#complfunc#omni_complete#get_complete_words(cur_keyword_p
   endfor
 
   return l:list
+endfunction"}}}
+
+function! neocomplcache#sources#omni_complete#define()"{{{
+  return s:source
 endfunction"}}}
 
 function! s:get_omni_list(list)"{{{
