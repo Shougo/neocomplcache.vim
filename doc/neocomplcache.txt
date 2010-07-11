@@ -717,6 +717,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-11
+- Supported GetLatestVimScripts.
+
 2010-07-10
 - Deleted spell_complete.
 - Implemented dictionary plugins.
