@@ -164,6 +164,8 @@ function! neocomplcache#enable() "{{{
         \'^\s*\[\h\w*\|[%.]\?\h\w*\|\%(\.\.\@\?\|%[%$!]\)\%(\h\w*\)\?\|\h\w*:\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'asm',
         \'[%$.]\?\h\w*\%(\$\h\w*\)\?')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'gdb,int-gdb',
+        \'$\h\w*\|[[:alnum:]:._-]\+')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'make',
         \'[[:alpha:]_.-][[:alnum:]_.-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'scala',
@@ -223,6 +225,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-clj', 'clojure')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-sml,int-smlsharp', 'sml')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-js,int-kjs', 'javascript')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-gdb', 'gdb')
   "}}}
 
   " Initialize include filetype lists."{{{

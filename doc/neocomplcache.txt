@@ -717,6 +717,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-13
+- Supported gdb keyword.
+
 2010-07-12
 - Improved eskk and vimproc check.
 
