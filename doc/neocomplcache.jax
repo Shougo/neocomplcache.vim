@@ -452,6 +452,11 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		
 		初期値は { 'default' : '-' } である。
 
+g:neocomplcache_quick_match_table			*g:neocomplcache_quick_match_table*
+		入力文字と対応する、クイックマッチリストの補完候補のテーブルである。
+		
+		初期値は複雑なので、plugin/neocomplcache.vimを参照せよ。
+
 g:neocomplcache_omni_functions				*g:neocomplcache_omni_functions*
 		|&filetype|をキーとしたディクショナリであり、|omni_complete|
 		が呼び出すオムニ補完関数を定義する。 |&filetype|に対応する関
@@ -507,27 +512,27 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		次のプレースホルダにジャンプする。スニペットの展開は行わない。
 		スニペット名を展開したくないときに使う。
                 
-neocomplcache#manual_filename_complete			*neocomplcache#manual_filename_complete*
+neocomplcache#manual_filename_complete()		*neocomplcache#manual_filename_complete()*
 		inoremap <expr>上で使用する。neocomplcacheのファイル名補完を
 		手動で呼び出す。 Vim標準のファイル名補完を置き換えるときに使
 		う。
 >
 		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_omni_complete			*neocomplcache#manual_omni_complete*
+neocomplcache#manual_omni_complete()			*neocomplcache#manual_omni_complete()*
 		inoremap <expr>上で使用する。neocomplcacheのオムニ補完を手動
 		で呼び出す。 Vim標準のオムニ補完を置き換えるときに使う。
 >
 		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
+neocomplcache#manual_keyword_complete()			*neocomplcache#manual_keyword_complete()*
 		inoremap <expr>上で使用する。neocomplcacheのキーワード補完を
 		手動で呼び出す。 Vim標準のキーワード補完を置き換えるときに使
 		う。
 >
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 <
-neocomplcache#close_popup				*neocomplcache#close_popup*
+neocomplcache#close_popup()				*neocomplcache#close_popup()*
 		neocomplcacheの補完を選択し、ポップアップメニューを閉じる。
 		<C-y>の代わりに 使うと良いだろう。
 >
@@ -539,7 +544,12 @@ neocomplcache#cancel_popup()				*neocomplcache#cancel_popup()*
 >
 		inoremap <expr><C-e>  neocomplcache#cancel_popup()
 <
-neocomplcache#undo_completion				*neocomplcache#undo_completion*
+neocomplcache#smart_close_popup()			*neocomplcache#smart_close_popup()*
+		neocomplcacheの補完を選択し、ポップアップメニューを閉じる。
+		|neocomplcache#close_popup()|とは違い、
+		|g:neocomplcache_enable_auto_select|によって挙動を賢く変化させる。
+
+neocomplcache#undo_completion				*neocomplcache#undo_completion()*
 		inoremap <expr>上で使用する。neocomplcacheによって補完した候
 		補を元に戻す。 Vimには確定した補完をキャンセルする機構がない
 		ため、活用すると便利であろう。

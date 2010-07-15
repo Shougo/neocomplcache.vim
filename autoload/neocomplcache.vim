@@ -52,7 +52,7 @@ function! neocomplcache#enable() "{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_cur_keyword_pos = -1
-  let s:quickmatch_keywordpos = -1
+  let s:quick_match_keywordpos = -1
   let s:old_complete_words = []
   let s:update_time_save = &updatetime
   let s:prev_numbered_list = []
@@ -866,6 +866,16 @@ endfunction"}}}
 "}}}
 
 " Key mapping functions."{{{
+function! neocomplcache#smart_close_popup()"{{{
+  if !pumvisible()
+    return ''
+  endif
+
+  let s:skip_next_complete = 1
+  
+  return g:neocomplcache_enable_auto_select ? "\<C-e>" : "\<C-y>"
+endfunction
+"}}}
 function! neocomplcache#close_popup()"{{{
   if !pumvisible()
     return ''
@@ -1035,10 +1045,10 @@ function! s:do_complete(is_moved)"{{{
     return
   endif
 
-  let l:quickmatch_pattern = s:get_quickmatch_pattern()
-  if g:neocomplcache_enable_quick_match && l:cur_text =~ l:quickmatch_pattern.'[a-z0-9;,./]$'
-    " Select quickmatch list.
-    let l:complete_words = s:select_quickmatch_list(l:cur_text[-1:])
+  let l:quick_match_pattern = s:get_quick_match_pattern()
+  if g:neocomplcache_enable_quick_match && l:cur_text =~ l:quick_match_pattern.'[a-z0-9;,./]$'
+    " Select quick_match list.
+    let l:complete_words = s:select_quick_match_list(l:cur_text[-1:])
     let s:prev_numbered_list = []
 
     if !empty(l:complete_words)
@@ -1053,13 +1063,13 @@ function! s:do_complete(is_moved)"{{{
     endif
   elseif g:neocomplcache_enable_quick_match 
         \&& !empty(s:old_complete_words)
-        \&& l:cur_text =~ l:quickmatch_pattern.'$'
-        \&& l:cur_text !~ l:quickmatch_pattern . l:quickmatch_pattern.'$'
+        \&& l:cur_text =~ l:quick_match_pattern.'$'
+        \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
 
-    " Print quickmatch list.
+    " Print quick_match list.
     let s:cur_keyword_pos = s:old_cur_keyword_pos
-    let l:cur_keyword_str = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quickmatch_pattern.'$'))-1])
-    let s:complete_words = s:make_quickmatch_list(s:old_complete_words, l:cur_keyword_str) 
+    let l:cur_keyword_str = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
+    let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -1084,7 +1094,7 @@ function! s:do_complete(is_moved)"{{{
   " Clear flag.
   let s:used_match_filter = 0
 
-  let l:is_quickmatch_list = 0
+  let l:is_quick_match_list = 0
   let s:prev_numbered_list = []
   let s:complete_words = []
   let s:old_complete_words = []
@@ -1328,22 +1338,16 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
   return l:list
 endfunction"}}}
 
-let s:quickmatch_table = {
-      \'a' : 0, 's' : 1, 'd' : 2, 'f' : 3, 'g' : 4, 'h' : 5, 'j' : 6, 'k' : 7, 'l' : 8, ';' : 9,
-      \'q' : 10, 'w' : 11, 'e' : 12, 'r' : 13, 't' : 14, 'y' : 15, 'u' : 16, 'i' : 17, 'o' : 18, 'p' : 19, 
-      \'z' : 20, 'x' : 21, 'c' : 22, 'v' : 23, 'b' : 24, 'n' : 25, 'm' : 26, ',' : 27, '.' : 28, '/' : 29,
-      \'1' : 30, '2' : 31, '3' : 32, '4' : 33, '5' : 34, '6' : 35, '7' : 36, '8' : 37, '9' : 38, '0' : 39
-      \}
-function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
+function! s:make_quick_match_list(list, cur_keyword_str)"{{{
   " Check dup.
   let l:dup_check = {}
   let l:num = 0
   let l:qlist = []
-  let l:key = 
-        \'asdfghjkl;'.
-        \'qwertyuiop'.
-        \'zxcvbnm,./'.
-        \'1234567890'
+
+  let l:keys = {}
+  for [l:key, l:number] in items(g:neocomplcache_quick_match_table)
+    let l:keys[l:number] = l:key
+  endfor
 
   " Save options.
   let l:ignorecase_save = &ignorecase
@@ -1357,12 +1361,12 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
   endif
 
   for keyword in a:list
-    if keyword.word != '' && 
-          \(keyword.word == a:cur_keyword_str || keyword.word[: len(a:cur_keyword_str)-1] == a:cur_keyword_str)
+    if keyword.word != '' && has_key(l:keys, l:num) 
+          \&& (keyword.word == a:cur_keyword_str || keyword.word[: len(a:cur_keyword_str)-1] == a:cur_keyword_str)
           \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
       let l:dup_check[keyword.word] = 1
       let l:keyword = deepcopy(l:keyword)
-      let keyword.abbr = printf('%s: %s', l:key[l:num], keyword.abbr)
+      let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
 
       call add(l:qlist, keyword)
       let l:num += 1
@@ -1372,25 +1376,25 @@ function! s:make_quickmatch_list(list, cur_keyword_str)"{{{
   let &ignorecase = l:ignorecase_save
   
   " Trunk too many items.
-  let l:qlist = l:qlist[: len(s:quickmatch_table)]
+  let l:qlist = l:qlist[: len(g:neocomplcache_quick_match_table)]
 
   " Save numbered lists.
   let s:prev_numbered_list = l:qlist
 
   return l:qlist
 endfunction"}}}
-function! s:select_quickmatch_list(key)"{{{
-  if !has_key(s:quickmatch_table, a:key)
+function! s:select_quick_match_list(key)"{{{
+  if !has_key(g:neocomplcache_quick_match_table, a:key)
     return []
   endif
-  let l:numbered = get(s:prev_numbered_list, s:quickmatch_table[a:key])
+  let l:numbered = get(s:prev_numbered_list, g:neocomplcache_quick_match_table[a:key])
   if type(l:numbered) == type({})
     return [l:numbered]
   endif
 
   return []
 endfunction"}}}
-function! s:get_quickmatch_pattern()"{{{
+function! s:get_quick_match_pattern()"{{{
   let l:filetype = neocomplcache#get_context_filetype()
 
   let l:pattern = has_key(g:neocomplcache_quick_match_patterns, l:filetype)?  

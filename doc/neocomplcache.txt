@@ -479,6 +479,12 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		
 		Default value is { 'default' : '-' }.
 
+g:neocomplcache_quick_match_table			*g:neocomplcache_quick_match_table*
+		It is the table of the candidates of an input letter and quick
+		match list.
+		
+		Because it is complicated, refer to plugin/neocomplcache.vim.
+
 g:neocomplcache_omni_functions				*g:neocomplcache_omni_functions*
 		This dictionary which appoints |omni_complete| call
 		function.  The key is |&filetype|. If
@@ -570,6 +576,11 @@ neocomplcache#cancel_popup()				*neocomplcache#cancel_popup()*
 >
 		inoremap <expr><C-e>  neocomplcache#cancel_popup()
 <
+neocomplcache#smart_close_popup()			*neocomplcache#smart_close_popup()*
+		Inset candidate and close popup menu for neocomplcache.
+		Unlike|neocomplcache#close_popup()|, this function changes
+		behavior by|g:neocomplcache_enable_auto_select|smart.
+
 neocomplcache#undo_completion				*neocomplcache#undo_completion*
 		Use this function on inoremap <expr>.  Undo inputed
 		candidate.  Because there is not mechanism to cancel
@@ -622,20 +633,17 @@ EXAMPLES						*neocomplcache-examples*
 	
 	" Recommended key-mappings.
 	" <CR>: close popup and save indent.
-	inoremap <expr><CR>  (pumvisible() ? "\<C-y>":'') . "\<C-f>\<CR>X\<BS>"
+	inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<C-f>\<CR>X\<BS>"
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 	" <C-h>, <BS>: close popup and delete backword char.
-	inoremap <expr><C-h> pumvisible() ? neocomplcache#close_popup()."\<C-h>" : "\<C-h>"
-	inoremap <expr><BS> pumvisible() ? neocomplcache#close_popup()."\<C-h>" : "\<C-h>"
+	inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+	inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
 	inoremap <expr><C-y>  neocomplcache#close_popup()
 	inoremap <expr><C-e>  neocomplcache#cancel_popup()
 	
 	" AutoComplPop like behavior.
 	"let g:neocomplcache_enable_auto_select = 1
-	"inoremap <expr><CR>  (pumvisible() ? "\<C-e>":'') . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
-	"inoremap <expr><C-h> pumvisible() ? neocomplcache#cancel_popup()."\<C-h>" : "\<C-h>"
-	"inoremap <expr><BS> pumvisible() ? neocomplcache#cancel_popup()."\<C-h>" : "\<C-h>"
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
@@ -719,6 +727,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-15
 - Fixed error when complete directory.
+- Added g:neocomplcache_quick_match_table.
+- Added neocomplcache#smart_close_popup().
 
 2010-07-13
 - Supported gdb keyword.

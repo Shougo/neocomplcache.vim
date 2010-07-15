@@ -117,9 +117,6 @@ endif
 if !exists('g:neocomplcache_lock_buffer_name_pattern')
   let g:neocomplcache_lock_buffer_name_pattern = ''
 endif
-if !exists('g:neocomplcache_temporary_dir')
-  let g:neocomplcache_temporary_dir = '~/.neocon'
-endif
 if !exists('g:neocomplcache_ctags_program')
   let g:neocomplcache_ctags_program = 'ctags'
 endif
@@ -132,9 +129,18 @@ endif
 if !exists('g:neocomplcache_plugin_rank')
   let g:neocomplcache_plugin_rank = {}
 endif
+if !exists('g:neocomplcache_temporary_dir')
+  let g:neocomplcache_temporary_dir = '~/.neocon'
+endif
 let g:neocomplcache_temporary_dir = expand(g:neocomplcache_temporary_dir)
 if !isdirectory(g:neocomplcache_temporary_dir)
   call mkdir(g:neocomplcache_temporary_dir, 'p')
+endif
+if !exists('g:neocomplcache_quick_match_table')
+  let g:neocomplcache_quick_match_table = {
+        \'a' : 0, 's' : 1, 'd' : 2, 'f' : 3, 'g' : 4, 'h' : 5, 'j' : 6, 'k' : 7, 'l' : 8, ';' : 9,
+        \'q' : 10, 'w' : 11, 'e' : 12, 'r' : 13, 't' : 14, 'y' : 15, 'u' : 16, 'i' : 17, 'o' : 18, 'p' : 19, 
+        \}
 endif
 if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
   " Enable startup.
