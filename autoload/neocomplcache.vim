@@ -867,13 +867,7 @@ endfunction"}}}
 
 " Key mapping functions."{{{
 function! neocomplcache#smart_close_popup()"{{{
-  if !pumvisible()
-    return ''
-  endif
-
-  let s:skip_next_complete = 1
-  
-  return g:neocomplcache_enable_auto_select ? "\<C-e>" : "\<C-y>"
+  return g:neocomplcache_enable_auto_select ? neocomplcache#cancel_popup() : neocomplcache#close_popup()
 endfunction
 "}}}
 function! neocomplcache#close_popup()"{{{
@@ -882,6 +876,11 @@ function! neocomplcache#close_popup()"{{{
   endif
 
   let s:skip_next_complete = 1
+  let s:cur_keyword_pos = -1
+  let s:cur_keyword_str = ''
+  let s:complete_words = []
+  let s:old_complete_words = []
+  let s:prev_numbered_list = []
   
   return "\<C-y>"
 endfunction
@@ -892,6 +891,11 @@ function! neocomplcache#cancel_popup()"{{{
   endif
 
   let s:skip_next_complete = 1
+  let s:cur_keyword_pos = -1
+  let s:cur_keyword_str = ''
+  let s:complete_words = []
+  let s:old_complete_words = []
+  let s:prev_numbered_list = []
   
   return "\<C-e>"
 endfunction
@@ -1299,6 +1303,8 @@ function! s:on_insert_leave()"{{{
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
+  let s:old_complete_words = []
+  let s:prev_numbered_list = []
   let s:used_match_filter = 0
   let s:context_filetype = ''
   let s:is_text_mode = 0
