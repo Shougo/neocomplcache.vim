@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2010
+" Last Modified: 14 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -625,7 +625,7 @@ function! neocomplcache#system(str, ...)"{{{
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
-  let l:output = s:exists_vimproc_version ? (a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input))
+  let l:output = s:exists_vimproc ? (a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input))
         \: (a:0 == 0 ? system(l:command) : system(l:command, l:input))
   if &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)

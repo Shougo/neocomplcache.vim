@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 15 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -228,7 +228,6 @@ function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_st
 
     call add(l:ret, l:dict)
   endfor
-  echomsg string(l:dict)
 
   return l:ret
 endfunction"}}}

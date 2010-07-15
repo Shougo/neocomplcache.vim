@@ -717,6 +717,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-15
+- Fixed error when complete directory.
+
 2010-07-13
 - Supported gdb keyword.
 
