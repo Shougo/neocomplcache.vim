@@ -729,6 +729,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed error when complete directory.
 - Added g:neocomplcache_quick_match_table.
 - Added neocomplcache#smart_close_popup().
+- Improved tilde substitution.
 
 2010-07-13
 - Supported gdb keyword.

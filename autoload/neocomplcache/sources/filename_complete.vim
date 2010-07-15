@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 15 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -131,7 +131,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:dict = { 'word' : word, 'menu' : '[F]' , 'rank': 1 }
 
     let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
-    let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
