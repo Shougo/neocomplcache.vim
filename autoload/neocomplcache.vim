@@ -651,8 +651,6 @@ endfunction"}}}
 function! neocomplcache#get_auto_completion_length(plugin_name)"{{{
   if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
     return g:neocomplcache_plugin_completion_length[a:plugin_name]
-  elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
-    return 0
   else
     return g:neocomplcache_auto_completion_start_length
   endif
@@ -1076,7 +1074,11 @@ function! s:do_complete(is_moved)"{{{
     let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str) 
 
     let &l:completefunc = 'neocomplcache#auto_complete'
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+      call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+    else
+      call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    endif
     let s:old_cur_text = l:cur_text
     return
   elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i

@@ -544,7 +544,7 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		you do not want to expand a snippet name, use this
 		keymapping.
 
-neocomplcache#manual_filename_complete			*neocomplcache#manual_filename_complete*
+neocomplcache#manual_filename_complete()		*neocomplcache#manual_filename_complete()*
 		Use this function on inoremap <expr>.  The keymapping call
 		the file name completion of neocomplcache.  When you
 		rearrange the file name completion of the Vim standard, you
@@ -552,21 +552,21 @@ neocomplcache#manual_filename_complete			*neocomplcache#manual_filename_complete
 >
 		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_omni_complete			*neocomplcache#manual_omni_complete*
+neocomplcache#manual_omni_complete()			*neocomplcache#manual_omni_complete()*
 		Use this function on inoremap <expr>.  The keymapping call
 		the omni completion of neocomplcache.  When you rearrange
 		the omni completion of the Vim standard, you use it.
 >
 		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_keyword_complete			*neocomplcache#manual_keyword_complete*
+neocomplcache#manual_keyword_complete()			*neocomplcache#manual_keyword_complete()*
 		Use this function on inoremap <expr>.  The keymapping call
 		keyword completion of neocomplcache.  When you rearrange the
 		keyword completion of the Vim standard, you use it.
 >
 		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
 
-neocomplcache#close_popup				*neocomplcache#close_popup*
+neocomplcache#close_popup()				*neocomplcache#close_popup()*
 		Inset candidate and close popup menu for neocomplcache.
 >
 		inoremap <expr><C-y>  neocomplcache#close_popup()
@@ -581,7 +581,7 @@ neocomplcache#smart_close_popup()			*neocomplcache#smart_close_popup()*
 		Unlike|neocomplcache#close_popup()|, this function changes
 		behavior by|g:neocomplcache_enable_auto_select|smart.
 
-neocomplcache#undo_completion				*neocomplcache#undo_completion*
+neocomplcache#undo_completion()				*neocomplcache#undo_completion()*
 		Use this function on inoremap <expr>.  Undo inputed
 		candidate.  Because there is not mechanism to cancel
 		candidate in Vim, it will be convenient when it inflects.
@@ -724,6 +724,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-07-16
+- Improved neocomplcache#get_auto_completion_length().
+- Fixed documentation.
+- Improved quickmatch selection.
 
 2010-07-15
 - Fixed error when complete directory.
