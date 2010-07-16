@@ -729,6 +729,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved neocomplcache#get_auto_completion_length().
 - Fixed documentation.
 - Improved quickmatch selection.
+- Improved check wildcard.
+- Fixed quickmatch selection.
 
 2010-07-15
 - Fixed error when complete directory.

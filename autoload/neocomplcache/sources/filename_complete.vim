@@ -55,13 +55,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 
   " Filename pattern.
   let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
-
-  let l:cur_keyword_pos = match(a:cur_text, l:pattern)
-  if g:neocomplcache_enable_wildcard
-    " Check wildcard.
-    let l:cur_keyword_pos = neocomplcache#match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
-  endif
-  let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
+  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text, l:pattern)
   if neocomplcache#is_auto_complete() && len(l:cur_keyword_str) < s:completion_length
     return -1
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jul 2010
+" Last Modified: 16 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -700,25 +700,16 @@ function! neocomplcache#get_prev_word(cur_keyword_str)"{{{
 
   return l:prev_word
 endfunction"}}}
-function! neocomplcache#match_word(cur_text)"{{{
-  return matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
-endfunction"}}}
-function! neocomplcache#match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
-  let l:cur_keyword_pos = a:cur_keyword_pos
-  if neocomplcache#is_eskk_enabled()
-    return l:cur_keyword_pos
-  endif
-
-  while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] == '*'
-    let l:left_text = a:cur_text[: l:cur_keyword_pos - 2]
-    if l:left_text == '' || l:left_text !~ a:pattern
-      break
-    endif
-
-    let l:cur_keyword_pos = match(l:left_text, a:pattern)
-  endwhile
-
-  return l:cur_keyword_pos
+function! neocomplcache#match_word(cur_text, ...)"{{{
+  let l:pattern = a:0 > 1 ? a:1 : neocomplcache#get_keyword_pattern_end()
+  let l:cur_keyword_pos = match(a:cur_text, l:pattern)
+  
+  " Check wildcard.
+  let l:cur_keyword_pos = s:match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
+  
+  let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
+  
+  return [l:cur_keyword_pos, l:cur_keyword_str]
 endfunction"}}}
 function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
@@ -954,7 +945,7 @@ function! neocomplcache#undo_completion()"{{{
   endif
 
   " Get cursor word.
-  let l:cur_keyword_str = neocomplcache#match_word(s:get_cur_text())
+  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(s:get_cur_text())
   let l:old_keyword_str = s:cur_keyword_str
   let s:cur_keyword_str = l:cur_keyword_str
 
@@ -967,9 +958,6 @@ function! neocomplcache#complete_common_string()"{{{
     return ''
   endif
 
-  " Get cursor word.
-  let l:cur_keyword_str = neocomplcache#match_word(s:get_cur_text())
-
   " Save options.
   let l:ignorecase_save = &ignorecase
 
@@ -980,6 +968,9 @@ function! neocomplcache#complete_common_string()"{{{
   else
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
+
+  " Get cursor word.
+  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(s:get_cur_text())
 
   let l:complete_words = neocomplcache#keyword_filter(copy(s:old_complete_words), l:cur_keyword_str)
   if empty(l:complete_words)
@@ -1059,7 +1050,11 @@ function! s:do_complete(is_moved)"{{{
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
-      call feedkeys("\<C-x>\<C-u>", 'n')
+      if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+        call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+      else
+        call feedkeys("\<C-x>\<C-u>", 'n')
+      endif
       let s:old_cur_text = l:cur_text
       return 
     endif
@@ -1069,16 +1064,13 @@ function! s:do_complete(is_moved)"{{{
         \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
 
     " Print quick_match list.
-    let s:cur_keyword_pos = s:old_cur_keyword_pos
-    let l:cur_keyword_str = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
+    let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
+    let s:cur_keyword_pos = l:cur_keyword_pos
     let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str) 
 
+    " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
-    if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
-      call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
-    else
-      call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-    endif
+    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
     let s:old_cur_text = l:cur_text
     return
   elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
@@ -1345,7 +1337,9 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
 
   return l:list
 endfunction"}}}
+"}}}
 
+" Internal helper functions."{{{
 function! s:make_quick_match_list(list, cur_keyword_str)"{{{
   " Check dup.
   let l:dup_check = {}
@@ -1368,9 +1362,8 @@ function! s:make_quick_match_list(list, cur_keyword_str)"{{{
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
-  for keyword in a:list
+  for keyword in neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
     if keyword.word != '' && has_key(l:keys, l:num) 
-          \&& (keyword.word == a:cur_keyword_str || keyword.word[: len(a:cur_keyword_str)-1] == a:cur_keyword_str)
           \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
       let l:dup_check[keyword.word] = 1
       let l:keyword = deepcopy(l:keyword)
@@ -1463,5 +1456,24 @@ function! s:set_context_filetype()"{{{
         \ || (exists('eskk#get_mode') && eskk#get_mode() ==# 'ascii')
   let s:within_comment = (l:attr ==# 'Comment')
 endfunction"}}}
+function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
+  let l:cur_keyword_pos = a:cur_keyword_pos
+  if neocomplcache#is_eskk_enabled() || !g:neocomplcache_enable_wildcard
+    return l:cur_keyword_pos
+  endif
+
+  while l:cur_keyword_pos > 1 && a:cur_text[l:cur_keyword_pos - 1] == '*'
+    let l:left_text = a:cur_text[: l:cur_keyword_pos - 2]
+    if l:left_text == '' || l:left_text !~ a:pattern
+      break
+    endif
+
+    let l:cur_keyword_pos = match(l:left_text, a:pattern)
+  endwhile
+
+  return l:cur_keyword_pos
+endfunction"}}}
+"}}}
 
 " vim: foldmethod=marker
+
