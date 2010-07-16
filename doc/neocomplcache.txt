@@ -82,6 +82,7 @@ COMMANDS 						*neocomplcache-commands*
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		Change start length of automatic completion.
+		This length is buffer local.
 
 :NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
 		Caching [bufname] buffer.  Warning: considerably take time,
@@ -240,7 +241,7 @@ g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		When neocomplcache displays candidates, this option controls
 		whether neocomplcache selects the first candidate
 		automatically.  If you enable this option, neocomplcache's
-		completion behaivior is like |AutoComplPop|.
+		completion behavior is like |AutoComplPop|.
 
 		Default value is 0.
 
@@ -731,6 +732,9 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved quickmatch selection.
 - Improved check wildcard.
 - Fixed quickmatch selection.
+- Improved vimshell pattern.
+- Improved :NeoComplCacheAutoCompletionLength behavior.
+- Improved buffer caching.
 
 2010-07-15
 - Fixed error when complete directory.
@@ -952,7 +956,7 @@ ChangeLog NeoComplCache 4.30: {{{
 2010-05-27
 - Caching readonly buffer.
 - Fixed menu bug in buffer_complete.
-- Improved recaching behaivior.
+- Improved recaching behavior.
 - Improved caching.
 
 2010-05-26
@@ -1036,7 +1040,7 @@ ChangeLog NeoComplCache 4.30: {{{
 
 2010-04-25
 * Enable spell_complete in manual_complete.
-* Fixed quickmatch behaivior.
+* Fixed quickmatch behavior.
 * Improved user commands analsze in vim_complete.
 
 2010-04-20
@@ -1045,7 +1049,7 @@ ChangeLog NeoComplCache 4.30: {{{
 * Enable cache in "[Command line]" buffer.
 
 2010-04-17
-* Improved print prototype behaivior when g:neocomplcache_cursor_hold_i_time.
+* Improved print prototype behavior when g:neocomplcache_cursor_hold_i_time.
 * Improved redraw.
 * Improved for skk.vim.
 
@@ -1163,7 +1167,7 @@ ChangeLog NeoComplCache 4.00-: {{{
     - Fixed neocomplcache#system.
     - Added g:neocomplcache_ctags_program option.
     - Fixed ctags execution bug.
-    - Improved quickmatch behaivior.
+    - Improved quickmatch behavior.
     - Fixed complete length bug in omni_complete.
     - Fixed wildcard freeze in filename_complete.
     
@@ -1413,7 +1417,7 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Save error log when analyzing tags.
 
    3.09:
-    - Improved wildcard behaivior.
+    - Improved wildcard behavior.
     - Disabled partial match.
     - Added g:neocomplcache_plugin_disable option.
     - Fixed wildcard bug.
@@ -1529,7 +1533,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Implemented completion undo.
     - Fixed non-initialize error.
     - Fixed wildcard bug.
-    - Improved quickmatch behaivior.
+    - Improved quickmatch behavior.
     - Added g:neocomplcache_caching_percent_in_statusline option.
     - Fixed completion column bug.
 
@@ -1570,7 +1574,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Fixed dup bug in snippets_complete.
 
    2.72:
-    - Improved quickmatch behaivior.
+    - Improved quickmatch behavior.
     - Fixed expand() bug in snippets_complete.
     - Fixed prefix bug in filename completion.
     - Improved filename completion.
@@ -1587,7 +1591,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Improved get cursour word.
     - Added Objective-C/C++ support.
     - Fixed filename completion bug when environment variable used.
-    - Improved skipped behaivior.
+    - Improved skipped behavior.
     - Implemented short filename completion.
     - Check cdpath in filename completion.
     - Fixed expand jump bug in snippets completion.
@@ -1712,7 +1716,7 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Optimized calc rank.
     - Fixed abbr_save error.
     - Don't caching on BufEnter.
-    - Optimized manual_complete behaivior.
+    - Optimized manual_complete behavior.
     - Added g:neocomplcache_manual_completion_start_length option.
     - Fixed next keyword completion bug.
     - Fixed caching initialize bug.
@@ -1722,7 +1726,7 @@ ChangeLog NeoComplCache 2.00-2.50: {{{
    2.50: Caching on editing file.
     - Optimized NeoComplCacheCachingBuffer.
     - Implemented neocomplcache#close_popup() and neocomplcache#cancel_popup().
-    - Fixed ignore case behaivior.
+    - Fixed ignore case behavior.
     - Fixed escape error.
     - Improved caching.
     - Deleted g:NeoComplCache_TryKeywordCompletion and g:NeoComplCache_TryDefaultCompletion options.
@@ -1805,7 +1809,7 @@ ChangeLog NeoComplCache 2.00-2.50: {{{
    2.33:
     - Implemented <Plug>(neocomplcache_snippets_expand) keymapping.
     - Implemented place holder.
-    - Improved place holder's default value behaivior.
+    - Improved place holder's default value behavior.
     - Enable filename completion in lisp filetype.
 
    2.32:

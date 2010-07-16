@@ -48,6 +48,7 @@ function! neocomplcache#enable() "{{{
   let s:complfunc_sources = {}
   let s:plugin_sources = {}
   let s:complete_lock = {}
+  let s:auto_completion_length = {}
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
@@ -117,7 +118,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'sh,zsh,int-zsh,int-bash,int-sh',
         \'\$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*\%(\s\?\[|\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'vimshell',
-        \'\$\$\?\w*\|[[:alpha:]_.-][[:alnum:]_.-]*\|\d\+\%(\.\d\+\)\+')
+        \'\$\$\?\w*\|[[:alpha:]_.\\/~-][[:alnum:]_.\\/~-]*\|\d\+\%(\.\d\+\)\+')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'ps1,int-powershell',
         \'\[\h\%([[:alnum:]_.]*\]::\)\?\|[$%@.]\?[[:alpha:]_.:-][[:alnum:]_.:-]*\%(\s\?()\?\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'c',
@@ -313,7 +314,7 @@ function! neocomplcache#enable() "{{{
   command! -nargs=0 NeoComplCacheLock call s:lock()
   command! -nargs=0 NeoComplCacheUnlock call s:unlock()
   command! -nargs=0 NeoComplCacheToggle call s:toggle_lock()
-  command! -nargs=1 NeoComplCacheAutoCompletionLength let g:neocomplcache_auto_completion_start_length = <args>
+  command! -nargs=1 NeoComplCacheAutoCompletionLength call s:set_auto_completion_length(<args>)
   "}}}
 
   " Must g:neocomplcache_auto_completion_start_length > 1.
@@ -638,7 +639,9 @@ function! neocomplcache#get_cur_text()"{{{
   return neocomplcache#is_auto_complete()? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
-  if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
+  if neocomplcache#is_auto_complete() && has_key(s:auto_completion_length, bufnr('%'))
+    return s:auto_completion_length[bufnr('%')]
+  elseif has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
     return g:neocomplcache_plugin_completion_length[a:plugin_name]
   elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
     return 0
@@ -851,6 +854,9 @@ function! s:display_neco()"{{{
     echo l:anim[0] . "\n" . l:anim[1]
     sleep 150m
   endfor
+endfunction"}}}
+function! s:set_auto_completion_length(len)"{{{
+  let s:auto_completion_length[bufnr('%')] = a:len
 endfunction"}}}
 "}}}
 

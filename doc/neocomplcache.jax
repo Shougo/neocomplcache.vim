@@ -79,6 +79,7 @@ COMMANDS 						*neocomplcache-commands*
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		自動補完する文字数を一時的に変更する。
+		この状態はバッファローカルであり、他の設定より優先される。
 
 :NeoComplCacheCachingBuffer [bufname]			*:NeoComplCacheCachingBuffer*
 		[bufname]で示されるバッファを完全にキャッシュする。 大きなバッ
