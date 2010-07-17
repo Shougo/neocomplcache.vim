@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2010
+" Last Modified: 17 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -704,11 +704,10 @@ function! neocomplcache#get_prev_word(cur_keyword_str)"{{{
   return l:prev_word
 endfunction"}}}
 function! neocomplcache#match_word(cur_text, ...)"{{{
-  let l:pattern = a:0 > 1 ? a:1 : neocomplcache#get_keyword_pattern_end()
-  let l:cur_keyword_pos = match(a:cur_text, l:pattern)
+  let l:pattern = a:0 >= 1 ? a:1 : neocomplcache#get_keyword_pattern_end()
   
   " Check wildcard.
-  let l:cur_keyword_pos = s:match_wildcard(a:cur_text, l:pattern, l:cur_keyword_pos)
+  let l:cur_keyword_pos = s:match_wildcard(a:cur_text, l:pattern, match(a:cur_text, l:pattern))
   
   let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
   
