@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 17 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -149,6 +149,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   try
     let l:cur_keyword_pos = call(l:omnifunc, [1, ''])
   catch
+    call neocomplcache#print_error(v:exception)
     let l:cur_keyword_pos = -1
   endtry
 
@@ -200,6 +201,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       call setline('.', l:line)
     endif
   catch
+    call neocomplcache#print_error(v:exception)
     let l:list = []
   endtry
   call setpos('.', l:pos)

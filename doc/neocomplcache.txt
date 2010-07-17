@@ -729,6 +729,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-07-17
 - Fixed neocomplcache#match_word() bug.
 - Optimized match.
+- Improved print error.
 
 2010-07-16
 - Improved neocomplcache#get_auto_completion_length().
@@ -2178,7 +2179,7 @@ ChangeLog AltAutoComplPop: {{{
      - Added g:AltAutoComplPop_CalcRankCount option.
    2.11:
      - Added g:AltAutoComplPop_SlowCompleteSkip option.
-     - Removed g:AltAutoComplPop_OptimiseLevel option.
+     - Removed g:AltAutoComplPop_OptimizeLevel option.
    2.10:
      - Added g:AltAutoComplPop_QuickMatch option.
      - Changed g:AltAutoComplPop_MaxList default value.
@@ -2187,8 +2188,8 @@ ChangeLog AltAutoComplPop: {{{
      - Added g:AltAutoComplPop_EnableAsterisk option.
      - Fixed next cache line cleared bug.
    2.08:
-     - Added g:AltAutoComplPop_OptimiseLevel option.
-       If list has many keyword, will optimise complete. 
+     - Added g:AltAutoComplPop_OptimizeLevel option.
+       If list has many keyword, will optimize complete. 
      - Added g:AltAutoComplPop_DisableAutoComplete option.
    2.07:
      - Fixed caching miss when BufRead.
