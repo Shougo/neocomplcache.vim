@@ -497,7 +497,7 @@ endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
   let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
 
-  return filter(a:list, printf("v:val.word[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
+  return filter(a:list, printf("stridx(v:val.word, %s) == 0", string(l:cur_keyword)))
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let l:ret = []
@@ -736,8 +736,7 @@ function! neocomplcache#trunk_string(string, max)"{{{
   return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
 function! neocomplcache#head_match(checkstr, headstr)"{{{
-  return a:headstr == '' || a:checkstr ==# a:headstr
-        \|| a:checkstr[: len(a:headstr)-1] ==# a:headstr
+  return stridx(a:checkstr, a:headstr) == 0
 endfunction"}}}
 function! neocomplcache#get_source_filetypes(filetype)"{{{
   let l:filetype = a:filetype == ''? 'nothing' : a:filetype

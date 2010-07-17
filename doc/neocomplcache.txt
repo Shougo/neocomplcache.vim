@@ -728,6 +728,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-17
 - Fixed neocomplcache#match_word() bug.
+- Optimized match.
 
 2010-07-16
 - Improved neocomplcache#get_auto_completion_length().
