@@ -965,6 +965,9 @@ function! neocomplcache#complete_common_string()"{{{
   " Save options.
   let l:ignorecase_save = &ignorecase
 
+  " Get cursor word.
+  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(s:get_cur_text())
+  
   if neocomplcache#is_text_mode()
     let &ignorecase = 1
   elseif g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
@@ -973,10 +976,8 @@ function! neocomplcache#complete_common_string()"{{{
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
-  " Get cursor word.
-  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(s:get_cur_text())
-
   let l:complete_words = neocomplcache#keyword_filter(copy(s:old_complete_words), l:cur_keyword_str)
+  
   if empty(l:complete_words)
     let &ignorecase = l:ignorecase_save
 
