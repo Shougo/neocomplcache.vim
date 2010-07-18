@@ -178,9 +178,17 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
     endfor
   endif
 
-  return has_key(l:snippets, matchstr(s:get_cur_text(), neocomplcache#get_keyword_pattern_end()))
+  if has_key(l:snippets, matchstr(s:get_cur_text(), neocomplcache#get_keyword_pattern_end()))
         \ || has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$'))
-        \ || search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
+    " Found snippet trigger.
+    return 1
+  elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
+    " Found snippet placeholder.
+    return 2
+  else
+    " Not found.
+    return 0
+  endif
 endfunction"}}}
 
 function! s:caching()"{{{

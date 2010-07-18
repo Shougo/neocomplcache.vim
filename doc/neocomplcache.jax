@@ -563,6 +563,18 @@ neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()
 >
 		inoremap <expr><C-l>     neocomplcache#complete_common_string()
 <
+neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snippets_complete#expandable()*
+		inoremap <expr>上で使用する。カーソル前の文字列がスニペット
+		のトリガーかどうか、もしくはプレースホルダーが存在するかどう
+		かを調べる。スニペットの展開にキーマッピングを取られたくない
+		場合に便利である。
+		戻り値：
+		0 : 見つからない
+		1 : カーソル位置にスニペットのトリガーがある
+		2 : カレントバッファにスニペットのプレースホルダーを発見した
+>
+		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
+<
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
 
