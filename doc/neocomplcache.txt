@@ -726,6 +726,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-18
+- Improved multibyte trunk.
+
 2010-07-17
 - Fixed neocomplcache#match_word() bug.
 - Optimized match.

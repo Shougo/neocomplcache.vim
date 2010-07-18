@@ -1285,7 +1285,18 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-15)
   for l:keyword in l:complete_words
     if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
-      let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-13:])
+      if l:keyword.abbr =~ '[:cntrl:]'
+        " Multibyte string.
+        let l:len = len(substitute(l:keyword.abbr, '.', 'x', 'g'))
+
+        if l:len * 2 > g:neocomplcache_max_keyword_width
+          let l:head = matchstr(l:keyword.abbr, printf('^.\{%d}', g:neocomplcache_max_keyword_width/2 - 7))
+          let l:tail = matchstr(l:keyword.abbr, '.\{5}$')
+          let l:keyword.abbr = l:head . '..' . l:tail
+        endif
+      else
+        let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-13:])
+      endif
     endif
   endfor
 
