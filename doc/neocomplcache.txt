@@ -742,6 +742,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-07-18
 - Improved multibyte trunk.
 - Improved neocomplcache#snippets_complete#expandable().
+- Disabled Ruby omni completion.
 
 2010-07-17
 - Fixed neocomplcache#match_word() bug.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2010
+" Last Modified: 18 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,14 +34,14 @@ function! s:source.initialize()"{{{
   if !exists('g:neocomplcache_omni_patterns')
     let g:neocomplcache_omni_patterns = {}
   endif
-  if has('ruby')
-    try 
-      ruby 1
-      call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'ruby',
-            \'[^. *\t]\.\h\w*\|\h\w*::')
-    catch
-    endtry
-  endif
+  "if has('ruby')
+    "try 
+      "ruby 1
+      "call neocomplcache#set_variable_pattern('g:neocomplcache_omni_patterns', 'ruby',
+            "\'[^. *\t]\.\h\w*\|\h\w*::')
+    "catch
+    "endtry
+  "endif
   if has('python')
     try 
       python 1
