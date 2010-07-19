@@ -267,7 +267,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
           continue
         endif
 
-        let l:abbr = (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
+        let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature : (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
         let l:keyword = {
               \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
               \}
