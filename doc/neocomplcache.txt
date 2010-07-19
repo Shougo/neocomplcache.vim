@@ -741,6 +741,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-19
 - Improved truncate filename.
+- Fixed quick match bug.
 
 2010-07-18
 - Improved multibyte trunk.
