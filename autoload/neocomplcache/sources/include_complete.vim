@@ -37,6 +37,9 @@ function! s:source.initialize()"{{{
   let s:include_cache = {}
   let s:cached_pattern = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
+  
+  " Set rank.
+  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'include_complete', 7)
 
   augroup neocomplcache
     " Caching events
