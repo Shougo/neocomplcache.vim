@@ -242,8 +242,6 @@ function! s:load_from_tags(filename, filetype)"{{{
   let l:keyword_lists = {}
 
   for l:keyword in neocomplcache#cache#load_from_tags('include_cache', a:filename, l:lines, 'I', a:filetype)
-    let l:keyword.dup = 1
-    
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
     if !has_key(l:keyword_lists, l:key)
       let l:keyword_lists[l:key] = []
@@ -283,6 +281,8 @@ function! s:load_from_cache(filename)"{{{
   let l:keyword_lists = {}
 
   for l:keyword in neocomplcache#cache#load_from_cache('include_cache', a:filename)
+    let l:keyword.dup = 1
+    
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
     if !has_key(l:keyword_lists, l:key)
       let l:keyword_lists[l:key] = []
