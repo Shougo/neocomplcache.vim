@@ -739,6 +739,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-19
+- Improved truncate filename.
+
 2010-07-18
 - Improved multibyte trunk.
 - Improved neocomplcache#snippets_complete#expandable().

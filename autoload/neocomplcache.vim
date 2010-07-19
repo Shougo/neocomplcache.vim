@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2010
+" Last Modified: 18 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1285,14 +1285,12 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-15)
   for l:keyword in l:complete_words
     if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
-      if l:keyword.abbr =~ '[:cntrl:]'
+      if l:keyword.abbr =~ '[^[:print:]]'
         " Multibyte string.
-        let l:len = len(substitute(l:keyword.abbr, '.', 'x', 'g'))
+        let l:len = neocomplcache#util#wcswidth(l:keyword.abbr)
 
-        if l:len * 2 > g:neocomplcache_max_keyword_width
-          let l:head = matchstr(l:keyword.abbr, printf('^.\{%d}', g:neocomplcache_max_keyword_width/2 - 7))
-          let l:tail = matchstr(l:keyword.abbr, '.\{5}$')
-          let l:keyword.abbr = l:head . '..' . l:tail
+        if l:len > g:neocomplcache_max_keyword_width
+          let l:keyword.abbr = neocomplcache#util#truncate(l:keyword.abbr, g:neocomplcache_max_keyword_width - 2) . '..'
         endif
       else
         let l:keyword.abbr = printf(l:abbr_pattern, l:keyword.abbr, l:keyword.abbr[-13:])

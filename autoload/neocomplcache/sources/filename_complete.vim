@@ -151,12 +151,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   for keyword in l:list
     let l:abbr = keyword.word
     
-    if len(l:abbr) > g:neocomplcache_max_keyword_width
-      let l:over_len = len(l:abbr) - g:neocomplcache_max_keyword_width
-      let l:prefix_len = (l:over_len > 10) ?  10 : l:over_len
-      let l:abbr = printf('%s~%s', l:abbr[: l:prefix_len - 1], l:abbr[l:over_len+l:prefix_len :])
-    endif
-
     if isdirectory(keyword.word)
       let l:abbr .= '/'
       let keyword.rank += 1
