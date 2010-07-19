@@ -732,6 +732,9 @@ endfunction"}}}
 function! neocomplcache#print_error(string)"{{{
   echohl Error | echo a:string | echohl None
 endfunction"}}}
+function! neocomplcache#print_warning(string)"{{{
+  echohl WarningMsg | echomsg a:string | echohl None
+endfunction"}}}
 function! neocomplcache#trunk_string(string, max)"{{{
   return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
