@@ -280,6 +280,9 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
         elseif has_key(l:option, 'enum')
           let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
           let keyword.class = l:option.enum
+        elseif has_key(l:option, 'union')
+          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.union)
+          let keyword.class = l:option.union
         else
           let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
           let keyword.class = ''
