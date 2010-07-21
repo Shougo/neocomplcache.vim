@@ -72,9 +72,9 @@ function! neocomplcache#enable() "{{{
   " Search autoload.
   for file in split(globpath(&runtimepath, 'autoload/neocomplcache/sources/*.vim'), '\n')
     let l:source_name = fnamemodify(file, ':t:r')
-    if !has_key(s:plugin_sources, l:source_name) &&
-          \ !has_key(g:neocomplcache_plugin_disable, l:source_name) || 
-          \ g:neocomplcache_plugin_disable[l:source_name] == 0
+    if !has_key(s:plugin_sources, l:source_name)
+          \ && (!has_key(g:neocomplcache_plugin_disable, l:source_name) || 
+          \ g:neocomplcache_plugin_disable[l:source_name] == 0)
       let l:source = call('neocomplcache#sources#' . l:source_name . '#define', [])
       if l:source.kind ==# 'complfunc'
         let s:complfunc_sources[l:source_name] = l:source
