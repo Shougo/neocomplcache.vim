@@ -337,6 +337,9 @@ g:neocomplcache_next_keyword_patterns			*g:neocomplcache_next_keyword_patterns*
 g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		This dictionary records keyword patterns to Omni completion.
 		This is appointed in regular expression every file type.
+		If this pattern is not defined, neocomplcache don't call
+		|omnifunc|. For example, ruby omnifunc is disabled, because
+		it's too slow.
 	
 		Because it is complicated, refer to
 		s:source.initialize() autoload/neocomplcache/sources/omni_complete.vim
@@ -741,6 +744,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-21
 - Improved autoload plugins.
+- Improved g:neocomplcache_omni_patterns description.
 
 2010-07-19
 - Improved truncate filename.
