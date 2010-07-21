@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jul 2010
+" Last Modified: 19 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,7 +56,7 @@ function! neocomplcache#enable() "{{{
   let s:quick_match_keywordpos = -1
   let s:old_complete_words = []
   let s:update_time_save = &updatetime
-  let s:prev_numbered_list = []
+  let s:prev_numbered_dict = {}
   let s:cur_text = ''
   let s:old_cur_text = ''
   let s:moved_cur_text = ''
@@ -733,6 +733,9 @@ endfunction"}}}
 function! neocomplcache#print_error(string)"{{{
   echohl Error | echo a:string | echohl None
 endfunction"}}}
+function! neocomplcache#print_warning(string)"{{{
+  echohl WarningMsg | echomsg a:string | echohl None
+endfunction"}}}
 function! neocomplcache#trunk_string(string, max)"{{{
   return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
@@ -874,7 +877,7 @@ function! neocomplcache#close_popup()"{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_complete_words = []
-  let s:prev_numbered_list = []
+  let s:prev_numbered_dict = {}
   
   return "\<C-y>"
 endfunction
@@ -889,7 +892,7 @@ function! neocomplcache#cancel_popup()"{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_complete_words = []
-  let s:prev_numbered_list = []
+  let s:prev_numbered_dict = {}
   
   return "\<C-e>"
 endfunction
@@ -1048,7 +1051,7 @@ function! s:do_complete(is_moved)"{{{
   if g:neocomplcache_enable_quick_match && l:cur_text =~ l:quick_match_pattern.'[a-z0-9;,./]$'
     " Select quick_match list.
     let l:complete_words = s:select_quick_match_list(l:cur_text[-1:])
-    let s:prev_numbered_list = []
+    let s:prev_numbered_dict = {}
 
     if !empty(l:complete_words)
       let s:complete_words = l:complete_words
@@ -1099,7 +1102,7 @@ function! s:do_complete(is_moved)"{{{
   let s:used_match_filter = 0
 
   let l:is_quick_match_list = 0
-  let s:prev_numbered_list = []
+  let s:prev_numbered_dict = {}
   let s:complete_words = []
   let s:old_complete_words = []
   let s:changedtick = b:changedtick
@@ -1313,7 +1316,7 @@ function! s:on_insert_leave()"{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_complete_words = []
-  let s:prev_numbered_list = []
+  let s:prev_numbered_dict = {}
   let s:used_match_filter = 0
   let s:context_filetype = ''
   let s:is_text_mode = 0
@@ -1356,11 +1359,6 @@ endfunction"}}}
 
 " Internal helper functions."{{{
 function! s:make_quick_match_list(list, cur_keyword_str)"{{{
-  " Check dup.
-  let l:dup_check = {}
-  let l:num = 0
-  let l:qlist = []
-
   let l:keys = {}
   for [l:key, l:number] in items(g:neocomplcache_quick_match_table)
     let l:keys[l:number] = l:key
@@ -1377,6 +1375,10 @@ function! s:make_quick_match_list(list, cur_keyword_str)"{{{
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
+  " Check dup.
+  let l:dup_check = {}
+  let l:num = 0
+  let l:qlist = {}
   for keyword in neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
     if keyword.word != '' && has_key(l:keys, l:num) 
           \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
@@ -1384,31 +1386,26 @@ function! s:make_quick_match_list(list, cur_keyword_str)"{{{
       let l:keyword = deepcopy(l:keyword)
       let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
 
-      call add(l:qlist, keyword)
-      let l:num += 1
+      let l:qlist[l:num] = keyword
     endif
+    
+    let l:num += 1
   endfor
   
   let &ignorecase = l:ignorecase_save
   
-  " Trunk too many items.
-  let l:qlist = l:qlist[: len(g:neocomplcache_quick_match_table)]
+  " Save numbered dicts.
+  let s:prev_numbered_dict = l:qlist
 
-  " Save numbered lists.
-  let s:prev_numbered_list = l:qlist
-
-  return l:qlist
+  return values(l:qlist)
 endfunction"}}}
 function! s:select_quick_match_list(key)"{{{
   if !has_key(g:neocomplcache_quick_match_table, a:key)
     return []
   endif
-  let l:numbered = get(s:prev_numbered_list, g:neocomplcache_quick_match_table[a:key])
-  if type(l:numbered) == type({})
-    return [l:numbered]
-  endif
 
-  return []
+  return has_key(s:prev_numbered_dict, g:neocomplcache_quick_match_table[a:key]) ?
+        \ [ s:prev_numbered_dict[g:neocomplcache_quick_match_table[a:key]] ] : []
 endfunction"}}}
 function! s:get_quick_match_pattern()"{{{
   let l:filetype = neocomplcache#get_context_filetype()

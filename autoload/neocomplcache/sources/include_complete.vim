@@ -37,6 +37,9 @@ function! s:source.initialize()"{{{
   let s:include_cache = {}
   let s:cached_pattern = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
+  
+  " Set rank.
+  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'include_complete', 7)
 
   augroup neocomplcache
     " Caching events
@@ -278,6 +281,8 @@ function! s:load_from_cache(filename)"{{{
   let l:keyword_lists = {}
 
   for l:keyword in neocomplcache#cache#load_from_cache('include_cache', a:filename)
+    let l:keyword.dup = 1
+    
     let l:key = tolower(l:keyword.word[: s:completion_length-1])
     if !has_key(l:keyword_lists, l:key)
       let l:keyword_lists[l:key] = []

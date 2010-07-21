@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -267,9 +267,9 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
           continue
         endif
 
-        let l:abbr = (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
+        let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature : (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
         let l:keyword = {
-              \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind']
+              \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
               \}
         if has_key(l:option, 'struct')
           let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
@@ -280,6 +280,9 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
         elseif has_key(l:option, 'enum')
           let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
           let keyword.class = l:option.enum
+        elseif has_key(l:option, 'union')
+          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.union)
+          let keyword.class = l:option.union
         else
           let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
           let keyword.class = ''
@@ -292,10 +295,10 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
       let l:line_num += 1
     endfor"}}}
   catch /E684:/
-    echohl WarningMsg | echomsg 'Error occured while analyzing tags!' | echohl None
-    echohl WarningMsg | echomsg v:exception | echohl None
+    call neocomplcache#print_warning('Error occured while analyzing tags!')
+    call neocomplcache#print_warning(v:exception)
     let l:log_file = g:neocomplcache_temporary_dir . '/' . a:cache_dir . '/error_log'
-    echohl WarningMsg | echomsg 'Please look tags file: ' . l:log_file | echohl None
+    call neocomplcache#print_warning('Please look tags file: ' . l:log_file)
     call writefile(a:tags_list, l:log_file)
     return []
   endtry
