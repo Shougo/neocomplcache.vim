@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jul 2010
+" Last Modified: 22 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -173,7 +173,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'scala',
         \'\h\w*\%(\s\?()\?\|\[\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'int-termtter',
-        \'\h[[:alnum:]_-]*\|@[[:alnum:]_+-]\+\|\$\a\+\|#\h\w*')
+        \'\h[[:alnum:]_-]*\|\$\a\+\|#\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'dosbatch,int-cmdproxy',
         \'\$\w+\|[[:alpha:]_./-][[:alnum:]_.-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'vb',
