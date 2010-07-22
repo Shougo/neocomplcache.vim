@@ -746,6 +746,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved detect completefunc.
 - Improved interactive termtter pattern.
 - Improved caching.
+- Fixed analyzing function.
 
 2010-07-21
 - Improved autoload plugins.

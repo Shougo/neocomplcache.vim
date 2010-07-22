@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jul 2010
+" Last Modified: 22 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -519,7 +519,7 @@ function! s:get_script_candidates(bufnumber)"{{{
       " Get script function.
       let l:line = substitute(matchstr(l:line, '\<fu\%[nction]!\?\s\+\zs.*)'), '".*$', '', '')
       let l:orig_line = l:line
-      let l:word = matchstr(l:line, l:keyword_pattern)
+      let l:word = matchstr(l:line, '^\h[[:alnum:]_:#.]*()\?')
       if l:word != '' && !has_key(l:function_dict, l:word) 
         let l:function_dict[l:word] = {
               \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern_func, 'kind' : 'f'
@@ -741,20 +741,21 @@ function! s:get_functionlist()"{{{
   let l:keyword_list = []
   let l:function_prototypes = {}
   let l:menu_pattern = '[V] function'
-  let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
   for l:line in split(l:redir, '\n')
     let l:line = l:line[9:]
-    let l:orig_line = l:line
-    let l:word = matchstr(l:line, l:keyword_pattern)
-    if l:word =~ '^<SNR>'
+    if l:line =~ '^<SNR>'
       continue
     endif
+    let l:orig_line = l:line
     
-    call add(l:keyword_list, {
-          \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern,
-          \})
+    let l:word = matchstr(l:line, '\h[[:alnum:]_:#.]*()\?')
+    if l:word != ''
+      call add(l:keyword_list, {
+            \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern,
+            \})
 
-    let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
+      let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
+    endif
   endfor
 
   let s:global_candidates_list.function_prototypes = l:function_prototypes
