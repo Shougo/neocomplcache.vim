@@ -1015,24 +1015,26 @@ function! s:on_moved_i()"{{{
   call s:do_complete(1)
 endfunction"}}}
 function! s:do_complete(is_moved)"{{{
+  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
+        \|| (g:neocomplcache_lock_buffer_name_pattern != '' && bufname('%') =~ g:neocomplcache_lock_buffer_name_pattern)
+        \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
+        \|| g:neocomplcache_disable_auto_complete
+        \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
+    return
+  endif
+  
   " Detect global completefunc.
   if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
     99verbose set completefunc
     echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
+    NeoComplCacheLock
     return
   endif
 
   " Detect AutoComplPop.
   if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
     echohl Error | echoerr 'Detected enabled AutoComplPop! Disabled neocomplcache.' | echohl None
-    return
-  endif
-
-  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
-        \|| (g:neocomplcache_lock_buffer_name_pattern != '' && bufname('%') =~ g:neocomplcache_lock_buffer_name_pattern)
-        \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
-        \|| g:neocomplcache_disable_auto_complete
-        \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
+    NeoComplCacheLock
     return
   endif
 
@@ -1465,7 +1467,6 @@ function! s:set_context_filetype()"{{{
   let l:attr = synIDattr(synIDtrans(synID(line('.'), col('.')-1, 1)), 'name')
   let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
         \ || l:attr ==# 'Constant'
-        \ || (exists('eskk#get_mode') && eskk#get_mode() ==# 'ascii')
   let s:within_comment = (l:attr ==# 'Comment')
 endfunction"}}}
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{

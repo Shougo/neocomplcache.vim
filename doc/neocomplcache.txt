@@ -742,6 +742,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-22
+- Improved detect completefunc.
+
 2010-07-21
 - Improved autoload plugins.
 - Improved g:neocomplcache_omni_patterns description.
