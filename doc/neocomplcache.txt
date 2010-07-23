@@ -744,6 +744,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-23
 - Fixed environments parse bug.
+- Improved include check.
 
 2010-07-22
 - Improved detect completefunc.
