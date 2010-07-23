@@ -742,6 +742,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-23
+- Fixed environments parse bug.
+
 2010-07-22
 - Improved detect completefunc.
 - Improved interactive termtter pattern.
