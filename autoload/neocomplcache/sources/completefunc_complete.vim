@@ -31,7 +31,7 @@ let s:source = {
 
 function! s:source.initialize()"{{{
   " Set rank.
-  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'completefunc_complete', 5)
+  call neocomplcache#set_variable_pattern(g:neocomplcache_plugin_rank, 'completefunc_complete', 5)
 endfunction"}}}
 function! s:source.finalize()"{{{
 endfunction"}}}

@@ -35,7 +35,7 @@ function! s:source.initialize()"{{{
   let s:completion_length = neocomplcache#get_auto_completion_length('filename_complete')
   
   " Set rank.
-  call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'filename_complete', 2)
+  call neocomplcache#set_variable_pattern(g:neocomplcache_plugin_rank, 'filename_complete', 2)
 endfunction"}}}
 function! s:source.finalize()"{{{
 endfunction"}}}
