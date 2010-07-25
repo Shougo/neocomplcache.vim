@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2010
+" Last Modified: 26 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -448,7 +448,8 @@ function! neocomplcache#available_plugins()"{{{
   return s:plugin_sources
 endfunction"}}}
 function! neocomplcache#available_sources()"{{{
-  return extend(s:complfunc_sources, s:plugin_sources)
+  call s:set_context_filetype()
+  return extend(extend(copy(s:complfunc_sources), s:plugin_sources), s:loaded_ftplugin_sources)
 endfunction"}}}
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Escape."{{{
@@ -1193,7 +1194,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
   
-  let l:complfuncs = a:0 == 0 ? extend(neocomplcache#available_complfuncs(), neocomplcache#available_loaded_ftplugins()) : a:1
+  let l:complfuncs = a:0 == 0 ? extend(copy(neocomplcache#available_complfuncs()), neocomplcache#available_loaded_ftplugins()) : a:1
   
   " Try complfuncs completion."{{{
   let l:complete_result = {}

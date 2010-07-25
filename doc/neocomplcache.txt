@@ -760,6 +760,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed example.
 - Allow blank line in snippet.
 - Fixed snippet parse.
+- Fixed ftplugin bug.
 
 2010-07-23
 - Fixed environments parse bug.
