@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -143,8 +143,11 @@ if !exists('g:neocomplcache_quick_match_table')
         \}
 endif
 if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
-  " Enable startup.
-  call neocomplcache#enable()
+  augroup neocomplcache
+    autocmd!
+    " Enable startup.
+    autocmd VimEnter * call neocomplcache#enable()
+  augroup END
 endif"}}}
 
 let &cpo = s:save_cpo

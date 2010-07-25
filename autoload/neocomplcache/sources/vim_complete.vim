@@ -26,7 +26,8 @@
 
 let s:source = {
       \ 'name' : 'vim_complete',
-      \ 'kind' : 'complfunc',
+      \ 'kind' : 'ftplugin',
+      \ 'filetypes' : { 'vim' : 1, },
       \}
 
 function! s:source.initialize()"{{{
@@ -43,8 +44,9 @@ function! s:source.initialize()"{{{
   " Set rank.
   call neocomplcache#set_variable_pattern('g:neocomplcache_plugin_rank', 'vim_complete', 100)
   
-  " Set caching event.
-  autocmd neocomplcache FileType vim call neocomplcache#sources#vim_complete#helper#on_filetype()
+  " Call caching event.
+  autocmd neocomplcache FileType * call neocomplcache#sources#vim_complete#helper#on_filetype()
+  call neocomplcache#sources#vim_complete#helper#on_filetype()
 
   " Add command.
   command! -nargs=? -complete=buffer NeoComplCacheCachingVim call neocomplcache#sources#vim_complete#helper#recaching(<q-args>)
@@ -55,7 +57,7 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
-  if neocomplcache#get_context_filetype() !=# 'vim' || neocomplcache#within_comment()
+  if neocomplcache#within_comment()
     return -1
   endif
 

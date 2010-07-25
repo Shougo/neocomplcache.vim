@@ -748,6 +748,9 @@ CHANGELOG						*neocomplcache-changelog*
 - Implemented set rank helper.
 - Changed vim_complete marker.
 - Implemented syntax attr helper.
+- Improved startup.
+- Improved member filter.
+- Implemented filetype plugin.
 
 2010-07-23
 - Fixed environments parse bug.

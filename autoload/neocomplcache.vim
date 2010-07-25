@@ -41,12 +41,16 @@ function! neocomplcache#enable() "{{{
     autocmd CursorHoldI * call s:on_hold_i()
     autocmd InsertEnter * call s:on_insert_enter()
     autocmd InsertLeave * call s:on_insert_leave()
-    autocmd GUIEnter * set vb t_vb=
   augroup END "}}}
+  
+  " Disable beep.
+  set vb t_vb=
 
   " Initialize"{{{
   let s:complfunc_sources = {}
   let s:plugin_sources = {}
+  let s:ftplugin_sources = {}
+  let s:loaded_ftplugin_sources = {}
   let s:complete_lock = {}
   let s:auto_completion_length = {}
   let s:cur_keyword_pos = -1
@@ -78,6 +82,11 @@ function! neocomplcache#enable() "{{{
       let l:source = call('neocomplcache#sources#' . l:source_name . '#define', [])
       if l:source.kind ==# 'complfunc'
         let s:complfunc_sources[l:source_name] = l:source
+      elseif l:source.kind ==# 'ftplugin'
+        let s:ftplugin_sources[l:source_name] = l:source
+
+        " Clear loaded flag.
+        let s:ftplugin_sources[l:source_name].loaded = 0
       elseif l:source.kind ==# 'plugin'
         let s:plugin_sources[l:source_name] = l:source
       endif
@@ -258,9 +267,9 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_member_prefix_patterns')
     let g:neocomplcache_member_prefix_patterns = {}
   endif
-  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'c,cpp,objc,objcpp', '^\.\|^->')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'perl,php', '^->')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'java,javascript,d,vim,ruby', '^\.')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'c,cpp,objc,objcpp', '\.\|->')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'perl,php', '->')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_member_prefix_patterns', 'java,javascript,d,vim,ruby', '\.')
   "}}}
 
   " Initialize delimiter patterns."{{{
@@ -345,8 +354,8 @@ function! neocomplcache#enable() "{{{
   set vb t_vb=
   
   " Initialize.
-  for l:complfunc in values(neocomplcache#available_complfuncs())
-    call l:complfunc.initialize()
+  for l:source in values(neocomplcache#available_complfuncs())
+    call l:source.initialize()
   endfor
 endfunction"}}}
 
@@ -366,8 +375,13 @@ function! neocomplcache#disable()"{{{
   delcommand NeoComplCacheToggle
   delcommand NeoComplCacheAutoCompletionLength
 
-  for l:complfunc in values(neocomplcache#available_complfuncs())
-    call l:complfunc.finalize()
+  for l:source in values(neocomplcache#available_complfuncs())
+    call l:source.finalize()
+  endfor
+  for l:source in values(neocomplcache#available_ftplugins())
+    if l:source.loaded
+      call l:source.finalize()
+    endif
   endfor
 endfunction"}}}
 
@@ -423,6 +437,12 @@ endfunction"}}}
 " Plugin helper."{{{
 function! neocomplcache#available_complfuncs()"{{{
   return s:complfunc_sources
+endfunction"}}}
+function! neocomplcache#available_ftplugins()"{{{
+  return s:ftplugin_sources
+endfunction"}}}
+function! neocomplcache#available_loaded_ftplugins()"{{{
+  return s:loaded_ftplugin_sources
 endfunction"}}}
 function! neocomplcache#available_plugins()"{{{
   return s:plugin_sources
@@ -547,13 +567,17 @@ endfunction"}}}
 function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
   let l:ft = neocomplcache#get_context_filetype()
 
-  if has_key(g:neocomplcache_member_prefix_patterns, l:ft) && a:cur_keyword_str =~ g:neocomplcache_member_prefix_patterns[l:ft]
-    let l:list = filter(a:list, '(has_key(v:val, "kind") && v:val.kind ==# "m") || (has_key(v:val, "class") && v:val.class != "")')
-  else
-    let l:list = a:list
+  let l:list = a:list
+  if has_key(g:neocomplcache_member_prefix_patterns, l:ft)
+    let l:pattern = '\%(' . g:neocomplcache_member_prefix_patterns[l:ft] . '\m\h\w*\)$'
+    if neocomplcache#get_cur_text() =~ l:pattern
+      " Filtering.
+      let l:list = filter(l:list,
+            \ '(has_key(v:val, "kind") && v:val.kind ==# "m") || (has_key(v:val, "class") && v:val.class != "") || (has_key(v:val, "struct") && v:val.struct != "")')
+    endif
   endif
   
-  return neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
+  return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
 function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completion_length)"{{{
   if len(a:cur_keyword_str) < a:completion_length ||
@@ -791,6 +815,8 @@ function! neocomplcache#get_plugin_rank(plugin_name)"{{{
   if has_key(g:neocomplcache_plugin_rank, a:plugin_name)
     return g:neocomplcache_plugin_rank[a:plugin_name]
   elseif has_key(s:complfunc_sources, a:plugin_name)
+    return 10
+  elseif has_key(s:ftplugin_sources, a:plugin_name)
     return 10
   elseif has_key(s:plugin_sources, a:plugin_name)
     return 5
@@ -1153,7 +1179,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
   
-  let l:complfuncs = a:0 == 0 ? neocomplcache#available_complfuncs() : a:1
+  let l:complfuncs = a:0 == 0 ? extend(neocomplcache#available_complfuncs(), neocomplcache#available_loaded_ftplugins()) : a:1
   
   " Try complfuncs completion."{{{
   let l:complete_result = {}
@@ -1489,6 +1515,19 @@ function! s:set_context_filetype()"{{{
   let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
         \ || l:syn_name ==# 'Constant'
   let s:within_comment = (l:syn_name ==# 'Comment')
+
+  " Set filetype plugins.
+  let s:loaded_ftplugin_sources = {}
+  for [l:source_name, l:source] in items(neocomplcache#available_ftplugins())
+    if has_key(l:source.filetypes, l:filetype)
+      let s:loaded_ftplugin_sources[l:source_name] = l:source
+
+      if !l:source.loaded
+        " Initialize.
+        call l:source.initialize()
+      endif
+    endif
+  endfor
 endfunction"}}}
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
   let l:cur_keyword_pos = a:cur_keyword_pos
