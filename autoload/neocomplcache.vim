@@ -170,7 +170,7 @@ function! neocomplcache#enable() "{{{
         \'$\h\w*\|[[:alnum:]:._-]\+')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'make',
         \'[[:alpha:]_.-][[:alnum:]_.-]*')
-  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'scala',
+  call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'scala,int-scala',
         \'\h\w*\%(\s\?()\?\|\[\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'int-termtter',
         \'\h[[:alnum:]_-]*\|\$\a\+\|#\h\w*')
@@ -228,6 +228,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-sml,int-smlsharp', 'sml')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-js,int-kjs', 'javascript')
   call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-gdb', 'gdb')
+  call neocomplcache#set_variable_pattern('g:neocomplcache_same_filetype_lists', 'int-scala', 'scala')
   "}}}
 
   " Initialize include filetype lists."{{{

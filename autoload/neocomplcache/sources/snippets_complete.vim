@@ -182,7 +182,7 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
         \ || has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$'))
     " Found snippet trigger.
     return 1
-  elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'w') > 0
+  elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
     " Found snippet placeholder.
     return 2
   else
