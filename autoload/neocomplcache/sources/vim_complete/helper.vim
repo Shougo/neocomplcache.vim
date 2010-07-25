@@ -931,19 +931,19 @@ function! s:analyze_dictionary_variable_line(line, keyword_dict, var_name)"{{{
 endfunction"}}}
 
 " Initialize return types."{{{
-function! s:set_variable_pattern(variable, keys, value)"{{{
+function! s:set_dictionary_helper(variable, keys, value)"{{{
   for key in split(a:keys, ',')
     let a:variable[key] = a:value
   endfor
 endfunction"}}}
 let s:function_return_types = {}
-call s:set_variable_pattern(s:function_return_types,
+call neocomplcache#set_dictionary_helper(s:function_return_types,
       \ 'len,match,matchend',
       \ '0')
-call s:set_variable_pattern(s:function_return_types,
+call neocomplcache#set_dictionary_helper(s:function_return_types,
       \ 'input,matchstr',
       \ '""')
-call s:set_variable_pattern(s:function_return_types,
+call neocomplcache#set_dictionary_helper(s:function_return_types,
       \ 'expand,filter,sort,split',
       \ '[]')
 "}}}

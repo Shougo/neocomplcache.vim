@@ -37,7 +37,7 @@ function! s:source.initialize()"{{{
   "if has('ruby')
     "try 
       "ruby 1
-      "call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'ruby',
+      "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'ruby',
             "\'[^. *\t]\.\h\w*\|\h\w*::')
     "catch
     "endtry
@@ -45,32 +45,32 @@ function! s:source.initialize()"{{{
   if has('python')
     try 
       python 1
-      call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'python',
+      call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'python',
             \'[^. \t]\.\h\w*')
     catch
     endtry
   endif
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'html,xhtml,xml,markdown',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'html,xhtml,xml,markdown',
         \'<[^>]*')
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'css',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'css',
         \'^\s\+\w+\|\w+[):;]?\s\+\|[@!]')
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'javascript',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'javascript',
         \'[^. \t]\.\%(\h\w*\)\?')
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'actionscript',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'actionscript',
         \'[^. \t][.:]\h\w*')
-  "call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'php',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'php',
         "\'[^. \t]->\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+\|\h\w*::')
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'java',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'java',
         \'\%(\h\w*\|)\)\.')
-  "call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'perl',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'perl',
   "\'\h\w*->\h\w*\|\h\w*::')
-  "call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'c',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'c',
         "\'\h\w\+\|\%(\h\w*\|)\)\%(\.\|->\)\h\w*')
-  "call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'cpp',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'cpp',
         "\'\h\w*\%(\.\|->\)\h\w*\|\h\w*::')
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'vimshell',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'vimshell',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
-  call neocomplcache#set_variable_pattern(g:neocomplcache_omni_patterns, 'objc',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'objc',
         \'\h\w\+\|\h\w*\%(\.\|->\)\h\w*')
   "}}}
   
@@ -81,7 +81,7 @@ function! s:source.initialize()"{{{
   "}}}
 
   " Set rank.
-  call neocomplcache#set_variable_pattern(g:neocomplcache_plugin_rank, 'omni_complete', 100)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'omni_complete', 100)
   
   let s:keyword_cache = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('omni_complete')

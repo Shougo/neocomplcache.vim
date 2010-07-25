@@ -35,7 +35,7 @@ function! s:source.initialize()"{{{
   let s:completion_length = neocomplcache#get_auto_completion_length('syntax_complete')
   
   " Set rank.
-  call neocomplcache#set_variable_pattern(g:neocomplcache_plugin_rank, 'syntax_complete', 8)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'syntax_complete', 8)
 
   " Set caching event.
   autocmd neocomplcache FileType * call s:caching()

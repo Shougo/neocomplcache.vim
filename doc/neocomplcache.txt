@@ -756,7 +756,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Implemented expand completion.
 - Refactoringed vim_complete.
 - Improved vim_complete.
-- Changed neocomplcache#set_variable_pattern().
+- Changed neocomplcache#set_dictionary_helper().
 
 2010-07-23
 - Fixed environments parse bug.

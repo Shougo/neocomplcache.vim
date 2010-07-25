@@ -54,7 +54,7 @@ function! s:source.initialize()"{{{
   "}}}
   
   " Set rank.
-  call neocomplcache#set_variable_pattern(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')

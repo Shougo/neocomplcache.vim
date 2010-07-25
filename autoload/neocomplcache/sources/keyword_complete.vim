@@ -31,7 +31,7 @@ let s:source = {
 
 function! s:source.initialize()"{{{
   " Set rank.
-  call neocomplcache#set_variable_pattern(g:neocomplcache_plugin_rank, 'keyword_complete', 5)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'keyword_complete', 5)
   
   " Initialize.
   for l:plugin in values(neocomplcache#available_plugins())
