@@ -751,6 +751,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved startup.
 - Improved member filter.
 - Implemented filetype plugin.
+- Fixed neocomplcache#system().
 
 2010-07-23
 - Fixed environments parse bug.

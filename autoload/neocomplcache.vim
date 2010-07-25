@@ -647,16 +647,30 @@ function! neocomplcache#rand(max)"{{{
 endfunction"}}}
 function! neocomplcache#system(str, ...)"{{{
   let l:command = a:str
-  let l:input = join(a:000)
+  let l:input = a:0 >= 1 ? '' : a:1
   if &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
-  let l:output = s:exists_vimproc ? (a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input))
-        \: (a:0 == 0 ? system(l:command) : system(l:command, l:input))
+  
+  if !s:exists_vimproc
+    if a:0 == 0
+      let l:output = system(l:command)
+    else
+      let l:output = system(l:command, l:input)
+    endif
+  elseif a:0 == 0
+    let l:output = vimproc#system(l:command)
+  elseif a:0 == 1
+    let l:output = vimproc#system(l:command, l:input)
+  else
+    let l:output = vimproc#system(l:command, l:input, a:2)
+  endif
+  
   if &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
+  
   return l:output
 endfunction"}}}
 
@@ -1525,6 +1539,8 @@ function! s:set_context_filetype()"{{{
       if !l:source.loaded
         " Initialize.
         call l:source.initialize()
+        
+        let l:source.loaded = 1
       endif
     endif
   endfor
