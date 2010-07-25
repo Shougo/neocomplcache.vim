@@ -425,7 +425,7 @@ function! s:get_local_variables()"{{{
 
     if l:line =~ '\<\%(let\|for\)\s\+\a[[:alnum:]_:]*'
       let l:word = matchstr(l:line, '\<\%(let\|for\)\s\+\zs\a[[:alnum:]_:]*')
-      let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\zs.*$')
+      let l:expression = matchstr(l:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\s*\zs.*$')
       if !has_key(l:keyword_dict, l:word) 
         let l:keyword_dict[l:word] = {
               \ 'word' : l:word, 'menu' : l:menu_pattern,
@@ -435,6 +435,30 @@ function! s:get_local_variables()"{{{
         " Update kind.
         let l:keyword_dict[l:word].kind = s:get_variable_type(l:expression)
       endif
+    elseif l:line =~ '\<\%(let\|for\)\s\+\[.\{-}\]'
+      " let [var1, var2] = pattern.
+      let l:words = split(matchstr(l:line, '\<\%(let\|for\)\s\+\[\zs.\{-}\ze\]'), '[,[:space:]]\+')
+      let l:expressions = split(matchstr(l:line, '\<let\s\+\[.\{-}\]\s*=\s*\[\zs.\{-}\ze\]$'), '[,[:space:]]\+')
+      echomsg string(l:words)
+      echomsg string(l:expressions)
+      
+      let i = 0
+      while i < len(l:words)
+        let l:expression = get(l:expressions, i, '')
+        let l:word = l:words[i]
+
+        if !has_key(l:keyword_dict, l:word) 
+          let l:keyword_dict[l:word] = {
+                \ 'word' : l:word, 'menu' : l:menu_pattern,
+                \ 'kind' : s:get_variable_type(l:expression)
+                \}
+        elseif l:expression != '' && l:keyword_dict[l:word].kind == ''
+          " Update kind.
+          let l:keyword_dict[l:word].kind = s:get_variable_type(l:expression)
+        endif
+        
+        let i += 1
+      endwhile
     endif
 
     let l:line_num += 1

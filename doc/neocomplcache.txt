@@ -752,6 +752,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved member filter.
 - Implemented filetype plugin.
 - Fixed neocomplcache#system().
+- Improved local variable analysis.
 
 2010-07-23
 - Fixed environments parse bug.
