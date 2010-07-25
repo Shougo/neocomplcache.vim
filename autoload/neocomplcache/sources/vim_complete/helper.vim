@@ -26,7 +26,7 @@
 
 if !exists('s:internal_candidates_list')
   let s:internal_candidates_list = {}
-  let s:global_candidates_list = {}
+  let s:global_candidates_list = { 'dictionary_variables' : {} }
   let s:script_candidates_list = {}
   let s:local_candidates_list = {}
 endif
@@ -62,7 +62,7 @@ function! neocomplcache#sources#vim_complete#helper#recaching(bufname)"{{{
   if getbufvar(l:bufnumber, '&filetype') == 'vim' && bufloaded(l:bufnumber)
     let s:script_candidates_list[l:bufnumber] = s:get_script_candidates(l:bufnumber)
   endif
-  let s:global_candidates_list = {}
+  let s:global_candidates_list = { 'dictionary_variables' : {} }
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#print_prototype(cur_text)"{{{
   " Echo prototype.
@@ -352,7 +352,10 @@ function! neocomplcache#sources#vim_complete#helper#tag_listfiles(cur_text, cur_
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#var_dictionary(cur_text, cur_keyword_str)"{{{
   let l:var_name = matchstr(a:cur_text, '\%(\a:\)\?\h\w*\ze\.\%(\h\w*\%(()\?\)\?\)\?$')
-  if a:cur_text =~ '[swtbgv]:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
+  if a:cur_text =~ '[btwg]:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
+    let l:list = has_key(s:global_candidates_list['dictionary_variables'], l:var_name) ?
+          \ s:global_candidates_list.dictionary_variables[l:var_name] : []
+  elseif a:cur_text =~ 's:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
     let l:list = values(get(s:get_cached_script_candidates().dictionary_variables, l:var_name, {}))
   else
     let l:list = s:get_local_dictionary_variables(l:var_name)
@@ -394,6 +397,12 @@ function! s:get_local_variables()"{{{
     if l:line =~ '\<endf\%[unction]\>'
       break
     elseif l:line =~ '\<fu\%[nction]!\?\s\+'
+      let l:candidates_list = l:line =~ '\<fu\%[nction]!\?\s\+s:' && has_key(s:script_candidates_list, bufnr('%')) ?
+            \ s:script_candidates_list[bufnr('%')], s:global_candidates_list
+      if has_key(l:candidates_list, 'functions') && has_key(l:candidates_list, 'function_prototypes')
+        call s:analyze_function_line(l:line, l:candidates_list.functions, l:candidates_list.function_prototypes) 
+      endif
+
       " Get function arguments.
       call s:analyze_variable_line(l:line, l:keyword_dict)
       break
@@ -408,7 +417,13 @@ function! s:get_local_variables()"{{{
     let l:line = getline(l:line_num)
 
     if l:line =~ '\<\%(let\|for\)\s\+'
-      call s:analyze_variable_line(l:line, l:keyword_dict)
+      if l:line =~ '\<\%(let\|for\)\s\+[btwgs]:' && has_key(s:script_candidates_list, bufnr('%'))
+            \ && has_key(s:script_candidates_list[bufnr('%')], 'variables')
+        let l:candidates_list = s:script_candidates_list[bufnr('%')].variables
+      else
+        let l:candidates_list = l:keyword_list
+      endif
+      call s:analyze_variable_line(l:line, l:candidates_list)
     endif
 
     let l:line_num += 1
@@ -440,7 +455,22 @@ function! s:get_local_dictionary_variables(var_name)"{{{
 
     if l:line =~ l:var_pattern
       while l:line !~ l:var_pattern
-        call s:analyze_dictionary_variable_line(l:line, l:keyword_dict, a:var_name)
+        let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
+        if l:var_name =~ '^[btwg]:'
+          let l:candidates_dict = s:global_candidates_list.dictionary_variables
+          if !has_key(l:candidates, l:var_name)
+            let l:candidates_dict[l:var_name] = {}
+          endif
+        elseif l:var_name =~ '^s:' && has_key(s:script_candidates_list, bufnr('%'))
+          let l:candidates_dict = s:script_candidates_list[bufnr('%')].dictionary_variables
+          if !has_key(l:candidates_dict, l:var_name)
+            let l:candidates_dict[l:var_name] = {}
+          endif
+        else
+          let l:candidates_dict = l:keyword_dict
+        endif
+
+        call s:analyze_dictionary_variable_line(l:line, l:candidates_dict, l:var_name)
 
         let l:line = l:line[matchend(l:line, l:var_pattern) :]
       endwhile
@@ -455,7 +485,7 @@ endfunction"}}}
 function! s:get_cached_script_candidates()"{{{
   return has_key(s:script_candidates_list, bufnr('%')) ?
         \ s:script_candidates_list[bufnr('%')] : {
-        \   'functions' : [], 'variables' : [], 'function_prototypes' : {}, 'dictionary_variables' : [] }
+        \   'functions' : [], 'variables' : [], 'function_prototypes' : {}, 'dictionary_variables' : {} }
 endfunction"}}}
 function! s:get_script_candidates(bufnumber)"{{{
   " Get script candidate list.
@@ -477,11 +507,16 @@ function! s:get_script_candidates(bufnumber)"{{{
     elseif l:line =~ l:var_pattern
       while l:line !~ l:var_pattern
         let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
-        if !has_key(l:dictionary_variable_dict, l:var_name) 
-          let l:dictionary_variable_dict[l:var_name] = {}
+        if l:var_name =~ '^[btwg]:'
+          let l:candidates_dict = s:global_candidates_list.dictionary_variables
+        else
+          let l:candidates_dict = l:dictionary_variable_dict
+        endif
+        if !has_key(l:candidates, l:var_name)
+          let l:candidates_dict[l:var_name] = {}
         endif
 
-        call s:analyze_dictionary_variable_line(l:line, l:dictionary_variable_dict[l:var_name], l:var_name)
+        call s:analyze_dictionary_variable_line(l:line, l:candidates_dict[l:var_name], l:var_name)
 
         let l:line = l:line[matchend(l:line, l:var_pattern) :]
       endwhile
@@ -490,7 +525,7 @@ function! s:get_script_candidates(bufnumber)"{{{
 
   call neocomplcache#print_caching('Caching done.')
   return { 'functions' : values(l:function_dict), 'variables' : values(l:variable_dict), 
-        \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : values(l:dictionary_variable_dict) }
+        \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : l:dictionary_variable_dict }
 endfunction"}}}
 
 function! s:caching_from_dict(dict_name, kind)"{{{
