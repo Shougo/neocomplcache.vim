@@ -787,6 +787,21 @@ function! neocomplcache#get_context_filetype(...)"{{{
   
   return s:context_filetype
 endfunction"}}}
+function! neocomplcache#get_plugin_rank(plugin_name)"{{{
+  if has_key(g:neocomplcache_plugin_rank, a:plugin_name)
+    return g:neocomplcache_plugin_rank[a:plugin_name]
+  elseif has_key(s:complfunc_sources, a:plugin_name)
+    return 10
+  elseif has_key(s:plugin_sources, a:plugin_name)
+    return 5
+  else
+    " unknown.
+    return 1
+  endif
+endfunction"}}}
+function! neocomplcache#get_syn_name(is_trans)"{{{
+  return synIDattr(synID(line('.'), mode() ==# 'i' ? col('.')-1 : col('.'), a:is_trans), 'name')
+endfunction"}}}
 
 " Set pattern helper.
 function! neocomplcache#set_variable_pattern(variable, filetype, pattern)"{{{
@@ -1213,8 +1228,13 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
       endfor
     endif
 
+    let l:base_rank = neocomplcache#get_plugin_rank(l:complfunc_name)
+
     for l:keyword in l:result.complete_words
       let l:word = l:keyword.word
+      if !has_key(l:keyword, 'rank')
+        let l:keyword.rank = l:base_rank
+      endif
       if has_key(l:frequencies, l:word)
         let l:keyword.rank = l:keyword.rank * l:frequencies[l:word]
       endif
@@ -1465,10 +1485,10 @@ function! s:set_context_filetype()"{{{
   endif
 
   " Set text mode or not.
-  let l:attr = synIDattr(synIDtrans(synID(line('.'), col('.')-1, 1)), 'name')
+  let l:syn_name = neocomplcache#get_syn_name(1)
   let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
-        \ || l:attr ==# 'Constant'
-  let s:within_comment = (l:attr ==# 'Comment')
+        \ || l:syn_name ==# 'Constant'
+  let s:within_comment = (l:syn_name ==# 'Comment')
 endfunction"}}}
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
   let l:cur_keyword_pos = a:cur_keyword_pos

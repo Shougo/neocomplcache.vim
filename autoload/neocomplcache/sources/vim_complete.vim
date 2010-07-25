@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -126,11 +126,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
         endfor
         call neocomplcache#used_match_filter()
 
-        " Set rank.
-        let l:rank = g:neocomplcache_plugin_rank['vim_complete']
-        for l:keyword in l:ret
-          let l:keyword.rank = l:rank
-        endfor
         return l:ret
       endif
     else
@@ -146,15 +141,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     endif
   endif
 
-  let l:list = neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
-
-  " Set rank.
-  let l:rank = g:neocomplcache_plugin_rank['vim_complete']
-  for l:keyword in l:list
-    let l:keyword.rank = l:rank
-  endfor
-
-  return l:list
+  return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#vim_complete#define()"{{{

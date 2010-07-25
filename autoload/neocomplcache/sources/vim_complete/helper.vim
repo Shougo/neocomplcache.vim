@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -195,7 +195,7 @@ function! neocomplcache#sources#vim_complete#helper#custom(command_name, cur_tex
   endif
 
   return s:make_completion_list(split(call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '\n'), '[V] custom', '')
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '\n'), '[vim] custom', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur_text, cur_keyword_str)"{{{
   if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
@@ -203,7 +203,7 @@ function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur
   endif
   
   return s:make_completion_list(call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '[V] customlist', '')
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '[vim] customlist', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
   " Check dup.
@@ -217,7 +217,7 @@ function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_st
   let l:ret = []
   let l:paths = map(split(&cdpath, ','), 'substitute(v:val, "\\\\", "/", "g")')
   for keyword in keys(l:check)
-    let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : '[V] directory', }
+    let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : '[vim] directory', }
     " Path search.
     for path in l:paths
       if path != '' && neocomplcache#head_match(l:dict.word, path . '/')
@@ -257,7 +257,7 @@ function! neocomplcache#sources#vim_complete#helper#file(cur_text, cur_keyword_s
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#filetype(cur_text, cur_keyword_str)"{{{
   return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 
-        \'fnamemodify(v:val, ":t:r")'), "v:val =~ '^" . neocomplcache#escape_match(a:cur_keyword_str) . "'"), '[V] filetype', '')
+        \'fnamemodify(v:val, ":t:r")'), "v:val =~ '^" . neocomplcache#escape_match(a:cur_keyword_str) . "'"), '[vim] filetype', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
   " Caching.
@@ -335,7 +335,7 @@ function! neocomplcache#sources#vim_complete#helper#option(cur_text, cur_keyword
     endfor
   endif
   
-  if a:cur_text =~ '\<set\%[local]\s\+filetype='
+  if a:cur_text =~ '\<set\%[local]\s\+\%(filetype\|ft\)='
     return neocomplcache#sources#vim_complete#helper#filetype(a:cur_text, a:cur_keyword_str)
   else
     return s:internal_candidates_list.options
@@ -381,7 +381,7 @@ function! s:get_local_variables()"{{{
   " Get local variable list.
 
   let l:keyword_dict = {}
-  let l:menu_pattern = '[V] variable'
+  let l:menu_pattern = '[vim] variable'
 
   " Search function.
   let l:line_num = line('.') - 1
@@ -460,7 +460,7 @@ function! s:get_local_dictionary_variables(var_name)"{{{
 
   let l:end_line = line('.') - 1
   let l:keyword_dict = {}
-  let l:menu_pattern = '[V] dictionary'
+  let l:menu_pattern = '[vim] dictionary'
   let l:var_pattern = a:var_name.'\.\h\w*\%(()\?\)\?'
   let l:let_pattern = '\<let\s\+'.a:var_name.'\.\h\w*'
   let l:call_pattern = '\<call\s\+'.a:var_name.'\.\h\w*()\?'
@@ -507,9 +507,9 @@ function! s:get_script_candidates(bufnumber)"{{{
   let l:dictionary_variable_dict = {}
   let l:function_prototypes = {}
 
-  let l:menu_pattern_func = '[V] function'
-  let l:menu_pattern_var = '[V] variable'
-  let l:menu_pattern_dict = '[V] dictionary'
+  let l:menu_pattern_func = '[vim] function'
+  let l:menu_pattern_var = '[vim] variable'
+  let l:menu_pattern_dict = '[vim] dictionary'
   let l:keyword_pattern = '^\%('.neocomplcache#get_keyword_pattern('vim').'\m\)'
 
   call neocomplcache#print_caching('Caching vim from '. bufname(a:bufnumber) .' ... please wait.')
@@ -579,7 +579,7 @@ function! s:caching_from_dict(dict_name, kind)"{{{
     return []
   endif
 
-  let l:menu_pattern = '[V] '.a:dict_name[: -2]
+  let l:menu_pattern = '[vim] '.a:dict_name[: -2]
   let l:keyword_pattern =
         \'^\%(-\h\w*\%(=\%(\h\w*\|[01*?+%]\)\?\)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
   let l:keyword_list = []
@@ -663,7 +663,7 @@ function! s:get_cmdlist()"{{{
         \ 'var', 'custom', 'customlist' ]
   let l:command_prototypes = {}
   let l:command_completions = {}
-  let l:menu_pattern = '[V] command'
+  let l:menu_pattern = '[vim] command'
   for line in split(l:redir, '\n')[1:]
     let l:word = matchstr(line, '\a\w*')
     
@@ -716,7 +716,7 @@ function! s:get_variablelist()"{{{
   redir END
 
   let l:keyword_list = []
-  let l:menu_pattern = '[V] variable'
+  let l:menu_pattern = '[vim] variable'
   let l:kind_dict = ['0', '""', '()', '[]', '{}', '.']
   for line in split(l:redir, '\n')
     let l:word = matchstr(line, '^\a[[:alnum:]_:]*')
@@ -740,7 +740,7 @@ function! s:get_functionlist()"{{{
 
   let l:keyword_list = []
   let l:function_prototypes = {}
-  let l:menu_pattern = '[V] function'
+  let l:menu_pattern = '[vim] function'
   for l:line in split(l:redir, '\n')
     let l:line = l:line[9:]
     if l:line =~ '^<SNR>'
@@ -769,7 +769,7 @@ function! s:get_augrouplist()"{{{
   redir END
 
   let l:keyword_list = []
-  let l:menu_pattern = '[V] augroup'
+  let l:menu_pattern = '[vim] augroup'
   for l:group in split(l:redir . ' END', '\s')
     call add(l:keyword_list, { 'word' : l:group, 'menu' : l:menu_pattern})
   endfor
@@ -782,7 +782,7 @@ function! s:get_mappinglist()"{{{
   redir END
 
   let l:keyword_list = []
-  let l:menu_pattern = '[V] mapping'
+  let l:menu_pattern = '[vim] mapping'
   for line in split(l:redir, '\n')
     let l:map = matchstr(line, '^\a*\s*\zs\S\+')
     if l:map !~ '^<' || l:map =~ '^<SNR>'
@@ -796,7 +796,7 @@ function! s:get_envlist()"{{{
   " Get environment variable list.
 
   let l:keyword_list = []
-  let l:menu_pattern = '[V] environment'
+  let l:menu_pattern = '[vim] environment'
   for line in split(system('set'), '\n')
     let l:word = '$' . toupper(matchstr(line, '^\h\w*'))
     call add(l:keyword_list, { 'word' : l:word, 'menu' : l:menu_pattern, 'kind' : 'e' })
@@ -807,7 +807,7 @@ function! s:get_endlist()"{{{
   " Get end command list.
 
   let l:keyword_dict = {}
-  let l:menu_pattern = '[V] end'
+  let l:menu_pattern = '[vim] end'
   let l:line_num = line('.') - 1
   let l:end_line = (line('.') < 100) ? line('.') - 100 : 1
   let l:cnt = {

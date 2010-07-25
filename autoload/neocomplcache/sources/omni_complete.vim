@@ -216,12 +216,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:list = s:get_omni_list(l:list)
   endif
 
-  " Set rank.
-  let l:rank = g:neocomplcache_plugin_rank['omni_complete']
-  for l:keyword in l:list
-    let l:keyword.rank = l:rank
-  endfor
-
   return l:list
 endfunction"}}}
 

@@ -165,12 +165,9 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let keyword.abbr = l:abbr
   endfor
 
-  " Set rank.
-  let l:rank = g:neocomplcache_plugin_rank['filename_complete']
   for keyword in l:list
     " Escape word.
     let keyword.word = escape(keyword.word, ' *?[]"={}')
-    let l:keyword.rank = l:rank
   endfor
 
   return l:list
