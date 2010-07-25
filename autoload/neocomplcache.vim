@@ -1495,7 +1495,10 @@ function! s:set_context_filetype()"{{{
   
   " Default.
   let s:context_filetype = l:filetype
-  if has_key(g:neocomplcache_filetype_include_lists, l:filetype)
+  if neocomplcache#is_eskk_enabled()
+    let s:context_filetype = 'eskk'
+    let l:filetype = 'eskk'
+  elseif has_key(g:neocomplcache_filetype_include_lists, l:filetype)
         \ && !empty(g:neocomplcache_filetype_include_lists[l:filetype])
 
     let l:pos = [line('.'), col('.')]
