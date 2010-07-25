@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: syntax/snippet.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 19 Jun 2010
-" Usage: Just source this file.
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,39 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.6, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.6:
-"    - Improved snippet line.
-"
-"   1.5:
-"    - Deleted rank and condition.
-"
-"   1.4:
-"     - Added condition.
-"     - Implemented optional placeholder.
-"
-"   1.3:
-"     - Added variable.
-"
-"   1.2:
-"     - Added alias.
-"     - Improved color.
-"
-"   1.1:
-"     - Added delete.
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 if version < 700
@@ -68,7 +34,6 @@ syn region  SnippetPrevWord             start=+'+ end=+'+ contained
 syn region  SnippetPrevWord             start=+"+ end=+"+ contained
 syn region  SnippetEval                 start=+`+ end=+`+ contained
 syn match   SnippetWord                 '^\s\+.*$' contains=SnippetEval,SnippetExpand
-syn match   SnippetError                '^\s\+$'
 syn match   SnippetExpand               '\${\d\+\%(:.\{-}\)\?\\\@<!}' contained
 syn match   SnippetVariable             '\$\d\+' contained
 syn match   SnippetComment              '^#.*$'
@@ -94,7 +59,6 @@ hi def link SnippetName Identifier
 hi def link SnippetAbbr Normal
 hi def link SnippetEval Type
 hi def link SnippetWord String
-hi def link SnippetError Error
 hi def link SnippetExpand Special
 hi def link SnippetVariable Special
 hi def link SnippetComment Comment

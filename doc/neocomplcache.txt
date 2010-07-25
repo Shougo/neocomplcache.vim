@@ -650,7 +650,7 @@ EXAMPLES						*neocomplcache-examples*
 	
 	" Recommended key-mappings.
 	" <CR>: close popup and save indent.
-	inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<C-f>\<CR>X\<BS>"
+	inoremap <expr><CR>  neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 	" <C-h>, <BS>: close popup and delete backword char.
@@ -757,6 +757,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Refactoringed vim_complete.
 - Improved vim_complete.
 - Changed neocomplcache#set_dictionary_helper().
+- Fixed example.
+- Allow blank line in snippet.
 
 2010-07-23
 - Fixed environments parse bug.

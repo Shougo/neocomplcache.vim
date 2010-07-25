@@ -202,7 +202,7 @@ endfunction"}}}
 function! s:set_snippet_pattern(dict)"{{{
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
-  let l:word = a:dict.word
+  let l:word = substitute(a:dict.word, '\%(<\\n>\)\+$', '', '')
   let l:menu_pattern = a:dict.word =~ '\${\d\+\%(:.\{-}\)\?\\\@<!}' ? '<Snip> ' : '[Snip] '
 
   let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : 
@@ -342,6 +342,9 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       else
         let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
       endif
+    elseif line =~ '^$'
+      " Blank line.
+      let l:snippet_pattern.word .= '<\n>'
     elseif line =~ '^delete\s'
       let l:name = matchstr(line, '^delete\s\+\zs.*\ze\s*$')
       if l:name != '' && has_key(l:snippet, l:name)
