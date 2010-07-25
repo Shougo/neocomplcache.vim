@@ -759,6 +759,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Changed neocomplcache#set_dictionary_helper().
 - Fixed example.
 - Allow blank line in snippet.
+- Fixed snippet parse.
 
 2010-07-23
 - Fixed environments parse bug.

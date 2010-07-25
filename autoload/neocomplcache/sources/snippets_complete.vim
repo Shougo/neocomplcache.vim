@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -306,6 +306,11 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       for snippets_file in l:snippets_files
         call extend(l:snippet, s:load_snippets(snippets_file, l:filetype))
       endfor
+    elseif line =~ '^delete\s'
+      let l:name = matchstr(line, '^delete\s\+\zs.*\ze\s*$')
+      if l:name != '' && has_key(l:snippet, l:name)
+        call remove(l:snippet, l:name)
+      endif
     elseif line =~ '^snippet\s'
       if has_key(l:snippet_pattern, 'name')
         let l:pattern = s:set_snippet_pattern(l:snippet_pattern)
@@ -326,29 +331,27 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       endif
 
       let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*\ze\s*$')
-    elseif line =~ '^abbr\s'
-      let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze\s*$')
-    elseif line =~ '^alias\s'
-      let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*\ze\s*$'), '[,[:space:]]\+')
-    elseif line =~ '^prev_word\s'
-      let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
-    elseif line =~ '^\s'
-      if l:snippet_pattern.word == ''
-        let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
-      elseif line =~ '^\t'
-        let line = substitute(line, '^\s', '', '')
-        let l:snippet_pattern.word .= '<\n>' . 
-              \substitute(line, '^\t\+', repeat('<\\t>', matchend(line, '^\t\+')), '')
-      else
-        let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
-      endif
-    elseif line =~ '^$'
-      " Blank line.
-      let l:snippet_pattern.word .= '<\n>'
-    elseif line =~ '^delete\s'
-      let l:name = matchstr(line, '^delete\s\+\zs.*\ze\s*$')
-      if l:name != '' && has_key(l:snippet, l:name)
-        call remove(l:snippet, l:name)
+    elseif has_key(l:snippet_pattern, 'name')
+      " Only in snippets.
+      if line =~ '^abbr\s'
+        let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze\s*$')
+      elseif line =~ '^alias\s'
+        let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*\ze\s*$'), '[,[:space:]]\+')
+      elseif line =~ '^prev_word\s'
+        let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
+      elseif line =~ '^\s'
+        if l:snippet_pattern.word == ''
+          let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
+        elseif line =~ '^\t'
+          let line = substitute(line, '^\s', '', '')
+          let l:snippet_pattern.word .= '<\n>' . 
+                \substitute(line, '^\t\+', repeat('<\\t>', matchend(line, '^\t\+')), '')
+        else
+          let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
+        endif
+      elseif line =~ '^$'
+        " Blank line.
+        let l:snippet_pattern.word .= '<\n>'
       endif
     endif
   endfor

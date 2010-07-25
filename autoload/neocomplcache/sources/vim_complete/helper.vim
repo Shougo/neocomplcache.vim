@@ -370,7 +370,7 @@ function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_st
   endif
   
   if a:cur_keyword_str =~ '^[swtb]:'
-    let l:list = s:get_cached_script_candidates().variables
+    let l:list = values(s:get_cached_script_candidates().variables)
   elseif a:cur_keyword_str =~ '^[vg]:'
     let l:list = s:global_candidates_list.variables
   else
@@ -485,7 +485,7 @@ endfunction"}}}
 function! s:get_cached_script_candidates()"{{{
   return has_key(s:script_candidates_list, bufnr('%')) ?
         \ s:script_candidates_list[bufnr('%')] : {
-        \   'functions' : [], 'variables' : [], 'function_prototypes' : {}, 'dictionary_variables' : {} }
+        \   'functions' : [], 'variables' : {}, 'function_prototypes' : {}, 'dictionary_variables' : {} }
 endfunction"}}}
 function! s:get_script_candidates(bufnumber)"{{{
   " Get script candidate list.
@@ -524,7 +524,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   endfor
 
   call neocomplcache#print_caching('Caching done.')
-  return { 'functions' : values(l:function_dict), 'variables' : values(l:variable_dict), 
+  return { 'functions' : values(l:function_dict), 'variables' : l:variable_dict, 
         \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : l:dictionary_variable_dict }
 endfunction"}}}
 
