@@ -173,7 +173,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'scala,int-scala',
         \'\h\w*\%(\s\?()\?\|\[\)\?')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'int-termtter',
-        \'\h[[:alnum:]_-]*\|\$\a\+\|#\h\w*')
+        \'\h[[:alnum:]_/-]*\|\$\a\+\|#\h\w*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'dosbatch,int-cmdproxy',
         \'\$\w+\|[[:alpha:]_./-][[:alnum:]_.-]*')
   call neocomplcache#set_variable_pattern('g:neocomplcache_keyword_patterns', 'vb',
