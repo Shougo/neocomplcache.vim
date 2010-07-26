@@ -742,6 +742,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-26
+- Fixed snippets expand error.
+
 2010-07-25
 - Improved termtter keywords.
 - Improved filetype completion.

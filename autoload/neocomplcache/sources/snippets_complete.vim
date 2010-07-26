@@ -390,7 +390,9 @@ function! s:snippets_expand(cur_text, col)"{{{
   " Set same filetype.
   if has_key(g:neocomplcache_same_filetype_lists, l:ft)
     for l:same_ft in split(g:neocomplcache_same_filetype_lists[l:ft], ',')
-      call extend(l:snippets, s:snippets[l:same_ft], 'keep')
+      if has_key(s:snippets, l:same_ft)
+        call extend(l:snippets, s:snippets[l:same_ft], 'keep')
+      endif
     endfor
   endif
 
