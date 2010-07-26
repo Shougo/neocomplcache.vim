@@ -648,7 +648,7 @@ function! neocomplcache#rand(max)"{{{
 endfunction"}}}
 function! neocomplcache#system(str, ...)"{{{
   let l:command = a:str
-  let l:input = a:0 >= 1 ? '' : a:1
+  let l:input = a:0 >= 1 ? a:1 : ''
   if &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
