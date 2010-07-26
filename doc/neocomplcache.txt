@@ -744,6 +744,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-26
 - Fixed snippets expand error.
+- Fixed error when local variable completion.
 
 2010-07-25
 - Improved termtter keywords.

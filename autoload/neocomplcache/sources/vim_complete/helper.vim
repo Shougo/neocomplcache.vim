@@ -421,7 +421,7 @@ function! s:get_local_variables()"{{{
             \ && has_key(s:script_candidates_list[bufnr('%')], 'variables')
         let l:candidates_list = s:script_candidates_list[bufnr('%')].variables
       else
-        let l:candidates_list = l:keyword_list
+        let l:candidates_list = l:keyword_dict
       endif
       call s:analyze_variable_line(l:line, l:candidates_list)
     endif
