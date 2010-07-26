@@ -367,13 +367,17 @@ endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_str)"{{{
   " Caching.
   if !has_key(s:global_candidates_list, 'variables')
-    let s:global_candidates_list.variables = extend(s:caching_from_dict('variables', ''), s:get_variablelist())
+    let l:dict = {}
+    for l:var in extend(s:caching_from_dict('variables', ''), s:get_variablelist())
+      let l:dict[l:var.word] = l:var
+    endfor
+    let s:global_candidates_list.variables = l:dict
   endif
   
   if a:cur_keyword_str =~ '^[swtb]:'
     let l:list = values(s:get_cached_script_candidates().variables)
   elseif a:cur_keyword_str =~ '^[vg]:'
-    let l:list = s:global_candidates_list.variables
+    let l:list = values(s:global_candidates_list.variables)
   else
     let l:list = s:get_local_variables()
   endif
@@ -418,9 +422,12 @@ function! s:get_local_variables()"{{{
     let l:line = getline(l:line_num)
 
     if l:line =~ '\<\%(let\|for\)\s\+'
-      if l:line =~ '\<\%(let\|for\)\s\+[btwgs]:' && has_key(s:script_candidates_list, bufnr('%'))
+      if l:line =~ '\<\%(let\|for\)\s\+s:' && has_key(s:script_candidates_list, bufnr('%'))
             \ && has_key(s:script_candidates_list[bufnr('%')], 'variables')
         let l:candidates_list = s:script_candidates_list[bufnr('%')].variables
+      elseif l:line =~ '\<\%(let\|for\)\s\+[btwg]:'
+            \ && has_key(s:global_candidates_list, 'variables')
+        let l:candidates_list = s:global_candidates_list.variables
       else
         let l:candidates_list = l:keyword_dict
       endif
@@ -458,15 +465,17 @@ function! s:get_local_dictionary_variables(var_name)"{{{
       while l:line !~ l:var_pattern
         let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
         if l:var_name =~ '^[btwg]:'
-          let l:candidates_dict = s:global_candidates_list.dictionary_variables
+          let l:candidates = s:global_candidates_list.dictionary_variables
           if !has_key(l:candidates, l:var_name)
-            let l:candidates_dict[l:var_name] = {}
+            let l:candidates[l:var_name] = {}
           endif
+          let l:candidates_dict = l:candidates[l:var_name]
         elseif l:var_name =~ '^s:' && has_key(s:script_candidates_list, bufnr('%'))
-          let l:candidates_dict = s:script_candidates_list[bufnr('%')].dictionary_variables
-          if !has_key(l:candidates_dict, l:var_name)
-            let l:candidates_dict[l:var_name] = {}
+          let l:candidates = s:script_candidates_list[bufnr('%')].dictionary_variables
+          if !has_key(l:candidates, l:var_name)
+            let l:candidates[l:var_name] = {}
           endif
+          let l:candidates_dict = l:candidates[l:var_name]
         else
           let l:candidates_dict = l:keyword_dict
         endif
