@@ -265,30 +265,31 @@ function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keywo
     let s:global_candidates_list.functions = s:get_functionlist()
   endif
   if !has_key(s:internal_candidates_list, 'functions')
-    let s:internal_candidates_list.functions = s:caching_from_dict('functions', 'f')
+    let l:dict = {}
+    for l:function in s:caching_from_dict('functions', 'f')
+      let l:dict[l:function.word] = l:function
+    endfor
+    let s:internal_candidates_list.functions = l:dict
 
     let l:function_prototypes = {}
-    for function in s:internal_candidates_list.functions
+    for function in values(s:internal_candidates_list.functions)
       let l:function_prototypes[function.word] = function.abbr
     endfor
     let s:internal_candidates_list.function_prototypes = s:caching_prototype_from_dict('functions')
   endif
   
-  let l:list = []
   let l:script_candidates_list = s:get_cached_script_candidates()
-
   if a:cur_keyword_str =~ '^s:'
-    let l:list += l:script_candidates_list.functions
+    let l:list = values(l:script_candidates_list.functions)
   elseif a:cur_keyword_str =~ '^\a:'
-    let l:functions = deepcopy(l:script_candidates_list.functions)
+    let l:functions = deepcopy(values(l:script_candidates_list.functions))
     for l:keyword in l:functions
       let l:keyword.word = '<SID>' . l:keyword.word[2:]
       let l:keyword.abbr = '<SID>' . l:keyword.abbr[2:]
     endfor
-    let l:list += l:functions
+    let l:list = l:functions
   else
-    let l:list += s:internal_candidates_list.functions
-    let l:list += s:global_candidates_list.functions
+    let l:list = values(s:internal_candidates_list.functions) + values(s:global_candidates_list.functions)
   endif
 
   return l:list
@@ -398,7 +399,7 @@ function! s:get_local_variables()"{{{
       break
     elseif l:line =~ '\<fu\%[nction]!\?\s\+'
       let l:candidates_list = l:line =~ '\<fu\%[nction]!\?\s\+s:' && has_key(s:script_candidates_list, bufnr('%')) ?
-            \ s:script_candidates_list[bufnr('%')], s:global_candidates_list
+            \ s:script_candidates_list[bufnr('%')] : s:global_candidates_list
       if has_key(l:candidates_list, 'functions') && has_key(l:candidates_list, 'function_prototypes')
         call s:analyze_function_line(l:line, l:candidates_list.functions, l:candidates_list.function_prototypes) 
       endif
@@ -485,7 +486,7 @@ endfunction"}}}
 function! s:get_cached_script_candidates()"{{{
   return has_key(s:script_candidates_list, bufnr('%')) ?
         \ s:script_candidates_list[bufnr('%')] : {
-        \   'functions' : [], 'variables' : {}, 'function_prototypes' : {}, 'dictionary_variables' : {} }
+        \   'functions' : {}, 'variables' : {}, 'function_prototypes' : {}, 'dictionary_variables' : {} }
 endfunction"}}}
 function! s:get_script_candidates(bufnumber)"{{{
   " Get script candidate list.
@@ -524,7 +525,7 @@ function! s:get_script_candidates(bufnumber)"{{{
   endfor
 
   call neocomplcache#print_caching('Caching done.')
-  return { 'functions' : values(l:function_dict), 'variables' : l:variable_dict, 
+  return { 'functions' : l:function_dict, 'variables' : l:variable_dict, 
         \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : l:dictionary_variable_dict }
 endfunction"}}}
 
@@ -693,7 +694,7 @@ function! s:get_functionlist()"{{{
   silent! function
   redir END
 
-  let l:keyword_list = []
+  let l:keyword_dict = {}
   let l:function_prototypes = {}
   let l:menu_pattern = '[vim] function'
   for l:line in split(l:redir, '\n')
@@ -705,9 +706,9 @@ function! s:get_functionlist()"{{{
     
     let l:word = matchstr(l:line, '\h[[:alnum:]_:#.]*()\?')
     if l:word != ''
-      call add(l:keyword_list, {
+      let l:keyword_dict[l:word] = {
             \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern,
-            \})
+            \}
 
       let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
     endif
@@ -715,7 +716,7 @@ function! s:get_functionlist()"{{{
 
   let s:global_candidates_list.function_prototypes = l:function_prototypes
 
-  return l:keyword_list
+  return l:keyword_dict
 endfunction"}}}
 function! s:get_augrouplist()"{{{
   " Get function list.
