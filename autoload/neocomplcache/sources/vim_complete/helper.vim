@@ -354,7 +354,7 @@ endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#var_dictionary(cur_text, cur_keyword_str)"{{{
   let l:var_name = matchstr(a:cur_text, '\%(\a:\)\?\h\w*\ze\.\%(\h\w*\%(()\?\)\?\)\?$')
   if a:cur_text =~ '[btwg]:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
-    let l:list = has_key(s:global_candidates_list['dictionary_variables'], l:var_name) ?
+    let l:list = has_key(s:global_candidates_list.dictionary_variables, l:var_name) ?
           \ s:global_candidates_list.dictionary_variables[l:var_name] : []
   elseif a:cur_text =~ 's:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
     let l:list = values(get(s:get_cached_script_candidates().dictionary_variables, l:var_name, {}))
