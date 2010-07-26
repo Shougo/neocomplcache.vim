@@ -462,7 +462,7 @@ function! s:get_local_dictionary_variables(var_name)"{{{
     let l:line = getline(l:line_num)
 
     if l:line =~ l:var_pattern
-      while l:line !~ l:var_pattern
+      while l:line =~ l:var_pattern
         let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
         if l:var_name =~ '^[btwg]:'
           let l:candidates = s:global_candidates_list.dictionary_variables
@@ -515,14 +515,14 @@ function! s:get_script_candidates(bufnumber)"{{{
       " Get script variable.
       call s:analyze_variable_line(l:line, l:variable_dict)
     elseif l:line =~ l:var_pattern
-      while l:line !~ l:var_pattern
+      while l:line =~ l:var_pattern
         let l:var_name = matchstr(l:line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
         if l:var_name =~ '^[btwg]:'
           let l:candidates_dict = s:global_candidates_list.dictionary_variables
         else
           let l:candidates_dict = l:dictionary_variable_dict
         endif
-        if !has_key(l:candidates, l:var_name)
+        if !has_key(l:candidates_dict, l:var_name)
           let l:candidates_dict[l:var_name] = {}
         endif
 
@@ -959,18 +959,17 @@ call neocomplcache#set_dictionary_helper(s:function_return_types,
 "}}}
 function! s:get_variable_type(expression)"{{{
   " Analyze variable type.
-  if a:expression =~ '\%(^\|+\)\s*\d\+\.\d\+'
+  if a:expression =~ '^\%(\s*+\)\?\s*\d\+\.\d\+'
     return '.'
-  elseif a:expression =~ '\%(^\|+\)\s*\d\+'
+  elseif a:expression =~ '^\%(\s*+\)\?\s*\d\+'
     return '0'
-  elseif a:expression =~ '\%(^\|\.\)\s*["'']'
+  elseif a:expression =~ '^\%(\s*\.\)\?\s*["'']'
     return '""'
   elseif a:expression =~ '\<function('
     return '()'
-  elseif a:expression =~
-        \ '\%(^\|+\)\s*\[\|\<split('
+  elseif a:expression =~ '^\%(\s*+\)\?\s*\['
     return '[]'
-  elseif a:expression =~ '^\s*{\|\.\h[[:alnum:]_:]*'
+  elseif a:expression =~ '^\s*{\|^\.\h[[:alnum:]_:]*'
     return '{}'
   elseif a:expression =~ '\<\h\w*('
     " Function.
