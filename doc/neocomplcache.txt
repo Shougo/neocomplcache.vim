@@ -744,6 +744,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed omni completion bug.
 - Fixed :NeoComplCacheToggle.
 - Improved g:neocomplcache_plugin_disable behavior.
+- Improved eskk check.
 
 2010-07-26
 - Fixed snippets expand error.
