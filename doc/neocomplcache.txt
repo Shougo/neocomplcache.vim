@@ -513,11 +513,8 @@ g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
                 
 g:neocomplcache_plugin_disable				*g:neocomplcache_plugin_disable*
 		The dictionary which appoints whether you invalidate a
-		complete function and plugin.  With a complete function and
-		plugin name as a key, it becomes invalid by making a value
-		1.  Because neocomplcache refer this option when
-		neocomplcache initialize, it is necessary to appoint it
-		before initialization.
+		plugin. With a plugin name as a key, it becomes invalid by
+		making a value 1.
 		
 		Default value is {}.
 
@@ -745,6 +742,8 @@ CHANGELOG						*neocomplcache-changelog*
 2010-07-27
 - Fixed autocompletion freeze.
 - Fixed omni completion bug.
+- Fixed :NeoComplCacheToggle.
+- Improved g:neocomplcache_plugin_disable behavior.
 
 2010-07-26
 - Fixed snippets expand error.

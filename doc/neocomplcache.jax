@@ -485,22 +485,20 @@ g:neocomplcache_vim_completefuncs			*g:neocomplcache_vim_completefuncs*
 		初期値は空である。
 
 g:neocomplcache_plugin_disable				*g:neocomplcache_plugin_disable*
-		補完関数やプラグインを無効にするかどうかを指定するディクショ
-		ナリ。 補完関数やプラグイン名をキーにして、値を1にすることで
-		無効になる。 neocomplcacheを初期化するときに参照されるので、
-		初期化前に指定する必要がある。
+		プラグインを無効にするかどうかを指定するディクショナリ。プラ
+		グイン名をキーにして、値を1にすることで無効になる。
 		
 		初期値は空である。
 
 g:neocomplcache_plugin_completion_length		*g:neocomplcache_plugin_completion_length*
-		補完関数を呼び出す文字数をプラグインごとに指定するディクショ
+		プラグインを呼び出す文字数をプラグインごとに指定するディクショ
 		ナリ。 重いプラグインは文字数が多いときにのみ呼び出せるよう
 		にするなどが考えられる。
 		
 		初期値は空である。
 
 g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
-		補完関数の優先度をプラグインごとに指定するディクショナリ。
+		プラグインの優先度を指定するディクショナリ。
 		
 		初期値はそれぞれのプラグインによってセットされる。
 

@@ -1199,6 +1199,12 @@ function! s:get_complete_result(cur_text, ...)"{{{
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
+    if has_key(g:neocomplcache_plugin_disable, l:source_name)
+        \ && g:neocomplcache_plugin_disable[l:source_name]
+      " Skip plugin.
+      continue
+    endif
+    
     let l:cur_keyword_pos = l:complfunc.get_keyword_pos(a:cur_text)
 
     if l:cur_keyword_pos >= 0

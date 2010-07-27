@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 27 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,7 +40,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
-command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle()
 
 " Obsolute options check."{{{
 if exists('g:NeoComplCache_EnableAtStartup')
