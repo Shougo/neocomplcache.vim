@@ -742,6 +742,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-27
+- Fixed autocompletion freeze.
+
 2010-07-26
 - Fixed snippets expand error.
 - Fixed error when local variable completion.
