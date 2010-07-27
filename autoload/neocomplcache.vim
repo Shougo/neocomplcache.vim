@@ -1199,8 +1199,8 @@ function! s:get_complete_result(cur_text, ...)"{{{
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
-    if has_key(g:neocomplcache_plugin_disable, l:source_name)
-        \ && g:neocomplcache_plugin_disable[l:source_name]
+    if has_key(g:neocomplcache_plugin_disable, l:complfunc_name)
+        \ && g:neocomplcache_plugin_disable[l:complfunc_name]
       " Skip plugin.
       continue
     endif

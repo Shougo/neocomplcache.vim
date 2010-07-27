@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 27 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,17 +58,22 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   " Get keyword list.
   let l:cache_keyword_list = []
   for [l:name, l:plugin] in items(neocomplcache#available_plugins())
-    if !has_key(g:neocomplcache_plugin_completion_length, l:name)
-          \|| !neocomplcache#is_auto_complete()
-          \|| len(a:cur_keyword_str) >= g:neocomplcache_plugin_completion_length[l:name]
-      let l:list = l:plugin.get_keyword_list(a:cur_keyword_str)
-      let l:rank = has_key(g:neocomplcache_plugin_rank, l:name)? 
-              \ g:neocomplcache_plugin_rank[l:name] : g:neocomplcache_plugin_rank['keyword_complete']
-      for l:keyword in l:list
-        let l:keyword.rank = l:rank
-      endfor
-      let l:cache_keyword_list += l:list
+    if (has_key(g:neocomplcache_plugin_disable, l:name)
+        \ && g:neocomplcache_plugin_disable[l:name])
+        \ || (neocomplcache#is_auto_complete()
+        \     && has_key(g:neocomplcache_plugin_completion_length, l:name)
+        \     && len(a:cur_keyword_str) <= g:neocomplcache_plugin_completion_length[l:name])
+      " Skip plugin.
+      continue
     endif
+    
+    let l:list = l:plugin.get_keyword_list(a:cur_keyword_str)
+    let l:rank = has_key(g:neocomplcache_plugin_rank, l:name)? 
+          \ g:neocomplcache_plugin_rank[l:name] : g:neocomplcache_plugin_rank['keyword_complete']
+    for l:keyword in l:list
+      let l:keyword.rank = l:rank
+    endfor
+    let l:cache_keyword_list += l:list
   endfor
 
   return l:cache_keyword_list
