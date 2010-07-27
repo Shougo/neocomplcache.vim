@@ -744,6 +744,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-07-27
 - Fixed autocompletion freeze.
+- Fixed omni completion bug.
 
 2010-07-26
 - Fixed snippets expand error.
