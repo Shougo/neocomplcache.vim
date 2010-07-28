@@ -1231,9 +1231,9 @@ function! s:get_complete_result(cur_text, ...)"{{{
 
       if !empty(l:words)
         let l:complete_result[l:complfunc_name] = {
-              \'complete_words' : l:words, 
-              \'cur_keyword_pos' : l:cur_keyword_pos, 
-              \'cur_keyword_str' : l:cur_keyword_str, 
+              \ 'complete_words' : l:words, 
+              \ 'cur_keyword_pos' : l:cur_keyword_pos, 
+              \ 'cur_keyword_str' : l:cur_keyword_str, 
               \}
       endif
     endif
