@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jul 2010
+" Last Modified: 28 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -758,8 +758,7 @@ function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
 endfunction"}}}
 function! neocomplcache#is_eskk_enabled()"{{{
-  return exists('g:loaded_eskk') && (!exists('g:eskk_disable') || !g:eskk_disable)
-        \ && (eskk#is_enabled() || (has('multi_byte') && &l:iminsert))
+  return exists('g:loaded_eskk') && (!exists('g:eskk_disable') || !g:eskk_disable) && eskk#is_enabled()
 endfunction"}}}
 function! neocomplcache#is_text_mode()"{{{
   return s:is_text_mode || s:within_comment
@@ -1205,7 +1204,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
       " Skip plugin.
       continue
     endif
-    
+
     let l:cur_keyword_pos = l:complfunc.get_keyword_pos(a:cur_text)
 
     if l:cur_keyword_pos >= 0

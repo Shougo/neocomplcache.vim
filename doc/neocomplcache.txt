@@ -739,6 +739,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-07-28
+- Fixed eskk check.
+
 2010-07-27
 - Fixed autocompletion freeze.
 - Fixed omni completion bug.
