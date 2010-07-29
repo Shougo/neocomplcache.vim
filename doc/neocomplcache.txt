@@ -756,6 +756,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added omni completion examples.
 - Supported inline assembly language.
 - Fixed vim_complete commands.dict.
+- Added neocomplcache#set_completion_length().
 
 2010-07-28
 - Fixed eskk check.

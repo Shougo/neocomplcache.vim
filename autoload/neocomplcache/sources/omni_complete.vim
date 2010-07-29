@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jul 2010
+" Last Modified: 29 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,8 +83,8 @@ function! s:source.initialize()"{{{
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'omni_complete', 100)
   
-  let s:keyword_cache = {}
-  let s:completion_length = neocomplcache#get_auto_completion_length('omni_complete')
+  " Set completion length.
+  call neocomplcache#set_completion_length('omni_complete', 0)
 endfunction"}}}
 function! s:source.finalize()"{{{
 endfunction"}}}

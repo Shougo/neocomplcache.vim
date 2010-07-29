@@ -692,12 +692,15 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
     return s:auto_completion_length[bufnr('%')]
   elseif has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
     return g:neocomplcache_plugin_completion_length[a:plugin_name]
-  elseif a:plugin_name == 'omni_complete' || a:plugin_name == 'vim_complete' || a:plugin_name == 'completefunc_complete'
-    return 0
   elseif neocomplcache#is_auto_complete()
     return g:neocomplcache_auto_completion_start_length
   else
     return g:neocomplcache_manual_completion_start_length
+  endif
+endfunction"}}}
+function! neocomplcache#set_completion_length(plugin_name, length)"{{{
+  if !has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
+    let g:neocomplcache_plugin_completion_length[a:plugin_name] = a:length
   endif
 endfunction"}}}
 function! neocomplcache#get_auto_completion_length(plugin_name)"{{{

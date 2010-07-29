@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2010
+" Last Modified: 29 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,22 +44,25 @@ function! s:source.initialize()"{{{
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
+  " Set rank.
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
+  
+  " Set completion length.
+  call neocomplcache#set_completion_length('buffer_complete', 1)
+
+  " Create cache directory.
+  if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
+    call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
+  endif
+  
   " Initialize script variables."{{{
   let s:buffer_sources = {}
   let s:filetype_frequencies = {}
   let s:cache_line_count = 70
   let s:rank_cache_count = 1
   let s:disable_caching_list = {}
-  let s:completion_length = neocomplcache#get_auto_completion_length('buffer_complete')
+  let s:completion_length = g:neocomplcache_auto_completion_start_length
   "}}}
-  
-  " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
-
-  " Create cache directory.
-  if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
-    call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
-  endif
 
   " Add commands."{{{
   command! -nargs=? -complete=buffer NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
@@ -89,6 +92,10 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
+  if neocomplcache#is_auto_complete() && len(a:cur_keyword_str) < s:completion_length
+    return []
+  endif
+  
   let l:keyword_list = []
 
   let l:current = bufnr('%')

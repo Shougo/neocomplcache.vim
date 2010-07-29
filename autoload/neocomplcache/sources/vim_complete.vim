@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jul 2010
+" Last Modified: 29 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,6 +43,9 @@ function! s:source.initialize()"{{{
 
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'vim_complete', 100)
+  
+  " Set completion length.
+  call neocomplcache#set_completion_length('vim_complete', 1)
   
   " Call caching event.
   autocmd neocomplcache FileType * call neocomplcache#sources#vim_complete#helper#on_filetype()
