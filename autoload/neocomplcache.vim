@@ -244,6 +244,14 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_filetype_include_lists')
     let g:neocomplcache_filetype_include_lists = {}
   endif
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'c,cpp', [
+        \ {'filetype' : 'masm', 'start' : '_*asm\s*\%(\n\s*\)\?{', 'end' : '}'},
+        \ {'filetype' : 'masm', 'start' : '_*asm\s*\h\w*', 'end' : '$'},
+        \ {'filetype' : 'gas', 'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
+        \])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'd', [
+        \ {'filetype' : 'masm', 'start' : 'asm\s*\%(\n\s*\)\?{', 'end' : '}'},
+        \])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'perl6', [
         \ {'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'},
         \])

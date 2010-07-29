@@ -346,10 +346,6 @@ g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		for the initial value.
 >
 		" Examples:
-		if !exists('g:neocomplcache_omni_patterns')
-		let g:neocomplcache_omni_patterns = {}
-		endif
-		let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 <
 g:neocomplcache_tags_filter_patterns			*g:neocomplcache_tags_filter_patterns*
 		This dictionary records  a pattern to filter a candidate in
@@ -661,6 +657,20 @@ EXAMPLES						*neocomplcache-examples*
 	
 	" AutoComplPop like behavior.
 	"let g:neocomplcache_enable_auto_select = 1
+	
+	" Enable omni completion.
+	autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+	autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+	autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+	autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+	autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+	
+	" Enable heavy omni completion.
+	if !exists('g:neocomplcache_omni_patterns')
+		let g:neocomplcache_omni_patterns = {}
+	endif
+	let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+	"autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
 <
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
@@ -741,6 +751,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-07-29
+- Added omni completion examples.
+- Supported inline assembly language.
+- Fixed vim_complete commands.dict.
 
 2010-07-28
 - Fixed eskk check.
