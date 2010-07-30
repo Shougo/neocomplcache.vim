@@ -443,7 +443,7 @@ g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
 		if !exists('g:neocomplcache_delimiter_patterns')
 		let g:neocomplcache_delimiter_patterns= {}
 		endif
-		let g:neocomplcache_delimiter_patterns.vim = ['java']
+		let g:neocomplcache_delimiter_patterns.vim = ['#']
 		let g:neocomplcache_delimiter_patterns.cpp = ['::']
 <
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。

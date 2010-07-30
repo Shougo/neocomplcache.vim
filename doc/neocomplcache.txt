@@ -466,7 +466,14 @@ g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
 		This variable appoints a delimiter pattern to smart complete a
 		function.  This is appointed in regular expression's string
 		list every file type.
-		
+>
+		" Examples:
+		if !exists('g:neocomplcache_delimiter_patterns')
+		let g:neocomplcache_delimiter_patterns= {}
+		endif
+		let g:neocomplcache_delimiter_patterns.vim = ['#']
+		let g:neocomplcache_delimiter_patterns.cpp = ['::']
+<
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
@@ -751,6 +758,12 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-07-31
+- Supported coffee script.
+
+2010-07-30
+- Fixed documentation.
 
 2010-07-29
 - Added omni completion examples.
