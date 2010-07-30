@@ -147,9 +147,9 @@ function! neocomplcache#enable() "{{{
         \'\h\w*\%(\s\?()\?\|<\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'java',
         \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|[@]\?\h\w*\%(\s\?()\?\|<\)\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'javascript,actionscript',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'javascript,actionscript,int-js,int-kjs',
         \'\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|\h\w*\%(\s\?()\?\)\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'coffee',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'coffee,int-coffee',
         \'@\h\w*\|\<\u\w*\%(\.\w*\%(()\?\)\?\)*\|\h\w*\%(\s\?()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'awk',
         \'\h\w*\%(\s\?()\?\)\?')
@@ -869,21 +869,9 @@ endfunction"}}}
 
 " Complete filetype helper.
 function! neocomplcache#filetype_complete(arglead, cmdline, cursorpos)"{{{
-  let l:list = split(globpath(&runtimepath, 'snippets/*.snip*'), '\n') +
-        \split(globpath(&runtimepath, 'autoload/neocomplcache/sources/snippets_complete/*.snip*'), '\n')
-  if exists('g:neocomplcache_snippets_dir')
-    for l:dir in split(g:neocomplcache_snippets_dir, ',')
-      let l:dir = expand(l:dir)
-      if isdirectory(l:dir)
-        let l:list += split(globpath(l:dir, '*.snip*'), '\n')
-      endif
-    endfor
-  endif
-  let l:items = map(l:list, 'fnamemodify(v:val, ":t:r")')
-
   " Dup check.
   let l:ret = {}
-  for l:item in l:items
+  for l:item in map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 'fnamemodify(v:val, ":t:r")')
     if !has_key(l:ret, l:item) && l:item =~ '^'.a:arglead
       let l:ret[l:item] = 1
     endif
