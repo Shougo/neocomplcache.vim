@@ -32,7 +32,7 @@ if v:version < 700
 elseif exists('g:loaded_neocomplcache')
   finish
 elseif !has('reltime')
-  echoerr 'neocomplcache needs reltime future.'
+  echoerr 'neocomplcache needs reltime feature.'
   finish
 endif
 
