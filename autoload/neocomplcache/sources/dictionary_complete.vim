@@ -98,7 +98,7 @@ endfunction"}}}
 
 function! s:recaching(filetype)"{{{
   if a:filetype == ''
-    let l:filetype = neocomplcache#get_context_filetype()
+    let l:filetype = neocomplcache#get_context_filetype(1)
   else
     let l:filetype = a:filetype
   endif
