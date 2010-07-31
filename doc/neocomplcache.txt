@@ -762,6 +762,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-07-31
 - Supported coffee script.
 - Improved neocomplcache#filetype_complete().
+- Skip filename completion when too many candidates.
 
 2010-07-30
 - Fixed documentation.

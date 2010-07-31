@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2010
+" Last Modified: 31 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -112,11 +112,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     call neocomplcache#print_error(v:exception)
     return []
   endtry
-  if empty(l:files)
+  if empty(l:files) || (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
     return []
-  elseif len(l:files) > g:neocomplcache_max_list
-    " Trunk items.
-    let l:files = l:files[: g:neocomplcache_max_list - 1]
   endif
 
   let l:list = []
