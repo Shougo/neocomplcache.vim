@@ -763,6 +763,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-02
+- Released neocomplcache Ver.5.1
+- Fixed css snippet.
+
 2010-07-31
 - Supported coffee script.
 - Improved neocomplcache#filetype_complete().
