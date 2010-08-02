@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 5.1
+Version: 5.2
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -764,6 +764,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG						*neocomplcache-changelog*
 
 2010-08-02
+- Ver.5.2 development started.
+- Fixed filename_complete.
+
+ChangeLog NeoComplCache 5.1: {{{
+2010-08-02
 - Released neocomplcache Ver.5.1
 - Fixed css snippet.
 
@@ -913,7 +918,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Implemented text mode.
 - Added g:neocomplcache_text_mode_filetypes option.
 - Added "nothing" in text mode filetype.
-
+}}}
 ChangeLog NeoComplCache 5.0: {{{
 2010-06-24
 - Improved eruby support.

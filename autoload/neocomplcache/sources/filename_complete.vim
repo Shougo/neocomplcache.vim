@@ -137,37 +137,26 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       endfor
     endif
 
+    let l:abbr = l:dict.word
+    if isdirectory(l:word)
+      let l:abbr .= '/'
+      let l:dict.rank += 1
+    elseif l:is_win
+      if '.'.fnamemodify(l:word, ':e') =~ l:exts
+        let l:abbr .= '*'
+      endif
+    elseif executable(l:word)
+      let l:abbr .= '*'
+    endif
+    let l:dict.abbr = l:abbr
+
+    " Escape word.
+    let l:dict.word = escape(l:dict.word, ' *?[]"={}')
+
     call add(l:list, l:dict)
   endfor
 
-  call sort(l:list, 'neocomplcache#compare_rank')
-  " Trunk many items.
-  let l:list = l:list[: g:neocomplcache_max_list-1]
-
-  let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-  for keyword in l:list
-    let l:abbr = keyword.word
-    
-    if isdirectory(keyword.word)
-      let l:abbr .= '/'
-      let keyword.rank += 1
-    elseif l:is_win
-      if '.'.fnamemodify(keyword.word, ':e') =~ l:exts
-        let l:abbr .= '*'
-      endif
-    elseif executable(keyword.word)
-      let l:abbr .= '*'
-    endif
-
-    let keyword.abbr = l:abbr
-  endfor
-
-  for keyword in l:list
-    " Escape word.
-    let keyword.word = escape(keyword.word, ' *?[]"={}')
-  endfor
-
-  return l:list
+  return sort(l:list, 'neocomplcache#compare_rank')
 endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
