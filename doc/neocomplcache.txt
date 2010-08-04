@@ -766,6 +766,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-08-04
 - Improved eskk support.
 - Improved vim_complete check.
+- Fixed vim_complete cur_keyword_str bug.
 
 2010-08-03
 - Fixed filename_complete error.

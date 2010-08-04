@@ -71,7 +71,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  let l:pattern = '\.\%(\h\w*\%(()\?\)\?\)\?\|' . neocomplcache#get_keyword_pattern_end('vim')
+  let l:pattern = '\h\w*\.\%(\h\w*\)\?$\|' . neocomplcache#get_keyword_pattern_end('vim')
   if l:cur_text !~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
     let l:command_completion = neocomplcache#sources#vim_complete#helper#get_completion_name(
           \neocomplcache#sources#vim_complete#get_command(l:cur_text))
