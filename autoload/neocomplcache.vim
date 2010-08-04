@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2010
+" Last Modified: 04 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1201,8 +1201,8 @@ function! s:get_complete_result(cur_text, ...)"{{{
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
-    if has_key(g:neocomplcache_plugin_disable, l:complfunc_name)
-        \ && g:neocomplcache_plugin_disable[l:complfunc_name]
+    if (has_key(g:neocomplcache_plugin_disable, l:complfunc_name) && g:neocomplcache_plugin_disable[l:complfunc_name])
+        \ || (neocomplcache#is_eskk_enabled() && l:complfunc_name !=# 'omni_complete')
       " Skip plugin.
       continue
     endif
