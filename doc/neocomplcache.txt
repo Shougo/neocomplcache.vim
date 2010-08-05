@@ -765,6 +765,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-05
 - Improved ctags arguments.
+- Improved gas syntax.
 
 2010-08-04
 - Improved eskk support.

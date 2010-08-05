@@ -177,6 +177,8 @@ function! neocomplcache#enable() "{{{
         \'^\s*\[\h\w*\|[%.]\?\h\w*\|\%(\.\.\@\?\|%[%$!]\)\%(\h\w*\)\?\|\h\w*:\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'asm',
         \'[%$.]\?\h\w*\%(\$\h\w*\)\?')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'gas',
+        \'[$.]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'gdb,int-gdb',
         \'$\h\w*\|[[:alnum:]:._-]\+')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'make',
