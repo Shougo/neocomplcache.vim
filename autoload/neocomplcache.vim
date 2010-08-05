@@ -305,7 +305,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'vim',
         \"--extra=fq --fields=afmiKlnsStz --regex-vim='/function!? ([a-z#:_0-9A-Z]+)/\\1/function/'")
   call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'cpp',
-        \'--c++-kinds=+p --fields=+iaS --extra=+q')
+        \'--c++-kinds=+p --fields=+iaS --extra=+q -I __wur')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'c',
+        \'--c-types=+p --fields=+iaS --extra=+q -I __wur')
   "}}}
   
   " Initialize text mode filetypes."{{{
