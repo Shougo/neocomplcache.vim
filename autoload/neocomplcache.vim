@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Aug 2010
+" Last Modified: 07 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,6 +47,7 @@ function! neocomplcache#enable() "{{{
   set vb t_vb=
 
   " Initialize"{{{
+  let s:is_enabled = 1
   let s:complfunc_sources = {}
   let s:plugin_sources = {}
   let s:ftplugin_sources = {}
@@ -375,6 +376,8 @@ function! neocomplcache#enable() "{{{
 endfunction"}}}
 
 function! neocomplcache#disable()"{{{
+  let s:is_enabled = 0
+  
   " Restore options.
   let &completefunc = s:completefunc_save
   let &completeopt = s:completeopt_save
@@ -402,6 +405,10 @@ endfunction"}}}
 
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
+    if !neocomplcache#is_enabled()
+      return -1
+    endif
+    
     let s:old_complete_words = []
     
     " Clear flag.
@@ -422,6 +429,10 @@ endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{
   if a:findstart
+    if !neocomplcache#is_enabled()
+      return -1
+    endif
+
     " Check text was changed.
     let l:cached_text = s:cur_text
     if s:get_cur_text() != l:cached_text
@@ -772,6 +783,15 @@ function! neocomplcache#match_word(cur_text, ...)"{{{
   
   return [l:cur_keyword_pos, l:cur_keyword_str]
 endfunction"}}}
+function! neocomplcache#is_enabled()"{{{
+  return s:is_enabled
+endfunction"}}}
+function! neocomplcache#is_locked()"{{{
+  return !s:is_enabled 
+        \ || (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
+        \ || g:neocomplcache_disable_auto_complete
+        \ || (g:neocomplcache_lock_buffer_name_pattern != '' && bufname('%') =~ g:neocomplcache_lock_buffer_name_pattern)
+endfunction"}}}
 function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
 endfunction"}}}
@@ -1079,9 +1099,7 @@ function! s:on_moved_i()"{{{
 endfunction"}}}
 function! s:do_complete(is_moved)"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
-        \|| (g:neocomplcache_lock_buffer_name_pattern != '' && bufname('%') =~ g:neocomplcache_lock_buffer_name_pattern)
-        \|| (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
-        \|| g:neocomplcache_disable_auto_complete
+        \|| neocomplcache#is_locked()
         \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
     return
   endif
