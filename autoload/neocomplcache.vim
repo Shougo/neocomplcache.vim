@@ -801,6 +801,9 @@ endfunction"}}}
 function! neocomplcache#is_text_mode()"{{{
   return s:is_text_mode || s:within_comment
 endfunction"}}}
+function! neocomplcache#exists_echodoc()"{{{
+  return exists('g:loaded_echodoc') && g:loaded_echodoc
+endfunction"}}}
 function! neocomplcache#within_comment()"{{{
   return s:within_comment
 endfunction"}}}

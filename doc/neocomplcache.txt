@@ -765,6 +765,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-07
 - Implemented neocomplcache enabled check.
+- Supported echodoc.
 
 2010-08-05
 - Improved ctags arguments.

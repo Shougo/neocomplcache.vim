@@ -57,6 +57,10 @@ endfunction"}}}
 
 function! s:source.finalize()"{{{
   delcommand NeoComplCacheCachingVim
+  
+  if neocomplcache#exists_echodoc()
+    call echodoc#unregister('vim_complete')
+  endif
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{

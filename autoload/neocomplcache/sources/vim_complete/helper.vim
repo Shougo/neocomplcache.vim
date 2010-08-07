@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 07 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,15 +45,10 @@ function! neocomplcache#sources#vim_complete#helper#on_filetype()"{{{
     let l:bufnumber += 1
   endwhile
 
-  autocmd neocomplcache CursorMovedI <buffer> call s:on_moved_i()
-endfunction"}}}
-
-function! s:on_moved_i()
-  if g:neocomplcache_enable_display_parameter && neocomplcache#get_context_filetype() ==# 'vim'
-    " Print prototype.
-    call neocomplcache#sources#vim_complete#helper#print_prototype(neocomplcache#sources#vim_complete#get_cur_text())
+  if neocomplcache#exists_echodoc()
+    call echodoc#register('vim_complete', s:doc_dict)
   endif
-endfunction
+endfunction"}}}
 
 function! neocomplcache#sources#vim_complete#helper#recaching(bufname)"{{{
   " Caching script candidates.
@@ -64,12 +59,22 @@ function! neocomplcache#sources#vim_complete#helper#recaching(bufname)"{{{
   endif
   let s:global_candidates_list = { 'dictionary_variables' : {} }
 endfunction"}}}
-function! neocomplcache#sources#vim_complete#helper#print_prototype(cur_text)"{{{
+
+" For echodoc."{{{
+let s:doc_dict = {
+      \ 'name' : 'vim_complete',
+      \ 'rank' : 10,
+      \ 'filetypes' : { 'vim' : 1 },
+      \ }
+function! s:doc_dict.search(cur_text)"{{{
+  let l:cur_text = neocomplcache#sources#vim_complete#get_cur_text()
+  
   " Echo prototype.
   let l:script_candidates_list = s:get_cached_script_candidates()
 
-  let l:prototype_name = matchstr(a:cur_text, 
+  let l:prototype_name = matchstr(l:cur_text,
         \'\%(<[sS][iI][dD]>\|[sSgGbBwWtTlL]:\)\=\%(\i\|[#.]\|{.\{-1,}}\)*\s*(\ze\%([^(]\|(.\{-})\)*$')
+  let l:ret = []
   if l:prototype_name != ''
     if !has_key(s:internal_candidates_list, 'function_prototypes')
       " No cache.
@@ -77,15 +82,13 @@ function! neocomplcache#sources#vim_complete#helper#print_prototype(cur_text)"{{
     endif
     
     " Search function name.
+    call add(l:ret, { 'text' : l:prototype_name, 'highlight' : 'Function' })
     if has_key(s:internal_candidates_list.function_prototypes, l:prototype_name)
-      echohl Function | echo l:prototype_name | echohl None
-      echon s:internal_candidates_list.function_prototypes[l:prototype_name]
+      call add(l:ret, { 'text' : s:internal_candidates_list.function_prototypes[l:prototype_name] })
     elseif has_key(s:global_candidates_list.function_prototypes, l:prototype_name)
-      echohl Function | echo l:prototype_name | echohl None
-      echon s:global_candidates_list.function_prototypes[l:prototype_name]
+      call add(l:ret, { 'text' : s:global_candidates_list.function_prototypes[l:prototype_name] })
     elseif has_key(l:script_candidates_list.function_prototypes, l:prototype_name)
-      echohl Function | echo l:prototype_name | echohl None
-      echon l:script_candidates_list.function_prototypes[l:prototype_name]
+      call add(l:ret, { 'text' : l:script_candidates_list.function_prototypes[l:prototype_name] })
     endif
   else
     if !has_key(s:internal_candidates_list, 'command_prototypes')
@@ -95,16 +98,18 @@ function! neocomplcache#sources#vim_complete#helper#print_prototype(cur_text)"{{
     
     " Search command name.
     " Skip head digits.
-    let l:prototype_name = neocomplcache#sources#vim_complete#get_command(a:cur_text)
+    let l:prototype_name = neocomplcache#sources#vim_complete#get_command(l:cur_text)
+    call add(l:ret, { 'text' : l:prototype_name, 'highlight' : 'Statement' })
     if has_key(s:internal_candidates_list.command_prototypes, l:prototype_name)
-      echohl Statement | echo l:prototype_name | echohl None
-      echon s:internal_candidates_list.command_prototypes[l:prototype_name]
+      call add(l:ret, { 'text' : s:internal_candidates_list.command_prototypes[l:prototype_name] })
     elseif has_key(s:global_candidates_list.command_prototypes, l:prototype_name)
-      echohl Statement | echo l:prototype_name | echohl None
-      echon s:global_candidates_list.command_prototypes[l:prototype_name]
+      call add(l:ret, { 'text' : s:global_candidates_list.command_prototypes[l:prototype_name] })
     endif
   endif
+
+  return l:ret
 endfunction"}}}
+"}}}
 
 function! neocomplcache#sources#vim_complete#helper#get_command_completion(command_name, cur_text, cur_keyword_str)"{{{
   let l:completion_name = neocomplcache#sources#vim_complete#helper#get_completion_name(a:command_name)
