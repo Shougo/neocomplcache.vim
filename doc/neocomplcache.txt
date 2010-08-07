@@ -765,7 +765,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-07
 - Implemented neocomplcache enabled check.
-- Supported echodoc.
+- Supported echodoc in vim_complete.
+- Supported echodoc in snippets_complete.
 
 2010-08-05
 - Improved ctags arguments.

@@ -78,7 +78,7 @@ function! s:doc_dict.search(cur_text)"{{{
   if l:prototype_name != ''
     if !has_key(s:internal_candidates_list, 'function_prototypes')
       " No cache.
-      return
+      return []
     endif
     
     " Search function name.
@@ -93,7 +93,7 @@ function! s:doc_dict.search(cur_text)"{{{
   else
     if !has_key(s:internal_candidates_list, 'command_prototypes')
       " No cache.
-      return
+      return []
     endif
     
     " Search command name.
