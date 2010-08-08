@@ -147,7 +147,19 @@ function! s:doc_dict.search(cur_text)"{{{
       if has_key(s:include_cache[l:include], l:key)
         let l:cache = filter(copy(s:include_cache[l:include][l:key]), 'stridx(v:val.word, ' . string(l:word) . ') == 0')
         if !empty(l:cache) && has_key(l:cache[0], 'kind') && l:cache[0].kind != ''
-          return [ { 'text' : l:cache[0].abbr } ]
+          let l:match = match(neocomplcache#escape_match(l:cache[0].abbr), l:word)
+          if l:match >= 0
+            let l:ret = []
+
+            if l:match > 0
+              call add(l:ret, { 'text' : l:cache[0].abbr[ : l:match-1] })
+            endif
+            
+            call add(l:ret, { 'text' : l:word, 'highlight' : 'Identifier' })
+            call add(l:ret, { 'text' : l:cache[0].abbr[l:match+len(l:word) :] })
+
+            return l:ret
+          endif
         endif
       endif
     endfor

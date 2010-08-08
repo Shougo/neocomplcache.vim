@@ -82,7 +82,7 @@ function! s:doc_dict.search(cur_text)"{{{
     endif
     
     " Search function name.
-    call add(l:ret, { 'text' : l:prototype_name, 'highlight' : 'Function' })
+    call add(l:ret, { 'text' : l:prototype_name, 'highlight' : 'Identifier' })
     if has_key(s:internal_candidates_list.function_prototypes, l:prototype_name)
       call add(l:ret, { 'text' : s:internal_candidates_list.function_prototypes[l:prototype_name] })
     elseif has_key(s:global_candidates_list.function_prototypes, l:prototype_name)
