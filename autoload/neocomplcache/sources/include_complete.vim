@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2010
+" Last Modified: 08 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,10 +66,18 @@ function! s:source.initialize()"{{{
 
   " Add command.
   command! -nargs=? -complete=buffer NeoComplCacheCachingInclude call s:check_buffer(<q-args>)
+
+  if neocomplcache#exists_echodoc()
+    call echodoc#register('include_complete', s:doc_dict)
+  endif
 endfunction"}}}
 
 function! s:source.finalize()"{{{
   delcommand NeoComplCacheCachingInclude
+  
+  if neocomplcache#exists_echodoc()
+    call echodoc#unregister('include_complete')
+  endif
 endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
@@ -108,6 +116,46 @@ function! neocomplcache#sources#include_complete#get_include_files(bufnumber)"{{
     return []
   endif
 endfunction"}}}
+
+" For echodoc."{{{
+let s:doc_dict = {
+      \ 'name' : 'include_complete',
+      \ 'rank' : 5,
+      \ 'filetypes' : {},
+      \ }
+function! s:doc_dict.search(cur_text)"{{{
+  if &filetype ==# 'vim'
+    return []
+  endif
+  
+  " Collect words.
+  let l:words = []
+  let i = 0
+  while i >= 0
+    let l:word = matchstr(a:cur_text, '\k\+')
+    if len(l:word) >= s:completion_length
+      call add(l:words, l:word)
+    endif
+    
+    let i = matchend(a:cur_text, '\k\+', i)
+  endwhile
+
+  for l:word in reverse(l:words)
+    let l:key = tolower(l:word[: s:completion_length-1])
+    
+    for l:include in s:include_info[bufnr('%')].include_files
+      if has_key(s:include_cache[l:include], l:key)
+        let l:cache = filter(copy(s:include_cache[l:include][l:key]), 'stridx(v:val.word, ' . string(l:word) . ') == 0')
+        if !empty(l:cache) && has_key(l:cache[0], 'kind') && l:cache[0].kind != ''
+          return [ { 'text' : l:cache[0].abbr } ]
+        endif
+      endif
+    endfor
+  endfor
+  
+  return []
+endfunction"}}}
+"}}}
 
 function! s:check_buffer_all()"{{{
   let l:bufnumber = 1
