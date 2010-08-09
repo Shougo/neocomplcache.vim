@@ -125,7 +125,6 @@ let s:doc_dict = {
       \ }
 function! s:doc_dict.search(cur_text)"{{{
   if &filetype ==# 'vim' || !has_key(s:include_info, bufnr('%'))
-        \ || !has_key(s:include_cache, bufnr('%'))
     return []
   endif
   
