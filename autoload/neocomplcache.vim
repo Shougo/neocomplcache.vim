@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2010
+" Last Modified: 09 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1555,6 +1555,7 @@ function! s:set_context_filetype()"{{{
 
         if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) > 0
           let s:context_filetype = l:include.filetype
+          let l:filetype = l:include.filetype
           break 
         endif
       endif

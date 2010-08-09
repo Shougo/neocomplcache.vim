@@ -765,6 +765,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-09
 - Fixed include_complete error in echodoc.
+- Fixed context filetype bug in filetype plugin.
 
 2010-08-08
 - Improved lock.
