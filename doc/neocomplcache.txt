@@ -763,6 +763,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-09
+- Fixed include_complete error in echodoc.
+
 2010-08-08
 - Improved lock.
 - Supported echodoc in vim_complete.
