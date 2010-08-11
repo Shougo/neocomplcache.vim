@@ -65,7 +65,7 @@ COMMANDS 						*neocomplcache-commands*
 		neocomplcacheのロック状態を切り替える。
 		ロックしている間は自動補完ができなくなる。
 
-:Neco 							*:Neco*
+:Neco [{number}] 					*:Neco*
 		？？？
 
 :NeoComplCacheLock					*:NeoComplCacheLock*

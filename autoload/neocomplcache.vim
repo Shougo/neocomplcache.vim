@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Aug 2010
+" Last Modified: 11 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -337,7 +337,7 @@ function! neocomplcache#enable() "{{{
 
   " Add commands."{{{
   command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
-  command! -nargs=0 Neco call s:display_neco()
+  command! -nargs=? Neco call s:display_neco(<q-args>)
   command! -nargs=0 NeoComplCacheLock call s:lock()
   command! -nargs=0 NeoComplCacheUnlock call s:unlock()
   command! -nargs=0 NeoComplCacheToggle call s:toggle_lock()
@@ -922,26 +922,157 @@ endfunction"}}}
 function! s:unlock()"{{{
   let s:complete_lock[bufnr('%')] = 0
 endfunction"}}}
-function! s:display_neco()"{{{
+function! s:display_neco(number)"{{{
+  let l:cmdheight_save = &cmdheight
+  
   let l:animation = [
-        \["   A A", 
-        \ "~(-'_'-)"], 
+    \[
+        \[
+        \ "   A A", 
+        \ "~(-'_'-)"
+        \], 
+        \[
+        \ "      A A", 
+        \ "   ~(-'_'-)",
+        \],
+        \[
+        \ "        A A", 
+        \ "     ~(-'_'-)",
+        \],
+        \[
+        \ "          A A  ", 
+        \ "       ~(-'_'-)",
+        \], 
+        \[
+        \ "             A A", 
+        \ "          ~(-^_^-)",
+        \], 
+    \],
+    \[
+        \[
+        \ "   A A", 
+        \ "~(-'_'-)",
+        \],
+        \[
+        \ "      A A", 
+        \ "   ~(-'_'-)",
+        \],
+        \[
+        \ "        A A", 
+        \ "     ~(-'_'-)",
+        \],
+        \[
+        \ "          A A  ", 
+        \ "       ~(-'_'-)",
+        \], 
+        \[
+        \ "             A A", 
+        \ "          ~(-'_'-)",
+        \],
+        \[
+        \ "          A A  ", 
+        \ "       ~(-'_'-)"
+        \],
+        \[
+        \ "        A A", 
+        \ "     ~(-'_'-)"
+        \],
+        \[
+        \ "      A A", 
+        \ "   ~(-'_'-)"
+        \],
+        \[
+        \ "   A A", 
+        \ "~(-'_'-)"
+        \],
+    \],
+    \[
+        \[
+        \ "   A A", 
+        \ "~(-'_'-)",
+        \], 
+        \[
+        \ "        A A", 
+        \ "     ~(-'_'-)",
+        \],
+        \[
+        \ "             A A", 
+        \ "          ~(-'_'-)",
+        \],
+        \[
+        \ "                  A A", 
+        \ "               ~(-'_'-)",
+        \],
+        \[
+        \ "                       A A", 
+        \ "                    ~(-'_'-)",
+        \],
+        \["                           A A", 
+        \ "                        ~(-'_'-)",
+        \],
+    \],
+    \[
+        \[
+        \ "",
+        \ "   A A", 
+        \ "~(-'_'-)",
+        \], 
         \["      A A", 
-        \ "   ~(-'_'-)"], 
-        \["        A A", 
-        \ "     ~(-'_'-)"], 
-        \["          A A  ", 
-        \ "       ~(-'_'-)"], 
-        \["             A A", 
-        \ "          ~(-^_^-)"],
-        \]
+        \ "   ~(-'_'-)",
+        \ "",
+        \], 
+        \[
+        \ "",
+        \ "        A A", 
+        \ "     ~(-'_'-)",
+        \],
+        \[
+        \ "          A A  ", 
+        \ "       ~(-'_'-)", 
+        \ "",
+        \], 
+        \[
+        \ "",
+        \ "             A A", 
+        \ "          ~(-^_^-)",
+        \],
+    \],
+    \[
+        \[
+        \ "   A A        A A", 
+        \ "~(-'_'-)  -8(*'_'*)"
+        \], 
+        \[
+        \ "     A A        A A", 
+        \ "  ~(-'_'-)  -8(*'_'*)"
+        \],
+        \[
+        \ "       A A        A A", 
+        \ "    ~(-'_'-)  -8(*'_'*)"
+        \],
+        \[
+        \ "     A A        A A", 
+        \ "  ~(-'_'-)  -8(*'_'*)"
+        \], 
+        \[
+        \ "   A A        A A", 
+        \ "~(-'_'-)  -8(*'_'*)"
+        \], 
+    \],
+  \]
 
-  for l:anim in l:animation
-    echo ''
+  let l:num = a:number == '' ? neocomplcache#rand(len(l:animation) - 1) : a:number
+  let &cmdheight = len(l:animation[l:num][0])
+
+  for l:anim in l:animation[l:num]
+    echo join(repeat([''], &cmdheight-1), "\n")
     redraw
-    echo l:anim[0] . "\n" . l:anim[1]
-    sleep 150m
+    echon join(l:anim, "\n")
+    sleep 300m
   endfor
+  redraw
+
+  let &cmdheight = l:cmdheight_save
 endfunction"}}}
 function! s:set_auto_completion_length(len)"{{{
   let s:auto_completion_length[bufnr('%')] = a:len
