@@ -544,9 +544,13 @@ function! neocomplcache#check_match_filter(cur_keyword_str, ...)"{{{
         \empty(a:000)? a:cur_keyword_str : a:cur_keyword_str[ : a:1-1]) =~ '[^\\]\*\|\\+'
 endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
-  let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
+  if &ignorecase
+    let l:expr = printf('!stridx(tolower(v:val.word), %s)', string(tolower(a:cur_keyword_str)))
+  else
+    let l:expr = printf('!stridx(v:val.word, %s)', string(a:cur_keyword_str))
+  endif
 
-  return filter(a:list, printf("stridx(v:val.word, %s) == 0", string(l:cur_keyword)))
+  return filter(a:list, l:expr)
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let l:ret = []

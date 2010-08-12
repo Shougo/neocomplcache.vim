@@ -763,6 +763,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-12
+- Fixed filter bug.
+
 2010-08-11
 - Refactoringed :Neco command.
 
