@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 13 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,7 +38,7 @@ function! s:source.initialize()"{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'syntax_complete', 8)
 
   " Set caching event.
-  autocmd neocomplcache FileType * call s:caching()
+  autocmd neocomplcache Syntax * call s:caching()
 
   " Add command.
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheCachingSyntax call s:recaching(<q-args>)

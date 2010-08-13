@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2010
+" Last Modified: 13 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -458,12 +458,14 @@ function! s:check_source()"{{{
   while l:bufnumber <= bufnr('$')
     if bufloaded(l:bufnumber)
       let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
+      let l:buftype = getbufvar(l:bufnumber, '&buftype')
       if (!has_key(s:buffer_sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
             \&& !has_key(s:disable_caching_list, l:bufnumber)
             \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& (g:neocomplcache_lock_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_lock_buffer_name_pattern)
             \&& getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
-            \&& getbufvar(l:bufnumber, '&buftype') !~# 'help'
+            \&& l:buftype !~# 'help'
+            \&& (l:buftype !~# 'nofile' || len(getbufline(l:bufnumber, 1, '$')) < 500)
         " Caching.
         call s:word_caching(l:bufnumber)
       endif
