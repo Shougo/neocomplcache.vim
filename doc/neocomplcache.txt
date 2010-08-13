@@ -765,6 +765,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-13
 - Improved caching.
+- Fixed nasm error.
 
 2010-08-12
 - Fixed filter bug.
