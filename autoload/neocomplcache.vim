@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2010
+" Last Modified: 14 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -816,7 +816,7 @@ function! neocomplcache#print_caching(string)"{{{
   echo a:string
 endfunction"}}}
 function! neocomplcache#print_error(string)"{{{
-  echohl Error | echo a:string | echohl None
+  echohl Error | echomsg a:string | echohl None
 endfunction"}}}
 function! neocomplcache#print_warning(string)"{{{
   echohl WarningMsg | echomsg a:string | echohl None
@@ -1367,7 +1367,14 @@ function! s:get_complete_result(cur_text, ...)"{{{
       continue
     endif
 
-    let l:cur_keyword_pos = l:complfunc.get_keyword_pos(a:cur_text)
+    try
+      let l:cur_keyword_pos = l:complfunc.get_keyword_pos(a:cur_text)
+    catch
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
+      call neocomplcache#print_error('Plugin name is ' . l:complfunc_name)
+    endtry
 
     if l:cur_keyword_pos >= 0
       let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
@@ -1387,7 +1394,14 @@ function! s:get_complete_result(cur_text, ...)"{{{
         let &ignorecase = g:neocomplcache_enable_ignore_case
       endif
 
-      let l:words = l:complfunc.get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
+      try
+        let l:words = l:complfunc.get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
+      catch
+        call neocomplcache#print_error(v:throwpoint)
+        call neocomplcache#print_error(v:exception)
+        call neocomplcache#print_error('Error occured in complfunc''s get_complete_words()!')
+        call neocomplcache#print_error('Plugin name is ' . l:complfunc_name)
+      endtry
 
       let &ignorecase = l:ignorecase_save
 

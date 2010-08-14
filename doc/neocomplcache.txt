@@ -763,6 +763,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-14
+- Improved error catch.
+
 2010-08-13
 - Improved caching.
 - Fixed nasm error.
