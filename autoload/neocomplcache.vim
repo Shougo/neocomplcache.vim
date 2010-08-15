@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Aug 2010
+" Last Modified: 16 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -192,6 +192,8 @@ function! neocomplcache#enable() "{{{
         \'\$\w+\|[[:alpha:]_./-][[:alnum:]_.-]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'vb',
         \'\a[[:alnum:]]*\%(()\?\)\?\|#\a[[:alnum:]]*')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'lua',
+        \'\<\u\w*\%([.:]\w*\%(()\?\)\?\)*\|\h\w*\%(()\?\)\?')
   "}}}
 
   " Initialize next keyword patterns."{{{
@@ -284,6 +286,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'c,cpp,objc,objcpp', '\.\|->')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'perl,php', '->')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'java,javascript,d,vim,ruby', '\.')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'lua', '\.\|:')
   "}}}
 
   " Initialize delimiter patterns."{{{
@@ -298,6 +301,8 @@ function! neocomplcache#enable() "{{{
         \['::'])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'java,d,javascript,actionscript,ruby,eruby,haskell,coffee',
         \['\.'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'lua',
+        \['\.', ':'])
   "}}}
   
   " Initialize ctags arguments."{{{
