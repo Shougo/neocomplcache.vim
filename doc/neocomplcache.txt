@@ -763,6 +763,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-16
+- Fixed abbrev_complete.
+
 2010-08-15
 - Improved plugin error catch.
 

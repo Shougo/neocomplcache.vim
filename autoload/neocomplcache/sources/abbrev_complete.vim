@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: abbrev_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2010
+" Last Modified: 16 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   for l:line in split(l:abbrev_list, '\n')
     let l:abbrev = split(l:line)
 
-    if l:abbrev[0] !~ '^[!ac]$'
+    if l:abbrev[0] !~ '^[!i]$'
       " No abbreviation found.
       return []
     endif
