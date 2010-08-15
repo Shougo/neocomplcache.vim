@@ -55,7 +55,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
           \{ 'word' : l:abbrev[1], 'menu' : printf('[A] %.'. g:neocomplcache_max_filename_width.'s', l:abbrev[2]) })
   endfor
 
-  return l:list
+  return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#abbrev_complete#define()"{{{
