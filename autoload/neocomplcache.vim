@@ -1374,6 +1374,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
       call neocomplcache#print_error('Plugin name is ' . l:complfunc_name)
+      return
     endtry
 
     if l:cur_keyword_pos >= 0
@@ -1401,6 +1402,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
         call neocomplcache#print_error(v:exception)
         call neocomplcache#print_error('Error occured in complfunc''s get_complete_words()!')
         call neocomplcache#print_error('Plugin name is ' . l:complfunc_name)
+        return
       endtry
 
       let &ignorecase = l:ignorecase_save
