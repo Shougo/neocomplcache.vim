@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: abbrev_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Aug 2010
+" Last Modified: 17 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,6 +38,7 @@ endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
   " Get current abbrev list.
+  let l:abbrev_list = ''
   redir => l:abbrev_list
   silent! iabbrev
   redir END
