@@ -933,7 +933,7 @@ function! s:analyze_dictionary_variable_line(line, keyword_dict, var_name)"{{{
     let l:word = matchstr(a:line, a:var_name.'\zs\.\h\w*()\?')
     let l:kind = '()'
   else
-    let l:word = matchstr(a:line, a:var_name.'\zs.\h\w*')
+    let l:word = matchstr(a:line, a:var_name.'\zs.\h\w*\%(()\?\)\?')
     let l:kind = s:get_variable_type(matchstr(a:line, a:var_name.'\.\h\w*\zs.*$'))
   endif
 
@@ -970,7 +970,7 @@ function! s:get_variable_type(expression)"{{{
     return '0'
   elseif a:expression =~ '^\%(\s*\.\)\?\s*["'']'
     return '""'
-  elseif a:expression =~ '\<function('
+  elseif a:expression =~ '\<function(\|^\s*('
     return '()'
   elseif a:expression =~ '^\%(\s*+\)\?\s*\['
     return '[]'
