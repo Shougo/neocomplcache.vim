@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Aug 2010
+" Last Modified: 18 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1671,7 +1671,7 @@ endfunction"}}}
 function! s:get_cur_text()"{{{
   let l:pos = mode() ==# 'i' ? 1 : 0
 
-  let s:cur_text = matchstr(getline('.'), '^\%(.*\%'.(col('.') - l:pos).'c.\)')
+  let s:cur_text = matchstr(getline('.'), '^.*\%'.(col('.') - l:pos).'c.')
 
   " Save cur_text.
   return s:cur_text
