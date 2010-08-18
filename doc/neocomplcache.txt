@@ -768,6 +768,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed var_dictionary complete in vim_complete.
 - Improved get_cur_text().
 - Fixed keyword pattern.
+- Fixed echodoc in include_complete.
 
 2010-08-16
 - Fixed abbrev_complete.

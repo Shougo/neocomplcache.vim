@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Aug 2010
+" Last Modified: 18 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -132,7 +132,7 @@ function! s:doc_dict.search(cur_text)"{{{
   let l:words = []
   let i = 0
   while i >= 0
-    let l:word = matchstr(a:cur_text, '\k\+')
+    let l:word = matchstr(a:cur_text, '\k\+', i)
     if len(l:word) >= s:completion_length
       call add(l:words, l:word)
     endif
