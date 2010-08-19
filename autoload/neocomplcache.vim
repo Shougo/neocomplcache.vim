@@ -1669,9 +1669,7 @@ function! s:get_quick_match_pattern()"{{{
   return l:pattern
 endfunction"}}}
 function! s:get_cur_text()"{{{
-  let l:pos = mode() ==# 'i' ? 1 : 0
-
-  let s:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
+  let s:cur_text = col('.') < 1 ? '' : matchstr(getline('.'), '.*')[: col('.') - 1]
 
   " Save cur_text.
   return s:cur_text
