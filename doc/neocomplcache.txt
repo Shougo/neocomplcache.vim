@@ -767,6 +767,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed get_cur_text() bug.
 - Fixed examples.
 - Improved for echodoc.
+- Fixed get_cur_text() in snippets_complete.
 
 2010-08-17
 - Fixed abbrev_complete redir bug.

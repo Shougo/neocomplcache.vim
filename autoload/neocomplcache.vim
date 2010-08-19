@@ -710,9 +710,9 @@ function! neocomplcache#system(str, ...)"{{{
   return l:output
 endfunction"}}}
 
-function! neocomplcache#get_cur_text()"{{{
+function! neocomplcache#get_cur_text(...)"{{{
   " Return cached text.
-  return neocomplcache#is_auto_complete()? s:cur_text : s:get_cur_text()
+  return a:0 == 0 ? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
   if neocomplcache#is_auto_complete() && has_key(s:auto_completion_length, bufnr('%'))

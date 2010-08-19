@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2010
+" Last Modified: 19 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -201,9 +201,10 @@ endfunction"}}}
 
 function! neocomplcache#sources#snippets_complete#expandable()"{{{
   let l:snippets = s:get_snippets()
+  let l:cur_text = neocomplcache#get_cur_text(1)
 
-  if has_key(l:snippets, matchstr(s:get_cur_text(), neocomplcache#get_keyword_pattern_end()))
-        \ || has_key(l:snippets, matchstr(s:get_cur_text(), '\S\+$'))
+  if has_key(l:snippets, matchstr(l:cur_text, neocomplcache#get_keyword_pattern_end()))
+        \ || has_key(l:snippets, matchstr(l:cur_text, '\S\+$'))
     " Found snippet trigger.
     return 1
   elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
@@ -659,8 +660,7 @@ function! s:substitute_marker(start, end)"{{{
   endif
 endfunction"}}}
 function! s:trigger(function)"{{{
-  let l:cur_text = s:get_cur_text()
-  let s:cur_text = l:cur_text
+  let l:cur_text = neocomplcache#get_cur_text(1)
   return printf("\<ESC>:call %s(%s,%d)\<CR>", a:function, string(l:cur_text), col('.'))
 endfunction"}}}
 function! s:eval_snippet(snippet_text)"{{{
@@ -686,12 +686,6 @@ function! s:eval_snippet(snippet_text)"{{{
   endtry
 
   return l:snip_word
-endfunction"}}}
-function! s:get_cur_text()"{{{
-  let l:pos = mode() ==# 'i' ? 2 : 1
-  let s:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
-  
-  return s:cur_text
 endfunction"}}}
 function! s:get_snippets()"{{{
   " Get buffer filetype.
