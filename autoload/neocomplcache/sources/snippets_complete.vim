@@ -688,7 +688,8 @@ function! s:eval_snippet(snippet_text)"{{{
   return l:snip_word
 endfunction"}}}
 function! s:get_cur_text()"{{{
-  let s:cur_text = col('.') < 1 ? '' : matchstr(getline('.'), '.*')[: col('.') - 1]
+  let l:pos = mode() ==# 'i' ? 2 : 1
+  let s:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
   
   return s:cur_text
 endfunction"}}}

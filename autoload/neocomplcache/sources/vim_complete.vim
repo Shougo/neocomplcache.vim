@@ -95,7 +95,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
         \&& len(a:cur_keyword_str) < s:completion_length)
     return []
   endif
-  
+
   if l:cur_text =~ '\h\w*\.\%(\h\w*\)\?$'
     " Dictionary.
     let l:cur_keyword_str = matchstr(l:cur_text, '.\%(\h\w*\)\?$')
@@ -166,10 +166,6 @@ function! neocomplcache#sources#vim_complete#get_cur_text()"{{{
     return l:cur_text[len(vimshell#get_secondary_prompt()) :]
   endif
 
-  if mode() !=# 'i'
-    let l:cur_text .= matchstr('a'.getline('.')[col('.') :], '^\%('.neocomplcache#get_next_keyword_pattern().'\m\)')[1:]
-  endif
-  
   let l:line = line('.')
   let l:cnt = 0
   while l:cur_text =~ '^\s*\\' && l:line > 1 && l:cnt < 5
