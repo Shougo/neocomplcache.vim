@@ -657,7 +657,7 @@ EXAMPLES						*neocomplcache-examples*
 	
 	" Recommended key-mappings.
 	" <CR>: close popup and save indent.
-	inoremap <expr><CR>  neocomplcache#smart_close_popup() . (&indentexpr != '' ? "\<C-f>\<CR>X\<BS>":"\<CR>")
+	inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 	" <C-h>, <BS>: close popup and delete backword char.
@@ -765,6 +765,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-19
 - Fixed get_cur_text() bug.
+- Fixed examples.
 
 2010-08-17
 - Fixed abbrev_complete redir bug.
