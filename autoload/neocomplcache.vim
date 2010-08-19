@@ -1671,7 +1671,7 @@ endfunction"}}}
 function! s:get_cur_text()"{{{
   let l:pos = mode() ==# 'i' ? 1 : 0
 
-  let s:cur_text = matchstr(getline('.'), '^.*\%'.(col('.') - l:pos).'c.')
+  let s:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
 
   " Save cur_text.
   return s:cur_text
