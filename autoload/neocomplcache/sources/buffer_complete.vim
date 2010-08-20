@@ -104,12 +104,18 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     let l:cur_text = neocomplcache#get_cur_text()
     let l:var_name = matchstr(l:cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
           \ g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+$')
-    if l:var_name == '' || !has_key(s:buffer_sources, bufnr('%'))
-          \ || !has_key(s:buffer_sources[bufnr('%')].member_cache, l:var_name)
+    if l:var_name == ''
       return []
     endif
+
+    let l:keyword_list = []
+    for src in s:get_sources_list()
+      if has_key(s:buffer_sources[src].member_cache, l:var_name)
+        let l:keyword_list += values(s:buffer_sources[src].member_cache[l:var_name])
+      endif
+    endfor
     
-    return values(s:buffer_sources[bufnr('%')].member_cache[l:var_name])
+    return l:keyword_list
   endif
   
   let l:keyword_list = []
