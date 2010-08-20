@@ -287,7 +287,7 @@ function! neocomplcache#enable() "{{{
   endif
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'c,cpp,objc,objcpp', '\.\|->')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'perl,php', '->')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'java,javascript,d,vim,ruby', '\.')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'cs,java,javascript,d,vim,ruby,python,perl6,scala,vb', '\.')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns, 'lua', '\.\|:')
   "}}}
 
