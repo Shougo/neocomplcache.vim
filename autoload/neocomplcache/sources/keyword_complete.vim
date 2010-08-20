@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Aug 2010
+" Last Modified: 20 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,7 +58,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  echomsg a:cur_keyword_str
   " Get keyword list.
   let l:cache_keyword_list = []
   for [l:name, l:plugin] in items(neocomplcache#available_plugins())

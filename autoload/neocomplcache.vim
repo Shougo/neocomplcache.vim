@@ -370,7 +370,9 @@ function! neocomplcache#enable() "{{{
 
   " Set options.
   set completeopt-=menu
-  set completeopt-=longest
+  if !g:neocomplcache_disable_auto_complete
+    set completeopt-=longest
+  endif
   set completeopt+=menuone
 
   " Disable bell.
