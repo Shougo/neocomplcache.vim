@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2010
+" Last Modified: 20 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ function! s:source.initialize()"{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
   
   " Set completion length.
-  call neocomplcache#set_completion_length('buffer_complete', 1)
+  call neocomplcache#set_completion_length('buffer_complete', 0)
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
@@ -93,12 +93,29 @@ endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if neocomplcache#is_auto_complete() && len(a:cur_keyword_str) < s:completion_length
-    return []
+    
+    " Check member prefix pattern.
+    let l:filetype = neocomplcache#get_context_filetype()
+    if !has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
+          \ || g:neocomplcache_member_prefix_patterns[l:filetype] == ''
+      return []
+    endif
+
+    let l:cur_text = neocomplcache#get_cur_text()
+    let l:var_name = matchstr(l:cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
+          \ g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+$')
+    if l:var_name == '' || !has_key(s:buffer_sources, bufnr('%'))
+          \ || !has_key(s:buffer_sources[bufnr('%')].member_cache, l:var_name)
+      return []
+    endif
+    
+    return values(s:buffer_sources[bufnr('%')].member_cache[l:var_name])
   endif
   
   let l:keyword_list = []
 
   let l:current = bufnr('%')
+  
   if len(a:cur_keyword_str) < s:completion_length ||
         \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
     for src in s:get_sources_list()
@@ -326,6 +343,47 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
     let l:line_num += 1
   endwhile
+  
+  let l:filetype = neocomplcache#get_context_filetype(1)
+  if !has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
+        \ || g:neocomplcache_member_prefix_patterns[l:filetype] == ''
+    return
+  endif
+  
+  let l:menu = '[B] member'
+  let l:keyword_pattern = '\%(\h\w*\%(()\?\)\?\%(' . g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+\h\w*\%(()\?\)\?'
+  let l:keyword_pattern2 = '^'.l:keyword_pattern
+  let l:member_pattern = '\h\w*\%(()\?\)\?$'
+  
+  " Cache member pattern.
+  let [l:line_num, l:max_lines] = [0, len(l:buflines)]
+  while l:line_num < l:max_lines
+    let l:line = buflines[l:line_num]
+    let l:match = match(l:line, l:keyword_pattern)
+
+    while l:match >= 0"{{{
+      let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
+
+      " Next match.
+      let l:match = matchend(l:line, l:keyword_pattern, l:match + len(l:match_str))
+      
+      while l:match_str != ''
+        let l:member_name = matchstr(l:match_str, l:member_pattern)
+        let l:var_name = l:match_str[ : -len(l:member_name)-1]
+
+        if !has_key(l:source.member_cache, l:var_name)
+          let l:source.member_cache[l:var_name] = {}
+        endif
+        if !has_key(l:source.member_cache[l:var_name], l:member_name)
+          let l:source.member_cache[l:var_name][l:member_name] = { 'word' : l:member_name, 'menu' : l:menu }
+        endif
+
+        let l:match_str = matchstr(l:var_name, l:keyword_pattern2)
+      endwhile
+    endwhile"}}}
+
+    let l:line_num += 1
+  endwhile
 endfunction"}}}
 
 function! s:initialize_source(srcname)"{{{
@@ -372,7 +430,7 @@ function! s:initialize_source(srcname)"{{{
   let l:keyword_pattern = neocomplcache#get_keyword_pattern(l:ft)
 
   let s:buffer_sources[a:srcname] = {
-        \'keyword_cache' : {}, 'rank_lines' : {},
+        \'keyword_cache' : {}, 'rank_lines' : {}, 'member_cache' : {},
         \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
         \'end_line' : l:end_line , 'cache_line_cnt' : l:cache_line_cnt, 
         \'frequencies' : {}, 'check_sum' : len(join(l:buflines[:4], '\n'))

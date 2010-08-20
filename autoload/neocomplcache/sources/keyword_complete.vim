@@ -49,11 +49,16 @@ endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+  if l:cur_keyword_pos < 0
+    " Empty string.
+    return len(a:cur_text)
+  endif
 
   return l:cur_keyword_pos
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+  echomsg a:cur_keyword_str
   " Get keyword list.
   let l:cache_keyword_list = []
   for [l:name, l:plugin] in items(neocomplcache#available_plugins())
