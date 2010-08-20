@@ -763,6 +763,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-20
+- Fixed is_enabled error.
+
 2010-08-19
 - Fixed get_cur_text() bug.
 - Fixed examples.
