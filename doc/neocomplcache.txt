@@ -459,9 +459,9 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		initial value.
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
-		This variable appoints a keyword pattern to complete a
-		member in include_complete and tags_complete.  This is
-		appointed in regular expression every file type.
+		This variable appoints a keyword pattern to complete a member
+		in include_complete and tags_complete and buffer_complete.
+		This is appointed in regular expression every file type.
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.

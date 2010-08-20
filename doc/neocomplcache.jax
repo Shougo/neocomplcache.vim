@@ -429,8 +429,9 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		s:source.initialize()を参照せよ。
                 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
-		include_completeやtags_completeでメンバ補完するためのキーワー
-		ドパターンを記録する。これはファイルタイプ毎に正規表現で指定
+		include_completeやtags_complete,
+		buffer_completeがメンバを認識するための
+		パターンを記録する。これはファイルタイプ毎に正規表現で指定
 		されている。
 		
 		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
