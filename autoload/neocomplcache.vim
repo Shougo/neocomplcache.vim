@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Aug 2010
+" Last Modified: 22 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -467,6 +467,124 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 
     return s:old_complete_words
   endif
+endfunction"}}}
+
+function! neocomplcache#do_auto_complete(is_moved)"{{{
+  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
+        \|| neocomplcache#is_locked()
+        \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
+    return
+  endif
+
+  " Detect global completefunc.
+  if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
+    99verbose set completefunc
+    echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
+    NeoComplCacheLock
+    return
+  endif
+
+  " Detect AutoComplPop.
+  if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
+    echohl Error | echoerr 'Detected enabled AutoComplPop! Disabled neocomplcache.' | echohl None
+    NeoComplCacheLock
+    return
+  endif
+
+  " Get cursor word.
+  let l:cur_text = s:get_cur_text()
+  " Prevent infinity loop.
+  " Not complete multi byte character for ATOK X3.
+  if l:cur_text == '' || l:cur_text == s:old_cur_text
+        \|| (!neocomplcache#is_eskk_enabled() && (l:cur_text[-1] >= 0x80  || (exists('b:skk_on') && b:skk_on)))
+    let s:complete_words = []
+    let s:old_complete_words = []
+    return
+  endif
+
+  let l:quick_match_pattern = s:get_quick_match_pattern()
+  if g:neocomplcache_enable_quick_match && l:cur_text =~ l:quick_match_pattern.'[a-z0-9;,./]$'
+    " Select quick_match list.
+    let l:complete_words = s:select_quick_match_list(l:cur_text[-1:])
+    let s:prev_numbered_dict = {}
+
+    if !empty(l:complete_words)
+      let s:complete_words = l:complete_words
+      let s:cur_keyword_pos = s:old_cur_keyword_pos
+
+      " Set function.
+      let &l:completefunc = 'neocomplcache#auto_complete'
+      if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+        call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+      else
+        call feedkeys("\<C-x>\<C-u>", 'n')
+      endif
+      let s:old_cur_text = l:cur_text
+      return 
+    endif
+  elseif g:neocomplcache_enable_quick_match 
+        \&& !empty(s:old_complete_words)
+        \&& l:cur_text =~ l:quick_match_pattern.'$'
+        \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
+
+    " Print quick_match list.
+    let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
+    let s:cur_keyword_pos = l:cur_keyword_pos
+    let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str) 
+
+    " Set function.
+    let &l:completefunc = 'neocomplcache#auto_complete'
+    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    let s:old_cur_text = l:cur_text
+    return
+  elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
+        \&& !s:used_match_filter
+    if l:cur_text !=# s:moved_cur_text
+      let s:moved_cur_text = l:cur_text
+      " Dummy cursor move.
+      call feedkeys("a\<BS>", 'n')
+      return
+    endif
+  endif
+
+  let s:old_cur_text = l:cur_text
+  if s:skip_next_complete
+    let s:skip_next_complete = 0
+    return
+  endif
+
+  " Clear flag.
+  let s:used_match_filter = 0
+
+  let l:is_quick_match_list = 0
+  let s:prev_numbered_dict = {}
+  let s:complete_words = []
+  let s:old_complete_words = []
+  let s:changedtick = b:changedtick
+
+  " Set function.
+  let &l:completefunc = 'neocomplcache#auto_complete'
+
+  " Get complete result.
+  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(l:cur_text), 1)
+
+  if empty(l:complete_words)
+    let &l:completefunc = 'neocomplcache#manual_complete'
+    let s:changedtick = b:changedtick
+    let s:used_match_filter = 0
+    return
+  endif
+
+  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
+        \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
+
+  " Start auto complete.
+  if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+    call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+  else
+    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+  endif
+  let s:changedtick = b:changedtick
 endfunction"}}}
 
 " Plugin helper."{{{
@@ -1238,128 +1356,11 @@ endfunction"}}}
 " Event functions."{{{
 function! s:on_hold_i()"{{{
   if g:neocomplcache_enable_cursor_hold_i
-    call s:do_complete(0)
+    call neocomplcache#do_auto_complete(0)
   endif
 endfunction"}}}
 function! s:on_moved_i()"{{{
-  call s:do_complete(1)
-endfunction"}}}
-function! s:do_complete(is_moved)"{{{
-  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
-        \|| neocomplcache#is_locked()
-        \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
-    return
-  endif
-  
-  " Detect global completefunc.
-  if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
-    99verbose set completefunc
-    echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
-    NeoComplCacheLock
-    return
-  endif
-
-  " Detect AutoComplPop.
-  if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
-    echohl Error | echoerr 'Detected enabled AutoComplPop! Disabled neocomplcache.' | echohl None
-    NeoComplCacheLock
-    return
-  endif
-
-  " Get cursor word.
-  let l:cur_text = s:get_cur_text()
-  " Prevent infinity loop.
-  " Not complete multi byte character for ATOK X3.
-  if l:cur_text == '' || l:cur_text == s:old_cur_text
-        \|| (!neocomplcache#is_eskk_enabled() && (l:cur_text[-1] >= 0x80  || (exists('b:skk_on') && b:skk_on)))
-    let s:complete_words = []
-    let s:old_complete_words = []
-    return
-  endif
-
-  let l:quick_match_pattern = s:get_quick_match_pattern()
-  if g:neocomplcache_enable_quick_match && l:cur_text =~ l:quick_match_pattern.'[a-z0-9;,./]$'
-    " Select quick_match list.
-    let l:complete_words = s:select_quick_match_list(l:cur_text[-1:])
-    let s:prev_numbered_dict = {}
-
-    if !empty(l:complete_words)
-      let s:complete_words = l:complete_words
-      let s:cur_keyword_pos = s:old_cur_keyword_pos
-
-      " Set function.
-      let &l:completefunc = 'neocomplcache#auto_complete'
-      if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
-        call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
-      else
-        call feedkeys("\<C-x>\<C-u>", 'n')
-      endif
-      let s:old_cur_text = l:cur_text
-      return 
-    endif
-  elseif g:neocomplcache_enable_quick_match 
-        \&& !empty(s:old_complete_words)
-        \&& l:cur_text =~ l:quick_match_pattern.'$'
-        \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
-
-    " Print quick_match list.
-    let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
-    let s:cur_keyword_pos = l:cur_keyword_pos
-    let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str) 
-
-    " Set function.
-    let &l:completefunc = 'neocomplcache#auto_complete'
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-    let s:old_cur_text = l:cur_text
-    return
-  elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
-        \&& !s:used_match_filter
-    if l:cur_text !=# s:moved_cur_text
-      let s:moved_cur_text = l:cur_text
-      " Dummy cursor move.
-      call feedkeys("a\<BS>", 'n')
-      return
-    endif
-  endif
-
-  let s:old_cur_text = l:cur_text
-  if s:skip_next_complete
-    let s:skip_next_complete = 0
-    return
-  endif
-  
-  " Clear flag.
-  let s:used_match_filter = 0
-
-  let l:is_quick_match_list = 0
-  let s:prev_numbered_dict = {}
-  let s:complete_words = []
-  let s:old_complete_words = []
-  let s:changedtick = b:changedtick
-
-  " Set function.
-  let &l:completefunc = 'neocomplcache#auto_complete'
-
-  " Get complete result.
-  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(l:cur_text), 1)
-
-  if empty(l:complete_words)
-    let &l:completefunc = 'neocomplcache#manual_complete'
-    let s:changedtick = b:changedtick
-    let s:used_match_filter = 0
-    return
-  endif
-
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
-        \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
-
-  " Start auto complete.
-  if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
-    call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
-  else
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
-  endif
-  let s:changedtick = b:changedtick
+  call neocomplcache#do_auto_complete(1)
 endfunction"}}}
 function! s:get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
