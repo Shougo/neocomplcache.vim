@@ -773,6 +773,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-08-22
 - Improved get_cur_text().
 - Implemented neocomplcache#do_auto_complete().
+- Improved print caching.
 
 2010-08-20
 - Fixed is_enabled error.
