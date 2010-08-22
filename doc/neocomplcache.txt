@@ -770,6 +770,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-22
+- Improved get_cur_text().
+
 2010-08-20
 - Fixed is_enabled error.
 - Implemented member completion in buffer_complete.
