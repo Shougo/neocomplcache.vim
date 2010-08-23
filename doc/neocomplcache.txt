@@ -770,6 +770,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-23
+- Improved print caching.
+
 2010-08-22
 - Improved get_cur_text().
 - Implemented neocomplcache#do_auto_complete().
