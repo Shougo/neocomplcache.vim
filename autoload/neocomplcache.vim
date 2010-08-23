@@ -939,7 +939,6 @@ function! neocomplcache#within_comment()"{{{
   return s:within_comment
 endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
-  echo join(repeat([''], &cmdheight-1), "\n")
   redraw
   echon a:string
 endfunction"}}}
