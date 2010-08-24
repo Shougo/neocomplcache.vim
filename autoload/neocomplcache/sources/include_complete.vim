@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2010
+" Last Modified: 24 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,6 +70,9 @@ function! s:source.initialize()"{{{
   if neocomplcache#exists_echodoc()
     call echodoc#register('include_complete', s:doc_dict)
   endif
+  
+  " Initialize check.
+  call s:check_buffer_all()
 endfunction"}}}
 
 function! s:source.finalize()"{{{
@@ -102,7 +105,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     endfor
   endif
 
-  return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
+  return neocomplcache#member_filter(neocomplcache#dup_filter(l:keyword_list), a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#include_complete#define()"{{{
@@ -182,7 +185,7 @@ function! s:check_buffer_all()"{{{
   endwhile
 endfunction"}}}
 function! s:check_buffer(bufname)"{{{
-  let l:bufname = fnamemodify((a:bufname == '')? a:bufname : bufname('%'), ':p')
+  let l:bufname = fnamemodify((a:bufname == '' ? bufname('%') : a:bufname), ':p')
   let l:bufnumber = bufnr(l:bufname)
   let s:include_info[l:bufnumber] = {}
   if (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)

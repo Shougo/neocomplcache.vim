@@ -317,7 +317,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'cpp',
         \'--c++-kinds=+p --fields=+iaS --extra=+q -I __wur')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'c',
-        \'--c-types=+p --fields=+iaS --extra=+q -I __wur')
+        \'--c-kinds=+p --fields=+iaS --extra=+q -I __wur')
   "}}}
   
   " Initialize text mode filetypes."{{{
@@ -727,7 +727,7 @@ function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
 
   let l:list = a:list
   if has_key(g:neocomplcache_member_prefix_patterns, l:ft)
-    let l:pattern = '\%(' . g:neocomplcache_member_prefix_patterns[l:ft] . '\m\h\w*\)$'
+    let l:pattern = '\%(' . g:neocomplcache_member_prefix_patterns[l:ft] . '\m\)\w*$'
     if neocomplcache#get_cur_text() =~ l:pattern
       " Filtering.
       let l:list = filter(l:list,
