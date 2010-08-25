@@ -489,9 +489,8 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   " Get cursor word.
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
-  " Not complete multi byte character for ATOK X3.
   if l:cur_text == '' || l:cur_text == s:old_cur_text
-        \|| (!neocomplcache#is_eskk_enabled() && (l:cur_text[-1] >= 0x80  || (exists('b:skk_on') && b:skk_on)))
+        \|| (!neocomplcache#is_eskk_enabled() && exists('b:skk_on') && b:skk_on)
     let s:complete_words = []
     let s:old_complete_words = []
     return
