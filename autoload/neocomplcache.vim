@@ -103,13 +103,8 @@ function! neocomplcache#enable() "{{{
   endif
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'default',
         \'\k\+')
-  if has('win32') || has('win64')
-    call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'filename',
-          \'\%(\\[^[:alnum:].-]\|[[:alnum:]:@/._+#$%~-]\)\+')
-  else
-    call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'filename',
-          \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/._+#$%~-]\)\+')
-  endif
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'filename',
+  \'\%(\\[^[:alnum:].-]\|\f\)\+')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'lisp,scheme,clojure,int-gosh,int-clisp,int-clj', 
         \'[[:alnum:]+*@$%^&_=<>~.-]\+[!?]\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ruby,int-irb',

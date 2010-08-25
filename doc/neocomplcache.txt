@@ -772,6 +772,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-25
 - Improved keyword patterns.
+- Improved filename pattern.
 
 2010-08-24
 - Improved g:neocomplcache_ctags_arguments_list.
