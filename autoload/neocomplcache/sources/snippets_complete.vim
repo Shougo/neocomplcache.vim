@@ -96,6 +96,9 @@ function! s:source.initialize()"{{{
   " Caching _ snippets.
   call s:caching_snippets('_')
 
+  " Initialize check.
+  call s:caching()
+
   if neocomplcache#exists_echodoc()
     call echodoc#register('snippets_complete', s:doc_dict)
   endif

@@ -770,6 +770,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-08-29
+- Fixed caching timing.
+
 2010-08-25
 - Improved keyword patterns.
 - Improved filename pattern.

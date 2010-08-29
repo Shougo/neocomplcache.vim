@@ -49,6 +49,8 @@ function! s:source.initialize()"{{{
   
   " Call caching event.
   autocmd neocomplcache FileType * call neocomplcache#sources#vim_complete#helper#on_filetype()
+  
+  " Initialize check.
   call neocomplcache#sources#vim_complete#helper#on_filetype()
 
   " Add command.
