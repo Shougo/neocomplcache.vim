@@ -772,6 +772,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-29
 - Fixed caching timing.
+- Added objj support.
 
 2010-08-25
 - Improved keyword patterns.
