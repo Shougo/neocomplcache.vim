@@ -1203,7 +1203,7 @@ function! s:display_neco(number)"{{{
   let &cmdheight = len(l:animation[l:num][0])
 
   for l:anim in l:animation[l:num]
-    echo join(repeat([''], &cmdheight-1), "\n")
+    echo repeat("\n", &cmdheight-1)
     redraw
     echon join(l:anim, "\n")
     sleep 300m
