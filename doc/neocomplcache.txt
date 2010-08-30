@@ -772,6 +772,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-30
 - Improved ctags arguments for mac.
+- Fixed mac check.
 
 2010-08-29
 - Fixed caching timing.
