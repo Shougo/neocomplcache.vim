@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2010
+" Last Modified: 31 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -946,6 +946,7 @@ function! neocomplcache#within_comment()"{{{
   return s:within_comment
 endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
+  echo repeat("\n", &cmdheight-2)
   redraw
   echon a:string
 endfunction"}}}
@@ -1203,7 +1204,7 @@ function! s:display_neco(number)"{{{
   let &cmdheight = len(l:animation[l:num][0])
 
   for l:anim in l:animation[l:num]
-    echo repeat("\n", &cmdheight-1)
+    echo repeat("\n", &cmdheight-2)
     redraw
     echon join(l:anim, "\n")
     sleep 300m

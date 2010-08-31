@@ -772,6 +772,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-08-31
 - Improved :Neco.
+- Improved echo.
 
 2010-08-30
 - Improved ctags arguments for mac.
