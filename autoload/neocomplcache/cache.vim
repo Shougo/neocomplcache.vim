@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 01 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -89,7 +89,7 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   endtry
 
   if l:max_lines > 3000
-    call neocomplcache#print_caching('Caching done.')
+    call neocomplcache#print_caching('')
   endif
 
   return l:keyword_lists
@@ -175,7 +175,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   endfor"}}}
 
   if l:max_lines > 1000
-    call neocomplcache#print_caching('Caching done.')
+    call neocomplcache#print_caching('')
   endif
 
   return l:keyword_lists
@@ -304,7 +304,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   endtry
 
   if l:max_lines > 1000
-    call neocomplcache#print_caching('Caching done.')
+    call neocomplcache#print_caching('')
   endif
 
   if a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)

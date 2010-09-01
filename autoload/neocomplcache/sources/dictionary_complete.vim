@@ -90,11 +90,7 @@ function! s:caching()"{{{
   let l:key = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
   for l:filetype in keys(neocomplcache#get_source_filetypes(l:key))
     if !has_key(s:dictionary_list, l:filetype)
-      call neocomplcache#print_caching('Caching dictionary "' . l:filetype . '"... please wait.')
-
       let s:dictionary_list[l:filetype] = s:initialize_dictionary(l:filetype)
-
-      call neocomplcache#print_caching('Caching done.')
     endif
   endfor
 endfunction"}}}
@@ -107,10 +103,7 @@ function! s:recaching(filetype)"{{{
   endif
 
   " Caching.
-  call neocomplcache#print_caching('Caching dictionary "' . l:filetype . '"... please wait.')
   let s:dictionary_list[l:filetype] = s:caching_from_dict(l:filetype)
-
-  call neocomplcache#print_caching('Caching done.')
 endfunction"}}}
 
 function! s:initialize_dictionary(filetype)"{{{

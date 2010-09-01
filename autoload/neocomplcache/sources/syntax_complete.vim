@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2010
+" Last Modified: 01 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -95,12 +95,8 @@ function! s:caching()"{{{
         " Caching from cache.
         let s:syntax_list[l:filetype] = l:keyword_lists
       elseif l:filetype == &filetype
-        call neocomplcache#print_caching('Caching syntax "' . l:filetype . '"... please wait.')
-
         " Caching from syn list.
-        let s:syntax_list[l:filetype] = s:caching_from_syn()
-
-        call neocomplcache#print_caching('Caching done.')
+        let s:syntax_list[l:filetype] = s:caching_from_syn(l:filetype)
       endif
     endif
   endfor
@@ -114,13 +110,12 @@ function! s:recaching(filetype)"{{{
   endif
 
   " Caching.
-  call neocomplcache#print_caching('Caching syntax "' . l:filetype . '"... please wait.')
-  let s:syntax_list[l:filetype] = s:caching_from_syn()
-
-  call neocomplcache#print_caching('Caching done.')
+  let s:syntax_list[l:filetype] = s:caching_from_syn(l:filetype)
 endfunction"}}}
 
-function! s:caching_from_syn()"{{{
+function! s:caching_from_syn(filetype)"{{{
+  call neocomplcache#print_caching('Caching syntax "' . a:filetype . '"... please wait.')
+
   " Get current syntax list.
   redir => l:syntax_list
   silent! syntax list
@@ -187,6 +182,8 @@ function! s:caching_from_syn()"{{{
 
   " Save syntax cache.
   call neocomplcache#cache#save_cache('syntax_cache', &filetype, neocomplcache#unpack_dictionary(l:keyword_lists))
+
+  call neocomplcache#print_caching('')
 
   return l:keyword_lists
 endfunction"}}}

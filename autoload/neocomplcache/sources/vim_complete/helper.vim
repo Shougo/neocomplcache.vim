@@ -511,8 +511,6 @@ function! s:get_script_candidates(bufnumber)"{{{
   let l:function_prototypes = {}
   let l:var_pattern = '\a:[[:alnum:]_:]*\.\h\w*\%(()\?\)\?'
 
-  call neocomplcache#print_caching('Caching vim from '. bufname(a:bufnumber) .' ... please wait.')
-
   for l:line in getbufline(a:bufnumber, 1, '$')
     if l:line =~ '\<fu\%[nction]!\?\s\+s:'
       call s:analyze_function_line(l:line, l:function_dict, l:function_prototypes)
@@ -538,7 +536,6 @@ function! s:get_script_candidates(bufnumber)"{{{
     endif
   endfor
 
-  call neocomplcache#print_caching('Caching done.')
   return { 'functions' : l:function_dict, 'variables' : l:variable_dict, 
         \'function_prototypes' : l:function_prototypes, 'dictionary_variables' : l:dictionary_variable_dict }
 endfunction"}}}
