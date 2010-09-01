@@ -773,6 +773,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-09-01
 - Fixed :Neco.
 - Improved caching message.
+- Fixed filtering.
 
 2010-08-31
 - Improved :Neco.
