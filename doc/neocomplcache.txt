@@ -69,7 +69,7 @@ COMMANDS 						*neocomplcache-commands*
 		While locking neocomplcache, automatic completion is not
 		possible.
 
-:Neco [{number}] 					*:Neco*
+:Neco [{anim-number}] 					*:Neco*
 		Secret.
 
 :NeoComplCacheLock					*:NeoComplCacheLock*
@@ -769,6 +769,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-09-01
+- Fixed :Neco.
 
 2010-08-31
 - Improved :Neco.

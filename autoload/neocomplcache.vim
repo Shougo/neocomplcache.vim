@@ -1199,13 +1199,13 @@ function! s:display_neco(number)"{{{
     \],
   \]
 
-  let l:num = a:number == '' ? neocomplcache#rand(len(l:animation) - 1) : a:number
-  let &cmdheight = len(l:animation[l:num][0])
+  let l:anim = get(l:animation, a:number, l:animation[neocomplcache#rand(len(l:animation) - 1)])
+  let &cmdheight = len(l:anim[0])
 
-  for l:anim in l:animation[l:num]
+  for l:frame in l:anim
     echo repeat("\n", &cmdheight-2)
     redraw
-    echon join(l:anim, "\n")
+    echon join(l:frame, "\n")
     sleep 300m
   endfor
   redraw
