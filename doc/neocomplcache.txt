@@ -769,12 +769,15 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-02
+- Deleted g:neocomplcache_enable_display_parameter option.
+- Added g:neocomplcache_enable_caching_message option.
+- Supported Vim7.3 in vim_complete.
+
 2010-09-01
 - Fixed :Neco.
 - Improved caching message.
 - Fixed filtering.
-- Deleted g:neocomplcache_enable_display_parameter option.
-- Added g:neocomplcache_enable_caching_message option.
 
 2010-08-31
 - Improved :Neco.

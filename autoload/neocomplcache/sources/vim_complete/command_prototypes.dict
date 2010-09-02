@@ -10,8 +10,8 @@ an[oremenu]     {menu}
 ar[gs]
 arga[dd]        {name} ..
 argd[elete]     {pattern} ..
-arge[dit]       [++opt] [+cmd] {name}
 argdo           {cmd}
+arge[dit]       [++opt] [+cmd] {name}
 argg[lobal]     [++opt] [+cmd] {arglist}
 argl[ocal]      [++opt] [+cmd] {arglist}
 argu[ment]      [count] [++opt] [+cmd]
@@ -19,8 +19,8 @@ as[cii]
 au[tocmd]       [group] {event} {pat} [nested] {cmd}
 aug[roup]       {name}
 aun[menu]       {menu}
-b[uffer]        {bufname}
 bN[ext]         [N]
+b[uffer]        {bufname}
 ba[ll]          [N]
 bad[d]          [+lnum] {fname}
 bd[elete]       {bufname}
@@ -42,13 +42,13 @@ bufdo         {cmd}
 buffers
 bun[load]       {bufname}
 bw[ipeout]      {bufname}
-c[hange]
 cN[ext]
 cNf[ile]
+c[hange]
 ca[bbrev]       [<expr>] [lhs] [rhs]
 cabc[lear]
-caddb[uffer]    [bufnr]
 cad[dexpr]      {expr}
+caddb[uffer]    [bufnr]
 caddf[ile]      [errorfile]
 cal[l]          {name}([arguments])
 cat[ch]         /{pattern}/
@@ -60,9 +60,9 @@ ce[nter]        [width]
 cex[pr]         {expr}
 cf[ile]         [errorfile]
 cfir[st]        [nr]
+cg[etfile]      [errorfile]
 cgetb[uffer]    [bufnr]
 cgete[xpr]      {expr}
-cg[etfile]      [errorfile]
 changes
 chd[ir]         [path]
 che[ckpath]
@@ -99,20 +99,20 @@ cuna[bbrev]     {lhs}
 cunme[nu]       {menu}
 cw[indow]       [height]
 d[elete]        [x]
-delm[arks]      {marks}
 deb[ug]         {cmd}
 debugg[reedy]
 del[command]    {cmd}
 delf[unction]   {name}
-diffu[pdate]
+delm[arks]      {marks}
+di[splay]       [arg]
 diffg[et]       [bufspec]
 diffo[ff]
 diffp[atch]     {patchfile}
 diffpu[t]       [bufspec]
 diffs[plit]     {filename}
 diffthis
+diffu[pdate]
 dig[raphs]      {char1}{char2} {number} ...
-di[splay]       [arg]
 dj[ump]         [count] [/]string[/]
 dl[ist]         [/]string[/]
 do[autocmd]     [group] {event} [fname]
@@ -131,8 +131,8 @@ el[se]
 elsei[f]        {expr1}
 em[enu]         {menu}
 en[dif]
-endfo[r]
 endf[unction]
+endfo[r]
 endt[ry]
 endw[hile]
 ene[w]
@@ -160,8 +160,8 @@ gr[ep]          [arguments]
 grepa[dd]       [arguments]
 gu[i]           [++opt] [+cmd] [-f|-b] [files...]
 gv[im]          [++opt] [+cmd] [-f|-b] [files...]
-ha[rdcopy]      [arguments]
 h[elp]          {subject}
+ha[rdcopy]      [arguments]
 helpf[ind]
 helpg[rep]      {pattern}[@xx]
 helpt[ags]      [++t] {dir}
@@ -188,16 +188,16 @@ iuna[bbrev]     {lhs}
 iunme[nu]       {menu}
 j[oin]          {count} [flags]
 ju[mps]
-keepa[lt]       {cmd}
 kee[pmarks]     {command}
 keep[jumps]     {command}
+keepa[lt]       {cmd}
 lN[ext]
 lNf[ile]
 l[ist]          [count] [flags]
+la[st]          [++opt] [+cmd]
 lad[dexpr]      {expr}
 laddb[uffer]    [bufnr]
 laddf[ile]      [errorfile]
-la[st]          [++opt] [+cmd]
 lan[guage]      {name} | mes[sages] {name} | cty[pe] {name} | tim[e] {name}
 lat[er]         {count} | {N}s | {N}m | {N}h
 lb[uffer]       [bufnr]
@@ -211,24 +211,24 @@ let             {var-name} = {expr1}
 lex[pr]         {expr}
 lf[ile]         [errorfile]
 lfir[st]        [nr]
+lg[etfile]      [errorfile]
 lgetb[uffer]    [bufnr]
 lgete[xpr]      {expr}
-lg[etfile]      [errorfile]
 lgr[ep]         [arguments]
 lgrepa[dd]      [arguments]
 lh[elpgrep]     {pattern}[@xx]
 ll              [nr]
 lla[st]         [nr]
 lli[st]         [from] [, [to]]
-lmak[e]         [arguments]
 lm[ap]          {lhs} {rhs}
+lmak[e]         [arguments]
 lmapc[lear]
+ln[oremap]      {lhs} {rhs}
 lne[xt]
 lnew[er]        [count]
 lnf[ile]
-ln[oremap]      {lhs} {rhs}
-loadk[eymap]
 lo[adview]      [nr]
+loadk[eymap]
 loc[kmarks]     {command}
 lockv[ar]       [depth] {name} ...
 lol[der]        [count]
@@ -238,6 +238,9 @@ lpf[ile]
 lr[ewind]       [nr]
 ls
 lt[ag]          [ident]
+lua             {chunk} | << {endmarker}
+luado           {body}
+luafile         {file}
 lu[nmap]        {lhs}
 lv[imgrep]      /{pattern}/[g][j] {file} ... | {pattern} {file} ...
 lvimgrepadd     /{pattern}/[g][j] {file} ... | {pattern} {file} ...
@@ -260,16 +263,16 @@ mkvie[w]        [file]
 mod[e]          [mode]
 mz[scheme]      {stmt} | << {endmarker} {script} {endmarker} | {file}
 mzf[ile]        {file}
-nb[key]         key
 n[ext]          [++opt] [+cmd]
+nb[key]         key
 new
 nm[ap]          {lhs} {rhs}
 nmapc[lear]
 nmenu           {menu}
 nno[remap]      {lhs} {rhs}
 nnoreme[nu]     {menu}
-noa[utocmd]     {cmd}
 no[remap]       {lhs} {rhs} 
+noa[utocmd]     {cmd}
 noh[lsearch]    
 norea[bbrev]    [<expr>] [lhs] [rhs]
 noreme[nu]      {menu}
@@ -277,8 +280,8 @@ norm[al]        {commands}
 nu[mber]        [count] [flags]
 nun[map]        {lhs}
 nunme[nu]       {menu}
-ol[dfiles]
 o[pen]          /pattern/
+ol[dfiles]
 om[ap]          {lhs} {rhs}
 omapc[lear]
 ome[nu]         {menu}
@@ -288,23 +291,24 @@ onoreme[nu]     {menu}
 opt[ions]
 ou[nmap]        {lhs}
 ounmenu         {menu}
-pc[lose]
-ped[it]         [++opt] [+cmd] {file}
-pe[rl]          {cmd} | << {endpattern} {script} {endpattern}
+ownsyntax       list {group-name} | list @{cluster-name}
 p[rint]         {count} [flags]
-profd[el]       ...
-prof[ile]       start {fname} | pause | continue | func {pattern} | file {pattern}
-promptf[ind]    [string]
-promptr[epl]    [string]
+pc[lose]
+pe[rl]          {cmd} | << {endpattern} {script} {endpattern}
+ped[it]         [++opt] [+cmd] {file}
 perld[o]        {cmd}
 po[p]
 popu[p]         {name}
 pp[op]
 pre[serve]
 prev[ious]      [count] [++opt] [+cmd]
+prof[ile]       start {fname} | pause | continue | func {pattern} | file {pattern}
+profd[el]       ...
+promptf[ind]    [string]
+promptr[epl]    [string]
 ps[earch]       [count] [/]pattern[/]
-pta[g]          [tagname]
 ptN[ext]
+pta[g]          [tagname]
 ptf[irst]
 ptj[ump]
 ptl[ast]
@@ -315,10 +319,12 @@ pts[elect]      [ident]
 pu[t]           [x]
 pw[d]
 py[thon]        {stmt} | << {endmarker} {script} {endmarker}
+python3         {stmt} | << {endmarker} {script} {endmarker}
 pyf[ile]        {file}
+py3f[ile]       {file}
 q[uit]
-quita[ll]
 qa[ll]
+quita[ll]
 r[ead]          [++opt] [name]
 rec[over]       [file]
 red[o]
@@ -337,14 +343,14 @@ rubyd[o]        {cmd}
 rubyf[ile]      {file}
 runtime         {file} ..
 rv[iminfo]      [file]
-s[ubstitute]    /{pattern}/{string}/[flags] [count]
 sN[ext]         [++opt] [+cmd] [N]
-san[dbox]       {cmd}
+s[ubstitute]    /{pattern}/{string}/[flags] [count]
 sa[rgument]     [++opt] [+cmd] [N]
 sal[l]
+san[dbox]       {cmd}
 sav[eas]        [++opt] {file}
-sb[uffer]       {bufname}
 sbN[ext]        [N]
+sb[uffer]       {bufname}
 sba[ll]         [N]
 sbf[irst]
 sbl[ast]
@@ -362,9 +368,9 @@ setl[ocal]      ...
 sf[ind]         [++opt] [+cmd] {file}
 sfir[st]        [++opt] [+cmd]
 sh[ell]
-sim[alt]        {key}
 sig[n]          define {name} {argument}... | icon={pixmap} | linehl={group} | text={text} | texthl={group}
 sil[ent]        {command}
+sim[alt]        {key}
 sl[eep]         [N] [m]
 sla[st]         [++opt] [+cmd]
 sm[agic]        ...
@@ -375,15 +381,15 @@ sn[ext]         [++opt] [+cmd] [file ..]
 sni[ff]         request [symbol]
 sno[remap]      {lhs} {rhs}
 snoreme[nu]     {menu}
-sor[t]          [i][u][r][n][x][o] [/{pattern}/]
 so[urce]        {file}
-spelld[ump]
+sor[t]          [i][u][r][n][x][o] [/{pattern}/]
+sp[lit]         [++opt] [+cmd]
 spe[llgood]     {word}
+spelld[ump]
 spelli[nfo]     
 spellr[epall]
 spellu[ndo]     {word}
 spellw[rong]    {word}
-sp[lit]         [++opt] [+cmd]
 spr[evious]     [++opt] [+cmd] [N]
 sre[wind]       [++opt] [+cmd]
 st[op]
@@ -391,8 +397,8 @@ sta[g]          [tagname]
 star[tinsert]
 startg[replace]
 startr[eplace]
-stopi[nsert]
 stj[ump]        [ident]
+stopi[nsert]
 sts[elect]      [ident]
 sun[hide]       [N]
 sunm[ap]        {lhs}
@@ -404,6 +410,8 @@ sy[ntax]        list {group-name} | list @{cluster-name}
 sync[bind]
 t
 tN[ext]
+ta[g]           {ident}
+tab             {cmd}
 tabN[ext]
 tabc[lose]
 tabd[o]         {cmd}
@@ -412,14 +420,12 @@ tabf[ind]       [++opt] [+cmd] {file}
 tabfir[st]
 tabl[ast]
 tabm[ove]       [N]
-tabnew          [++opt] [+cmd] {file}
 tabn[ext]
+tabnew          [++opt] [+cmd] {file}
 tabo[nly]
 tabp[revious]
 tabr[ewind]
 tabs
-tab             {cmd}
-ta[g]           {ident}
 tags
 tc[l]           {cmd} | {endmarker} {script} {endmarker}
 tcld[o]         {cmd}
@@ -438,9 +444,9 @@ try
 tselect
 tu[nmenu]       {menu}
 u[ndo]          {N}
+una[bbreviate]  {lhs}
 undoj[oin]
 undol[ist]
-una[bbreviate]  {lhs}
 unh[ide]        [N]
 unl[et]         {name} ...
 unlo[ckvar]     [depth] {name} ...
@@ -448,31 +454,31 @@ unm[ap]         {lhs}
 unme[nu]        {menu}
 uns[ilent]      {command}
 up[date]        [++opt] [>>] [file]
-vg[lobal]       /{pattern}/[cmd]
 ve[rsion]
 verb[ose]       {command}
 vert[ical]      {cmd}
+vg[lobal]       /{pattern}/[cmd]
+vi[sual]        [++opt] [+cmd] [file]
+vie[w]          [++opt] [+cmd] file
 vim[grep]       /{pattern}/[g][j] {file} ... | {pattern} {file} ...
 vimgrepa[dd]    /{pattern}/[g][j] {file} ... | {pattern} {file} ...
-vi[sual]        [++opt] [+cmd] [file]
 viu[sage]
-vie[w]          [++opt] [+cmd] file
 vm[ap]          {lhs} {rhs}
 vmapc[lear]
 vmenu           {menu}
-vne[w]          [++opt] [+cmd] [file]
 vn[oremap]      {lhs} {rhs}
+vne[w]          [++opt] [+cmd] [file]
 vnoremenu       {menu}
 vsp[lit]        [++opt] [+cmd] [file]
 vu[nmap]        {lhs}
 vunmenu         {menu}
-windo           {cmd}
-w[rite]         [++opt] [file]
 wN[ext]         [++opt] [file]
+w[rite]         [++opt] [file]
 wa[ll]
 wh[ile]         {expr1}
 win[size]       {width} {height}
 winc[md]        {arg}
+windo           {cmd}
 winp[os]        {X} {Y}
 wn[ext]         [++opt]
 wp[revious]     [++opt] [file]
@@ -482,8 +488,8 @@ ws[verb]        verb
 wv[iminfo]      [file]
 x[it]           [++opt] [file]
 xa[ll]          [++opt]
-xmapc[lear]
 xm[ap]          {lhs} {rhs}
+xmapc[lear]
 xmenu           {menu}
 xn[oremap]      {lhs} {rhs}
 xnoremenu       {menu}

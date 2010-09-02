@@ -10,8 +10,8 @@ an[oremenu]     menu
 ar[gs]          file
 arga[dd]        file
 argd[elete]     file
-arge[dit]       file
 argdo           command
+arge[dit]       file
 argg[lobal]     file
 argl[ocal]      file
 argu[ment]      
@@ -19,8 +19,8 @@ as[cii]
 au[tocmd]       autocmd_args
 aug[roup]       augroup
 aun[menu]       menu
-b[uffer]        buffer
 bN[ext]         
+b[uffer]        buffer
 ba[ll]          
 bad[d]          file
 bd[elete]       buffer
@@ -42,13 +42,13 @@ bufdo           command
 buffers
 bun[load]       buffer
 bw[ipeout]      buffer
-c[hange]
 cN[ext]
 cNf[ile]
+c[hange]
 ca[bbrev]       abbreviation
 cabc[lear]
-caddb[uffer]    
 cad[dexpr]      expression
+caddb[uffer]    
 caddf[ile]      file
 cal[l]          function
 cat[ch]         
@@ -60,9 +60,9 @@ ce[nter]
 cex[pr]         expression
 cf[ile]         file
 cfir[st]        
+cg[etfile]      file
 cgetb[uffer]    
 cgete[xpr]      expression
-cg[etfile]      file
 changes
 chd[ir]         dir
 che[ckpath]
@@ -99,20 +99,20 @@ cuna[bbrev]     abbreviation
 cunme[nu]       menu
 cw[indow]       
 d[elete]        
-delm[arks]      
 deb[ug]         command
 debugg[reedy]
 del[command]    command
 delf[unction]   function
-diffu[pdate]
+delm[arks]      
+di[splay]       
 diffg[et]       
 diffo[ff]
 diffp[atch]     file
 diffpu[t]       
 diffs[plit]     file
 diffthis
+diffu[pdate]
 dig[raphs]      
-di[splay]       
 dj[ump]         
 dl[ist]         
 do[autocmd]     autocmd_args
@@ -131,8 +131,8 @@ el[se]
 elsei[f]        expression
 em[enu]         menu
 en[dif]
-endfo[r]
 endf[unction]
+endfo[r]
 endt[ry]
 endw[hile]
 ene[w]
@@ -160,8 +160,8 @@ gr[ep]          file
 grepa[dd]       file
 gu[i]           file
 gv[im]          file
-ha[rdcopy]      
 h[elp]          help
+ha[rdcopy]      
 helpf[ind]
 helpg[rep]      
 helpt[ags]      dir
@@ -188,16 +188,16 @@ iuna[bbrev]     abbreviation
 iunme[nu]       menu
 j[oin]          
 ju[mps]
-keepa[lt]       command
 kee[pmarks]     command
 keep[jumps]     command
+keepa[lt]       command
 lN[ext]
 lNf[ile]
 l[ist]          
+la[st]          
 lad[dexpr]      expr
 laddb[uffer]    
 laddf[ile]      file
-la[st]          
 lan[guage]      language_args
 lat[er]         
 lb[uffer]       
@@ -211,24 +211,24 @@ let             let
 lex[pr]         expression
 lf[ile]         file
 lfir[st]        
+lg[etfile]      file
 lgetb[uffer]    
 lgete[xpr]      expression
-lg[etfile]      file
 lgr[ep]         file
 lgrepa[dd]      file
 lh[elpgrep]     
 ll              
 lla[st]         
 lli[st]         
-lmak[e]         file
 lm[ap]          mapping
+lmak[e]         file
 lmapc[lear]
+ln[oremap]      mapping
 lne[xt]
 lnew[er]        
 lnf[ile]
-ln[oremap]      mapping
-loadk[eymap]
 lo[adview]      
+loadk[eymap]
 loc[kmarks]     command
 lockv[ar]       var
 lol[der]        
@@ -239,6 +239,9 @@ lr[ewind]
 ls
 lt[ag]          
 lu[nmap]        mapping
+lua
+luado
+luafile         file
 lv[imgrep]      file
 lvimgrepadd     file
 lwindow         
@@ -260,16 +263,16 @@ mkvie[w]        file
 mod[e]          
 mz[scheme]      file
 mzf[ile]        file
-nb[key]         
 n[ext]          
+nb[key]         
 new
 nm[ap]          mapping
 nmapc[lear]
 nmenu           menu
 nno[remap]      mapping
 nnoreme[nu]     menu
-noa[utocmd]     command
 no[remap]       mapping
+noa[utocmd]     command
 noh[lsearch]    
 norea[bbrev]    abbreviation
 noreme[nu]      menu
@@ -277,8 +280,8 @@ norm[al]
 nu[mber]        
 nun[map]        mapping
 nunme[nu]       menu
-ol[dfiles]
 o[pen]          
+ol[dfiles]
 om[ap]          mapping
 omapc[lear]
 ome[nu]         menu
@@ -288,23 +291,24 @@ onoreme[nu]     menu
 opt[ions]
 ou[nmap]        lhs
 ounmenu         menu
-pc[lose]
-ped[it]         file
-pe[rl]          
+ownsyntax       syntax_args
 p[rint]         
-profd[el]       
-prof[ile]       profile_args
-promptf[ind]    
-promptr[epl]    
+pc[lose]
+pe[rl]          
+ped[it]         file
 perld[o]        
 po[p]
 popu[p]         
 pp[op]
 pre[serve]
 prev[ious]      
+prof[ile]       profile_args
+profd[el]       
+promptf[ind]    
+promptr[epl]    
 ps[earch]       
-pta[g]          tag
 ptN[ext]
+pta[g]          tag
 ptf[irst]
 ptj[ump]
 ptl[ast]
@@ -314,11 +318,13 @@ ptr[ewind]
 pts[elect]      tag
 pu[t]           
 pw[d]
+py3f[ile]       file
 py[thon]        
 pyf[ile]        file
+python3        
 q[uit]
-quita[ll]
 qa[ll]
+quita[ll]
 r[ead]          
 rec[over]       file
 red[o]
@@ -337,14 +343,14 @@ rubyd[o]
 rubyf[ile]      file
 runtime         file
 rv[iminfo]      file
-s[ubstitute]    
 sN[ext]         
-san[dbox]       command
+s[ubstitute]    
 sa[rgument]     
 sal[l]
+san[dbox]       command
 sav[eas]        file
-sb[uffer]       buffer
 sbN[ext]        
+sb[uffer]       buffer
 sba[ll]         
 sbf[irst]
 sbl[ast]
@@ -362,9 +368,9 @@ setl[ocal]      option
 sf[ind]         file
 sfir[st]        
 sh[ell]
-sim[alt]        
 sig[n]          sign_args
 sil[ent]        command
+sim[alt]        
 sl[eep]         
 sla[st]         
 sm[agic]        
@@ -375,15 +381,15 @@ sn[ext]         file
 sni[ff]         
 sno[remap]      mapping
 snoreme[nu]     menu
-sor[t]          
 so[urce]        file
-spelld[ump]
+sor[t]          
+sp[lit]         
 spe[llgood]     
+spelld[ump]
 spelli[nfo]     
 spellr[epall]
 spellu[ndo]     
 spellw[rong]    
-sp[lit]         
 spr[evious]     
 sre[wind]       
 st[op]
@@ -391,8 +397,8 @@ sta[g]          tag
 star[tinsert]
 startg[replace]
 startr[eplace]
-stopi[nsert]
 stj[ump]        tag
+stopi[nsert]
 sts[elect]      tag
 sun[hide]       
 sunm[ap]        mapping
@@ -404,6 +410,8 @@ sy[ntax]        syntax_args
 sync[bind]
 t
 tN[ext]
+ta[g]           tag
+tab             command
 tabN[ext]
 tabc[lose]
 tabd[o]         command
@@ -412,14 +420,12 @@ tabf[ind]       file
 tabfir[st]
 tabl[ast]
 tabm[ove]       
-tabnew          file
 tabn[ext]
+tabnew          file
 tabo[nly]
 tabp[revious]
 tabr[ewind]
 tabs
-tab             command
-ta[g]           tag
 tags
 tc[l]           
 tcld[o]         
@@ -438,9 +444,9 @@ try
 tselect
 tu[nmenu]       menu
 u[ndo]          
+una[bbreviate]  abbreviation
 undoj[oin]
 undol[ist]
-una[bbreviate]  abbreviation
 unh[ide]        
 unl[et]         var
 unlo[ckvar]     var
@@ -448,31 +454,31 @@ unm[ap]         mapping
 unme[nu]        menu
 uns[ilent]      command
 up[date]        file
-vg[lobal]       
 ve[rsion]
 verb[ose]       command
 vert[ical]      command
+vg[lobal]       
+vi[sual]        file
+vie[w]          file
 vim[grep]       file
 vimgrepa[dd]    file
-vi[sual]        file
 viu[sage]
-vie[w]          file
 vm[ap]          mapping
 vmapc[lear]
 vmenu           menu
-vne[w]          file
 vn[oremap]      mapping
+vne[w]          file
 vnoremenu       menu
 vsp[lit]        file
 vu[nmap]        mapping
 vunmenu         menu
-windo           command
-w[rite]         file
 wN[ext]         file
+w[rite]         file
 wa[ll]
 wh[ile]         expression
 win[size]       
 winc[md]        
+windo           command
 winp[os]        
 wn[ext]         
 wp[revious]     file
@@ -482,8 +488,8 @@ ws[verb]
 wv[iminfo]      file
 x[it]           file
 xa[ll]          
-xmapc[lear]
 xm[ap]          mapping
+xmapc[lear]
 xmenu           menu
 xn[oremap]      mapping
 xnoremenu       menu
