@@ -270,10 +270,9 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 	
 		Default value is 0.
 
-g:neocomplcache_enable_display_parameter		*g:neocomplcache_enable_display_parameter*
-		When you input, this variable controls whether neocomplcache
-		displays the prototype of the function in Command-line.
-		Only vim_complete supports now.
+g:neocomplcache_enable_caching_message			*g:neocomplcache_enable_caching_message*
+		When make cache, this variable controls whether neocomplcache
+		displays the message in Command-line.
 	
 		Default value is 1.
 
@@ -774,6 +773,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed :Neco.
 - Improved caching message.
 - Fixed filtering.
+- Deleted g:neocomplcache_enable_display_parameter option.
+- Added g:neocomplcache_enable_caching_message option.
 
 2010-08-31
 - Improved :Neco.

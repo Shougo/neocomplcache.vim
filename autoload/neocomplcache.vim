@@ -946,8 +946,10 @@ function! neocomplcache#within_comment()"{{{
   return s:within_comment
 endfunction"}}}
 function! neocomplcache#print_caching(string)"{{{
-  redraw
-  echon a:string
+  if g:neocomplcache_enable_caching_message
+    redraw
+    echon a:string
+  endif
 endfunction"}}}
 function! neocomplcache#print_error(string)"{{{
   echohl Error | echomsg a:string | echohl None

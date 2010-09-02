@@ -95,8 +95,8 @@ endif
 if !exists('g:neocomplcache_enable_underbar_completion')
   let g:neocomplcache_enable_underbar_completion = 0
 endif
-if !exists('g:neocomplcache_enable_display_parameter')
-  let g:neocomplcache_enable_display_parameter = 1
+if !exists('g:neocomplcache_enable_caching_message')
+  let g:neocomplcache_enable_caching_message = 1
 endif
 if !exists('g:neocomplcache_enable_cursor_hold_i')
   let g:neocomplcache_enable_cursor_hold_i = 0

@@ -264,9 +264,9 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 		
 		副作用があるので、初期値は0となっている。
 
-g:neocomplcache_enable_display_parameter		*g:neocomplcache_enable_display_parameter*
-		入力中に、関数のプロトタイプをCommand-lineに表示するかを制御
-		する。 現在はvim_completeのみ対応している。
+g:neocomplcache_enable_caching_message			*g:neocomplcache_enable_caching_message*
+		キャッシュ中に、メッセージをCommand-lineに表示するかを制御
+		する。
 	
 		初期値は1である。
 
