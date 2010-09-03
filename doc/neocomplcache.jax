@@ -610,38 +610,46 @@ tags_complete.vim					*tags_complete*
 		ルード補完を使用するべきである。
 
 syntax_complete.vim					*syntax_complete*
-		標準で提供されているautoload/syntaxcomplete.vimのように、 シ
-		ンタックスファイルを解析し、補完候補に加えるプラグイン。
+		標準で提供されているautoload/syntaxcomplete.vimのように、シン
+		タックスファイルを解析し、補完候補に加えるプラグイン。
 		autoload/syntaxcomplete.vimよりもたくさんの候補を認識できる。
 
 include_complete.vim					*include_complete*
-		開いているバッファを解析し、参照しているファイルを自動的に候
-		補に加えるプラグイン。 いちいちタグファイルや辞書ファイルを
-		用意しなくて良いので便利である。 ただし、'path'や'include',
+		開いているバッファを解析し、参照しているファイルを自動的に候補
+		に加えるプラグイン。 いちいちタグファイルや辞書ファイルを用意し
+		なくて良いので便利である。 ただし、'path'や'include',
 		'includeexpr'が適切に設定されている必要がある。
                 
 vim_complete.vim					*vim_complete*
-		実験的機能。文脈を解析し、VimScriptのオムニ補完を行う。
+		文脈を解析し、VimScriptのオムニ補完を行う。
 		VimScriptの編集時以外では動作しない。 neocomplcacheからは
-		|i_CTRL-X_CTRL-V|が呼び出せないため作られた。 標準で用意され
-		ている補完よりも、高機能なものにすることが目標である。 現在、
+		|i_CTRL-X_CTRL-V|が呼び出せないため作られた。 現在、
 		ローカル変数やスクリプト変数、関数やコマンドの解析が実装され
 		ている。
 
 dictionary_complete.vim					*dictionary_complete*
-		
+		'dictionary'または|g:neocomplcache_dictionary_filetype_lists|
+		から候補を収集し、補完候補に加えるプラグインである。
 
 filename_complete.vim					*filename_complete*
-		
+		このプラグインはファイル名を補完候補に加える。ヘッダーファイル
+		の補完などで便利であろう。
 
 omni_complete.vim					*omni_complete*
-		
+		このプラグインはカーソルが|g:neocomplcache_omni_patterns|にマッ
+		チする場合、'omnifunc'を自動的に呼び出す。
+		|g:neocomplcache_omni_function_list|が定義されている場合、そち
+		らが優先される。
 
 completefunc_complete.vim				*completefunc_complete*
-		
+		任意の補完関数から補完候補を収集するためのプラグインだが、未完
+		成である。 現在、補完関数を手動で呼び出すための
+		neocomplcache#sources#completefunc_complete#call_completefunc(funcname)
+		のみが使用できる。
 
 abbrev_complete.vim					*abbrev_complete*
-		
+		abbrevから補完候補を収集するプラグインである。Vimではabbrevがあ
+		まり使われないため、ほとんど使用することはないと思われる。
 
 ==============================================================================
 SNIPPET							*neocomplcache-snippet-completion*
