@@ -769,6 +769,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-03
+- Fixed snippets analyze.
+
 2010-09-02
 - Deleted g:neocomplcache_enable_display_parameter option.
 - Added g:neocomplcache_enable_caching_message option.

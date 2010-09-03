@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Aug 2010
+" Last Modified: 03 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -327,15 +327,20 @@ function! s:load_snippets(snippets_file, filetype)"{{{
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
   for line in readfile(a:snippets_file)
+    if line =~ '^\h\w*.*\s$'
+      " Delete spaces.
+      let line = substitute(line, '\s\+$', '', '')
+    endif
+    
     if line =~ '^include'
       " Include snippets.
-      let l:filetype = matchstr(line, '^include\s\+\zs.*\ze\s*$')
+      let l:filetype = matchstr(line, '^include\s\+\zs.*$')
       let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
       for snippets_file in l:snippets_files
         call extend(l:snippet, s:load_snippets(snippets_file, l:filetype))
       endfor
     elseif line =~ '^delete\s'
-      let l:name = matchstr(line, '^delete\s\+\zs.*\ze\s*$')
+      let l:name = matchstr(line, '^delete\s\+\zs.*$')
       if l:name != '' && has_key(l:snippet, l:name)
         call remove(l:snippet, l:name)
       endif
@@ -358,13 +363,13 @@ function! s:load_snippets(snippets_file, filetype)"{{{
         let l:snippet_pattern = { 'word' : '' }
       endif
 
-      let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*\ze\s*$')
+      let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
     elseif has_key(l:snippet_pattern, 'name')
       " Only in snippets.
       if line =~ '^abbr\s'
-        let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*\ze\s*$')
+        let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*$')
       elseif line =~ '^alias\s'
-        let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*\ze\s*$'), '[,[:space:]]\+')
+        let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*$'), '[,[:space:]]\+')
       elseif line =~ '^prev_word\s'
         let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
       elseif line =~ '^\s'
