@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2010
+" Last Modified: 04 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! s:source.initialize()"{{{
     try 
       python 1
       call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'python',
-            \'[^. \t]\.\h\w*')
+            \'[^. \t]\.\w*')
     catch
     endtry
   endif
@@ -95,7 +95,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   if neocomplcache#within_comment()
     return -1
   endif
-  
+
   let l:filetype = neocomplcache#get_context_filetype()
   if neocomplcache#is_eskk_enabled()
     let l:omnifunc = &l:omnifunc
