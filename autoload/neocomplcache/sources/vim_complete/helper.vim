@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2010
+" Last Modified: 06 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -89,6 +89,9 @@ function! s:doc_dict.search(cur_text)"{{{
       call add(l:ret, { 'text' : s:global_candidates_list.function_prototypes[l:prototype_name] })
     elseif has_key(l:script_candidates_list.function_prototypes, l:prototype_name)
       call add(l:ret, { 'text' : l:script_candidates_list.function_prototypes[l:prototype_name] })
+    else
+      " No prototypes.
+      return []
     endif
   else
     if !has_key(s:internal_candidates_list, 'command_prototypes')
@@ -104,6 +107,9 @@ function! s:doc_dict.search(cur_text)"{{{
       call add(l:ret, { 'text' : s:internal_candidates_list.command_prototypes[l:prototype_name] })
     elseif has_key(s:global_candidates_list.command_prototypes, l:prototype_name)
       call add(l:ret, { 'text' : s:global_candidates_list.command_prototypes[l:prototype_name] })
+    else
+      " No prototypes.
+      return []
     endif
   endif
 

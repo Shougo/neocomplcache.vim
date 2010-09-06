@@ -777,6 +777,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-06
+- Improved for echodoc.
+
 2010-09-04
 - Improved omni_complete default pattern.
 

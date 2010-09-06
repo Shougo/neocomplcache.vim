@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Aug 2010
+" Last Modified: 06 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -161,7 +161,9 @@ function! s:doc_dict.search(cur_text)"{{{
             call add(l:ret, { 'text' : l:word, 'highlight' : 'Identifier' })
             call add(l:ret, { 'text' : l:cache[0].abbr[l:match+len(l:word) :] })
 
-            return l:ret
+            if l:match > 0 || len(l:ret[-1].text) > 0
+              return l:ret
+            endif
           endif
         endif
       endif
