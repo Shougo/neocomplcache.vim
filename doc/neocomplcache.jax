@@ -48,6 +48,11 @@ neocomplcache Ver.5では、かなりの変数名が変更されているため�
 っている。移行の際には、thinca氏の作成した次のスクリプトを利用すると良いだろう。
 http://gist.github.com/422503
 
+neocomplcacheの導入については、yuitowest氏の作成したこの記事を参考にすると良い
+だろう。
+http://d.hatena.ne.jp/yuitowest/20100907/1283865197
+この記事はVer.5.1対応だが、Ver.5.2でもインストール方法はそれほど違わない。
+
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
 
@@ -580,7 +585,8 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
 
-doc/neocomplcache.txtを参照せよ。
+doc/neocomplcache.txt(英語ヘルプ)の|neocomplcache-examples|を参照せよ。
+これは作者が普段使っている設定を基にしている。
 
 ==============================================================================
 PLUGINS							*neocomplcache-plugins*
