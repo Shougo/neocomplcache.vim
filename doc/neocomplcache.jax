@@ -25,6 +25,7 @@ License: MIT license  {{{
 CONTENTS						*neocomplcache-contents*
 
 Introduction		|neocomplcache-introduction|
+Install			|neocomplcache-install|
 Interface		|neocomplcache-interface|
   Commands		  |neocomplcache-commands|
   Variables		  |neocomplcache-variables|
@@ -51,7 +52,16 @@ http://gist.github.com/422503
 neocomplcacheの導入については、yuitowest氏の作成したこの記事を参考にすると良い
 だろう。
 http://d.hatena.ne.jp/yuitowest/20100907/1283865197
-この記事はVer.5.1対応だが、Ver.5.2でもインストール方法はそれほど違わない。
+この記事はVer.5.1対応だが、Ver.5.2でもインストール方法はそれほど変わらない。
+
+==============================================================================
+INSTALL							*neocomplcache-install*
+
+1: 配布ファイルを解凍し、Vimスクリプトのディレクトリへインストールする
+   (普通は ~/.vim/ またはWindowsの場合、 Program Files/Vim/vimfiles)
+2: neocomplcacheはデフォルトで無効化されている。有効にするためには、
+|:NeoComplCacheEnable|コマンドを実行するか、
+let g:neocomplcache_enable_at_startup = 1 を.vimrc内に記述する。
 
 ==============================================================================
 INTERFACE						*neocomplcache-interface*

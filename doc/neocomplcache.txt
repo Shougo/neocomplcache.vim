@@ -25,6 +25,7 @@ License: MIT license  {{{
 CONTENTS						*neocomplcache-contents*
 
 Introduction		|neocomplcache-introduction|
+Install			|neocomplcache-install|
 Interface		|neocomplcache-interface|
   Commands		  |neocomplcache-commands|
   Variables		  |neocomplcache-variables|
@@ -50,6 +51,15 @@ Because all variable names are changed in neocomplcache Ver.5, there is not
 backward compatibility. In the case of the upgrade, you should use the next
 script which Mr.thinca made.
 http://gist.github.com/422503
+
+==============================================================================
+INSTALL							*neocomplcache-install*
+
+1: Extract the file and Put files in your Vim directory
+   (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows). 
+2: Execute |:NeoComplCacheEnable| command or 
+let g:neocomplcache_enable_at_startup = 1
+in your .vimrc. 
 
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
@@ -781,6 +791,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved cache timing.
 - Revised documentation.
 - Fixed for Vim 7.0.
+- Added install description.
 
 2010-09-06
 - Improved for echodoc.
