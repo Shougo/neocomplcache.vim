@@ -253,7 +253,7 @@ function! s:calc_frequency(list)"{{{
         " Garbage collect
         let l:ignorecase_save = &ignorecase
         let &ignorecase = 0
-        let l:pos = searchpos(neocomplcache#escape_match(l:word), 'ncw', 0, 300)
+        let l:pos = searchpos(neocomplcache#escape_match(l:word), 'ncw', 0)
         let &ignorecase = l:ignorecase_save
         
         if l:pos[0] == 0

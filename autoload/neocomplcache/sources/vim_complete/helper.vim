@@ -504,7 +504,7 @@ function! s:get_local_dictionary_variables(var_name)"{{{
 endfunction"}}}
 
 function! s:get_cached_script_candidates()"{{{
-  return has_key(s:script_candidates_list, bufnr('%')) ?
+  return has_key(s:script_candidates_list, bufnr('%')) && v:version > 700 ?
         \ s:script_candidates_list[bufnr('%')] : {
         \   'functions' : {}, 'variables' : {}, 'function_prototypes' : {}, 'dictionary_variables' : {} }
 endfunction"}}}
