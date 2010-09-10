@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Aug 2010
+" Last Modified: 10 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,6 +115,9 @@ if !exists('g:neocomplcache_disable_caching_buffer_name_pattern')
 endif
 if !exists('g:neocomplcache_lock_buffer_name_pattern')
   let g:neocomplcache_lock_buffer_name_pattern = ''
+endif
+if !exists('g:neocomplcache_disable_auto_select_buffer_name_pattern')
+  let g:neocomplcache_disable_auto_select_buffer_name_pattern = ''
 endif
 if !exists('g:neocomplcache_ctags_program')
   let g:neocomplcache_ctags_program = 'ctags'

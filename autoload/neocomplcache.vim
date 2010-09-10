@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2010
+" Last Modified: 09 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -476,8 +476,9 @@ endfunction"}}}
 
 function! neocomplcache#do_auto_complete(is_moved)"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
-        \|| neocomplcache#is_locked()
-        \|| (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
+        \ || g:neocomplcache_disable_auto_complete
+        \ || neocomplcache#is_locked()
+        \ || (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
     return
   endif
 
@@ -518,7 +519,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
-      if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+      if neocomplcache#is_auto_select()
         call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
       else
         call feedkeys("\<C-x>\<C-u>", 'n')
@@ -583,7 +584,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
         \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   " Start auto complete.
-  if g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+  if neocomplcache#is_auto_select()
     call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
   else
     call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
@@ -921,11 +922,16 @@ endfunction"}}}
 function! neocomplcache#is_enabled()"{{{
   return s:is_enabled
 endfunction"}}}
-function! neocomplcache#is_locked()"{{{
+function! neocomplcache#is_locked(...)"{{{
+  let l:bufnr = a:0 > 0 ? a:1 : bufnr('%')
   return !s:is_enabled 
-        \ || (has_key(s:complete_lock, bufnr('%')) && s:complete_lock[bufnr('%')])
-        \ || g:neocomplcache_disable_auto_complete
-        \ || (g:neocomplcache_lock_buffer_name_pattern != '' && bufname('%') =~ g:neocomplcache_lock_buffer_name_pattern)
+        \ || (has_key(s:complete_lock, l:bufnr) && s:complete_lock[l:bufnr])
+        \ || (g:neocomplcache_lock_buffer_name_pattern != '' && bufname(l:bufnr) =~ g:neocomplcache_lock_buffer_name_pattern)
+endfunction"}}}
+function! neocomplcache#is_auto_select()"{{{
+  return g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
+        \ && (g:neocomplcache_disable_auto_select_buffer_name_pattern == ''
+        \     || bufname('%') !~ g:neocomplcache_disable_auto_select_buffer_name_pattern)
 endfunction"}}}
 function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
