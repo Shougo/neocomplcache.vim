@@ -795,6 +795,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-15
+- Implemented escaped ` in snippets_complete.
+- Improved snippet syntax.
+
 2010-09-10
 - Improved caching algorithm.
 - Added g:neocomplcache_disable_auto_select_buffer_name_pattern option.

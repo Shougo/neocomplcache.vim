@@ -189,7 +189,7 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
   " Substitute abbr.
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
   for snippet in l:list
-    if snippet.snip =~ '`[^`]*`'
+    if snippet.snip =~ '\\\@<!`.*\\\@<!`'
       let snippet.menu = s:eval_snippet(snippet.snip)
 
       if len(snippet.menu) > g:neocomplcache_max_keyword_width 
@@ -425,12 +425,15 @@ function! s:snippets_expand(cur_text, col)"{{{
   let l:cur_text = a:cur_text[: -1-len(l:cur_word)]
 
   let l:snip_word = l:snippet.snip
-  if l:snip_word =~ '`.\{-}`'
+  if l:snip_word =~ '\\\@<!`.*\\\@<!`'
     let l:snip_word = s:eval_snippet(l:snip_word)
   endif
   if l:snip_word =~ '\n'
     let snip_word = substitute(l:snip_word, '\n', '<\\n>', 'g')
   endif
+  
+  " Substitute escaped `.
+  let snip_word = substitute(l:snip_word, '\\`', '`', 'g')
 
   " Insert snippets.
   let l:next_line = getline('.')[a:col-1 :]
@@ -674,17 +677,17 @@ endfunction"}}}
 function! s:eval_snippet(snippet_text)"{{{
   let l:snip_word = ''
   let l:prev_match = 0
-  let l:match = match(a:snippet_text, '`.\{-}`')
+  let l:match = match(a:snippet_text, '\\\@<!`.\{-}\\\@<!`')
 
   try
     while l:match >= 0
       if l:match - l:prev_match > 0
         let l:snip_word .= a:snippet_text[l:prev_match : l:match - 1]
       endif
-      let l:prev_match = matchend(a:snippet_text, '`.\{-}`', l:match)
+      let l:prev_match = matchend(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', l:match)
       let l:snip_word .= eval(a:snippet_text[l:match+1 : l:prev_match - 2])
 
-      let l:match = match(a:snippet_text, '`.\{-}`', l:prev_match)
+      let l:match = match(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', l:prev_match)
     endwhile
     if l:prev_match >= 0
       let l:snip_word .= a:snippet_text[l:prev_match :]

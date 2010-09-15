@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/snippet.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Jul 2010
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 15 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,11 +32,12 @@ endif
 
 syn region  SnippetPrevWord             start=+'+ end=+'+ contained
 syn region  SnippetPrevWord             start=+"+ end=+"+ contained
-syn region  SnippetEval                 start=+`+ end=+`+ contained
-syn match   SnippetWord                 '^\s\+.*$' contains=SnippetEval,SnippetExpand
+syn region  SnippetEval                 start=+\\\@<!`+ end=+\\\@<!`+ contained
+syn match   SnippetWord                 '^\s\+.*$' contains=SnippetEval,SnippetExpand,SnippetEscape
 syn match   SnippetExpand               '\${\d\+\%(:.\{-}\)\?\\\@<!}' contained
 syn match   SnippetVariable             '\$\d\+' contained
 syn match   SnippetComment              '^#.*$'
+syn match   SnippetEscape               '\\[`]' contained
 
 syn match   SnippetKeyword              '^\%(include\|snippet\|abbr\|prev_word\|delete\|alias\)' contained
 syn match   SnippetPrevWords            '^prev_word\s\+.*$' contains=SnippetPrevWord,SnippetKeyword
@@ -65,5 +66,6 @@ hi def link SnippetComment Comment
 hi def link SnippetInclude PreProc
 hi def link SnippetDelete PreProc
 hi def link SnippetAlias Identifier
+hi def link SnippetEscape Special
 
 let b:current_syntax = "snippet"
