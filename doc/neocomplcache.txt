@@ -307,6 +307,14 @@ g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_patt
 	
 		Default value is ''.
 
+g:neocomplcache_force_caching_buffer_name_pattern	*g:neocomplcache_force_caching_buffer_name_pattern*
+		This variable set a pattern of the buffer name. If matched it,
+		neocomplcache will ignore 'readonly' or 'nomodifiable' options
+		and make a cache of the buffer. When it is an empty character
+		string, neocomplcache will ignore.
+	
+		Default value is ''.
+
 g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_auto_select_buffer_name_pattern*
 		This variable set a pattern of the buffer name. If matched it,
 		neocomplcache disable |g:neocomplcache_enable_auto_select|.
@@ -794,6 +802,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-09-16
+- Fixed caching bug.
+- Added g:neocomplcache_force_caching_buffer_name_pattern option.
 
 2010-09-15
 - Implemented escaped ` in snippets_complete.

@@ -303,6 +303,13 @@ g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_patt
 		
 		初期値は空となっている。
 
+g:neocomplcache_force_caching_buffer_name_pattern	*g:neocomplcache_force_caching_buffer_name_pattern*
+		neocomplcacheが'readonly'や'nomodifiable'を無視して強制的にキャ
+		ッシュするバッファ名のパターンを正規表現で設定する。空文字列だ
+		と無視される。
+		
+		初期値は空となっている。
+
 g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_disable_auto_select_buffer_name_pattern*
 		|g:neocomplcache_enable_auto_select|による候補の自動選択を無効
 		化するバッファ名のパターンを正規表現で設定する。空文字列だと無

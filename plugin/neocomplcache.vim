@@ -116,6 +116,9 @@ endif
 if !exists('g:neocomplcache_lock_buffer_name_pattern')
   let g:neocomplcache_lock_buffer_name_pattern = ''
 endif
+if !exists('g:neocomplcache_force_caching_buffer_name_pattern')
+  let g:neocomplcache_force_caching_buffer_name_pattern = ''
+endif
 if !exists('g:neocomplcache_disable_auto_select_buffer_name_pattern')
   let g:neocomplcache_disable_auto_select_buffer_name_pattern = ''
 endif
