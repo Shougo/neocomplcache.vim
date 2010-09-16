@@ -528,7 +528,7 @@ function! s:check_source()"{{{
             \&& !neocomplcache#is_locked(l:bufnumber)
         if getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
               \ && ((g:neocomplcache_force_caching_buffer_name_pattern != '' || l:bufname =~ g:neocomplcache_force_caching_buffer_name_pattern)
-              \       || getbufvar(l:bufnumber, '&modifiable') && getbufvar(l:bufnumber, '&noreadonly')
+              \       || getbufvar(l:bufnumber, '&modifiable') && getbufvar(l:bufnumber, '&noreadonly') && getbufvar(l:bufnumber, '&buftype') !~ 'help'
               \)
           " Caching.
           call s:word_caching(l:bufnumber)
