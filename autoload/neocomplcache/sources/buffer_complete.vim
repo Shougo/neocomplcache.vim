@@ -527,7 +527,7 @@ function! s:check_source()"{{{
             \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& !neocomplcache#is_locked(l:bufnumber)
         if getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
-              \ && ((g:neocomplcache_force_caching_buffer_name_pattern != '' || l:bufname =~ g:neocomplcache_force_caching_buffer_name_pattern)
+              \ && ((g:neocomplcache_force_caching_buffer_name_pattern != '' && l:bufname =~ g:neocomplcache_force_caching_buffer_name_pattern)
               \       || getbufvar(l:bufnumber, '&modifiable') && getbufvar(l:bufnumber, '&noreadonly') && getbufvar(l:bufnumber, '&buftype') !~ 'help'
               \)
           " Caching.
