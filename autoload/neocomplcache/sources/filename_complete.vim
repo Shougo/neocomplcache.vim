@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Aug 2010
+" Last Modified: 18 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -99,19 +99,25 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
   let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
+  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+
   try
-    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
     let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-    if empty(l:files)
-      " Add '*' to a delimiter.
-      let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-      let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-    endif
   catch
-    call neocomplcache#print_error(v:exception)
     return []
   endtry
+  
+  if empty(l:files)
+    " Add '*' to a delimiter.
+    let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
+    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+    
+    try
+      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
+    catch
+      return []
+    endtry
+  endif
   if empty(l:files) || (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
     return []
   endif

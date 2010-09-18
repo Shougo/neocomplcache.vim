@@ -803,6 +803,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-18
+- Fixed filename completion error.
+
 2010-09-16
 - Fixed caching bug.
 - Added g:neocomplcache_force_caching_buffer_name_pattern option.
