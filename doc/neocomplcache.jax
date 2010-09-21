@@ -58,7 +58,7 @@ http://d.hatena.ne.jp/yuitowest/20100907/1283865197
 INSTALL							*neocomplcache-install*
 
 1: 配布ファイルを解凍し、Vimスクリプトのディレクトリへインストールする
-   (普通は ~/.vim/ またはWindowsの場合、 Program Files/Vim/vimfiles)
+   (普通は ~/.vim/ またはWindowsの場合、 $HOME/vimfiles)
 2: neocomplcacheはデフォルトで無効化されている。有効にするためには、
 |:NeoComplCacheEnable|コマンドを実行するか、
 let g:neocomplcache_enable_at_startup = 1 を.vimrc内に記述する。
@@ -112,6 +112,11 @@ COMMANDS 						*neocomplcache-commands*
 		[bufname]のタグをキャッシュする。 [bufname]を省略すると、カ
 		レントバッファのファイルタイプを指定したことになる。 これを
 		実行しなければ、tags_completeは動作しない。
+
+:NeoComplCacheCachingInclude [bufname]			*:NeoComplCacheCachingInclude*
+		[bufname]のインクルードファイルを再キャッシュする。 [bufname]を
+		省略すると、カレントバッファのファイルタイプを指定したことにな
+		る。
 
 :NeoComplCacheDisableCaching [bufname]			*:NeoComplCacheDisableCaching*
 		[bufname]で示されるバッファをキャッシュしないようにする。 バッ

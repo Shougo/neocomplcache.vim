@@ -108,6 +108,14 @@ COMMANDS 						*neocomplcache-commands*
 		Caching [filetype] dictionary file.
 		Select current buffer filetype when [filetype] omitted.
 
+:NeoComplCacheCachingTags [filetype]			*:NeoComplCacheCachingTags*
+		Caching [filetype] tags file.
+		Select current buffer filetype when [filetype] omitted.
+
+:NeoComplCacheCachingInclude [filetype]			*:NeoComplCacheCachingInclude*
+		Caching [filetype] include file.
+		Select current buffer filetype when [filetype] omitted.
+
 :NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
 		Disable [bufname] buffer's cache.
 		The cache will be deleted.
@@ -802,6 +810,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-09-21
+- Added NeoComplCacheCachingInclude description.
+- Improved include cache.
 
 2010-09-18
 - Fixed filename completion error.

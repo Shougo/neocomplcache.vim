@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2010
+" Last Modified: 21 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,6 +44,7 @@ function! s:source.initialize()"{{{
   augroup neocomplcache
     " Caching events
     autocmd FileType * call s:check_buffer_all()
+    autocmd BufWritePost * call s:check_buffer('')
   augroup END
 
   " Initialize include pattern."{{{
