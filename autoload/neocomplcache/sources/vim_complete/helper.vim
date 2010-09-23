@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2010
+" Last Modified: 23 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -973,7 +973,7 @@ function! s:get_variable_type(expression)"{{{
     return '0'
   elseif a:expression =~ '^\%(\s*\.\)\?\s*["'']'
     return '""'
-  elseif a:expression =~ '\<function(\|^\s*('
+  elseif a:expression =~ '\<function('
     return '()'
   elseif a:expression =~ '^\%(\s*+\)\?\s*\['
     return '[]'

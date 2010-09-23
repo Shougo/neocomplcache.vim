@@ -811,6 +811,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-23
+- Fixed vim_complete kind bug.
+
 2010-09-21
 - Added NeoComplCacheCachingInclude description.
 - Improved include cache.
