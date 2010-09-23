@@ -326,7 +326,12 @@ function! s:load_snippets(snippets_file, filetype)"{{{
   let l:snippet_pattern = { 'word' : '' }
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
+  let l:names = {}
+  let l:linenr = 0
+
   for line in readfile(a:snippets_file)
+    let linenr += 1
+
     if line =~ '^\h\w*.*\s$'
       " Delete spaces.
       let line = substitute(line, '\s\+$', '', '')
@@ -364,12 +369,26 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       endif
 
       let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
+      " Check for duplicated names.
+      if has_key(l:names, l:snippet_pattern.name)
+        echomsg "Warning: " . a:snippets_file . ":" . l:linenr . ": duplicated snippet name `" . l:snippet_pattern.name . "'"
+      else
+        let l:names[l:snippet_pattern.name] = 1
+      endif
     elseif has_key(l:snippet_pattern, 'name')
       " Only in snippets.
       if line =~ '^abbr\s'
         let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*$')
       elseif line =~ '^alias\s'
         let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*$'), '[,[:space:]]\+')
+        " Check for duplicated names.
+        for l:alias in l:snippet_pattern.alias
+          if has_key(l:names, l:alias)
+            echomsg "Warning: " . a:snippets_file . ":" . l:linenr . ": duplicated snippet name `" . l:alias . "'"
+          else
+            let l:names[l:alias] = 1
+          endif
+        endfor
       elseif line =~ '^prev_word\s'
         let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
       elseif line =~ '^\s'
