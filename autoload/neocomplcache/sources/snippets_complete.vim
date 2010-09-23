@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2010
+" Last Modified: 23 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -326,12 +326,9 @@ function! s:load_snippets(snippets_file, filetype)"{{{
   let l:snippet_pattern = { 'word' : '' }
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
-  let l:names = {}
-  let l:linenr = 0
+  let l:linenr = 1
 
   for line in readfile(a:snippets_file)
-    let linenr += 1
-
     if line =~ '^\h\w*.*\s$'
       " Delete spaces.
       let line = substitute(line, '\s\+$', '', '')
@@ -369,11 +366,11 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       endif
 
       let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
+      
       " Check for duplicated names.
-      if has_key(l:names, l:snippet_pattern.name)
-        echomsg "Warning: " . a:snippets_file . ":" . l:linenr . ": duplicated snippet name `" . l:snippet_pattern.name . "'"
-      else
-        let l:names[l:snippet_pattern.name] = 1
+      if has_key(l:snippet, l:snippet_pattern.name)
+        call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . l:linenr . ': duplicated snippet name `' . l:snippet_pattern.name . '`')
+        call neocomplcache#print_error('Please delete this snippet name before.')
       endif
     elseif has_key(l:snippet_pattern, 'name')
       " Only in snippets.
@@ -381,14 +378,6 @@ function! s:load_snippets(snippets_file, filetype)"{{{
         let l:snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*$')
       elseif line =~ '^alias\s'
         let l:snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*$'), '[,[:space:]]\+')
-        " Check for duplicated names.
-        for l:alias in l:snippet_pattern.alias
-          if has_key(l:names, l:alias)
-            echomsg "Warning: " . a:snippets_file . ":" . l:linenr . ": duplicated snippet name `" . l:alias . "'"
-          else
-            let l:names[l:alias] = 1
-          endif
-        endfor
       elseif line =~ '^prev_word\s'
         let l:snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
       elseif line =~ '^\s'
@@ -406,6 +395,8 @@ function! s:load_snippets(snippets_file, filetype)"{{{
         let l:snippet_pattern.word .= '<\n>'
       endif
     endif
+
+    let l:linenr += 1
   endfor
 
   if has_key(l:snippet_pattern, 'name')
@@ -413,6 +404,12 @@ function! s:load_snippets(snippets_file, filetype)"{{{
     let l:snippet[l:snippet_pattern.name] = l:pattern
     if has_key(l:snippet_pattern, 'alias')
       for l:alias in l:snippet_pattern.alias
+        " Check for duplicated names.
+        if has_key(l:snippet, l:alias)
+          call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . l:linenr . ': duplicated snippet name `' . l:alias . '`')
+          call neocomplcache#print_error('Please delete this snippet name before.')
+        endif
+        
         let l:alias_pattern = copy(l:pattern)
         let l:alias_pattern.word = l:alias
 

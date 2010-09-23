@@ -813,6 +813,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-09-23
 - Fixed vim_complete kind bug.
+- Improved d snippet.
+- Detect duplicated snippet name.
 
 2010-09-21
 - Added NeoComplCacheCachingInclude description.

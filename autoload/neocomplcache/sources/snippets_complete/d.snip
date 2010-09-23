@@ -1,5 +1,18 @@
 include c
 
+# Delete snippet depended on C.
+delete struct
+delete struct_typedef
+delete enum
+delete main
+delete inc
+delete Inc
+delete Def
+delete def
+delete once
+delete printf
+delete fprintf
+
 snippet     foreach
 abbr        foreach() {}
     foreach (${1:var}; ${2:list}) {
