@@ -32,6 +32,7 @@ Interface		|neocomplcache-interface|
   Key mappings		  |neocomplcache-key-mappings|
 Examples		|neocomplcache-examples|
 Plugins			|neocomplcache-plugins|
+  User plugins		  |neocomplcache-user-plugins|
 Create plugin		|neocomplcache-create-plugin|
 ToDo			|neocomplcache-todo|
 Bugs			|neocomplcache-bugs|
@@ -193,13 +194,13 @@ g:neocomplcache_max_filename_width			*g:neocomplcache_max_filename_width*
 		Default value is 15.
 
 g:neocomplcache_auto_completion_start_length		*g:neocomplcache_auto_completion_start_length*
-		This variable controls the number of the input completioning
+		This variable controls the number of the input completion
 		at the time of key input automatically.
 	
 		Default value is 2.
 
 g:neocomplcache_manual_completion_start_length		*g:neocomplcache_manual_completion_start_length*
-		This variable controls the number of the input completioning
+		This variable controls the number of the input completion
 		at the time of manual completion.  It is convenient when you
 		reduce this value, but may get heavy when you deleted a
 		letter in <C-h> or <BS> at popup indication time.
@@ -796,6 +797,17 @@ completefunc_complete.vim				*completefunc_complete*
 abbrev_complete.vim					*abbrev_complete*
 		This plugin collects candidates from abbrev.
 
+------------------------------------------------------------------------------
+USER PLUGINS 						*neocomplcache-user-plugins*
+
+This section, introduce non default neocomplcache plugin.
+
+ghc_complete.vim					*neocomplcache-plugins-ghc_complete*
+		http://github.com/ujihisa/ghc_complete
+		This plugin's author is eagletmt, and maintainer is ujihisa.
+		It completes source file written Haskell.
+		It needs ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
+
 ==============================================================================
 TODO							*neocomplcache-todo*
 
@@ -810,6 +822,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-09-24
+- Added ghc_complete description.
 
 2010-09-23
 - Fixed vim_complete kind bug.
