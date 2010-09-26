@@ -823,6 +823,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-26
+- Fixed xhtml snippet error.
+
 2010-09-24
 - Added ghc_complete description.
 
