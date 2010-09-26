@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 26 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1520,12 +1520,17 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
         let l:delim_cnt += 1
       endwhile
 
+      let l:delimiter_dup = {}
       for l:keyword in l:complete_words
         let l:split_list = split(l:keyword.word, l:delimiter)
         if len(l:split_list) > 1
           let l:delimiter_sub = substitute(l:delimiter, '\\\([.^$]\)', '\1', 'g')
           let l:keyword.word = join(l:split_list[ : l:delim_cnt], l:delimiter_sub)
           let l:keyword.abbr = join(split(l:keyword.abbr, l:delimiter)[ : l:delim_cnt], l:delimiter_sub)
+          if !has_key(l:delimiter_dup, l:keyword.word)
+            let l:keyword.dup = 1
+            let l:delimiter_dup[l:keyword.word] = 1
+          endif
 
           if len(l:keyword.abbr) > g:neocomplcache_max_keyword_width
             let l:keyword.abbr = substitute(l:keyword.abbr, '\(\h\)\w*'.l:delimiter, '\1'.l:delimiter_sub, 'g')

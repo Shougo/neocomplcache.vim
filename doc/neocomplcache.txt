@@ -825,6 +825,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-09-26
 - Fixed xhtml snippet error.
+- Improved delimiter.
 
 2010-09-24
 - Added ghc_complete description.
