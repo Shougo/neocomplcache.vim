@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2010
+" Last Modified: 27 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -98,6 +98,9 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
+  " Glob by directory name.
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '/\?\zs[^/]*$', '', '')
+
   let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
@@ -163,7 +166,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     call add(l:list, l:dict)
   endfor
 
-  return sort(l:list, 'neocomplcache#compare_rank')
+  return sort(neocomplcache#keyword_filter(l:list, a:cur_keyword_str), 'neocomplcache#compare_rank')
 endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
