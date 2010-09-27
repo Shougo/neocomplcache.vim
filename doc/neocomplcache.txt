@@ -825,6 +825,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-09-27
 - Improved filename complete.
+- Fixed java snippet warning.
 
 2010-09-26
 - Fixed xhtml snippet error.
