@@ -823,6 +823,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-28
+- Fixed filename_complete.
+
 2010-09-27
 - Improved filename complete.
 - Fixed java snippet warning.
