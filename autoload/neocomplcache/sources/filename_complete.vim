@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Sep 2010
+" Last Modified: 29 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   return l:cur_keyword_pos
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
   let l:is_win = has('win32') || has('win64')
@@ -125,12 +125,13 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     return []
   endif
 
-  let l:list = []
+  let l:dir_list = []
+  let l:file_list = []
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
   let l:paths = map(split(&path, ','), 'substitute(v:val, "\\\\", "/", "g")')
   let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
   for word in l:files
-    let l:dict = { 'word' : word, 'menu' : '[F]' , 'rank': 1 }
+    let l:dict = { 'word' : word, 'menu' : '[F]' }
 
     let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
@@ -150,7 +151,9 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:abbr = l:dict.word
     if isdirectory(l:word)
       let l:abbr .= '/'
-      let l:dict.rank += 1
+      if g:neocomplcache_enable_auto_delimiter
+        let l:dict.word .= '/'
+      endif
     elseif l:is_win
       if '.'.fnamemodify(l:word, ':e') =~ l:exts
         let l:abbr .= '*'
@@ -163,11 +166,11 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     " Escape word.
     let l:dict.word = escape(l:dict.word, ' *?[]"={}')
 
-    call add(l:list, l:dict)
+    call add(isdirectory(l:word) ? l:dir_list : l:file_list, l:dict)
   endfor
 
-  return sort(neocomplcache#keyword_filter(l:list, a:cur_keyword_str), 'neocomplcache#compare_rank')
-endfunction"}}}
+  return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str) + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
+endfunction"}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
   return s:source

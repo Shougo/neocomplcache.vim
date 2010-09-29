@@ -263,6 +263,12 @@ g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		
 		初期値は0である。
 
+g:neocomplcache_enable_auto_delimiter			*g:neocomplcache_enable_auto_delimiter*
+		neocomplcacheが補完時に自動でデリミタを補完するかどうかを制御す
+		る。デリミタとは、ファイル名補完での /やVim scriptでの#である。
+		
+		初期値は0である。
+
 g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
 		|g:neocomplcache_enable_cursor_hold_i|が有効になっている場合、
 		自動補完を開始するための計算時間を定義する。このオプションは
@@ -288,7 +294,7 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 g:neocomplcache_enable_caching_message			*g:neocomplcache_enable_caching_message*
 		キャッシュ中に、メッセージをCommand-lineに表示するかを制御
 		する。
-	
+		
 		初期値は1である。
 
 g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_size*

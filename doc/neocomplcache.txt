@@ -168,7 +168,7 @@ VARIABLES 						*neocomplcache-variables*
 g:neocomplcache_enable_at_startup			*g:neocomplcache_enable_at_startup*
 		This variable controls whether I validate neocomplcache at
 		the time of Vim start.  This option should set it in .vimrc.
-	
+		
 		Because default value is 0, you cannot use neocomplcache
 		unless you validate it by manual operation.
 
@@ -176,27 +176,27 @@ g:neocomplcache_max_list				*g:neocomplcache_max_list*
 		This variable controls the number of candidates displayed in
 		a pop-up menu.  The case beyond this value is cut down a
 		candidate.
-	
+		
 		Default value is 100.
 
 g:neocomplcache_max_keyword_width			*g:neocomplcache_max_keyword_width*
 		This variable controls the indication width of a candidate
 		displayed in a pop-up menu.  The case beyond this value is
 		cut down properly.
-	
+		
 		Default value is 50.
 
 g:neocomplcache_max_filename_width			*g:neocomplcache_max_filename_width*
 		This variable controls the indication width of a file name
 		displayed in a pop-up menu.  The case beyond this value is
 		cut down.
-	
+		
 		Default value is 15.
 
 g:neocomplcache_auto_completion_start_length		*g:neocomplcache_auto_completion_start_length*
 		This variable controls the number of the input completion
 		at the time of key input automatically.
-	
+		
 		Default value is 2.
 
 g:neocomplcache_manual_completion_start_length		*g:neocomplcache_manual_completion_start_length*
@@ -204,46 +204,46 @@ g:neocomplcache_manual_completion_start_length		*g:neocomplcache_manual_completi
 		at the time of manual completion.  It is convenient when you
 		reduce this value, but may get heavy when you deleted a
 		letter in <C-h> or <BS> at popup indication time.
-	
+		
 		Default value is 2.
 
 g:neocomplcache_min_keyword_length			*g:neocomplcache_min_keyword_length*
 		In a buffer or dictionary files, this variable controls
 		length of keyword becoming the object of the completion at
 		the minimum.
-	
+		
 		Default value is 4.
 
 g:neocomplcache_min_syntax_length			*g:neocomplcache_min_syntax_length*
 		In syntax files, this variable controls length of keyword
 		becoming the object of the completion at the minimum.
-	
+		
 		Default value is 4.
 
 g:neocomplcache_enable_ignore_case			*g:neocomplcache_enable_ignore_case*
 		When neocomplcache looks for candidate completion, this
 		variable controls whether neocomplcache ignores the upper-
 		and lowercase.  If it is 1, neocomplcache ignores case.
-	
+		
 		Default value is 'ignorecase'.
 
 g:neocomplcache_enable_smart_case			*g:neocomplcache_enable_smart_case*
 		When a capital letter is included in input, neocomplcache do
 		not ignore the upper- and lowercase.
-	
+		
 		Default value is 0.
 
 g:neocomplcache_disable_auto_complete			*g:neocomplcache_disable_auto_complete*
 		This variable controls whether you invalidate automatic
 		completion.  If it is 1, automatic completion becomes
 		invalid, but can use the manual completion by <C-x><C-u>.
-	
+		
 		Default value is 0.
 
 g:neocomplcache_enable_wildcard				*g:neocomplcache_enable_wildcard*
 		This variable controls whether neocomplcache accept wild
 		card character '*' for input-saving.
-	
+		
 		Default value is 1.
 
 g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
@@ -251,13 +251,13 @@ g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		choose a candidate with a alphabet or number displayed
 		beside a candidate after '-'.  When you input 'ho-a',
 		neocomplcache will select candidate 'a'.
-	
+		
 		Default value is 0.
 
 g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		This variable controls whether neocomplcache use |CursorHoldI| event
 		when complete candidates.
-	
+		
 		Default value is 0.
 
 g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
@@ -265,7 +265,13 @@ g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		whether neocomplcache selects the first candidate
 		automatically.  If you enable this option, neocomplcache's
 		completion behavior is like |AutoComplPop|.
+		
+		Default value is 0.
 
+g:neocomplcache_enable_auto_delimiter			*g:neocomplcache_enable_auto_delimiter*
+		This option controls whether neocomplcache insert delimiter
+		automatically.  For example, /(filename) or #(Vim script).
+		
 		Default value is 0.
 
 g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
@@ -278,7 +284,7 @@ g:neocomplcache_enable_camel_case_completion		*g:neocomplcache_enable_camel_case
 		whether neocomplcache takes an ambiguous searching as an end
 		of the words in it.  For example, neocomplcache come to
 		match it with ArgumentsException when you input it with AE.
-	
+		
 		Default value is 0.
 
 g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_completion*
@@ -286,34 +292,34 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it
 		with 'public_html' when you input it with 'p_h'.
-	
+		
 		Default value is 0.
 
 g:neocomplcache_enable_caching_message			*g:neocomplcache_enable_caching_message*
 		When make cache, this variable controls whether neocomplcache
 		displays the message in Command-line.
-	
+		
 		Default value is 1.
 
 g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_size*
 		This variable set file size to make a cache of a file.  If
 		open file is bigger than this size, neocomplcache do not
 		make a cache.
-	
+		
 		Default value is 500000.
 
 g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
 		This variable set a pattern of the buffer name. If matched it,
 		neocomplcache does not make a cache of the buffer. When it is
 		an empty character string, neocomplcache will ignore.
-	
+		
 		Default value is ''.
 
 g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_pattern*
 		This variable set a pattern of the buffer name. If matched it,
 		neocomplcache does not complete automatically. When it is an
 		empty character string, neocomplcache will ignore.
-	
+		
 		Default value is ''.
 
 g:neocomplcache_force_caching_buffer_name_pattern	*g:neocomplcache_force_caching_buffer_name_pattern*
@@ -321,7 +327,7 @@ g:neocomplcache_force_caching_buffer_name_pattern	*g:neocomplcache_force_caching
 		neocomplcache will ignore 'readonly' or 'nomodifiable' options
 		and make a cache of the buffer. When it is an empty character
 		string, neocomplcache will ignore.
-	
+		
 		Default value is ''.
 
 g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_auto_select_buffer_name_pattern*
@@ -329,7 +335,7 @@ g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_auto_se
 		neocomplcache disable |g:neocomplcache_enable_auto_select|.
 		When it is an empty character string, neocomplcache will
 		ignore.
-	
+		
 		Default value is ''.
 
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
@@ -339,7 +345,7 @@ g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		which appointed here, neocomplcache will ignore.  User
 		defined snippet files are read after having read a normal
 		snippet files.  It is overwritten redundant snippet.
-	
+		
 		There is not this variable unless a user defines it by oneself.
 
 g:neocomplcache_temporary_dir				*g:neocomplcache_temporary_dir*
@@ -348,14 +354,14 @@ g:neocomplcache_temporary_dir				*g:neocomplcache_temporary_dir*
 		directory which appointed here, it is made.  For example,
 		keyword_complete.vim stores cache of the keyword in this
 		'keyword_cache' sub directory.
-	
+		
 		Default value is '~/.neocon'.
 
 g:neocomplcache_keyword_patterns			*g:neocomplcache_keyword_patterns*
 		This dictionary records regular expression to recognize a
 		keyword pattern of the next than a cursor.  The form is the
 		same as|g:neocomplcache_keyword_patterns|.
-	
+		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 >
@@ -368,7 +374,7 @@ g:neocomplcache_keyword_patterns			*g:neocomplcache_keyword_patterns*
 g:neocomplcache_next_keyword_patterns			*g:neocomplcache_next_keyword_patterns*
 		This dictionary records keyword patterns to completion.
 		This is appointed in regular expression every file type.
-	
+		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
@@ -378,7 +384,7 @@ g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		If this pattern is not defined, neocomplcache don't call
 		|omnifunc|. For example, ruby omnifunc is disabled, because
 		it's too slow.
-	
+		
 		Because it is complicated, refer to
 		s:source.initialize() autoload/neocomplcache/sources/omni_complete.vim
 		for the initial value.
@@ -389,14 +395,14 @@ g:neocomplcache_tags_filter_patterns			*g:neocomplcache_tags_filter_patterns*
 		This dictionary records  a pattern to filter a candidate in
 		the tag completion.  For example, it can exclude a candidate
 		beginning in _ in file type of C/C++.
-	
+		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_same_filetype_lists			*g:neocomplcache_same_filetype_lists*
 		It is a dictionary to connect file type mutually.  It is
 		effective at time to let you refer to c and cpp mutually.
-	
+		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
@@ -636,7 +642,7 @@ neocomplcache#complete_common_string()			*neocomplcache#complete_common_string()
 		have long common string.
 >
 		inoremap <expr><C-l>     neocomplcache#complete_common_string()
-	
+		
 <
 neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snippets_complete#expandable()*
 		Use this function on inoremap <expr>. It check whether
@@ -673,7 +679,7 @@ EXAMPLES						*neocomplcache-examples*
 	    \ 'vimshell' : $HOME.'/.vimshell_hist',
 	    \ 'scheme' : $HOME.'/.gosh_completions'
 	        \ }
-	
+		
 	" Define keyword.
 	if !exists('g:neocomplcache_keyword_patterns')
 	    let g:neocomplcache_keyword_patterns = {}
@@ -822,6 +828,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2010-09-29
+- Improved filename_complete.
+- Added g:neocomplcache_enable_auto_delimiter option.
 
 2010-09-28
 - Fixed filename_complete.

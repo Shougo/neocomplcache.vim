@@ -107,6 +107,9 @@ endif
 if !exists('g:neocomplcache_enable_auto_select')
   let g:neocomplcache_enable_auto_select = 0
 endif
+if !exists('g:neocomplcache_enable_auto_delimiter')
+  let g:neocomplcache_enable_auto_delimiter = 0
+endif
 if !exists('g:neocomplcache_caching_limit_file_size')
   let g:neocomplcache_caching_limit_file_size = 500000
 endif
