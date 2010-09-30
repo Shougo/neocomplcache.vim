@@ -831,6 +831,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-09-30
 - Deleted member filter.
+- Fixed delimiter.
 
 2010-09-29
 - Improved filename_complete.
@@ -1193,7 +1194,7 @@ ChangeLog NeoComplCache 5.0: {{{
 - Improved erlang keyword pattern.
 - Improved d and java keyword patterns.
 - Added g:neocomplcache_delimiter_patterns option.
-- Implemented delemiter completion.
+- Implemented delimiter completion.
 - Improved abbr.
 
 2010-06-15
