@@ -727,21 +727,6 @@ function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! neocomplcache#member_filter(list, cur_keyword_str)"{{{
-  let l:ft = neocomplcache#get_context_filetype()
-
-  let l:list = a:list
-  if has_key(g:neocomplcache_member_prefix_patterns, l:ft)
-    let l:pattern = '\%(' . g:neocomplcache_member_prefix_patterns[l:ft] . '\m\)\w*$'
-    if neocomplcache#get_cur_text() =~ l:pattern
-      " Filtering.
-      let l:list = filter(l:list,
-            \ '(has_key(v:val, "kind") && v:val.kind ==# "m") || (has_key(v:val, "class") && v:val.class != "") || (has_key(v:val, "struct") && v:val.struct != "")')
-    endif
-  endif
-  
-  return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
-endfunction"}}}
 function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completion_length)"{{{
   if len(a:cur_keyword_str) < a:completion_length ||
         \neocomplcache#check_match_filter(a:cur_keyword_str, a:completion_length)

@@ -106,7 +106,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     endfor
   endif
 
-  return neocomplcache#member_filter(neocomplcache#dup_filter(l:keyword_list), a:cur_keyword_str)
+  return neocomplcache#keyword_filter(neocomplcache#dup_filter(l:keyword_list), a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#include_complete#define()"{{{

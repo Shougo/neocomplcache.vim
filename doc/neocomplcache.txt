@@ -829,6 +829,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-09-30
+- Deleted member filter.
+
 2010-09-29
 - Improved filename_complete.
 - Added g:neocomplcache_enable_auto_delimiter option.

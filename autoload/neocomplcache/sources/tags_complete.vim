@@ -74,7 +74,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     endfor
   endif
 
-  return neocomplcache#member_filter(l:keyword_list, a:cur_keyword_str)
+  return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! s:caching_tags(bufname, force)"{{{
