@@ -832,6 +832,7 @@ CHANGELOG						*neocomplcache-changelog*
 2010-09-30
 - Deleted member filter.
 - Fixed delimiter.
+- Supported php namespace.
 
 2010-09-29
 - Improved filename_complete.

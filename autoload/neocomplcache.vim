@@ -110,7 +110,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ruby,int-irb',
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?\%(()\?\|\s\?\%(do\|{\)\s\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'php',
-        \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\h\w*\%(::\w*\)*\%(()\?\)\?')
+        \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\h\w*\%(\\\w*\)*\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'perl,int-perlsh',
         \'<\h\w*>\?\|[$@%&*]\h\w*\|\h\w*\%(::\w*\)*\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'perl6,int-perl6',
