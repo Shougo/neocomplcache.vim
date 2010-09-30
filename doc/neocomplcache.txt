@@ -835,6 +835,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Supported php namespace.
 - Improved c++ completion.
 - Improved php delimiter.
+- Added :Neco animation.
 
 2010-09-29
 - Improved filename_complete.

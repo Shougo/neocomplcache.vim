@@ -1192,6 +1192,13 @@ function! s:display_neco(number)"{{{
         \ "~(-'_'-)  -8(*'_'*)"
         \], 
     \],
+    \[
+        \[
+        \ "  A\\_A\\",
+        \ "(=' .' ) ~♥",
+        \ "(,(\")(\")",
+        \], 
+    \],
   \]
 
   let l:anim = get(l:animation, a:number, l:animation[neocomplcache#rand(len(l:animation) - 1)])
