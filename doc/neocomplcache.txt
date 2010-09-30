@@ -834,6 +834,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed delimiter.
 - Supported php namespace.
 - Improved c++ completion.
+- Improved php delimiter.
 
 2010-09-29
 - Improved filename_complete.
