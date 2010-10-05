@@ -829,6 +829,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-10-05
+- Improved haskell keyword pattern.
+
 2010-10-02
 - Ver.5.3 development started.
 
