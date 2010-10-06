@@ -367,8 +367,8 @@ g:neocomplcache_next_keyword_patterns			*g:neocomplcache_next_keyword_patterns*
 g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		オムニ補完するためのキーワードパターンを記録する。これはファ
 		イルタイプ毎に正規表現で指定されている。これが定義されていない場合、
-		自動補完ではオムニ補完がよばれない。Rubyのオムニ補完等は重い
-		ので、ほとんどのオムニ補完の呼び出しは無効化されている。
+		自動補完ではオムニ補完がよばれない。RubyやPHPのオムニ補完は重い
+		ので、パターンは無効化されている。
 		
 		
 		初期値は複雑なので、autoload/neocomplcache/sources/omni_complete.vimの
@@ -379,6 +379,7 @@ g:neocomplcache_omni_patterns				*g:neocomplcache_omni_patterns*
 		let g:neocomplcache_omni_patterns = {}
 		endif
 		let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+		let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 <
 g:neocomplcache_tags_filter_patterns			*g:neocomplcache_tags_filter_patterns*
 		タグ補完時の候補をフィルタするパターンを記録する。

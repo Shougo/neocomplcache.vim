@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Sep 2010
+" Last Modified: 06 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,7 +59,7 @@ function! s:source.initialize()"{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'actionscript',
         \'[^. \t][.:]\h\w*')
   "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'php',
-        "\'[^. \t]->\h\w*\|\$\h\w*\|\%(=\s*new\|extends\)\s\+\|\h\w*::')
+        "\'[^. \t]->\h\w*\|\h\w*::')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'java',
         \'\%(\h\w*\|)\)\.')
   "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'perl',
