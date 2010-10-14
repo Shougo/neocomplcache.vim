@@ -837,6 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-10-14
 - Fixed buffer caching bug.
+- Added zimbu support.
 
 2010-10-07
 - Improved python snippets.
