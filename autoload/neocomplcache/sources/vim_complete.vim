@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Aug 2010
+" Last Modified: 15 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,12 +106,20 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   elseif a:cur_keyword_str =~# '^&\%([gl]:\)\?'
     " Options.
     let l:prefix = matchstr(a:cur_keyword_str, '&\%([gl]:\)\?')
-    let l:options = deepcopy(neocomplcache#sources#vim_complete#helper#option(l:cur_text, a:cur_keyword_str))
+    let l:list = deepcopy(neocomplcache#sources#vim_complete#helper#option(l:cur_text, a:cur_keyword_str))
     for l:keyword in l:options
       let l:keyword.word = l:prefix . l:keyword.word
       let l:keyword.abbr = l:prefix . l:keyword.abbr
     endfor
-    let l:list = l:options
+  elseif a:cur_keyword_str =~? '^\c<sid>'
+    " SID functions.
+    let l:prefix = matchstr(a:cur_keyword_str, '^\c<sid>')
+    let l:cur_keyword_str = substitute(a:cur_keyword_str, '^\c<sid>', 's:', '')
+    let l:list = deepcopy(neocomplcache#sources#vim_complete#helper#function(l:cur_text, l:cur_keyword_str))
+    for l:keyword in l:list
+      let l:keyword.word = l:prefix . l:keyword.word[2:]
+      let l:keyword.abbr = l:prefix . l:keyword.abbr[2:]
+    endfor
   elseif l:cur_text =~# '\<has([''"]\w*$'
     " Features.
     let l:list = neocomplcache#sources#vim_complete#helper#feature(l:cur_text, a:cur_keyword_str)

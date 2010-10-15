@@ -837,6 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-10-15
 - Improved vim keyword pattern.
+- Improved sid functions support.
 
 2010-10-14
 - Fixed buffer caching bug.
