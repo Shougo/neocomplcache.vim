@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-10-15
+- Improved vim keyword pattern.
+
 2010-10-14
 - Fixed buffer caching bug.
 - Added zimbu support.
