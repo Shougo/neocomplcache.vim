@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-10-19
+- Fixed vim_complete error.
+
 2010-10-15
 - Improved vim keyword pattern.
 - Improved sid functions support.
