@@ -590,7 +590,6 @@ function! s:save_all_cache()"{{{
     let l:error_file = g:neocomplcache_temporary_dir . strftime('/error-%Y-%m-%d.log')
     call writefile([v:exception . ' ' . v:throwpoint], l:error_file)
     call neocomplcache#print_error('Please check error file: ' . l:error_file)
-    return []
   endtry
 endfunction"}}}
 
