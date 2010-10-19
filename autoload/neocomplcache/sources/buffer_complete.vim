@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2010
+" Last Modified: 19 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -581,9 +581,17 @@ function! s:save_cache(srcname)"{{{
   call neocomplcache#cache#save_cache('buffer_cache', l:srcname, neocomplcache#unpack_dictionary_dictionary(s:buffer_sources[a:srcname].keyword_cache))
 endfunction "}}}
 function! s:save_all_cache()"{{{
-  for l:key in keys(s:buffer_sources)
-    call s:save_cache(l:key)
-  endfor
+  try
+    for l:key in keys(s:buffer_sources)
+      call s:save_cache(l:key)
+    endfor
+  catch
+    call neocomplcache#print_error('Error occured while saving cache!')
+    let l:error_file = g:neocomplcache_temporary_dir . strftime('/error-%Y-%m-%d.log')
+    call writefile([v:exception . ' ' . v:throwpoint], l:error_file)
+    call neocomplcache#print_error('Please check error file: ' . l:error_file)
+    return []
+  endtry
 endfunction"}}}
 
 " Command functions."{{{

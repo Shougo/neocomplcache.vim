@@ -837,6 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-10-19
 - Fixed vim_complete error.
+- Improved error check.
 
 2010-10-15
 - Improved vim keyword pattern.
