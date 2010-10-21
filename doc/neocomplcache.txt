@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-10-21
+- Improved snippet_complete manual.
+
 2010-10-19
 - Fixed vim_complete error.
 - Improved error check.
