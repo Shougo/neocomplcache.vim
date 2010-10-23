@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 23 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -315,13 +315,13 @@ function! s:caching_snippets(filetype)"{{{
   let l:snippet = {}
   let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip*'), '\n')
   for snippets_file in l:snippets_files
-    call extend(l:snippet, s:load_snippets(snippets_file, a:filetype))
+    call extend(l:snippet, s:load_snippets(snippets_file))
   endfor
 
   let s:snippets[a:filetype] = l:snippet
 endfunction"}}}
 
-function! s:load_snippets(snippets_file, filetype)"{{{
+function! s:load_snippets(snippets_file)"{{{
   let l:snippet = {}
   let l:snippet_pattern = { 'word' : '' }
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
@@ -333,13 +333,12 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       " Delete spaces.
       let line = substitute(line, '\s\+$', '', '')
     endif
-    
+
     if line =~ '^include'
       " Include snippets.
-      let l:filetype = matchstr(line, '^include\s\+\zs.*$')
-      let l:snippets_files = split(globpath(join(s:snippets_dir, ','), l:filetype .  '.snip'), '\n')
-      for snippets_file in l:snippets_files
-        call extend(l:snippet, s:load_snippets(snippets_file, l:filetype))
+      let l:snippet_file = matchstr(line, '^include\s\+\zs.*$')
+      for snippets_file in split(globpath(join(s:snippets_dir, ','), l:snippet_file), '\n')
+        call extend(l:snippet, s:load_snippets(snippets_file))
       endfor
     elseif line =~ '^delete\s'
       let l:name = matchstr(line, '^delete\s\+\zs.*$')
@@ -366,7 +365,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
       endif
 
       let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
-      
+
       " Check for duplicated names.
       if has_key(l:snippet, l:snippet_pattern.name)
         call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . l:linenr . ': duplicated snippet name `' . l:snippet_pattern.name . '`')
@@ -409,7 +408,7 @@ function! s:load_snippets(snippets_file, filetype)"{{{
           call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . l:linenr . ': duplicated snippet name `' . l:alias . '`')
           call neocomplcache#print_error('Please delete this snippet name before.')
         endif
-        
+
         let l:alias_pattern = copy(l:pattern)
         let l:alias_pattern.word = l:alias
 

@@ -837,6 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-10-23
 - Implemented colorscheme completion.
+- Improved snippets include syntax.
 
 2010-10-21
 - Improved snippet_complete manual.
