@@ -715,7 +715,7 @@ EXAMPLES						*neocomplcache-examples*
 	"let g:neocomplcache_enable_auto_select = 1
 	
 	" Shell like behavior(not recommended).
-	"setlocal completeopt+=longest
+	"set completeopt+=longest
 	"let g:neocomplcache_enable_auto_select = 1
 	"let g:neocomplcache_disable_auto_complete = 1
 	"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<TAB>"
@@ -837,6 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-10-24
 - Fixed :NeoComplCacheEnableCaching error.
+- Fixed examples.
 
 2010-10-23
 - Implemented colorscheme completion.
