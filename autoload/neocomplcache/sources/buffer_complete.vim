@@ -652,7 +652,7 @@ function! s:output_keyword(name)"{{{
   endfor
 endfunction "}}}
 function! s:disable_caching(name)"{{{
-  if a:number == ''
+  if a:name == ''
     let l:number = bufnr('%')
   else
     let l:number = bufnr(a:name)
@@ -671,7 +671,7 @@ function! s:disable_caching(name)"{{{
   endif
 endfunction"}}}
 function! s:enable_caching(name)"{{{
-  if a:number == ''
+  if a:name == ''
     let l:number = bufnr('%')
   else
     let l:number = bufnr(a:name)
