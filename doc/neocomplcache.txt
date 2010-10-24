@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-10-24
+- Fixed :NeoComplCacheEnableCaching error.
+
 2010-10-23
 - Implemented colorscheme completion.
 - Improved snippets include syntax.
