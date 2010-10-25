@@ -32,10 +32,10 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'keyword_complete', 5)
-  
+
   " Set completion length.
   call neocomplcache#set_completion_length('keyword_complete', 0)
-  
+
   " Initialize.
   for l:plugin in values(neocomplcache#available_plugins())
     call l:plugin.initialize()
@@ -67,7 +67,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       " Skip plugin.
       continue
     endif
-    
+
     try
       let l:list = l:plugin.get_keyword_list(a:cur_keyword_str)
     catch
@@ -77,9 +77,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       call neocomplcache#print_error('Plugin name is ' . l:name)
       return []
     endtry
-    
-    let l:rank = has_key(g:neocomplcache_plugin_rank, l:name)? 
-          \ g:neocomplcache_plugin_rank[l:name] : g:neocomplcache_plugin_rank['keyword_complete']
+
+    let l:rank = neocomplcache#get_plugin_rank(l:name)
     for l:keyword in l:list
       let l:keyword.rank = l:rank
     endfor

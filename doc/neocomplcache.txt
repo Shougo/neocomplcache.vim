@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-10-25
+- Fixed g:neocomplcache_plugin_rank error.
+
 2010-10-21
 - Improved snippet_complete manual.
 

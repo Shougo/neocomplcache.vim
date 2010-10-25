@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2010
+" Last Modified: 25 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1010,7 +1010,7 @@ function! neocomplcache#get_plugin_rank(plugin_name)"{{{
   elseif has_key(s:ftplugin_sources, a:plugin_name)
     return 100
   elseif has_key(s:plugin_sources, a:plugin_name)
-    return 5
+    return neocomplcache#get_plugin_rank('keyword_complete')
   else
     " unknown.
     return 1
