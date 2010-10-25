@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 23 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -123,7 +123,7 @@ function! neocomplcache#sources#vim_complete#helper#get_command_completion(comma
     " Not found.
     return []
   endif
-  
+
   let l:args = (l:completion_name ==# 'custom' || l:completion_name ==# 'customlist')?
         \ [a:command_name, a:cur_text, a:cur_keyword_str] : [a:cur_text, a:cur_keyword_str]
   return call('neocomplcache#sources#vim_complete#helper#'.l:completion_name, l:args)
@@ -135,11 +135,11 @@ function! neocomplcache#sources#vim_complete#helper#get_completion_name(command_
   if !has_key(s:global_candidates_list, 'command_completions')
     let s:global_candidates_list.commands = s:get_cmdlist()
   endif
-  
-  if has_key(s:internal_candidates_list.command_completions, a:command_name) 
+
+  if has_key(s:internal_candidates_list.command_completions, a:command_name)
         \&& exists('*neocomplcache#sources#vim_complete#helper#'.s:internal_candidates_list.command_completions[a:command_name])
     return s:internal_candidates_list.command_completions[a:command_name]
-  elseif has_key(s:global_candidates_list.command_completions, a:command_name) 
+  elseif has_key(s:global_candidates_list.command_completions, a:command_name)
         \&& exists('*neocomplcache#sources#vim_complete#helper#'.s:global_candidates_list.command_completions[a:command_name])
     return s:global_candidates_list.command_completions[a:command_name]
   else
@@ -168,6 +168,10 @@ function! neocomplcache#sources#vim_complete#helper#augroup(cur_text, cur_keywor
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#buffer(cur_text, cur_keyword_str)"{{{
   return []
+endfunction"}}}
+function! neocomplcache#sources#vim_complete#helper#colorscheme_args(cur_text, cur_keyword_str)"{{{
+  return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'colors/*.vim'), '\n'),
+        \'fnamemodify(v:val, ":t:r")'), 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] colorscheme', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keyword_str)"{{{
   " Caching.
@@ -267,8 +271,8 @@ function! neocomplcache#sources#vim_complete#helper#file(cur_text, cur_keyword_s
   return []
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#filetype(cur_text, cur_keyword_str)"{{{
-  return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 
-        \'fnamemodify(v:val, ":t:r")'), "v:val =~ '^" . neocomplcache#escape_match(a:cur_keyword_str) . "'"), '[vim] filetype', '')
+  return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'),
+        \'fnamemodify(v:val, ":t:r")'), 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] filetype', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
   " Caching.

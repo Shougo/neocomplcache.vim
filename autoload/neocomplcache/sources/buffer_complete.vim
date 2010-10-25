@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Oct 2010
+" Last Modified: 23 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -652,7 +652,7 @@ function! s:output_keyword(name)"{{{
   endfor
 endfunction "}}}
 function! s:disable_caching(name)"{{{
-  if a:number == ''
+  if a:name == ''
     let l:number = bufnr('%')
   else
     let l:number = bufnr(a:name)
@@ -671,10 +671,10 @@ function! s:disable_caching(name)"{{{
   endif
 endfunction"}}}
 function! s:enable_caching(name)"{{{
-  if a:number == ''
+  if a:name == ''
     let l:number = bufnr('%')
   else
-    let l:number = bufnr(a:number)
+    let l:number = bufnr(a:name)
 
     if l:number < 0
       call neocomplcache#print_error('Invalid buffer name.')
