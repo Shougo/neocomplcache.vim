@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-11-02
+- Improved clojure and lisp support.
+
 2010-11-01
 - Improved Perl6 support.
 
