@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2010
+" Last Modified: 04 Nov 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -206,8 +206,7 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
   let l:snippets = s:get_snippets()
   let l:cur_text = neocomplcache#get_cur_text(1)
 
-  if has_key(l:snippets, matchstr(l:cur_text, neocomplcache#get_keyword_pattern_end()))
-        \ || has_key(l:snippets, matchstr(l:cur_text, '\S\+$'))
+  if s:get_cursor_snippet(l:cur_text) != ''
     " Found snippet trigger.
     return 1
   elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
@@ -424,18 +423,26 @@ function! s:load_snippets(snippets_file)"{{{
   return l:snippet
 endfunction"}}}
 
+function! s:get_cursor_snippet(snippets, cur_text)"{{{
+  let l:snippets = s:get_snippets()
+  let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
+  if l:cur_word == '' || !has_key(l:snippets, l:cur_word)
+    let l:cur_word = matchstr(a:cur_text, '\S\+$')
+  endif
+
+  return l:cur_word != '' && has_key(a:snippets, l:cur_word) ?
+        \ l:cur_word : ''
+endfunction"}}}
 function! s:snippets_expand(cur_text, col)"{{{
   let l:snippets = s:get_snippets()
 
-  let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
-  if !has_key(l:snippets, l:cur_word)
-    let l:cur_word = matchstr(a:cur_text, '\S\+$')
-  endif
-  if !has_key(l:snippets, l:cur_word)
+  let l:cur_word = s:get_cursor_snippet(l:snippets, a:cur_text)
+  if l:cur_word == ''
+    " Not found.
     call s:snippets_jump(a:cur_text, a:col)
     return
   endif
-  
+
   let l:snippet = l:snippets[l:cur_word]
   let l:cur_text = a:cur_text[: -1-len(l:cur_word)]
 
@@ -446,7 +453,7 @@ function! s:snippets_expand(cur_text, col)"{{{
   if l:snip_word =~ '\n'
     let snip_word = substitute(l:snip_word, '\n', '<\\n>', 'g')
   endif
-  
+
   " Substitute escaped `.
   let snip_word = substitute(l:snip_word, '\\`', '`', 'g')
 
