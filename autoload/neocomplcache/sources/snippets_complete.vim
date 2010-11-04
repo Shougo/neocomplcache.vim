@@ -156,11 +156,8 @@ function! s:doc_dict.search(cur_text)"{{{
   
   let l:snippets = s:get_snippets()
 
-  let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
-  if !has_key(l:snippets, l:cur_word)
-    let l:cur_word = matchstr(a:cur_text, '\S\+$')
-  endif
-  if !has_key(l:snippets, l:cur_word)
+  let l:cur_word = s:get_cursor_snippet(l:snippets, a:cur_text)
+  if l:cur_word == ''
     return []
   endif
 
@@ -206,7 +203,7 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
   let l:snippets = s:get_snippets()
   let l:cur_text = neocomplcache#get_cur_text(1)
 
-  if s:get_cursor_snippet(l:cur_text) != ''
+  if s:get_cursor_snippet(l:snippets, l:cur_text) != ''
     " Found snippet trigger.
     return 1
   elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
@@ -424,14 +421,12 @@ function! s:load_snippets(snippets_file)"{{{
 endfunction"}}}
 
 function! s:get_cursor_snippet(snippets, cur_text)"{{{
-  let l:snippets = s:get_snippets()
-  let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end())
-  if l:cur_word == '' || !has_key(l:snippets, l:cur_word)
-    let l:cur_word = matchstr(a:cur_text, '\S\+$')
-  endif
+  let l:cur_word = matchstr(a:cur_text, '\S\+$')
+  while l:cur_word != '' && !has_key(a:snippets, l:cur_word)
+    let l:cur_word = l:cur_word[1:]
+  endwhile
 
-  return l:cur_word != '' && has_key(a:snippets, l:cur_word) ?
-        \ l:cur_word : ''
+  return l:cur_word
 endfunction"}}}
 function! s:snippets_expand(cur_text, col)"{{{
   let l:snippets = s:get_snippets()

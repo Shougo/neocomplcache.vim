@@ -837,6 +837,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2010-11-04
 - Improved snippets expand.
+- Improved snippets search.
 
 2010-11-02
 - Improved clojure and lisp support.
