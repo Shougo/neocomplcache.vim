@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-11-07
+- Improved modeline.
+
 2010-11-04
 - Improved snippets expand.
 - Improved snippets search.
@@ -883,7 +886,8 @@ CHANGELOG						*neocomplcache-changelog*
 2010-10-02
 - Ver.5.3 development started.
 
-ChangeLog NeoComplCache 5.2: {{{
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 5.2:
 2010-09-30
 - Deleted member filter.
 - Fixed delimiter.
@@ -1055,8 +1059,9 @@ ChangeLog NeoComplCache 5.2: {{{
 2010-08-02
 - Ver.5.2 development started.
 - Fixed filename_complete.
-"}}}
-ChangeLog NeoComplCache 5.1: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 5.1:
 2010-08-02
 - Released neocomplcache Ver.5.1
 - Fixed css snippet.
@@ -1207,8 +1212,9 @@ ChangeLog NeoComplCache 5.1: {{{
 - Implemented text mode.
 - Added g:neocomplcache_text_mode_filetypes option.
 - Added "nothing" in text mode filetype.
-}}}
-ChangeLog NeoComplCache 5.0: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 5.0:
 2010-06-24
 - Improved eruby support.
 - Improved ruby keyword.
@@ -1353,8 +1359,9 @@ ChangeLog NeoComplCache 5.0: {{{
 - Changed NeoComplCacheCachingDisable into NeoComplCacheDisableCaching.
 - Changed NeoComplCacheCachingEnable into NeoComplCacheEnableCaching.
 - Check obsolute options.
-}}}
-ChangeLog NeoComplCache 4.30: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 4.30:
 2010-05-31
 - Marked as ver.4.30.
 
@@ -1484,8 +1491,9 @@ ChangeLog NeoComplCache 4.30: {{{
 * Implemented CursorHoldI completion.
 * Added g:neocomplcache_enable_cursor_hold_i and g:neocomplcache_cursor_hold_i_time options.
 * Deleted g:NeoComplCache_EnableSkipCompletion and g:NeoComplCache_SkipCompletionTime options.
-}}}
-ChangeLog NeoComplCache 4.20: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 4.20:
 2010-04-15
     * Changed default value of g:neocomplcache_enable_ignore_case.
 
@@ -1547,8 +1555,9 @@ ChangeLog NeoComplCache 4.20: {{{
 
 2010-02-18
     * Fixed filename pattern.
-}}}
-ChangeLog NeoComplCache 4.00-: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 4.00-:
    4.10:
     - Fixed interactive Gauche support.
     - Added omni_complete and vim_complete rank.
@@ -1697,9 +1706,9 @@ ChangeLog NeoComplCache 4.00-: {{{
     - Deleted caching current buffer in include_complete.
     - Improved tex keyword pattern.
     - Improved analyse in syntax_complete.
-    
-     }}}
-ChangeLog NeoComplCache 3.00-: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 3.00-:
    3.22:
     - Fixed manual completion error.
     - Fixed set completeopt bug.
@@ -1939,8 +1948,9 @@ ChangeLog NeoComplCache 3.00-: {{{
     - Splitted filename completion and omni completion and keyword completion.
     - Improved remove next keyword.
     - Renamed keyword_complete.vim as buffer_complete.vim.
-     }}}
-ChangeLog NeoComplCache 2.51-: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 2.51-:
    2.78:
     - Supported abbr in omni completion.
     - Clear quickmatch cache when auto complete is skipped.
@@ -2140,8 +2150,9 @@ ChangeLog NeoComplCache 2.51-: {{{
     - Fixed next keyword completion bug.
     - Fixed caching initialize bug.
     - Fixed on InsertLeave error.
-     }}}
-ChangeLog NeoComplCache 2.00-2.50: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 2.00-2.50:
    2.50: Caching on editing file.
     - Optimized NeoComplCacheCachingBuffer.
     - Implemented neocomplcache#close_popup() and neocomplcache#cancel_popup().
@@ -2396,8 +2407,9 @@ ChangeLog NeoComplCache 2.00-2.50: {{{
      - Fixed skipped bug.
      - Improved commands.
      - Deleted g:NeoComplCache_DrawWordsRank option.
-     }}}
-ChangeLog NeoComplCache 1.00-1.60: {{{
+
+------------------------------------------------------------------------------
+ChangeLog NeoComplCache 1.00-1.60:
    1.60:
      - Improved calc similar algorithm.
    1.59:
@@ -2564,8 +2576,9 @@ ChangeLog NeoComplCache 1.00-1.60: {{{
    1.00:
      - Renamed.
      - Initial version.
-     }}}
-ChangeLog AltAutoComplPop: {{{
+
+------------------------------------------------------------------------------
+ChangeLog AltAutoComplPop:
    2.62:
      - Set lazyredraw at auto complete.
      - Added g:AltAutoComplPop_CalcRankMaxLists option.
@@ -2633,7 +2646,6 @@ ChangeLog AltAutoComplPop: {{{
      - Implemented file completion.
    1.0:
      - Initial version.
-}}}
 
 ==============================================================================
-vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:noet:
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:noet:
