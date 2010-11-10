@@ -835,6 +835,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-11-10
+- Fixed :Neco.
+- Independent +reltime.
+
 2010-11-07
 - Improved modeline.
 

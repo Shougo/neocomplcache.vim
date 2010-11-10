@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2010
+" Last Modified: 10 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,9 +30,6 @@ if v:version < 700
   echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
   finish
 elseif exists('g:loaded_neocomplcache')
-  finish
-elseif !has('reltime')
-  echoerr 'neocomplcache needs reltime feature.'
   finish
 endif
 

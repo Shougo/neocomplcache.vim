@@ -800,6 +800,11 @@ function! s:compare_pos(i1, i2)
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
+  if !has('reltime')
+    " Same value.
+    return 0
+  endif
+
   let l:time = reltime()[1]
   return (l:time < 0 ? -l:time : l:time)% (a:max + 1)
 endfunction"}}}
@@ -1069,147 +1074,148 @@ function! s:display_neco(number)"{{{
   let l:animation = [
     \[
         \[
-        \ "   A A", 
+        \ "   A A",
         \ "~(-'_'-)"
-        \], 
+        \],
         \[
-        \ "      A A", 
+        \ "      A A",
         \ "   ~(-'_'-)",
         \],
         \[
-        \ "        A A", 
+        \ "        A A",
         \ "     ~(-'_'-)",
         \],
         \[
-        \ "          A A  ", 
+        \ "          A A  ",
         \ "       ~(-'_'-)",
-        \], 
+        \],
         \[
-        \ "             A A", 
+        \ "             A A",
         \ "          ~(-^_^-)",
-        \], 
+        \],
     \],
     \[
         \[
-        \ "   A A", 
+        \ "   A A",
         \ "~(-'_'-)",
         \],
         \[
-        \ "      A A", 
+        \ "      A A",
         \ "   ~(-'_'-)",
         \],
         \[
-        \ "        A A", 
+        \ "        A A",
         \ "     ~(-'_'-)",
         \],
         \[
-        \ "          A A  ", 
+        \ "          A A  ",
         \ "       ~(-'_'-)",
-        \], 
+        \],
         \[
-        \ "             A A", 
+        \ "             A A",
         \ "          ~(-'_'-)",
         \],
         \[
-        \ "          A A  ", 
+        \ "          A A  ",
         \ "       ~(-'_'-)"
         \],
         \[
-        \ "        A A", 
+        \ "        A A",
         \ "     ~(-'_'-)"
         \],
         \[
-        \ "      A A", 
+        \ "      A A",
         \ "   ~(-'_'-)"
         \],
         \[
-        \ "   A A", 
+        \ "   A A",
         \ "~(-'_'-)"
         \],
     \],
     \[
         \[
-        \ "   A A", 
+        \ "   A A",
         \ "~(-'_'-)",
-        \], 
+        \],
         \[
-        \ "        A A", 
+        \ "        A A",
         \ "     ~(-'_'-)",
         \],
         \[
-        \ "             A A", 
+        \ "             A A",
         \ "          ~(-'_'-)",
         \],
         \[
-        \ "                  A A", 
+        \ "                  A A",
         \ "               ~(-'_'-)",
         \],
         \[
-        \ "                       A A", 
+        \ "                       A A",
         \ "                    ~(-'_'-)",
         \],
-        \["                           A A", 
+        \["                           A A",
         \ "                        ~(-'_'-)",
         \],
     \],
     \[
         \[
         \ "",
-        \ "   A A", 
+        \ "   A A",
         \ "~(-'_'-)",
-        \], 
-        \["      A A", 
+        \],
+        \["      A A",
         \ "   ~(-'_'-)",
         \ "",
-        \], 
+        \],
         \[
         \ "",
-        \ "        A A", 
+        \ "        A A",
         \ "     ~(-'_'-)",
         \],
         \[
-        \ "          A A  ", 
-        \ "       ~(-'_'-)", 
+        \ "          A A  ",
+        \ "       ~(-'_'-)",
         \ "",
-        \], 
+        \],
         \[
         \ "",
-        \ "             A A", 
+        \ "             A A",
         \ "          ~(-^_^-)",
         \],
     \],
     \[
         \[
-        \ "   A A        A A", 
+        \ "   A A        A A",
         \ "~(-'_'-)  -8(*'_'*)"
-        \], 
+        \],
         \[
-        \ "     A A        A A", 
+        \ "     A A        A A",
         \ "  ~(-'_'-)  -8(*'_'*)"
         \],
         \[
-        \ "       A A        A A", 
+        \ "       A A        A A",
         \ "    ~(-'_'-)  -8(*'_'*)"
         \],
         \[
-        \ "     A A        A A", 
+        \ "     A A        A A",
         \ "  ~(-'_'-)  -8(*'_'*)"
-        \], 
+        \],
         \[
-        \ "   A A        A A", 
+        \ "   A A        A A",
         \ "~(-'_'-)  -8(*'_'*)"
-        \], 
+        \],
     \],
     \[
         \[
         \ "  A\\_A\\",
-        \ "(=' .' ) ~♥",
+        \ "(=' .' ) ~w",
         \ "(,(\")(\")",
-        \], 
+        \],
     \],
   \]
 
-  let l:anim = get(l:animation, a:number, l:animation[neocomplcache#rand(len(l:animation) - 1)])
+  let l:number = (a:number != '') ? a:number : len(l:animation)
+  let l:anim = get(l:animation, l:number, l:animation[neocomplcache#rand(len(l:animation) - 1)])
   let &cmdheight = len(l:anim[0])
 
   for l:frame in l:anim
