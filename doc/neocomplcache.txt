@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-11-14
+- Improved vim keyword pattern.
+
 2010-11-10
 - Fixed :Neco.
 - Independent +reltime.
