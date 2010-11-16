@@ -83,7 +83,9 @@ function! neocomplcache#enable() "{{{
           \ && (!has_key(g:neocomplcache_plugin_disable, l:source_name) || 
           \ g:neocomplcache_plugin_disable[l:source_name] == 0)
       let l:source = call('neocomplcache#sources#' . l:source_name . '#define', [])
-      if l:source.kind ==# 'complfunc'
+      if empty(l:source)
+        " Ignore.
+      elseif l:source.kind ==# 'complfunc'
         let s:complfunc_sources[l:source_name] = l:source
       elseif l:source.kind ==# 'ftplugin'
         let s:ftplugin_sources[l:source_name] = l:source
