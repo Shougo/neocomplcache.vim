@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-12-10
+- Released Ver.5.3.
+
 2010-12-05
 - Supported Konoha language.
 
