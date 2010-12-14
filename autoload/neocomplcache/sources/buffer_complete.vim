@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2010
+" Last Modified: 14 Dec 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -291,6 +291,7 @@ function! s:get_sources_list()"{{{
   let l:filetypes = neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype())
   for key in keys(s:buffer_sources)
     if has_key(l:filetypes, s:buffer_sources[key].filetype) || bufnr('%') == key
+          \ || (bufname('%') ==# '[Command Line]' && bufnr('#') == key)
       call add(l:sources_list, key)
     endif
   endfor
