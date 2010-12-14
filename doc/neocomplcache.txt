@@ -836,7 +836,7 @@ ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG						*neocomplcache-changelog*
 
 2010-12-14
-- Added alternative buffer completion in cmdwin.
+- Implemented alternative buffer completion in cmdwin.
 
 2010-12-12
 - Ver.6.0 development started.
