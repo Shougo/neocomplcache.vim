@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2010.
+" Last Modified: 14 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -815,11 +815,11 @@ endfunction"}}}
 function! neocomplcache#system(str, ...)"{{{
   let l:command = a:str
   let l:input = a:0 >= 1 ? a:1 : ''
-  if &termencoding != '' && &termencoding != &encoding
+  if has('iconv') && &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
-  
+
   if !s:exists_vimproc
     if a:0 == 0
       let l:output = system(l:command)
@@ -833,11 +833,11 @@ function! neocomplcache#system(str, ...)"{{{
   else
     let l:output = vimproc#system(l:command, l:input, a:2)
   endif
-  
-  if &termencoding != '' && &termencoding != &encoding
+
+  if has('iconv') && &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
-  
+
   return l:output
 endfunction"}}}
 
