@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2010-12-16
+- Added tex same filetype.
+
 2010-12-14
 - Implemented alternative buffer completion in cmdwin.
 - Improved tags_complete.
