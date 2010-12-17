@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Nov 2010
+" Last Modified: 17 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -462,6 +462,10 @@ function! s:snippets_expand(cur_text, col)"{{{
     call s:expand_tabline()
   else
     call s:expand_newline()
+  end
+  if has('folding') && foldclosed(line('.'))
+    " Open fold.
+    normal! zR
   endif
   if l:old_col < col('$')
     startinsert
