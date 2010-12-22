@@ -82,15 +82,14 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 
   let l:filetype = neocomplcache#get_context_filetype()
   " External language interface check.
-  if l:filetype == 'ruby' && has('ruby')
-    "   try 
-    "     ruby 1
-    "     call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'ruby',
-    "           \'[^. *\t]\.\h\w*\|\h\w*::')
-    "   catch
-    "   endtry
-    " endif
-  elseif l:filetype == 'python' && has('python')
+  if l:filetype ==# 'ruby' && has('ruby')
+    " try 
+    "   ruby 1
+    "   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'ruby',
+    "         \'[^. *\t]\.\h\w*\|\h\w*::')
+    " catch
+    " endtry
+  elseif l:filetype ==# 'python' && has('python')
     try
       python 1
       call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'python',
