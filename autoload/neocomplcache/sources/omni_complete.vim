@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Dec 2010.
+" Last Modified: 23 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,6 +58,16 @@ function! s:source.initialize()"{{{
         \'\h\w\+\|\h\w*\%(\.\|->\)\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'objj',
         \'[\[ \.]\w\+$\|:\w*$')
+
+  " External language interface check.
+  if has('ruby')
+    " call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'ruby',
+    "       \'[^. *\t]\.\h\w*\|\h\w*::')
+  endif
+  if has('python')
+    call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'python',
+          \'[^. \t]\.\w*')
+  endif
   "}}}
 
   " Initialize omni function list."{{{
@@ -81,22 +91,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   let l:filetype = neocomplcache#get_context_filetype()
-  " External language interface check.
-  if l:filetype ==# 'ruby' && has('ruby')
-    " try 
-    "   ruby 1
-    "   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'ruby',
-    "         \'[^. *\t]\.\h\w*\|\h\w*::')
-    " catch
-    " endtry
-  elseif l:filetype ==# 'python' && has('python')
-    try
-      python 1
-      call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'python',
-            \'[^. \t]\.\w*')
-    catch
-    endtry
-  endif
 
   if neocomplcache#is_eskk_enabled()
     let l:omnifunc = &l:omnifunc
