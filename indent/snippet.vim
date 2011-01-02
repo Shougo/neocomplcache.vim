@@ -25,7 +25,7 @@
 "=============================================================================
 
 " Only load this indent file when no other was loaded.
-if exists("b:did_indent")
+if exists('b:did_indent')
   finish
 endif
 let b:did_indent = 1
@@ -51,5 +51,5 @@ function! SnippetsIndent()"{{{
 endfunction"}}}
 
 let b:undo_indent .= '
-    \ | setlocal expandtab< shiftwidth< softtabstop<
+    \ | setlocal indentexpr<
     \'
