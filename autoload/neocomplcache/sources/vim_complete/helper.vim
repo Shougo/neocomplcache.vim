@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2010
+" Last Modified: 08 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -271,8 +271,9 @@ function! neocomplcache#sources#vim_complete#helper#file(cur_text, cur_keyword_s
   return []
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#filetype(cur_text, cur_keyword_str)"{{{
-  return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'),
-        \'fnamemodify(v:val, ":t:r")'), 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] filetype', '')
+  return s:make_completion_list(filter(map(
+        \ split(globpath(&runtimepath, 'syntax/*.vim'), '\n') + split(globpath(&runtimepath, 'ftplugin/*.vim'), '\n'),
+        \'matchstr(fnamemodify(v:val, ":t:r"), "^[[:alnum:]-]*")'), 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] filetype', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
   " Caching.
