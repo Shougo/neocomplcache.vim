@@ -835,6 +835,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-01-09
+- Supported unite.vim.
+
 2011-01-08
 - Improved filetype completion.
 

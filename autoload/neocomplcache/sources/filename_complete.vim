@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Sep 2010
+" Last Modified: 09 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,7 +41,8 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
-  if &filetype ==# 'vimshell' || neocomplcache#within_comment()
+  let l:filetype = neocomplcache#get_context_filetype()
+  if l:filetype ==# 'vimshell' || l:filetype ==# 'unite' || neocomplcache#within_comment()
     return -1
   endif
 
@@ -61,7 +62,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   " Not Filename pattern.
-  if l:is_win && &filetype == 'tex' && l:cur_keyword_str =~ '\\'
+  if l:is_win && l:filetype == 'tex' && l:cur_keyword_str =~ '\\'
     return -1
   endif
 
@@ -90,12 +91,12 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
     let l:len_env = len(l:env_ev)
   else
     let l:len_env = 0
-    
+
     if a:cur_keyword_str =~ '^\~\h\w*'
       let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
     endif
   endif
-  
+
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
   " Glob by directory name.
@@ -109,12 +110,12 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
   catch
     return []
   endtry
-  
+
   if empty(l:files)
     " Add '*' to a delimiter.
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-    
+
     try
       let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
     catch
