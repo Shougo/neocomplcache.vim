@@ -156,7 +156,7 @@ function! s:doc_dict.search(cur_text)"{{{
   
   let l:snippets = s:get_snippets()
 
-  let l:cur_word = s:get_cursor_snippet(l:snippets, a:cur_text)
+  let l:cur_word = s:get_cursor_keyword_snippet(l:snippets, a:cur_text)
   if l:cur_word == ''
     return []
   endif
@@ -203,7 +203,7 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
   let l:snippets = s:get_snippets()
   let l:cur_text = neocomplcache#get_cur_text(1)
 
-  if s:get_cursor_snippet(l:snippets, l:cur_text) != ''
+  if s:get_cursor_keyword_snippet(l:snippets, l:cur_text) != ''
     " Found snippet trigger.
     return 1
   elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
@@ -408,6 +408,14 @@ function! s:load_snippets(snippet, snippets_file)"{{{
   return a:snippet
 endfunction"}}}
 
+function! s:get_cursor_keyword_snippet(snippets, cur_text)"{{{
+  let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end().'\|\h\S\+$')
+  if !has_key(a:snippets, l:cur_word)
+    let l:cur_word = ''
+  endif
+
+  return l:cur_word
+endfunction"}}}
 function! s:get_cursor_snippet(snippets, cur_text)"{{{
   let l:cur_word = matchstr(a:cur_text, '\S\+$')
   while l:cur_word != '' && !has_key(a:snippets, l:cur_word)
@@ -416,18 +424,29 @@ function! s:get_cursor_snippet(snippets, cur_text)"{{{
 
   return l:cur_word
 endfunction"}}}
-function! s:snippets_expand(cur_text, col)"{{{
-  let l:snippets = s:get_snippets()
+function! s:snippets_force_expand(cur_text, col)"{{{
+  let l:cur_word = s:get_cursor_snippet(s:get_snippets(), a:cur_text)
+  if l:cur_word == ''
+    " Not found.
+    return
+  endif
 
-  let l:cur_word = s:get_cursor_snippet(l:snippets, a:cur_text)
+  call s:snippets_expand(a:cur_text, a:col, l:cur_word)
+endfunction"}}}
+function! s:snippets_expand_or_jump(cur_text, col)"{{{
+  let l:cur_word = s:get_cursor_keyword_snippet(s:get_snippets(), a:cur_text)
   if l:cur_word == ''
     " Not found.
     call s:snippets_jump(a:cur_text, a:col)
     return
   endif
 
-  let l:snippet = l:snippets[l:cur_word]
-  let l:cur_text = a:cur_text[: -1-len(l:cur_word)]
+  call s:snippets_expand(a:cur_text, a:col, l:cur_word)
+endfunction"}}}
+function! s:snippets_expand(cur_text, col, cur_word)"{{{
+  let l:snippets = s:get_snippets()
+  let l:snippet = l:snippets[a:cur_word]
+  let l:cur_text = a:cur_text[: -1-len(a:cur_word)]
 
   let l:snip_word = l:snippet.snip
   if l:snip_word =~ '\\\@<!`.*\\\@<!`'
@@ -735,9 +754,11 @@ function! s:SID_PREFIX()
 endfunction
 
 " Plugin key-mappings.
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
 inoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump')
 snoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
 
 " vim: foldmethod=marker

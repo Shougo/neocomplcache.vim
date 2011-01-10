@@ -550,8 +550,13 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 
 <Plug>(neocomplcache_snippets_expand)			*<Plug>(neocomplcache_snippets_expand)*
 		カーソル位置にあるスニペットを展開する。スニペットが存在しな
-		いとき、次のプレースホルダにジャンプする。 展開したスニペッ
-		トはランクが上昇するため、上位に表示されやすくなる。
+		いとき、次のプレースホルダにジャンプする。スニペットは
+		neocomplcacheのキーワードパターンで示されるもののみを認識す
+		る。
+
+<Plug>(neocomplcache_snippets_force_expand)		*<Plug>(neocomplcache_snippets_force_expand)*
+		カーソル位置にあるスニペットを展開する。スニペットが存在しな
+		いときは無視される。
 
 <Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
 		次のプレースホルダにジャンプする。スニペットの展開は行わない。
