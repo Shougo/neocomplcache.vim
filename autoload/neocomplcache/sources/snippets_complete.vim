@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2010.
+" Last Modified: 10 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -223,6 +223,26 @@ function! s:caching()"{{{
   endfor
 endfunction"}}}
 
+function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check)"{{{
+  if has_key(a:snippet_pattern, 'name')
+    let l:pattern = s:set_snippet_pattern(a:snippet_pattern)
+    let a:snippet_dict[a:snippet_pattern.name] = l:pattern
+    let a:dup_check[a:snippet_pattern.name] = 1
+    if has_key(a:snippet_pattern, 'alias')
+      for l:alias in a:snippet_pattern.alias
+        let l:alias_pattern = copy(l:pattern)
+        let l:alias_pattern.word = l:alias
+
+        let l:abbr = (len(l:alias) > g:neocomplcache_max_keyword_width) ?
+              \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
+        let l:alias_pattern.abbr = l:abbr
+
+        let a:snippet_dict[alias] = l:alias_pattern
+        let a:dup_check[alias] = 1
+      endfor
+    endif
+  endif
+endfunction"}}}
 function! s:set_snippet_pattern(dict)"{{{
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
@@ -311,14 +331,14 @@ function! s:caching_snippets(filetype)"{{{
   let l:snippet = {}
   let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip*'), '\n')
   for snippets_file in l:snippets_files
-    call extend(l:snippet, s:load_snippets(snippets_file))
+    call s:load_snippets(l:snippet, snippets_file)
   endfor
 
   let s:snippets[a:filetype] = l:snippet
 endfunction"}}}
 
-function! s:load_snippets(snippets_file)"{{{
-  let l:snippet = {}
+function! s:load_snippets(snippet, snippets_file)"{{{
+  let l:dup_check = {}
   let l:snippet_pattern = { 'word' : '' }
   let l:abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
 
@@ -334,36 +354,24 @@ function! s:load_snippets(snippets_file)"{{{
       " Include snippets.
       let l:snippet_file = matchstr(line, '^include\s\+\zs.*$')
       for snippets_file in split(globpath(join(s:snippets_dir, ','), l:snippet_file), '\n')
-        call extend(l:snippet, s:load_snippets(snippets_file))
+        call extend(a:snippet, s:load_snippets(snippets_file))
       endfor
     elseif line =~ '^delete\s'
       let l:name = matchstr(line, '^delete\s\+\zs.*$')
-      if l:name != '' && has_key(l:snippet, l:name)
-        call remove(l:snippet, l:name)
+      if l:name != '' && has_key(a:snippet, l:name)
+        call remove(a:snippet, l:name)
       endif
     elseif line =~ '^snippet\s'
       if has_key(l:snippet_pattern, 'name')
-        let l:pattern = s:set_snippet_pattern(l:snippet_pattern)
-        let l:snippet[l:snippet_pattern.name] = l:pattern
-        if has_key(l:snippet_pattern, 'alias')
-          for l:alias in l:snippet_pattern.alias
-            let l:alias_pattern = copy(l:pattern)
-            let l:alias_pattern.word = l:alias
-
-            let l:abbr = (len(l:alias) > g:neocomplcache_max_keyword_width)? 
-                  \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
-            let l:alias_pattern.abbr = l:abbr
-
-            let l:snippet[alias] = l:alias_pattern
-          endfor
-        endif
+        " Set previous snippet.
+        call s:set_snippet_dict(l:snippet_pattern, a:snippet, l:dup_check)
         let l:snippet_pattern = { 'word' : '' }
       endif
 
       let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
 
       " Check for duplicated names.
-      if has_key(l:snippet, l:snippet_pattern.name)
+      if has_key(l:dup_check, l:snippet_pattern.name)
         call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . l:linenr . ': duplicated snippet name `' . l:snippet_pattern.name . '`')
         call neocomplcache#print_error('Please delete this snippet name before.')
       endif
@@ -394,30 +402,10 @@ function! s:load_snippets(snippets_file)"{{{
     let l:linenr += 1
   endfor
 
-  if has_key(l:snippet_pattern, 'name')
-    let l:pattern = s:set_snippet_pattern(l:snippet_pattern)
-    let l:snippet[l:snippet_pattern.name] = l:pattern
-    if has_key(l:snippet_pattern, 'alias')
-      for l:alias in l:snippet_pattern.alias
-        " Check for duplicated names.
-        if has_key(l:snippet, l:alias)
-          call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . l:linenr . ': duplicated snippet name `' . l:alias . '`')
-          call neocomplcache#print_error('Please delete this snippet name before.')
-        endif
+  " Set previous snippet.
+  call s:set_snippet_dict(l:snippet_pattern, a:snippet, l:dup_check)
 
-        let l:alias_pattern = copy(l:pattern)
-        let l:alias_pattern.word = l:alias
-
-        let l:abbr = (len(l:alias) > g:neocomplcache_max_keyword_width)? 
-              \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
-        let l:alias_pattern.abbr = l:abbr
-
-        let l:snippet[alias] = l:alias_pattern
-      endfor
-    endif
-  endif
-
-  return l:snippet
+  return a:snippet
 endfunction"}}}
 
 function! s:get_cursor_snippet(snippets, cur_text)"{{{
