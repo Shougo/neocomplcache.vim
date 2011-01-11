@@ -397,7 +397,7 @@ function! neocomplcache#enable() "{{{
 
   " Disable bell.
   set vb t_vb=
-  
+
   " Initialize.
   for l:source in values(neocomplcache#available_complfuncs())
     call l:source.initialize()
@@ -406,7 +406,7 @@ endfunction"}}}
 
 function! neocomplcache#disable()"{{{
   let s:is_enabled = 0
-  
+
   " Restore options.
   let &completefunc = s:completefunc_save
   let &completeopt = s:completeopt_save
@@ -437,12 +437,12 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if !neocomplcache#is_enabled()
       return -1
     endif
-    
+
     let s:old_complete_words = []
-    
+
     " Clear flag.
     let s:used_match_filter = 0
-    
+
     let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = s:integrate_completion(s:get_complete_result(s:get_cur_text()), 1)
     if empty(l:complete_words)
       return -1
@@ -466,16 +466,16 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
     let l:cached_text = s:cur_text
     if s:get_cur_text() != l:cached_text
       " Text was changed.
-      
+
       " Restore options.
       let s:cur_keyword_pos = -1
       let &l:completefunc = 'neocomplcache#manual_complete'
       let s:old_complete_words = s:complete_words
       let s:complete_words = []
-      
+
       return -1
     endif
-    
+
     let s:old_cur_keyword_pos = s:cur_keyword_pos
     let s:cur_keyword_pos = -1
     return s:old_cur_keyword_pos
@@ -663,7 +663,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
       let l:cur_keyword_str = substitute(l:cur_keyword_str, l:delimiter, '*' . l:delimiter, 'g')
     endfor
   endif"}}}
-  
+
   if l:cur_keyword_str == ''
     return a:list
   elseif neocomplcache#check_match_filter(l:cur_keyword_str)
@@ -701,28 +701,28 @@ function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let l:ret = []
-  
+
   let l:cur_keyword_str = a:cur_keyword_str[2:]
   let l:max_str2 = len(l:cur_keyword_str)
   let l:len = len(a:cur_keyword_str)
   let m = range(l:max_str2+1)
   for keyword in filter(a:list, 'len(v:val.word) >= '.l:max_str2)
     let l:str1 = keyword.word[2 : l:len-1]
-    
+
     let i = 0
     while i <= l:max_str2+1
       let m[i] = range(l:max_str2+1)
-      
+
       let i += 1
     endwhile
     let i = 0
     while i <= l:max_str2+1
       let m[i][0] = i
       let m[0][i] = i
-      
+
       let i += 1
     endwhile
-    
+
     let i = 1
     let l:max = l:max_str2 + 1
     while i < l:max
@@ -797,8 +797,8 @@ endfunction"}}}
 
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  let l:rank = a:i2.rank - a:i1.rank
-  return l:rank ? l:rank : a:i1.word - a:i2.word
+  let l:diff = a:i2.rank - a:i1.rank
+  return l:diff ? l:diff : a:i1.word - a:i2.word
 endfunction"}}}
 " PosOrder."{{{
 function! s:compare_pos(i1, i2)
@@ -917,12 +917,12 @@ function! neocomplcache#get_prev_word(cur_keyword_str)"{{{
 endfunction"}}}
 function! neocomplcache#match_word(cur_text, ...)"{{{
   let l:pattern = a:0 >= 1 ? a:1 : neocomplcache#get_keyword_pattern_end()
-  
+
   " Check wildcard.
   let l:cur_keyword_pos = s:match_wildcard(a:cur_text, l:pattern, match(a:cur_text, l:pattern))
-  
+
   let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-  
+
   return [l:cur_keyword_pos, l:cur_keyword_str]
 endfunction"}}}
 function! neocomplcache#is_enabled()"{{{
@@ -1016,7 +1016,7 @@ function! neocomplcache#get_context_filetype(...)"{{{
   if a:0 != 0 || s:context_filetype == ''
     call s:set_context_filetype()
   endif
-  
+
   return s:context_filetype
 endfunction"}}}
 function! neocomplcache#get_plugin_rank(plugin_name)"{{{
@@ -1076,7 +1076,7 @@ function! s:unlock()"{{{
 endfunction"}}}
 function! s:display_neco(number)"{{{
   let l:cmdheight_save = &cmdheight
-  
+
   let l:animation = [
     \[
         \[
@@ -1255,7 +1255,7 @@ function! neocomplcache#close_popup()"{{{
   let s:complete_words = []
   let s:old_complete_words = []
   let s:prev_numbered_dict = {}
-  
+
   return "\<C-y>"
 endfunction
 "}}}
@@ -1270,7 +1270,7 @@ function! neocomplcache#cancel_popup()"{{{
   let s:complete_words = []
   let s:old_complete_words = []
   let s:prev_numbered_dict = {}
-  
+
   return "\<C-e>"
 endfunction
 "}}}
@@ -1293,7 +1293,7 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
     echoerr printf("Invalid completefunc name %s is given.", a:complfunc_name)
     return ''
   endif
-  
+
   " Clear flag.
   let s:used_match_filter = 0
 
@@ -1305,7 +1305,7 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   let l:dict[a:complfunc_name] = l:sources[a:complfunc_name]
   let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = 
         \ s:integrate_completion(s:get_complete_result(s:get_cur_text(), l:dict), 0)
-  
+
   " Restore function.
   let &l:completefunc = 'neocomplcache#auto_complete'
 
@@ -1348,7 +1348,7 @@ function! neocomplcache#complete_common_string()"{{{
 
   " Get cursor word.
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(s:get_cur_text())
-  
+
   if neocomplcache#is_text_mode()
     let &ignorecase = 1
   elseif g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u'
@@ -1358,7 +1358,7 @@ function! neocomplcache#complete_common_string()"{{{
   endif
 
   let l:complete_words = neocomplcache#keyword_filter(copy(s:old_complete_words), l:cur_keyword_str)
-  
+
   if empty(l:complete_words)
     let &ignorecase = l:ignorecase_save
 
@@ -1394,9 +1394,9 @@ endfunction"}}}
 function! s:get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
-  
+
   let l:complfuncs = a:0 == 0 ? extend(copy(neocomplcache#available_complfuncs()), neocomplcache#available_loaded_ftplugins()) : a:1
-  
+
   " Try complfuncs completion."{{{
   let l:complete_result = {}
   for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
@@ -1456,7 +1456,7 @@ function! s:get_complete_result(cur_text, ...)"{{{
     endif
   endfor
   "}}}
-  
+
   return l:complete_result
 endfunction"}}}
 function! s:integrate_completion(complete_result, is_sort)"{{{
@@ -1465,7 +1465,7 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
       " Caching current cache line.
       call neocomplcache#sources#buffer_complete#caching_current_cache_line()
     endif
-    
+
     return [-1, '', []]
   endif
 
@@ -1512,7 +1512,7 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
     call sort(l:complete_words, 'neocomplcache#compare_rank')
   endif
   let l:complete_words = l:complete_words[: g:neocomplcache_max_list]
-  
+
   let l:icase = g:neocomplcache_enable_ignore_case && 
         \!(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
   for l:keyword in l:complete_words
@@ -1556,7 +1556,7 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
       endfor
     endfor
   endif"}}}
-  
+
   " Convert words.
   if neocomplcache#is_text_mode()"{{{
     if l:cur_keyword_str =~ '^\l\+$'
@@ -1680,12 +1680,12 @@ function! s:make_quick_match_list(list, cur_keyword_str)"{{{
 
       let l:qlist[l:num] = keyword
     endif
-    
+
     let l:num += 1
   endfor
-  
+
   let &ignorecase = l:ignorecase_save
-  
+
   " Save numbered dicts.
   let s:prev_numbered_dict = l:qlist
 
@@ -1719,7 +1719,7 @@ function! s:set_context_filetype()"{{{
   if l:filetype == ''
     let l:filetype = 'nothing'
   endif
-  
+
   " Default.
   let s:context_filetype = l:filetype
   if neocomplcache#is_eskk_enabled()
@@ -1771,7 +1771,7 @@ function! s:set_context_filetype()"{{{
       if !l:source.loaded
         " Initialize.
         call l:source.initialize()
-        
+
         let l:source.loaded = 1
       endif
     endif
