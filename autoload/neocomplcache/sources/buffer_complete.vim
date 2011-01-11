@@ -45,7 +45,7 @@ function! s:source.initialize()"{{{
   augroup END"}}}
 
   " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 15)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
   
   " Set completion length.
   call neocomplcache#set_completion_length('buffer_complete', 0)
