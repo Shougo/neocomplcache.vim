@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Dec 2010.
+" Last Modified: 11 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -797,7 +797,8 @@ endfunction"}}}
 
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  return a:i2.rank - a:i1.rank
+  let l:rank = a:i2.rank - a:i1.rank
+  return l:rank ? l:rank : a:i1.word - a:i2.word
 endfunction"}}}
 " PosOrder."{{{
 function! s:compare_pos(i1, i2)
@@ -1796,4 +1797,3 @@ endfunction"}}}
 "}}}
 
 " vim: foldmethod=marker
-

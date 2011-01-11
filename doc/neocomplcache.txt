@@ -839,6 +839,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-01-11
 - Fixed snippets_complete error.
+- Changed buffer_complete rank.
+- Improved compare ranks.
 
 2011-01-10
 - Improved snippets_complete.
