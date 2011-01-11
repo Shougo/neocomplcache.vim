@@ -837,6 +837,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-01-11
+- Fixed snippets_complete error.
+
 2011-01-10
 - Improved snippets_complete.
 - Added <Plug>(neocomplcache_snippets_force_expand) keymapping.

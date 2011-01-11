@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jan 2011.
+" Last Modified: 11 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -354,7 +354,7 @@ function! s:load_snippets(snippet, snippets_file)"{{{
       " Include snippets.
       let l:snippet_file = matchstr(line, '^include\s\+\zs.*$')
       for snippets_file in split(globpath(join(s:snippets_dir, ','), l:snippet_file), '\n')
-        call extend(a:snippet, s:load_snippets(snippets_file))
+        call s:load_snippets(a:snippet, snippets_file)
       endfor
     elseif line =~ '^delete\s'
       let l:name = matchstr(line, '^delete\s\+\zs.*$')
