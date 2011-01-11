@@ -797,8 +797,14 @@ endfunction"}}}
 
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  return a:i2.rank - a:i1.rank || len(a:i1.word) - len(a:i2.word)
-        \ || a:i1.word ># a:i2.word || (a:i1.word ==# a:i2.word) ? 0 : -1
+  let l:diff = a:i2.rank - a:i1.rank
+  if !l:diff
+    let l:diff = len(a:i1.word) - len(a:i2.word)
+    if !l:diff
+      let l:diff = (a:i1.word ># a:i2.word) ? 1 : -1
+    endif
+  endif
+  return l:diff
 endfunction"}}}
 " PosOrder."{{{
 function! s:compare_pos(i1, i2)
