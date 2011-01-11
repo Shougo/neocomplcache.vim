@@ -797,8 +797,8 @@ endfunction"}}}
 
 " RankOrder."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  let l:diff = a:i2.rank - a:i1.rank
-  return l:diff ? l:diff : a:i1.word - a:i2.word
+  return a:i2.rank - a:i1.rank || len(a:i1.word) - len(a:i2.word)
+        \ || a:i1.word ># a:i2.word || (a:i1.word ==# a:i2.word) ? 0 : -1
 endfunction"}}}
 " PosOrder."{{{
 function! s:compare_pos(i1, i2)
