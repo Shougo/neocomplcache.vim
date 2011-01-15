@@ -36,6 +36,7 @@ Plugins			|neocomplcache-plugins|
 Create plugin		|neocomplcache-create-plugin|
 ToDo			|neocomplcache-todo|
 Bugs			|neocomplcache-bugs|
+Snippet			|neocomplcache-snippet|
 Changelog		|neocomplcache-changelog|
 
 ==============================================================================
@@ -829,6 +830,101 @@ TODO							*neocomplcache-todo*
 BUGS							*neocomplcache-bugs*
 
 ==============================================================================
+SNIPPET							*neocomplcache-snippet-completion*
+
+neocomplcache has built-in snippet feature. The snippet syntax resembles
+|snipMate|.
+
+Example:
+>
+	snippet     if
+	abbr        if endif
+	prev_word   '^'
+	if ${1:condition}
+	    ${2}
+	endif
+<
+
+By the way, it is warned that the snippet name is already defined by same snippet file.
+When you want to overwrite explicitly, as follows:
+>
+	delete snippets_name
+<
+And redefine snippet by snippet statement.
+When include external files or other snippet file's snippets are overwrited,
+will not be warned.
+
+Unlike snipMate, Snippet include feature is available.
+>
+	include c.snip
+<
+
+Eval snippet feature is available.
+>
+	snippet     hoge
+	prev_word   '^'
+	    `expand("%")`
+<
+
+If you use |:NeoComplCacheEditSnippets| command, edit snippet easily.
+When you saved a snippet file, the snippet file is loaded automatically.
+
+
+Neocomplcache don't mapping expand snippet key automatically. If you use
+neocomplcache snippet feature, define below mappings in your .vimrc.
+>
+	imap <C-l>    <Plug>(neocomplcache_snippets_expand)
+	smap <C-l>    <Plug>(neocomplcache_snippets_expand)
+<
+
+Placeholder feature is available.
+>
+	snippet     if
+	abbr        if endif
+	prev_word   '^'
+	    if ${1:condition}
+	        ${2}
+	    endif
+<
+'_' snippet feature is supported. '_' snippet is loaded in all filetypes.
+And neocomplcache can load snipMate snippets.
+
+
+Alias feature is supported. Separator is ' ' or ','.
+>
+	alias hoge hogera hogehoge
+<
+Synchronized placeholder feature is supported.  ${1} is synchronized to $1.
+When you jump next, it is synchlonized.  The synchronized value isn't
+contained new line.  $0 is last jump placeholder.
+
+When you want to view snippets list, execute |:NeoComplCachePrintSnippets| command.
+
+
+Multi snippet feature is supported in snipMate.
+>
+	snippet ${1:trigger} ${2:description}
+	${3}
+<
+
+Nested placeholder feature is supported.
+But must escape inner '}'. '\' is eacape sequence.
+>
+	snippet div
+	<div ${1:id="${2:someid\}"}>${3}</div>${4}
+<
+
+If you indented by hard tab, neocomplcache don't use indent plugin.  This
+feature is useful when you use the language whose indent plugin is
+powerless(example: PHP).
+>
+	snippet if
+		if (${1:/* condition */}) {
+			${2:// code...}
+		}
+<
+
+==============================================================================
 CREATE PLUGIN						*neocomplcache-create-plugin*
 
 In this clause, I comment on a method to make plugin of neocomplcache.  The
@@ -839,6 +935,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-01-15
 - Improved detect paste.
+- Added English snippet manual.
+- Improved Japanese snippet manual.
 
 2011-01-11
 - Fixed snippets_complete error.
