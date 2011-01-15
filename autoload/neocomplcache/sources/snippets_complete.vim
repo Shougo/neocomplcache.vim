@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2011.
+" Last Modified: 16 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -496,8 +496,6 @@ function! s:expand_newline()"{{{
   let l:formatoptions = &l:formatoptions
   setlocal formatoptions-=r
 
-  let l:pos = col('.')
-
   while l:match >= 0
     let l:end = getline('.')[matchend(getline('.'), '<\\n>') :]
     " Substitute CR.
@@ -566,22 +564,25 @@ function! s:search_snippet_range(start, end)"{{{
 
   let l:line = a:start
   while l:line <= a:end
-    let l:match = match(getline(l:line), l:pattern)
+    let l:current_line = getline(l:line)
+    let l:match = match(l:current_line, l:pattern)
     if l:match >= 0
-      let l:default = substitute(matchstr(getline(l:line), l:pattern2), '\\\ze.', '', 'g')
+      let l:default = substitute(matchstr(l:current_line, l:pattern2), '\\\ze.', '', 'g')
       let l:match_len2 = len(l:default)
+
+      let l:pos = getpos('.')
+      let l:pos[1] = l:line
+      let l:pos[2] = l:match+1
 
       if s:search_sync_placeholder(a:start, a:end, s:snippet_holder_cnt)
         " Substitute holder.
-        call setline(l:line, substitute(getline(l:line), l:pattern, '\$<'.s:snippet_holder_cnt.':'.escape(l:default, '\').'>', ''))
-        call setpos('.', [0, l:line, l:match+1 + len('$<'.s:snippet_holder_cnt.':'), 0])
-        let l:pos = l:match+1 + len('$<'.s:snippet_holder_cnt.':')
+        call setline(l:line, substitute(l:current_line, l:pattern, '\$<'.s:snippet_holder_cnt.':'.escape(l:default, '\').'>', ''))
+        let l:pos[2] += len('$<'.s:snippet_holder_cnt.':')
       else
         " Substitute holder.
-        call setline(l:line, substitute(getline(l:line), l:pattern, escape(l:default, '\'), ''))
-        call setpos('.', [0, l:line, l:match+1, 0])
-        let l:pos = l:match+1
+        call setline(l:line, substitute(l:current_line, l:pattern, escape(l:default, '\'), ''))
       endif
+      call setpos('.', l:pos)
 
       if l:match_len2 > 0
         " Select default value.
@@ -591,7 +592,7 @@ function! s:search_snippet_range(start, end)"{{{
         endif
 
         execute 'normal! v'. repeat('l', l:len) . "\<C-g>"
-      elseif l:pos < col('$')
+      elseif l:pos[2] < col('$')
         startinsert
       else
         startinsert!
@@ -612,26 +613,28 @@ function! s:search_outof_range(col)"{{{
   call s:substitute_marker(1, 0)
 
   let l:pattern = '\${\d\+\%(:.\{-}\)\?\\\@<!}'
+  let l:pos = getpos('.')
   if search(l:pattern, 'w') > 0
     let l:line = line('.')
-    let l:match = match(getline(l:line), l:pattern)
+    let l:current_line = getline(l:line)
+    let l:match = match(l:current_line, l:pattern)
     let l:pattern2 = '\${\d\+:\zs.\{-}\ze\\\@<!}'
-    let l:default = substitute(matchstr(getline(l:line), l:pattern2), '\\\ze.', '', 'g')
+    let l:default = substitute(matchstr(l:current_line, l:pattern2), '\\\ze.', '', 'g')
     let l:match_len2 = len(l:default)
 
+    let l:pos[2] = l:match+1
+
     " Substitute holder.
-    let l:cnt = matchstr(getline(l:line), '\${\zs\d\+\ze\%(:.\{-}\)\?\\\@<!}')
+    let l:cnt = matchstr(l:current_line, '\${\zs\d\+\ze\%(:.\{-}\)\?\\\@<!}')
     if search('\$'.l:cnt.'\d\@!', 'nw') > 0
       let l:pattern = '\${' . l:cnt . '\%(:.\{-}\)\?\\\@<!}'
-      call setline(l:line, substitute(getline(l:line), l:pattern, '\$<'.s:snippet_holder_cnt.':'.escape(l:default, '\').'>', ''))
-      call setpos('.', [bufnr('.'), l:line, l:match+1 + len('$<'.l:cnt.':'), 0])
-      let l:pos = l:match+1 + len('$<'.l:cnt.':')
+      call setline(l:line, substitute(l:current_line, l:pattern, '\$<'.s:snippet_holder_cnt.':'.escape(l:default, '\').'>', ''))
+      let l:pos[2] += len('$<'.s:snippet_holder_cnt.':')
     else
       " Substitute holder.
-      call setline(l:line, substitute(getline(l:line), l:pattern, escape(l:default, '\'), ''))
-      call setpos('.', [bufnr('.'), l:line, l:match+1, 0])
-      let l:pos = l:match+1
+      call setline(l:line, substitute(l:current_line, l:pattern, escape(l:default, '\'), ''))
     endif
+    call setpos('.', l:pos)
 
     if l:match_len2 > 0
       " Select default value.
@@ -645,18 +648,20 @@ function! s:search_outof_range(col)"{{{
       return
     endif
 
-    if l:pos < col('$')
+    if l:pos[2] < col('$')
       startinsert
     else
       startinsert!
     endif
   elseif a:col == 1
-    call setpos('.', [bufnr('.'), line('.'), 1, 0])
+    let l:pos[2] = 1
+    call setpos('.', l:pos)
     startinsert
   elseif a:col == col('$')
     startinsert!
   else
-    call setpos('.', [0, line('.'), a:col+1, 0])
+    let l:pos[2] = a:col+1
+    call setpos('.', l:pos)
     startinsert
   endif
 endfunction"}}}
