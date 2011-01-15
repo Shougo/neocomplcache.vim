@@ -895,8 +895,15 @@ Alias feature is supported. Separator is ' ' or ','.
 	alias hoge hogera hogehoge
 <
 Synchronized placeholder feature is supported.  ${1} is synchronized to $1.
-When you jump next, it is synchlonized.  The synchronized value isn't
-contained new line.  $0 is last jump placeholder.
+When you jump next, it is synchlonized. $0 is last jump placeholder.
+
+
+The placeholder value can't be contained new line. Below snippet is illegal.
+>
+	snippet test
+		${1:constructor: (${2:args\}) ->
+			${3:# do smth}}
+<
 
 When you want to view snippets list, execute |:NeoComplCachePrintSnippets| command.
 
@@ -932,6 +939,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-01-16
+- Fixed snippet documentation.
 
 2011-01-15
 - Improved detect paste.
