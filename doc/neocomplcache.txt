@@ -837,6 +837,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-01-15
+- Improved detect paste.
+
 2011-01-11
 - Fixed snippets_complete error.
 - Improved compare ranks.

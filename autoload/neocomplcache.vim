@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2011.
+" Last Modified: 15 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -490,7 +490,7 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 endfunction"}}}
 
 function! neocomplcache#do_auto_complete(is_moved)"{{{
-  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick) || &paste
+  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
         \ || (&l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete')
@@ -500,15 +500,21 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   " Detect global completefunc.
   if &g:completefunc != 'neocomplcache#manual_complete' && &g:completefunc != 'neocomplcache#auto_complete'
     99verbose set completefunc
-    echohl Error | echoerr 'Other plugin Use completefunc! Disabled neocomplcache.' | echohl None
+    call neocomplcache#print_error('Other plugin Use completefunc! Disabled neocomplcache.')
     NeoComplCacheLock
     return
   endif
 
   " Detect AutoComplPop.
   if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
-    echohl Error | echoerr 'Detected enabled AutoComplPop! Disabled neocomplcache.' | echohl None
+    call neocomplcache#print_error('Detected enabled AutoComplPop! Disabled neocomplcache.')
     NeoComplCacheLock
+    return
+  endif
+
+  " Detect set paste.
+  if &paste
+    call neocomplcache#print_error('Detected set paste! Disabled neocomplcache.')
     return
   endif
 
