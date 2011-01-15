@@ -39,11 +39,11 @@ snippet ^j
   \`${1:javascript}\`
 
 snippet forr
-  for ${1:name} in [${2:start}..${3:finish}]${4: by ${5:step}}
+  for ${1:name} in [${2:start}..${3:finish}]${4: by ${5:step\}}
     ${0:# body...}
 
 snippet forrex
-  for ${1:name} in [${2:start}...${3:finish}]${4: by ${t:step}}
+  for ${1:name} in [${2:start}...${3:finish}]${4: by ${t:step\}}
     ${0:# body...}
 
 snippet foro
@@ -62,7 +62,11 @@ snippet bfun
   (${1:args}) =>
     ${0:# body...}
 
-snippet cla
-  class ${1:ClassName}${2: extends ${3:Ancestor}}
+snippet     cla
+abbr        cla
+prev_word   '^'
+    class ${1:ClassName}${2: extends ${3:Ancestor\}}
 
-    ${4}
+        constructor: (${4:args}) ->
+            ${5:# body...}
+
