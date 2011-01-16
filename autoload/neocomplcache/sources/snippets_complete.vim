@@ -634,6 +634,7 @@ function! s:search_outof_range(col)"{{{
       " Substitute holder.
       call setline(l:line, substitute(l:current_line, l:pattern, escape(l:default, '\'), ''))
     endif
+    let l:pos[1] = line('.')
     call setpos('.', l:pos)
 
     if l:match_len2 > 0
