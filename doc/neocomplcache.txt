@@ -943,6 +943,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-01-16
 - Fixed snippet documentation.
 - Refctoringed snippets_complete.
+- Improved neocomplcache#is_eskk_enabled().
 
 2011-01-15
 - Improved detect paste.
