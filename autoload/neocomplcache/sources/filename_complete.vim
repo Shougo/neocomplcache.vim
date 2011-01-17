@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jan 2011.
+" Last Modified: 17 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,8 +32,9 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Initialize.
   let s:skip_dir = {}
-  let s:completion_length = neocomplcache#get_auto_completion_length('filename_complete')
-  
+
+  call neocomplcache#set_completion_length('filename_complete', 2)
+
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'filename_complete', 2)
 endfunction"}}}
@@ -57,9 +58,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   " Filename pattern.
   let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text, l:pattern)
-  if neocomplcache#is_auto_complete() && len(l:cur_keyword_str) < s:completion_length
-    return -1
-  endif
 
   " Not Filename pattern.
   if l:is_win && l:filetype == 'tex' && l:cur_keyword_str =~ '\\'
