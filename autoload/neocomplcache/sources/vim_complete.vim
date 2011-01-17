@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2010
+" Last Modified: 17 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,7 +32,7 @@ let s:source = {
 
 function! s:source.initialize()"{{{
   " Initialize.
-  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length, 'vim_complete') ? 
+  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length, 'vim_complete') ?
         \ g:neocomplcache_plugin_completion_length['vim_complete'] : g:neocomplcache_auto_completion_start_length
 
   " Initialize complete function list."{{{
@@ -43,13 +43,10 @@ function! s:source.initialize()"{{{
 
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'vim_complete', 100)
-  
-  " Set completion length.
-  call neocomplcache#set_completion_length('vim_complete', 1)
-  
+
   " Call caching event.
   autocmd neocomplcache FileType * call neocomplcache#sources#vim_complete#helper#on_filetype()
-  
+
   " Initialize check.
   call neocomplcache#sources#vim_complete#helper#on_filetype()
 
@@ -85,7 +82,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
       let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
     endif
   endif
-  
+
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text, l:pattern)
 
   return l:cur_keyword_pos
