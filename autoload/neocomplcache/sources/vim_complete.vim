@@ -32,8 +32,6 @@ let s:source = {
 
 function! s:source.initialize()"{{{
   " Initialize.
-  let s:completion_length = has_key(g:neocomplcache_plugin_completion_length, 'vim_complete') ?
-        \ g:neocomplcache_plugin_completion_length['vim_complete'] : g:neocomplcache_auto_completion_start_length
 
   " Initialize complete function list."{{{
   if !exists('g:neocomplcache_vim_completefuncs')
@@ -91,7 +89,7 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let l:cur_text = neocomplcache#sources#vim_complete#get_cur_text()
   if (neocomplcache#is_auto_complete() && l:cur_text !~ '\h\w*\.\%(\h\w*\)\?$'
-        \&& len(a:cur_keyword_str) < s:completion_length)
+        \&& len(a:cur_keyword_str) < g:neocomplcache_auto_completion_start_length)
     return []
   endif
 
