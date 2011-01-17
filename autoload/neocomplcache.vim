@@ -974,6 +974,10 @@ endfunction"}}}
 function! neocomplcache#is_win()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
+function! neocomplcache#is_buffer_complete_enabled()"{{{
+  return !has_key(g:neocomplcache_plugin_disable, 'buffer_complete')
+        \ || !g:neocomplcache_plugin_disable['buffer_complete']
+endfunction"}}}
 function! neocomplcache#exists_echodoc()"{{{
   return exists('g:loaded_echodoc') && g:loaded_echodoc
 endfunction"}}}
@@ -1485,6 +1489,7 @@ endfunction"}}}
 function! s:integrate_completion(complete_result, is_sort)"{{{
   if empty(a:complete_result)
     if neocomplcache#get_cur_text() =~ '\s\+$'
+          \ && neocomplcache#is_buffer_complete_enabled()
       " Caching current cache line.
       call neocomplcache#sources#buffer_complete#caching_current_cache_line()
     endif
@@ -1501,7 +1506,8 @@ function! s:integrate_completion(complete_result, is_sort)"{{{
   let l:cur_text = neocomplcache#get_cur_text()
   let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
 
-  let l:frequencies = neocomplcache#sources#buffer_complete#get_frequencies()
+  let l:frequencies = neocomplcache#is_buffer_complete_enabled() ?
+        \ neocomplcache#sources#buffer_complete#get_frequencies() : {}
 
   " Append prefix.
   let l:complete_words = []

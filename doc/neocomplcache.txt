@@ -944,6 +944,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved vim_complete check.
 - Improved completion length.
 - Improved get_cur_text().
+- Added neocomplcache#is_buffer_complete_enabled().
 
 2011-01-16
 - Fixed snippet documentation.
