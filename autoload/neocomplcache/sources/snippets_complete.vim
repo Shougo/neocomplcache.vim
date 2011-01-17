@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jan 2011.
+" Last Modified: 17 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -153,7 +153,7 @@ function! s:doc_dict.search(cur_text)"{{{
   if mode() !=# 'i'
     return []
   endif
-  
+
   let l:snippets = s:get_snippets()
 
   let l:cur_word = s:get_cursor_keyword_snippet(l:snippets, a:cur_text)

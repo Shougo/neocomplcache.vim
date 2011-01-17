@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2010.
+" Last Modified: 17 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -131,7 +131,7 @@ function! s:doc_dict.search(cur_text)"{{{
   if &filetype ==# 'vim' || !has_key(s:include_info, bufnr('%'))
     return []
   endif
-  
+
   " Collect words.
   let l:words = []
   let i = 0
@@ -140,13 +140,13 @@ function! s:doc_dict.search(cur_text)"{{{
     if len(l:word) >= s:completion_length
       call add(l:words, l:word)
     endif
-    
+
     let i = matchend(a:cur_text, '\k\+', i)
   endwhile
 
   for l:word in reverse(l:words)
     let l:key = tolower(l:word[: s:completion_length-1])
-    
+
     for l:include in s:include_info[bufnr('%')].include_files
       if has_key(s:include_cache[l:include], l:key)
         let l:cache = filter(copy(s:include_cache[l:include][l:key]), 'stridx(v:val.word, ' . string(l:word) . ') == 0')
@@ -158,7 +158,7 @@ function! s:doc_dict.search(cur_text)"{{{
             if l:match > 0
               call add(l:ret, { 'text' : l:cache[0].abbr[ : l:match-1] })
             endif
-            
+
             call add(l:ret, { 'text' : l:word, 'highlight' : 'Identifier' })
             call add(l:ret, { 'text' : l:cache[0].abbr[l:match+len(l:word) :] })
 
@@ -170,7 +170,7 @@ function! s:doc_dict.search(cur_text)"{{{
       endif
     endfor
   endfor
-  
+
   return []
 endfunction"}}}
 "}}}

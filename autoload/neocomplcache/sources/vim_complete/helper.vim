@@ -67,7 +67,7 @@ let s:doc_dict = {
       \ 'filetypes' : { 'vim' : 1 },
       \ }
 function! s:doc_dict.search(cur_text)"{{{
-  let l:cur_text = neocomplcache#sources#vim_complete#get_cur_text()
+  let l:cur_text = a:cur_text
 
   " Echo prototype.
   let l:script_candidates_list = s:get_cached_script_candidates()
