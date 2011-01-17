@@ -857,7 +857,7 @@ endfunction"}}}
 
 function! neocomplcache#get_cur_text(...)"{{{
   " Return cached text.
-  return a:0 == 0 ? s:cur_text : s:get_cur_text()
+  return (a:0 == 0 && mode('.') ==# 'i') ? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
   if neocomplcache#is_auto_complete() && has_key(s:auto_completion_length, bufnr('%'))
@@ -1642,7 +1642,7 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
     let l:pattern = '^\%(' . neocomplcache#get_next_keyword_pattern() . '\m\)'
   endif
 
-  let l:next_keyword_str = matchstr('a'.getline('.')[col('.') - 1 :], l:pattern)[1:]
+  let l:next_keyword_str = matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], l:pattern)[1:]
   if l:next_keyword_str != ''
     let l:next_keyword_str = substitute(escape(l:next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
@@ -1724,6 +1724,12 @@ endfunction"}}}
 function! s:get_cur_text()"{{{
   "let s:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
   let s:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  if mode() !=# 'i'
+    " Get next keyword.
+    let l:pattern = '^\%(' . neocomplcache#get_next_keyword_pattern() . '\m\)'
+    let l:next_keyword_str = matchstr('a'.getline('.')[len(s:cur_text) :], l:pattern)[1:]
+    let s:cur_text .= l:next_keyword_str
+  endif
 
   " Save cur_text.
   return s:cur_text

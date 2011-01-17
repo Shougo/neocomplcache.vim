@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jan 2011.
+" Last Modified: 17 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -68,7 +68,7 @@ let s:doc_dict = {
       \ }
 function! s:doc_dict.search(cur_text)"{{{
   let l:cur_text = neocomplcache#sources#vim_complete#get_cur_text()
-  
+
   " Echo prototype.
   let l:script_candidates_list = s:get_cached_script_candidates()
 
@@ -80,7 +80,7 @@ function! s:doc_dict.search(cur_text)"{{{
       " No cache.
       return []
     endif
-    
+
     " Search function name.
     call add(l:ret, { 'text' : l:prototype_name, 'highlight' : 'Identifier' })
     if has_key(s:internal_candidates_list.function_prototypes, l:prototype_name)
@@ -98,7 +98,7 @@ function! s:doc_dict.search(cur_text)"{{{
       " No cache.
       return []
     endif
-    
+
     " Search command name.
     " Skip head digits.
     let l:prototype_name = neocomplcache#sources#vim_complete#get_command(l:cur_text)
