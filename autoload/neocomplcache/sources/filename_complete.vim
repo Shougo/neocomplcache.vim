@@ -33,7 +33,7 @@ function! s:source.initialize()"{{{
   " Initialize.
   let s:skip_dir = {}
 
-  call neocomplcache#set_completion_length('filename_complete', 2)
+  call neocomplcache#set_completion_length('filename_complete', g:neocomplcache_auto_completion_start_length)
 
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'filename_complete', 2)
