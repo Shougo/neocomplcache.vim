@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2011.
+" Last Modified: 18 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -189,7 +189,8 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
     if snippet.snip =~ '\\\@<!`.*\\\@<!`'
       let snippet.menu = s:eval_snippet(snippet.snip)
 
-      if len(snippet.menu) > g:neocomplcache_max_keyword_width 
+      if g:neocomplcache_max_keyword_width >= 0 &&
+            \ len(snippet.menu) > g:neocomplcache_max_keyword_width
         let snippet.menu = printf(l:abbr_pattern, snippet.menu, snippet.menu[-8:])
       endif
       let snippet.menu = '`Snip` ' . snippet.menu
@@ -233,7 +234,8 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check)"{{{
         let l:alias_pattern = copy(l:pattern)
         let l:alias_pattern.word = l:alias
 
-        let l:abbr = (len(l:alias) > g:neocomplcache_max_keyword_width) ?
+        let l:abbr = (g:neocomplcache_max_keyword_width >= 0 &&
+              \       len(l:alias) > g:neocomplcache_max_keyword_width) ?
               \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
         let l:alias_pattern.abbr = l:abbr
 
@@ -251,7 +253,7 @@ function! s:set_snippet_pattern(dict)"{{{
 
   let l:abbr = has_key(a:dict, 'abbr')? a:dict.abbr : 
         \substitute(a:dict.word, '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+\|<\%(\\n\|\\t\)>\|\s\+', ' ', 'g')
-  let l:abbr = (len(l:abbr) > g:neocomplcache_max_keyword_width)? 
+  let l:abbr = (g:neocomplcache_max_keyword_width >= 0 && len(l:abbr) > g:neocomplcache_max_keyword_width)?
         \ printf(l:abbr_pattern, l:abbr, l:abbr[-8:]) : l:abbr
 
   let l:dict = {

@@ -1,0 +1,79 @@
+"=============================================================================
+" FILE: neocomplcache.vim
+" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 18 Jan 2011.
+" License: MIT license  {{{
+"     Permission is hereby granted, free of charge, to any person obtaining
+"     a copy of this software and associated documentation files (the
+"     "Software"), to deal in the Software without restriction, including
+"     without limitation the rights to use, copy, modify, merge, publish,
+"     distribute, sublicense, and/or sell copies of the Software, and to
+"     permit persons to whom the Software is furnished to do so, subject to
+"     the following conditions:
+"
+"     The above copyright notice and this permission notice shall be included
+"     in all copies or substantial portions of the Software.
+"
+"     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+"     OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+"     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+"     IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+"     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+"     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+"     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+" }}}
+"=============================================================================
+
+function! unite#sources#neocomplcache#define() "{{{
+  return s:neocomplcache_source
+endfunction "}}}
+
+" neocomplcache unite source.
+let s:neocomplcache_source = {
+      \   'name': 'neocomplcache',
+      \   'hooks' : {},
+      \ }
+
+function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
+  if !neocomplcache#is_enabled()
+    let s:complete_words = []
+    return
+  endif
+
+  " Save options.
+  let l:max_list_save = g:neocomplcache_max_list
+  let l:max_keyword_width_save = g:neocomplcache_max_keyword_width
+  let g:neocomplcache_max_list = -1
+  let g:neocomplcache_max_keyword_width = -1
+
+  let [l:cur_keyword_pos, l:cur_keyword_str, s:complete_words] =
+        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(neocomplcache#get_cur_text()), 1)
+
+  " Restore options.
+  let g:neocomplcache_max_list = l:max_list_save
+  let g:neocomplcache_max_keyword_width = l:max_keyword_width_save
+endfunction"}}}
+
+function! s:neocomplcache_source.gather_candidates(args, context) "{{{
+  let l:list = []
+  for l:keyword in s:complete_words
+    let l:dict = {
+        \   'word' : l:keyword.word,
+        \   'abbr' : printf('%-50s', (has_key(l:keyword, 'abbr') ? l:keyword.abbr : l:keyword.word)),
+        \   'source' : 'neocomplcache',
+        \   'kind': 'word',
+        \ }
+    if has_key(l:keyword, 'kind')
+      let l:dict.abbr .= ' ' . l:keyword.kind
+    endif
+    if has_key(l:keyword, 'menu')
+      let l:dict.abbr .= ' ' . l:keyword.menu
+    endif
+
+    call add(l:list, l:dict)
+  endfor
+
+  return l:list
+endfunction "}}}
+
+" vim: foldmethod=marker
