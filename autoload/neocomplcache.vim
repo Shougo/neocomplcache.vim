@@ -33,7 +33,9 @@ catch
   let s:exists_vimproc = 0
 endtry
 
-let s:is_enabled = 0
+if !exists('s:is_enabled')
+  let s:is_enabled = 0
+endif
 
 function! neocomplcache#enable() "{{{
   augroup neocomplcache "{{{
@@ -395,6 +397,10 @@ function! neocomplcache#enable() "{{{
   endif
   set completeopt+=menuone
 
+  " For auto complete keymappings.
+  inoremap <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
+  inoremap <Plug>(neocomplcache_start_auto_select_complete)   <C-x><C-u><C-p><Down>
+
   " Disable bell.
   set vb t_vb=
 
@@ -541,12 +547,12 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
       if neocomplcache#is_auto_select()
-        call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+        call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
       else
-        call feedkeys("\<C-x>\<C-u>", 'n')
+        call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
       endif
       let s:old_cur_text = l:cur_text
-      return 
+      return
     endif
   elseif g:neocomplcache_enable_quick_match 
         \&& !empty(s:old_complete_words)
@@ -560,7 +566,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)", 'n')
     let s:old_cur_text = l:cur_text
     return
   elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
@@ -606,9 +612,9 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   " Start auto complete.
   if neocomplcache#is_auto_select()
-    call feedkeys("\<C-x>\<C-u>\<C-p>\<Down>", 'n')
+    call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
   else
-    call feedkeys("\<C-x>\<C-u>\<C-p>", 'n')
+    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
   endif
   let s:changedtick = b:changedtick
 endfunction"}}}
