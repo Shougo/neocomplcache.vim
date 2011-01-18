@@ -36,7 +36,8 @@ let s:neocomplcache_source = {
 
 function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
   if !neocomplcache#is_enabled()
-    let s:complete_words = []
+    let a:context.source__cur_keyword_pos = -1
+    let a:context.source__complete_words = []
     return
   endif
 
@@ -46,7 +47,7 @@ function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
   let g:neocomplcache_max_list = -1
   let g:neocomplcache_max_keyword_width = -1
 
-  let [l:cur_keyword_pos, l:cur_keyword_str, s:complete_words] =
+  let [a:context.source__cur_keyword_pos, l:cur_keyword_str, a:context.source__complete_words] =
         \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(neocomplcache#get_cur_text()), 1)
 
   " Restore options.
@@ -55,13 +56,16 @@ function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
 endfunction"}}}
 
 function! s:neocomplcache_source.gather_candidates(args, context) "{{{
+  let l:keyword_pos = a:context.source__cur_keyword_pos
   let l:list = []
-  for l:keyword in s:complete_words
+  for l:keyword in a:context.source__complete_words
     let l:dict = {
         \   'word' : l:keyword.word,
         \   'abbr' : printf('%-50s', (has_key(l:keyword, 'abbr') ? l:keyword.abbr : l:keyword.word)),
         \   'source' : 'neocomplcache',
         \   'kind': 'word',
+        \   'action__complete_word' : l:keyword.word,
+        \   'action__complete_pos' : l:keyword_pos,
         \ }
     if has_key(l:keyword, 'kind')
       let l:dict.abbr .= ' ' . l:keyword.kind
