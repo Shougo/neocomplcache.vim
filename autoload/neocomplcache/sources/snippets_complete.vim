@@ -464,8 +464,10 @@ function! s:snippets_expand(cur_text, col, cur_word)"{{{
   " Insert snippets.
   let l:next_line = getline('.')[a:col-1 :]
   call setline(line('.'), l:cur_text . l:snip_word . l:next_line)
-  call setpos('.', [0, line('.'), len(l:cur_text)+len(l:snip_word)+1, 0])
-  let l:old_col = len(l:cur_text)+len(l:snip_word)+1
+  let l:pos = getpos('.')
+  let l:pos[2] = len(l:cur_text)+len(l:snip_word)+1
+  call setpos('.', l:pos)
+  let l:next_col = len(l:cur_text)+len(l:snip_word)+1
 
   if l:snip_word =~ '<\\t>'
     call s:expand_tabline()
@@ -476,7 +478,7 @@ function! s:snippets_expand(cur_text, col, cur_word)"{{{
     " Open fold.
     silent! normal! zO
   endif
-  if l:old_col < col('$')
+  if l:next_col < col('$')
     startinsert
   else
     startinsert!
@@ -504,7 +506,9 @@ function! s:expand_newline()"{{{
     silent! s/<\\n>//
 
     " Return.
-    call setpos('.', [0, line('.'), l:match+1, 0])
+    let l:pos = getpos('.')
+    let l:pos[2] = l:match+1
+    call setpos('.', l:pos)
     silent execute 'normal!' (l:match+1 >= col('$')? 'a' : 'i')."\<CR>"
 
     " Next match.

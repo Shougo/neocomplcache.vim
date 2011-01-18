@@ -944,6 +944,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added neocomplcache#get_next_keyword().
 - Improved feedkeys().
 - Added unite source(experimental).
+- Improved expand snippet.
 
 2011-01-17
 - Improved vim_complete check.
