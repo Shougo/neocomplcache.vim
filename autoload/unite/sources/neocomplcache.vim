@@ -25,13 +25,13 @@
 "=============================================================================
 
 function! unite#sources#neocomplcache#define() "{{{
-  if exists('*unite#version') && unite#version() >= 100
-    return s:neocomplcache_source
-  else
+  if !exists('*unite#version') || unite#version() <= 100
     echoerr 'Your unite.vim is too old.'
     echoerr 'Please install unite.vim Ver.1.1 or above.'
-    return {}
+    return []
   endif
+
+  return s:neocomplcache_source
 endfunction "}}}
 
 " neocomplcache unite source.
