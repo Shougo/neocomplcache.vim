@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jan 2011.
+" Last Modified: 19 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,13 @@
 "=============================================================================
 
 function! unite#sources#neocomplcache#define() "{{{
-  return s:neocomplcache_source
+  if exists('*unite#version') && unite#version() >= 100
+    return s:neocomplcache_source
+  else
+    echoerr 'Your unite.vim is too old.'
+    echoerr 'Please install unite.vim Ver.1.1 or above.'
+    return {}
+  endif
 endfunction "}}}
 
 " neocomplcache unite source.
