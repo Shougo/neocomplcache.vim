@@ -894,7 +894,7 @@ Alias feature is supported. Separator is ' ' or ','.
 >
 	alias hoge hogera hogehoge
 <
-Synchronized placeholder feature is supported.  ${1} is synchronized to $1.
+Synchronized placeholder feature is supported.  $1 is synchronized to ${1}.
 When you jump next, it is synchlonized. $0 is last jump placeholder.
 
 
@@ -939,6 +939,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-01-21
+- Fixed javascript snippet.
 
 2011-01-19
 - Check unite.vim version.
