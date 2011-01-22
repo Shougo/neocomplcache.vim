@@ -823,6 +823,11 @@ ghc_complete.vim					*neocomplcache-plugins-ghc_complete*
 		It completes source file written Haskell.
 		It needs ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
+neco-ruby						*neocomplcache-plugins-neco-ruby*
+		https://github.com/ujihisa/neco-ruby.git
+		This plugin is for ruby completion.  require_relative
+		completion is implemented.
+
 ==============================================================================
 TODO							*neocomplcache-todo*
 
@@ -939,6 +944,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-01-22
+- Added neco-ruby description.
 
 2011-01-21
 - Fixed javascript snippet.

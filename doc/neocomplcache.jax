@@ -710,6 +710,11 @@ ghc_complete.vim					*neocomplcache-plugins-ghc_complete*
 		Haskellのソースファイルを補完できるが、動作には
 		ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>が必要である。
 
+neco-ruby						*neocomplcache-plugins-neco-ruby*
+		https://github.com/ujihisa/neco-ruby.git
+		Ruby用の補完プラグインである。作者はujihisa氏。現在、require_relative
+		の補完ができる。
+
 ==============================================================================
 SNIPPET							*neocomplcache-snippet-completion*
 
