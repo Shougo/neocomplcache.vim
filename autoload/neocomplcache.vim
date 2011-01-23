@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jan 2011.
+" Last Modified: 23 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -902,10 +902,12 @@ function! neocomplcache#get_keyword_pattern(...)"{{{
   let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
   let l:keyword_patterns = []
+  " Compound filetype.
   for l:ft in split(l:filetype, '\.')
     call add(l:keyword_patterns, has_key(g:neocomplcache_keyword_patterns, l:ft) ?
           \ g:neocomplcache_keyword_patterns[l:ft] : g:neocomplcache_keyword_patterns['default'])
   endfor
+  " Same filetype.
 
   return join(l:keyword_patterns, '\m\|')
 endfunction"}}}
