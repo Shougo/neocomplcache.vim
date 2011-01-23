@@ -412,6 +412,7 @@ endfunction"}}}
 
 function! s:get_cursor_keyword_snippet(snippets, cur_text)"{{{
   let l:cur_word = matchstr(a:cur_text, neocomplcache#get_keyword_pattern_end().'\|\h\w*\W\+$')
+  echomsg neocomplcache#get_keyword_pattern_end()
   if !has_key(a:snippets, l:cur_word)
     let l:cur_word = ''
   endif

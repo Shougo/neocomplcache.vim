@@ -901,24 +901,14 @@ endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...)"{{{
   let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
-  let l:keyword_patterns = []
-  " Compound filetype.
-  for l:ft in split(l:filetype, '\.')
-    call add(l:keyword_patterns, has_key(g:neocomplcache_keyword_patterns, l:ft) ?
-          \ g:neocomplcache_keyword_patterns[l:ft] : g:neocomplcache_keyword_patterns['default'])
-  endfor
-  " Same filetype.
-
-  return join(l:keyword_patterns, '\m\|')
+  return s:unite_patterns(g:neocomplcache_keyword_patterns, l:filetype)
 endfunction"}}}
 function! neocomplcache#get_next_keyword_pattern(...)"{{{
   let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
+  let l:next_pattern = s:unite_patterns(g:neocomplcache_next_keyword_patterns, l:filetype)
 
-  if has_key(g:neocomplcache_next_keyword_patterns, l:filetype)
-    return g:neocomplcache_next_keyword_patterns[l:filetype] . '\m\|' . neocomplcache#get_keyword_pattern(l:filetype)
-  else
-    return neocomplcache#get_keyword_pattern(l:filetype)
-  endif
+  return (l:next_pattern == '' ? '' : l:next_pattern.'\m\|')
+        \ . neocomplcache#get_keyword_pattern(l:filetype)
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern_end(...)"{{{
   let l:filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
@@ -1836,6 +1826,34 @@ function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
   endwhile
 
   return l:cur_keyword_pos
+endfunction"}}}
+function! s:unite_patterns(pattern_var, filetype)"{{{
+  let l:keyword_patterns = []
+  let l:dup_check = {}
+
+  " Compound filetype.
+  for l:ft in split(a:filetype, '\.')
+    if has_key(a:pattern_var, l:ft) && !has_key(l:dup_check, l:ft)
+      let l:dup_check[l:ft] = 1
+      call add(l:keyword_patterns, a:pattern_var[l:ft])
+    endif
+
+    " Same filetype.
+    if has_key(g:neocomplcache_same_filetype_lists, l:ft)
+      for l:ft in split(g:neocomplcache_same_filetype_lists[l:ft], ',')
+        if has_key(a:pattern_var, l:ft) && !has_key(l:dup_check, l:ft)
+          let l:dup_check[l:ft] = 1
+          call add(l:keyword_patterns, a:pattern_var[l:ft])
+        endif
+      endfor
+    endif
+  endfor
+
+  if empty(l:keyword_patterns) && has_key(a:pattern_var, 'default')
+    call add(l:keyword_patterns, g:neocomplcache_keyword_patterns['default'])
+  endif
+
+  return join(l:keyword_patterns, '\m\|')
 endfunction"}}}
 "}}}
 
