@@ -945,6 +945,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-01-24
+- Improved context filetype.
+
 2011-01-23
 - Fixed snippets expand pattern.
 - Improved neocomplcache#get_keyword_pattern().

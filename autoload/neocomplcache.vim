@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jan 2011.
+" Last Modified: 24 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -283,7 +283,10 @@ function! neocomplcache#enable() "{{{
         \])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'html,xhtml', [
         \ {'filetype' : 'javascript', 'start' : '<script type="text/javascript">', 'end' : '</script>'},
-        \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},  
+        \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},
+        \])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'python', [
+        \ {'filetype' : 'vim', 'start' : 'vim.command\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
         \])
   "}}}
 
@@ -1748,15 +1751,59 @@ function! s:get_cur_text()"{{{
   return s:cur_text
 endfunction"}}}
 function! s:set_context_filetype()"{{{
-  let l:filetype = &filetype
+  let l:old_filetype = &filetype
+  if l:old_filetype == ''
+    let l:old_filetype = 'nothing'
+  endif
+
+  let l:dup_check = {}
+  while 1
+    let l:new_filetype = s:get_context_filetype(l:old_filetype)
+
+    " Check filetype root.
+    if has_key(l:dup_check, l:old_filetype) && l:dup_check[l:old_filetype] ==# l:new_filetype
+      let s:context_filetype = l:old_filetype
+      break
+    endif
+
+    " Save old -> new filetype graph.
+    let l:dup_check[l:old_filetype] = l:new_filetype
+    let l:old_filetype = l:new_filetype
+  endwhile
+
+  " Set text mode or not.
+  let l:syn_name = neocomplcache#get_syn_name(1)
+  let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
+        \ || l:syn_name ==# 'Constant'
+  let s:within_comment = (l:syn_name ==# 'Comment')
+
+  " Set filetype plugins.
+  let s:loaded_ftplugin_sources = {}
+  for [l:source_name, l:source] in items(neocomplcache#available_ftplugins())
+    if has_key(l:source.filetypes, s:context_filetype)
+      let s:loaded_ftplugin_sources[l:source_name] = l:source
+
+      if !l:source.loaded
+        " Initialize.
+        call l:source.initialize()
+
+        let l:source.loaded = 1
+      endif
+    endif
+  endfor
+
+  return s:context_filetype
+endfunction"}}}
+function! s:get_context_filetype(filetype)"{{{
+  let l:filetype = a:filetype
   if l:filetype == ''
     let l:filetype = 'nothing'
   endif
 
   " Default.
-  let s:context_filetype = l:filetype
+  let l:context_filetype = l:filetype
   if neocomplcache#is_eskk_enabled()
-    let s:context_filetype = 'eskk'
+    let l:context_filetype = 'eskk'
     let l:filetype = 'eskk'
   elseif has_key(g:neocomplcache_filetype_include_lists, l:filetype)
         \ && !empty(g:neocomplcache_filetype_include_lists[l:filetype])
@@ -1781,34 +1828,15 @@ function! s:set_context_filetype()"{{{
         let l:end_backward = searchpos(l:end_pattern, 'bnW')
 
         if l:end_backward[0] == 0 || s:compare_pos(l:start_backward, l:end_backward) > 0
-          let s:context_filetype = l:include.filetype
+          let l:context_filetype = l:include.filetype
           let l:filetype = l:include.filetype
-          break 
+          break
         endif
       endif
     endfor
   endif
 
-  " Set text mode or not.
-  let l:syn_name = neocomplcache#get_syn_name(1)
-  let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
-        \ || l:syn_name ==# 'Constant'
-  let s:within_comment = (l:syn_name ==# 'Comment')
-
-  " Set filetype plugins.
-  let s:loaded_ftplugin_sources = {}
-  for [l:source_name, l:source] in items(neocomplcache#available_ftplugins())
-    if has_key(l:source.filetypes, l:filetype)
-      let s:loaded_ftplugin_sources[l:source_name] = l:source
-
-      if !l:source.loaded
-        " Initialize.
-        call l:source.initialize()
-
-        let l:source.loaded = 1
-      endif
-    endif
-  endfor
+  return l:context_filetype
 endfunction"}}}
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
   let l:cur_keyword_pos = a:cur_keyword_pos
