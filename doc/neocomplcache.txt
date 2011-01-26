@@ -824,9 +824,9 @@ neco-ghc						*neocomplcache-plugins-neco-ghc*
 		It requires ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
 neco-ruby						*neocomplcache-plugins-neco-ruby*
-		https://github.com/ujihisa/neco-ruby.git
-		This plugin is for ruby completion.  require_relative
-		completion is implemented.
+		https://github.com/ujihisa/neco-ruby
+		This plugin is for ruby completion.  Only require_relative
+		completion is implemented so far.
 
 ==============================================================================
 TODO							*neocomplcache-todo*

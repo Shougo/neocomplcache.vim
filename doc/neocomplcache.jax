@@ -711,7 +711,7 @@ neco-ghc						*neocomplcache-plugins-neco-ghc*
 		ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>が必要である。
 
 neco-ruby						*neocomplcache-plugins-neco-ruby*
-		https://github.com/ujihisa/neco-ruby.git
+		https://github.com/ujihisa/neco-ruby
 		Ruby用の補完プラグインである。作者はujihisa氏。現在、require_relative
 		の補完ができる。
 
