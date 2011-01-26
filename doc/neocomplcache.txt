@@ -817,11 +817,11 @@ USER PLUGINS 						*neocomplcache-user-plugins*
 
 This section, introduce non default neocomplcache plugin.
 
-ghc_complete.vim					*neocomplcache-plugins-ghc_complete*
-		http://github.com/ujihisa/ghc_complete
-		This plugin's author is eagletmt, and maintainer is ujihisa.
-		It completes source file written Haskell.
-		It needs ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
+neco-ghc						*neocomplcache-plugins-neco-ghc*
+		https://github.com/ujihisa/neco-ghc
+		eagletmt originally implemented and now ujihisa is maintaining
+		this plugin.  It completes a source file written in Haskell.
+		It requires ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
 neco-ruby						*neocomplcache-plugins-neco-ruby*
 		https://github.com/ujihisa/neco-ruby.git

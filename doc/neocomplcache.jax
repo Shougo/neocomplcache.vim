@@ -704,8 +704,8 @@ USER PLUGINS 						*neocomplcache-user-plugins*
 
 ここではneocomplcacheに添付されていない、非標準のプラグインを紹介する。
 
-ghc_complete.vim					*neocomplcache-plugins-ghc_complete*
-		http://github.com/ujihisa/ghc_complete
+neco-ghc						*neocomplcache-plugins-neco-ghc*
+		https://github.com/ujihisa/neco-ghc
 		eagletmt氏が作成し、ujihisa氏がメンテナンスをしている。
 		Haskellのソースファイルを補完できるが、動作には
 		ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>が必要である。
