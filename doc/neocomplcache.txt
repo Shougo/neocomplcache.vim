@@ -947,6 +947,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-01-28
 - Fixed manual completion error.
+- Deleted register snippets.
 
 2011-01-24
 - Improved context filetype.
