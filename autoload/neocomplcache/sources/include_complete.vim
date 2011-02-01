@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2011.
+" Last Modified: 01 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -147,27 +147,24 @@ function! s:doc_dict.search(cur_text)"{{{
   for l:word in reverse(l:words)
     let l:key = tolower(l:word[: s:completion_length-1])
 
-    for l:include in s:include_info[bufnr('%')].include_files
-      if has_key(s:include_cache[l:include], l:key)
-        let l:cache = filter(copy(s:include_cache[l:include][l:key]), 'stridx(v:val.word, ' . string(l:word) . ') == 0')
-        if !empty(l:cache) && has_key(l:cache[0], 'kind') && l:cache[0].kind != ''
-          let l:match = match(neocomplcache#escape_match(l:cache[0].abbr), l:word)
-          if l:match >= 0
-            let l:ret = []
+    for l:include in filter(copy(s:include_info[bufnr('%')].include_files),
+          \ 'has_key(s:include_cache[v:val], l:key)')
+      for l:matched in filter(copy(s:include_cache[l:include][l:key]),
+            \ 'v:val.word ==# l:word && has_key(v:val, "kind") && v:val.kind != ""')
+        let l:ret = []
 
-            if l:match > 0
-              call add(l:ret, { 'text' : l:cache[0].abbr[ : l:match-1] })
-            endif
-
-            call add(l:ret, { 'text' : l:word, 'highlight' : 'Identifier' })
-            call add(l:ret, { 'text' : l:cache[0].abbr[l:match+len(l:word) :] })
-
-            if l:match > 0 || len(l:ret[-1].text) > 0
-              return l:ret
-            endif
-          endif
+        let l:match = match(l:matched.abbr, neocomplcache#escape_match(l:word))
+        if l:match > 0
+          call add(l:ret, { 'text' : l:matched.abbr[ : l:match-1] })
         endif
-      endif
+
+        call add(l:ret, { 'text' : l:word, 'highlight' : 'Identifier' })
+        call add(l:ret, { 'text' : l:matched.abbr[l:match+len(l:word) :] })
+
+        if l:match > 0 || len(l:ret[-1].text) > 0
+          return l:ret
+        endif
+      endfor
     endfor
   endfor
 

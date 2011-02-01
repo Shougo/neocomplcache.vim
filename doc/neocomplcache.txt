@@ -945,6 +945,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-02-01
+- Improved include_complete behavior for echodoc.
+
 2011-01-28
 - Fixed manual completion error.
 - Deleted register snippets.
