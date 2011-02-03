@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jan 2011.
+" Last Modified: 03 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,7 +54,7 @@ function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
   let g:neocomplcache_max_keyword_width = -1
 
   let [a:context.source__cur_keyword_pos, l:cur_keyword_str, a:context.source__complete_words] =
-        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(neocomplcache#get_cur_text()), 1)
+        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(neocomplcache#get_cur_text(1)), 1)
 
   " Restore options.
   let g:neocomplcache_max_list = l:max_list_save
@@ -69,7 +69,7 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
         \   'word' : l:keyword.word,
         \   'abbr' : printf('%-50s', (has_key(l:keyword, 'abbr') ? l:keyword.abbr : l:keyword.word)),
         \   'source' : 'neocomplcache',
-        \   'kind': 'word',
+        \   'kind': 'completion',
         \   'action__complete_word' : l:keyword.word,
         \   'action__complete_pos' : l:keyword_pos,
         \ }
@@ -84,6 +84,11 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
   endfor
 
   return l:list
+endfunction "}}}
+
+function! unite#sources#neocomplcache#start_complete() "{{{
+  return printf("\<ESC>:call unite#start(['neocomplcache'],
+        \ { 'col' : %d, 'complete' : 1 })\<CR>", col('.'))
 endfunction "}}}
 
 " vim: foldmethod=marker

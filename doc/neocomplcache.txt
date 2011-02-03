@@ -664,6 +664,10 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 >
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
+
+<Plug>(neocomplcache_start_unite_complete)		*<Plug>(neocomplcache_start_unite_complete)*
+		Start completion with |unite|. This completion interface is experimental.
+
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
 >
@@ -944,6 +948,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-02-03
+- Added <Plug>(neocomplcache_start_unite_complete) mapping.
+- Improved unite-neocomplcache source.
 
 2011-02-01
 - Improved include_complete behavior for echodoc.

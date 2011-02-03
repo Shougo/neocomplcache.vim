@@ -624,6 +624,10 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 >
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
+
+<Plug>(neocomplcache_start_unite_complete)		*<Plug>(neocomplcache_start_unite_complete)*
+		|unite|による補完インタフェースを使用する。この機能はまだ実験段階である。
+
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
 
