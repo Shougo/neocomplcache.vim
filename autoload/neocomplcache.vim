@@ -394,7 +394,7 @@ function! neocomplcache#enable() "{{{
   let &l:completefunc = 'neocomplcache#manual_complete'
 
   " Set options.
-  set completeopt-=menu
+  set completeopt-=menu,preview
   if !g:neocomplcache_disable_auto_complete
     set completeopt-=longest
   endif

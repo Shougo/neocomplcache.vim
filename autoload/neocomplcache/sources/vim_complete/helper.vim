@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2011.
+" Last Modified: 04 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -180,10 +180,15 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
   endif
   if !has_key(s:internal_candidates_list, 'commands')
     let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c')
-    
+
     let s:internal_candidates_list.command_prototypes = s:caching_prototype_from_dict('command_prototypes')
+    for l:command in s:internal_candidates_list.commands
+      if has_key(s:internal_candidates_list.command_prototypes, l:command.word)
+        let l:command.info = l:command.word . s:internal_candidates_list.command_prototypes[l:command.word]
+      endif
+    endfor
   endif
-  
+
   let l:list = s:internal_candidates_list.commands + s:global_candidates_list.commands
   if bufname('%') !=# '[Command Line]'
     let l:list = neocomplcache#keyword_filter(l:list, a:cur_keyword_str)
@@ -292,8 +297,14 @@ function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keywo
       let l:function_prototypes[function.word] = function.abbr
     endfor
     let s:internal_candidates_list.function_prototypes = s:caching_prototype_from_dict('functions')
+
+    for l:function in values(s:internal_candidates_list.functions)
+      if has_key(s:internal_candidates_list.function_prototypes, l:function.word)
+        let l:function.info = l:function.word . s:internal_candidates_list.function_prototypes[l:function.word]
+      endif
+    endfor
   endif
-  
+
   let l:script_candidates_list = s:get_cached_script_candidates()
   if a:cur_keyword_str =~ '^s:'
     let l:list = values(l:script_candidates_list.functions)
@@ -619,7 +630,7 @@ function! s:caching_prototype_from_dict(dict_name)"{{{
       let l:word_head = l:word
       let l:word_tail = ' '
     endif
-    
+
     for i in range(len(l:word_tail))
       let l:keyword_dict[l:word_head . l:word_tail[1:i]] = l:rest
     endfor
@@ -644,7 +655,7 @@ function! s:get_cmdlist()"{{{
   let l:menu_pattern = '[vim] command'
   for line in split(l:redir, '\n')[1:]
     let l:word = matchstr(line, '\a\w*')
-    
+
     " Analyze prototype.
     let l:end = matchend(line, '\a\w*')
     let l:args = matchstr(line, '[[:digit:]?+*]', l:end)
@@ -655,7 +666,7 @@ function! s:get_cmdlist()"{{{
         if l:comp == l:prototype
           let l:command_completions[l:word] = l:prototype
           let l:found = 1
-          
+
           break
         endif
       endfor
@@ -663,7 +674,7 @@ function! s:get_cmdlist()"{{{
       if !l:found
         let l:prototype = 'arg'
       endif
-      
+
       if l:args == '*'
         let l:prototype = '[' . l:prototype . '] ...'
       elseif l:args == '?'
@@ -671,15 +682,16 @@ function! s:get_cmdlist()"{{{
       elseif l:args == '+'
         let l:prototype = l:prototype . ' ...'
       endif
-      
+
       let l:command_prototypes[l:word] = ' ' . repeat(' ', 16 - len(l:word)) . l:prototype
     else
       let l:command_prototypes[l:word] = ''
     endif
     let l:prototype = l:command_prototypes[l:word]
-    
+
     call add(l:keyword_list, {
-          \ 'word' : l:word, 'abbr' : l:word . l:prototype, 'menu' : l:menu_pattern, 'kind' : 'c'
+          \ 'word' : l:word, 'abbr' : l:word . l:prototype,
+          \ 'info' : l:word . l:prototype, 'menu' : l:menu_pattern, 'kind' : 'c'
           \})
   endfor
   let s:global_candidates_list.command_prototypes = l:command_prototypes
@@ -725,11 +737,12 @@ function! s:get_functionlist()"{{{
       continue
     endif
     let l:orig_line = l:line
-    
+
     let l:word = matchstr(l:line, '\h[[:alnum:]_:#.]*()\?')
     if l:word != ''
       let l:keyword_dict[l:word] = {
-            \ 'word' : l:word, 'abbr' : l:line, 'menu' : l:menu_pattern,
+            \ 'word' : l:word, 'abbr' : l:line,
+            \ 'info' : l:line, 'menu' : l:menu_pattern,
             \}
 
       let l:function_prototypes[l:word] = l:orig_line[len(l:word):]

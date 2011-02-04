@@ -79,6 +79,9 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
     if has_key(l:keyword, 'menu')
       let l:dict.abbr .= ' ' . l:keyword.menu
     endif
+    if has_key(l:keyword, 'info')
+      let l:dict.action__complete_info = l:keyword.info
+    endif
 
     call add(l:list, l:dict)
   endfor
@@ -88,7 +91,9 @@ endfunction "}}}
 
 function! unite#sources#neocomplcache#start_complete() "{{{
   return printf("\<ESC>:call unite#start(['neocomplcache'],
-        \ { 'col' : %d, 'complete' : 1, 'buffer_name' : 'completion' })\<CR>", col('.'))
+        \ { 'auto_preview' : 1, 'col' : %d, 'complete' : 1,
+        \   'input' : neocomplcache#get_cur_text(1),
+        \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}
 
 " vim: foldmethod=marker

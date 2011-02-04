@@ -952,6 +952,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-02-04
 - Improved buffer_name.
 - Improved check dup.
+- Improved unite source.
 
 2011-02-03
 - Added <Plug>(neocomplcache_start_unite_complete) mapping.

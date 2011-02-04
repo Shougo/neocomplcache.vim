@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jan 2011.
+" Last Modified: 04 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -258,6 +258,7 @@ function! s:set_snippet_pattern(dict)"{{{
 
   let l:dict = {
         \'word' : a:dict.name, 'snip' : l:word, 'abbr' : a:dict.name, 
+        \'info' : l:word,
         \'menu' : l:menu_pattern . l:abbr, 'dup' : 1
         \}
   if has_key(a:dict, 'prev_word')
