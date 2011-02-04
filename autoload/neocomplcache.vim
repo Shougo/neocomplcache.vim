@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Feb 2011.
+" Last Modified: 04 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -567,7 +567,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     " Print quick_match list.
     let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
     let s:cur_keyword_pos = l:cur_keyword_pos
-    let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str) 
+    let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str)
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
@@ -1188,18 +1188,31 @@ function! neocomplcache#integrate_completion(complete_result, is_sort)"{{{
   if !neocomplcache#is_eskk_enabled() && a:is_sort
     call sort(l:complete_words, 'neocomplcache#compare_rank')
   endif
+
+  " Check dup and set icase.
+  let l:dup_check = {}
+  let l:words = []
+  let l:icase = g:neocomplcache_enable_ignore_case &&
+        \!(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
+  for keyword in l:complete_words
+    if keyword.word != ''
+          \&& (!has_key(l:dup_check, keyword.word)
+          \    || (has_key(keyword, 'dup') && keyword.dup))
+      let l:dup_check[keyword.word] = 1
+
+      let l:keyword.icase = l:icase
+      if !has_key(l:keyword, 'abbr')
+        let l:keyword.abbr = l:keyword.word
+      endif
+
+      call add(l:words, keyword)
+    endif
+  endfor
+  let l:complete_words = l:words
+
   if g:neocomplcache_max_list >= 0
     let l:complete_words = l:complete_words[: g:neocomplcache_max_list]
   endif
-
-  let l:icase = g:neocomplcache_enable_ignore_case &&
-        \!(g:neocomplcache_enable_smart_case && l:cur_keyword_str =~ '\u')
-  for l:keyword in l:complete_words
-    let l:keyword.icase = l:icase
-    if !has_key(l:keyword, 'abbr')
-      let l:keyword.abbr = l:keyword.word
-    endif
-  endfor
 
   " Delimiter check.
   let l:filetype = neocomplcache#get_context_filetype()
@@ -1704,19 +1717,13 @@ function! s:make_quick_match_list(list, cur_keyword_str)"{{{
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
-  " Check dup.
-  let l:dup_check = {}
+  " Add number.
   let l:num = 0
   let l:qlist = {}
   for keyword in neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
-    if keyword.word != '' && has_key(l:keys, l:num) 
-          \&& (!has_key(l:dup_check, keyword.word) || (has_key(keyword, 'dup') && keyword.dup))
-      let l:dup_check[keyword.word] = 1
-      let l:keyword = deepcopy(l:keyword)
-      let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
-
-      let l:qlist[l:num] = keyword
-    endif
+    let l:keyword = deepcopy(l:keyword)
+    let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
+    let l:qlist[l:num] = keyword
 
     let l:num += 1
   endfor
