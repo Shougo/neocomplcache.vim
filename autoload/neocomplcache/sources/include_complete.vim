@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Feb 2011.
+" Last Modified: 05 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -295,11 +295,16 @@ function! s:load_from_tags(filename, filetype)"{{{
     return s:load_from_file(a:filename, a:filetype)
   endif
 
-  let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ? 
+  let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
         \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
-  let l:command = has('win32') || has('win64') ? 
-        \ printf('%s -f - %s %s', g:neocomplcache_ctags_program, l:args, fnamemodify(a:filename, ':p:.')) :
-        \ printf('%s -f /dev/stdout 2>/dev/null %s %s', g:neocomplcache_ctags_program, l:args, fnamemodify(a:filename, ':p:.'))
+  let l:filename = fnamemodify(a:filename, ':p:.')
+  if unite#is_win()
+    let l:filename = substitute(l:filename, '\\', '/', 'g')
+    let l:command = printf('%s -f - %s %s', g:neocomplcache_ctags_program, l:args, l:filename)
+  else
+    let l:command = printf('%s -f /dev/stdout 2>/dev/null %s %s', g:neocomplcache_ctags_program, l:args, l:filename)
+  endif
+
   let l:lines = split(neocomplcache#system(l:command), '\n')
 
   if !empty(l:lines)
@@ -316,7 +321,7 @@ function! s:load_from_tags(filename, filetype)"{{{
     endif
 
     call add(l:keyword_lists[l:key], l:keyword)
-  endfor 
+  endfor
 
   call neocomplcache#cache#save_cache('include_cache', a:filename, neocomplcache#unpack_dictionary(l:keyword_lists))
 
