@@ -300,9 +300,9 @@ function! s:load_from_tags(filename, filetype)"{{{
   let l:filename = fnamemodify(a:filename, ':p:.')
   if unite#is_win()
     let l:filename = substitute(l:filename, '\\', '/', 'g')
-    let l:command = printf('%s -f - %s %s', g:neocomplcache_ctags_program, l:args, l:filename)
+    let l:command = printf('%s -f - %s "%s"', g:neocomplcache_ctags_program, l:args, l:filename)
   else
-    let l:command = printf('%s -f /dev/stdout 2>/dev/null %s %s', g:neocomplcache_ctags_program, l:args, l:filename)
+    let l:command = printf('%s -f /dev/stdout 2>/dev/null %s ''%s''', g:neocomplcache_ctags_program, l:args, l:filename)
   endif
 
   let l:lines = split(neocomplcache#system(l:command), '\n')
