@@ -298,7 +298,7 @@ function! s:load_from_tags(filename, filetype)"{{{
   let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
         \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
   let l:filename = fnamemodify(a:filename, ':p:.')
-  if unite#is_win()
+  if neocomplcache#is_win()
     let l:filename = substitute(l:filename, '\\', '/', 'g')
     let l:command = printf('%s -f - %s "%s"', g:neocomplcache_ctags_program, l:args, l:filename)
   else
