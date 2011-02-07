@@ -949,6 +949,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-02-07
+- Improved g:neocomplcache_ctags_arguments_list option.
+
 2011-02-05
 - Fixed include_complete error.
 

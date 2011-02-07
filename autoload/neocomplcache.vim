@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2011.
+" Last Modified: 07 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -339,10 +339,10 @@ function! neocomplcache#enable() "{{{
           \ -I__DARWIN_LDBL_COMPAT,__DARWIN_LDBL_COMPAT2')
   else
     call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'c',
-          \'--c-kinds=+p --fields=+iaS --extra=+q -I __wur')
+          \'-R --sort=1 --c-kinds=+p --fields=+iaS --extra=+q -I __wur')
   endif
   call neocomplcache#set_dictionary_helper(g:neocomplcache_ctags_arguments_list, 'cpp',
-        \'--c++-kinds=+p --fields=+iaS --extra=+q -I __wur')
+        \'-R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q -I __wur --language-force=C++')
   "}}}
 
   " Initialize text mode filetypes."{{{
