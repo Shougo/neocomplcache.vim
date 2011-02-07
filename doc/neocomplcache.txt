@@ -951,6 +951,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-02-07
 - Improved g:neocomplcache_ctags_arguments_list option.
+- Fixed completefunc issue.
 
 2011-02-05
 - Fixed include_complete error.

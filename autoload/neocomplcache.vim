@@ -501,6 +501,11 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 endfunction"}}}
 
 function! neocomplcache#do_auto_complete(is_moved)"{{{
+  if &l:completefunc == ''
+    " Set completefunc.
+    let &l:completefunc = 'neocomplcache#manual_complete'
+  endif
+
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
