@@ -725,7 +725,7 @@ EXAMPLES						*neocomplcache-examples*
 	"set completeopt+=longest
 	"let g:neocomplcache_enable_auto_select = 1
 	"let g:neocomplcache_disable_auto_complete = 1
-	"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<TAB>"
+	"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
 	"inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
 	
 	" Enable omni completion.
@@ -948,6 +948,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-02-09
+- Improved examples.
 
 2011-02-07
 - Improved g:neocomplcache_ctags_arguments_list option.
