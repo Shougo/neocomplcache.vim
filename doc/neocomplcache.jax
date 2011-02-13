@@ -685,7 +685,9 @@ dictionary_complete.vim					*dictionary_complete*
 
 filename_complete.vim					*filename_complete*
 		このプラグインはファイル名を補完候補に加える。ヘッダーファイル
-		の補完などで便利であろう。
+		の補完などで便利であろう。このプラグインはinclude_completeと
+		同様に、インクルードパスやインクルードパターンを適切に判断す
+		る。
 
 omni_complete.vim					*omni_complete*
 		このプラグインはカーソルが|g:neocomplcache_omni_patterns|にマッ

@@ -798,7 +798,8 @@ dictionary_complete.vim					*dictionary_complete*
 
 filename_complete.vim					*filename_complete*
 		This plugin collects filename candidates. It is useful
-		when you input header file name.
+		when you input header file name.  It recognizes include
+		pattern and include path like include_complete.
 
 omni_complete.vim					*omni_complete*
 		This plugin calls 'omnifunc' automatically when cursor
