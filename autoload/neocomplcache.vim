@@ -514,7 +514,10 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   " Detect completefunc.
   if &completefunc != 'neocomplcache#manual_complete' && &completefunc != 'neocomplcache#auto_complete'
-    99verbose set completefunc
+    redir => l:output
+      99verbose set completefunc
+    redir END
+    call neocomplcache#print_error(l:output)
     call neocomplcache#print_error('Other plugin Use completefunc! Disabled neocomplcache.')
     NeoComplCacheLock
     return
@@ -529,6 +532,10 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   " Detect set paste.
   if &paste
+    redir => l:output
+      99verbose set paste
+    redir END
+    call neocomplcache#print_error(l:output)
     call neocomplcache#print_error('Detected set paste! Disabled neocomplcache.')
     return
   endif

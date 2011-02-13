@@ -953,6 +953,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-02-13
 - Implemented include path complete in filename_complete.
 - Improved detect completefunc.
+- Improved error messages.
 
 2011-02-09
 - Improved examples.
