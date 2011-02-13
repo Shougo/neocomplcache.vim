@@ -47,8 +47,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  let l:is_win = has('win32') || has('win64')
-
   " Not Filename pattern.
   if a:cur_text =~ 
         \'\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
@@ -60,7 +58,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text, l:pattern)
 
   " Not Filename pattern.
-  if l:is_win && l:filetype == 'tex' && l:cur_keyword_str =~ '\\'
+  if neocomplcache#is_win() && l:filetype == 'tex' && l:cur_keyword_str =~ '\\'
     return -1
   endif
 
@@ -78,21 +76,8 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
-  let l:is_win = has('win32') || has('win64')
-
-  if a:cur_keyword_str =~ '^\$\h\w*'
-    let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
-    let l:env_ev = eval(l:env)
-    if l:is_win
-      let l:env_ev = substitute(l:env_ev, '\\', '/', 'g')
-    endif
-    let l:len_env = len(l:env_ev)
-  else
-    let l:len_env = 0
-
-    if a:cur_keyword_str =~ '^\~\h\w*'
-      let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
-    endif
+  if a:cur_keyword_str !~ '^\$\h\w*' && a:cur_keyword_str =~ '^\~\h\w*'
+    let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
   endif
 
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
@@ -100,11 +85,111 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
   " Glob by directory name.
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(^\.\|/\.\?\)\?\zs[^/]*$', '', '')
 
-  let l:files = s:get_include_files()
+  let l:files = s:get_include_files(l:cur_keyword_str)
   let l:glob_files = s:get_glob_files(l:cur_keyword_str)
 
   if (neocomplcache#is_auto_complete() && len(l:glob_files) < g:neocomplcache_max_list)
     let l:files += l:glob_files
+  endif
+
+  return l:files
+endfunction"}}
+
+function! s:get_include_files(cur_keyword_str)"{{{
+  let l:filetype = neocomplcache#get_context_filetype()
+
+  " Check include path.
+  let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
+        \g:neocomplcache_include_patterns[l:filetype] : &include
+  if l:pattern == ''
+    return []
+  endif
+  let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
+        \g:neocomplcache_include_paths[l:filetype] : &path
+  if has_key(g:neocomplcache_include_suffixes, l:filetype)
+    let l:suffixes = &l:suffixesadd
+  endif
+
+  " Restore option.
+  if has_key(g:neocomplcache_include_suffixes, l:filetype)
+    let &l:suffixesadd = l:suffixes
+  endif
+
+  let l:line = neocomplcache#get_cur_text()
+  if l:line !~ l:pattern
+    return []
+  endif
+
+  let l:match_end = matchend(l:line, l:pattern)
+  let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
+
+  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+  let l:files = split(substitute(globpath(l:path, l:glob, l:path), '\\', '/', 'g'), '\n')
+
+  let l:dir_list = []
+  let l:file_list = []
+  for word in l:files
+    let l:dict = { 'word' : word, 'menu' : '[F]' }
+
+    " Path search.
+    for path in map(split(&path, ','), 'substitute(v:val, "\\\\", "/", "g")')
+      if path != '' && neocomplcache#head_match(word, path . '/')
+        let l:dict.word = l:dict.word[len(path)+1 : ]
+        break
+      endif
+    endfor
+
+    let l:abbr = l:dict.word
+    if isdirectory(l:word)
+      let l:abbr .= '/'
+      if g:neocomplcache_enable_auto_delimiter
+        let l:dict.word .= '/'
+      endif
+    endif
+    let l:dict.abbr = l:abbr
+
+    " Escape word.
+    let l:dict.word = escape(l:dict.word, ' *?[]"={}')
+
+    call add(isdirectory(l:word) ? l:dir_list : l:file_list, l:dict)
+  endfor
+
+  return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str)
+        \ + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
+endfunction"}}}
+
+function! s:get_glob_files(cur_keyword_str)"{{{
+  let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
+  let l:cur_keyword_str = a:cur_keyword_str
+  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+
+  try
+    let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
+  catch
+    return []
+  endtry
+
+  if empty(l:files)
+    " Add '*' to a delimiter.
+    let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
+    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+
+    try
+      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
+    catch
+      return []
+    endtry
+  endif
+
+  if a:cur_keyword_str =~ '^\$\h\w*'
+    let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
+    let l:env_ev = eval(l:env)
+    if neocomplcache#is_win()
+      let l:env_ev = substitute(l:env_ev, '\\', '/', 'g')
+    endif
+    let l:len_env = len(l:env_ev)
+  else
+    let l:len_env = 0
   endif
 
   let l:dir_list = []
@@ -136,7 +221,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
       if g:neocomplcache_enable_auto_delimiter
         let l:dict.word .= '/'
       endif
-    elseif l:is_win
+    elseif neocomplcache#is_win()
       if '.'.fnamemodify(l:word, ':e') =~ l:exts
         let l:abbr .= '*'
       endif
@@ -151,66 +236,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
     call add(isdirectory(l:word) ? l:dir_list : l:file_list, l:dict)
   endfor
 
-  return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str) + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
-endfunction"}}
-
-function! s:get_include_files()"{{{
-  let l:filetype = neocomplcache#get_context_filetype()
-
-  " Check include path.
-  let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
-        \g:neocomplcache_include_patterns[l:filetype] : &include
-  if l:pattern == ''
-    return []
-  endif
-  let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
-        \g:neocomplcache_include_paths[l:filetype] : &path
-  if has_key(g:neocomplcache_include_suffixes, l:filetype)
-    let l:suffixes = &l:suffixesadd
-  endif
-
-  " Restore option.
-  if has_key(g:neocomplcache_include_suffixes, l:filetype)
-    let &l:suffixesadd = l:suffixes
-  endif
-
-  let l:line = neocomplcache#get_cur_text()
-  if l:line !~ l:pattern
-    return []
-  endif
-
-  let l:match_end = matchend(l:line, l:pattern)
-  let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
-
-  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-  let l:files = split(substitute(globpath(l:path, l:glob, l:path), '\\', '/', 'g'), '\n')
-  return map(map(l:files, 'isdirectory(v:val) ? v:val."/" : v:val'),
-        \ printf('matchstr(v:val, ''/\zs%s.*'')', neocomplcache#escape_match(l:cur_keyword_str)))
-endfunction"}}}
-function! s:get_glob_files(cur_keyword_str)"{{{
-  let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
-  let l:cur_keyword_str = a:cur_keyword_str
-  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-
-  try
-    let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-  catch
-    return []
-  endtry
-
-  if empty(l:files)
-    " Add '*' to a delimiter.
-    let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-
-    try
-      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-    catch
-      return []
-    endtry
-  endif
-
-  return l:files
+  return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str)
+        \ + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
