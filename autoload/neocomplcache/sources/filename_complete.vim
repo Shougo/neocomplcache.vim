@@ -164,8 +164,6 @@ function! s:get_include_files()"{{{
   endif
   let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
         \g:neocomplcache_include_paths[l:filetype] : &path
-  let l:expr = has_key(g:neocomplcache_include_exprs, l:filetype) ?
-        \g:neocomplcache_include_exprs[l:filetype] : &includeexpr
   if has_key(g:neocomplcache_include_suffixes, l:filetype)
     let l:suffixes = &l:suffixesadd
   endif
@@ -182,9 +180,6 @@ function! s:get_include_files()"{{{
 
   let l:match_end = matchend(l:line, l:pattern)
   let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
-  if l:expr != ''
-    let l:cur_keyword_str = eval(substitute(l:expr, 'v:fname', string(l:cur_keyword_str), 'g'))
-  endif
 
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
   let l:files = split(substitute(globpath(l:path, l:glob, l:path), '\\', '/', 'g'), '\n')
