@@ -518,7 +518,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
       99verbose set completefunc
     redir END
     call neocomplcache#print_error(l:output)
-    call neocomplcache#print_error('Other plugin Use completefunc! Disabled neocomplcache.')
+    call neocomplcache#print_error('Another plugin use completefunc! Disabled neocomplcache.')
     NeoComplCacheLock
     return
   endif
