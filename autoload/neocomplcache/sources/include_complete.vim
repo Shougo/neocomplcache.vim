@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2011.
+" Last Modified: 13 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -228,14 +228,14 @@ function! s:get_buffer_include_files(bufnumber)"{{{
           \ getbufvar(a:bufnumber, '&path') . ',/usr/include/c++/*')
   endif
 
-  let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ? 
+  let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
         \g:neocomplcache_include_patterns[l:filetype] : getbufvar(a:bufnumber, '&include')
   if l:pattern == ''
     return []
   endif
-  let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ? 
+  let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
         \g:neocomplcache_include_paths[l:filetype] : getbufvar(a:bufnumber, '&path')
-  let l:expr = has_key(g:neocomplcache_include_exprs, l:filetype) ? 
+  let l:expr = has_key(g:neocomplcache_include_exprs, l:filetype) ?
         \g:neocomplcache_include_exprs[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
   if has_key(g:neocomplcache_include_suffixes, l:filetype)
     let l:suffixes = &l:suffixesadd

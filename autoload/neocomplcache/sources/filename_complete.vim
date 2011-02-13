@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2011.
+" Last Modified: 13 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -100,26 +100,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
   " Glob by directory name.
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(^\.\|/\.\?\)\?\zs[^/]*$', '', '')
 
-  let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
-  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+  let l:files = s:get_include_files() + s:get_glob_files(l:cur_keyword_str)
 
-  try
-    let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-  catch
-    return []
-  endtry
-
-  if empty(l:files)
-    " Add '*' to a delimiter.
-    let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-
-    try
-      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-    catch
-      return []
-    endtry
-  endif
   if empty(l:files) || (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
     return []
   endif
@@ -170,6 +152,69 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
 
   return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str) + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
 endfunction"}}
+
+function! s:get_include_files()"{{{
+  let l:filetype = neocomplcache#get_context_filetype()
+
+  " Check include path.
+  let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
+        \g:neocomplcache_include_patterns[l:filetype] : &include
+  if l:pattern == ''
+    return []
+  endif
+  let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
+        \g:neocomplcache_include_paths[l:filetype] : &path
+  let l:expr = has_key(g:neocomplcache_include_exprs, l:filetype) ?
+        \g:neocomplcache_include_exprs[l:filetype] : &includeexpr
+  if has_key(g:neocomplcache_include_suffixes, l:filetype)
+    let l:suffixes = &l:suffixesadd
+  endif
+
+  " Restore option.
+  if has_key(g:neocomplcache_include_suffixes, l:filetype)
+    let &l:suffixesadd = l:suffixes
+  endif
+
+  let l:line = neocomplcache#get_cur_text()
+  if l:line !~ l:pattern
+    return []
+  endif
+
+  let l:match_end = matchend(l:line, l:pattern)
+  let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
+  if l:expr != ''
+    let l:cur_keyword_str = eval(substitute(l:expr, 'v:fname', string(l:cur_keyword_str), 'g'))
+  endif
+
+  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+  let l:files = split(substitute(globpath(l:path, l:glob, l:path), '\\', '/', 'g'), '\n')
+  return map(l:files, printf('matchstr(v:val, ''/\zs%s.*'')', neocomplcache#escape_match(l:cur_keyword_str)))
+endfunction"}}}
+function! s:get_glob_files(cur_keyword_str)"{{{
+  let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
+  let l:cur_keyword_str = a:cur_keyword_str
+  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+
+  try
+    let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
+  catch
+    return []
+  endtry
+
+  if empty(l:files)
+    " Add '*' to a delimiter.
+    let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
+    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+
+    try
+      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
+    catch
+      return []
+    endtry
+  endif
+
+  return l:files
+endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
   return s:source
