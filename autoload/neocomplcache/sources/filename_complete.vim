@@ -100,10 +100,11 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
   " Glob by directory name.
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(^\.\|/\.\?\)\?\zs[^/]*$', '', '')
 
-  let l:files = s:get_include_files() + s:get_glob_files(l:cur_keyword_str)
+  let l:files = s:get_include_files()
+  let l:glob_files = s:get_glob_files(l:cur_keyword_str)
 
-  if empty(l:files) || (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
-    return []
+  if (neocomplcache#is_auto_complete() && len(l:glob_files) < g:neocomplcache_max_list)
+    let l:files += l:glob_files
   endif
 
   let l:dir_list = []
@@ -183,7 +184,8 @@ function! s:get_include_files()"{{{
 
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
   let l:files = split(substitute(globpath(l:path, l:glob, l:path), '\\', '/', 'g'), '\n')
-  return map(l:files, printf('matchstr(v:val, ''/\zs%s.*'')', neocomplcache#escape_match(l:cur_keyword_str)))
+  return map(map(l:files, 'isdirectory(v:val) ? v:val."/" : v:val'),
+        \ printf('matchstr(v:val, ''/\zs%s.*'')', neocomplcache#escape_match(l:cur_keyword_str)))
 endfunction"}}}
 function! s:get_glob_files(cur_keyword_str)"{{{
   let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
