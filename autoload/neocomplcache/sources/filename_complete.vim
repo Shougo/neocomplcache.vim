@@ -74,25 +74,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
-  let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
-
-  if a:cur_keyword_str !~ '^\$\h\w*' && a:cur_keyword_str =~ '^\~\h\w*'
-    let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
-  endif
-
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
-
-  " Glob by directory name.
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(^\.\|/\.\?\)\?\zs[^/]*$', '', '')
-
-  let l:files = s:get_include_files(l:cur_keyword_str)
-  let l:glob_files = s:get_glob_files(l:cur_keyword_str)
-
-  if (neocomplcache#is_auto_complete() && len(l:glob_files) < g:neocomplcache_max_list)
-    let l:files += l:glob_files
-  endif
-
-  return l:files
+  return s:get_include_files(a:cur_keyword_str) + s:get_glob_files(a:cur_keyword_str)
 endfunction"}}
 
 function! s:get_include_files(cur_keyword_str)"{{{
@@ -160,7 +142,17 @@ endfunction"}}}
 
 function! s:get_glob_files(cur_keyword_str)"{{{
   let l:path = (!neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/')? &path : ','
+
   let l:cur_keyword_str = a:cur_keyword_str
+  let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
+  if a:cur_keyword_str !~ '^\$\h\w*' && a:cur_keyword_str =~ '^\~\h\w*'
+    let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
+  endif
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
+
+  " Glob by directory name.
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(^\.\|/\.\?\)\?\zs[^/]*$', '', '')
+
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
   try
@@ -179,6 +171,10 @@ function! s:get_glob_files(cur_keyword_str)"{{{
     catch
       return []
     endtry
+  endif
+
+  if (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
+    return []
   endif
 
   if a:cur_keyword_str =~ '^\$\h\w*'
@@ -200,7 +196,6 @@ function! s:get_glob_files(cur_keyword_str)"{{{
   for word in l:files
     let l:dict = { 'word' : word, 'menu' : '[F]' }
 
-    let l:cur_keyword_str = $HOME . '/../' . l:cur_keyword_str[1:]
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
