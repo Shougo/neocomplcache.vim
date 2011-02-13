@@ -508,7 +508,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
-        \ || neocomplcache#is_locked())
+        \ || neocomplcache#is_locked()
     return
   endif
 
