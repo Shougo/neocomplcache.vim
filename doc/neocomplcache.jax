@@ -90,7 +90,7 @@ COMMANDS 						*neocomplcache-commands*
 		一時的に無効にしたい場合に有効。 ロック状態はバッファローカ
 		ルである。
 
-:NeoComplCacheUnLock					*:NeoComplCacheUnLock*
+:NeoComplCacheUnlock					*:NeoComplCacheUnlock*
 		自動補完にかけたロックを解除する。
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*

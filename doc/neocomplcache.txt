@@ -89,7 +89,7 @@ COMMANDS 						*neocomplcache-commands*
 		While locking neocomplcache, manual completion is possible.
 		The lock status is buffer local.
 
-:NeoComplCacheUnLock					*:NeoComplCacheUnLock*
+:NeoComplCacheUnlock					*:NeoComplCacheUnlock*
 		Unlock neocomplcache.
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
@@ -949,6 +949,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-02-15
+- Fixed tags.
 
 2011-02-13
 - Implemented include path complete in filename_complete.
