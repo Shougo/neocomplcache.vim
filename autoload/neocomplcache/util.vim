@@ -88,4 +88,8 @@ function! s:wcwidth(ucs)"{{{
   return 1
 endfunction"}}}
 
+function! neocomplcache#util#mb_strlen(str)"{{{
+  return strlen(substitute(copy(a:str), '.', 'x', 'g'))
+endfunction"}}}
+
 " vim: foldmethod=marker

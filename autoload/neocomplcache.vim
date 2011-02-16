@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2011.
+" Last Modified: 16 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -576,7 +576,8 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
         \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
 
     " Print quick_match list.
-    let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
+    let [l:cur_keyword_pos, l:cur_keyword_str] =
+          \ neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
     let s:cur_keyword_pos = l:cur_keyword_pos
     let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str)
 
@@ -1104,7 +1105,7 @@ function! neocomplcache#get_complete_result(cur_text, ...)"{{{
 
     if l:cur_keyword_pos >= 0
       let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-      if len(l:cur_keyword_str) < neocomplcache#get_completion_length(l:complfunc_name)
+      if neocomplcache#util#mb_strlen(l:cur_keyword_str) < neocomplcache#get_completion_length(l:complfunc_name)
         " Skip.
         continue
       endif

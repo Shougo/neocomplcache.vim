@@ -950,6 +950,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-02-16
+- Supported g:eskk#start_completion_length.
+
 2011-02-15
 - Fixed tags.
 
