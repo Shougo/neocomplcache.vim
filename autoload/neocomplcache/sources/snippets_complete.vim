@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2011.
+" Last Modified: 21 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -713,7 +713,7 @@ function! s:substitute_marker(start, end)"{{{
 endfunction"}}}
 function! s:trigger(function)"{{{
   let l:cur_text = neocomplcache#get_cur_text(1)
-  return printf("\<ESC>:call %s(%s,%d)\<CR>", a:function, string(l:cur_text), col('.'))
+  return printf("\<C-o>:call %s(%s,%d)\<CR>", a:function, string(l:cur_text), col('.'))
 endfunction"}}}
 function! s:eval_snippet(snippet_text)"{{{
   let l:snip_word = ''
