@@ -950,6 +950,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-02-22
+- Fixed quick match bugs.
+
 2011-02-16
 - Supported g:eskk#start_completion_length.
 - Added file_include source.

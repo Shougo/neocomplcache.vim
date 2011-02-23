@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Feb 2011.
+" Last Modified: 22 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -583,7 +583,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
     " Set function.
     let &l:completefunc = 'neocomplcache#auto_complete'
-    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)", 'n')
+    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
     let s:old_cur_text = l:cur_text
     return
   elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
@@ -625,7 +625,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     return
   endif
 
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = 
+  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] =
         \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   " Start auto complete.
@@ -1733,9 +1733,11 @@ function! s:make_quick_match_list(list, cur_keyword_str)"{{{
   let l:num = 0
   let l:qlist = {}
   for keyword in neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
-    let l:keyword = deepcopy(l:keyword)
-    let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
-    let l:qlist[l:num] = keyword
+    if has_key(l:keys, l:num)
+      let l:keyword = deepcopy(l:keyword)
+      let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
+      let l:qlist[l:num] = keyword
+    endif
 
     let l:num += 1
   endfor
