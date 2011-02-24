@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2011.
+" Last Modified: 24 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   " Not Filename pattern.
-  if a:cur_text =~ 
+  if a:cur_text =~
         \'\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
     return -1
   endif
@@ -191,7 +191,6 @@ function! s:get_glob_files(cur_keyword_str)"{{{
   let l:dir_list = []
   let l:file_list = []
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
-  let l:paths = map(split(&path, ','), 'substitute(v:val, "\\\\", "/", "g")')
   let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
   for word in l:files
     let l:dict = { 'word' : word, 'menu' : '[F]' }
@@ -200,14 +199,6 @@ function! s:get_glob_files(cur_keyword_str)"{{{
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
       let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
-    elseif !neocomplcache#is_auto_complete() && a:cur_keyword_str !~ '^\.\.\?/'
-      " Path search.
-      for path in l:paths
-        if path != '' && neocomplcache#head_match(word, path . '/')
-          let l:dict.word = l:dict.word[len(path)+1 : ]
-          break
-        endif
-      endfor
     endif
 
     let l:abbr = l:dict.word
@@ -231,8 +222,9 @@ function! s:get_glob_files(cur_keyword_str)"{{{
     call add(isdirectory(l:word) ? l:dir_list : l:file_list, l:dict)
   endfor
 
-  return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str)
-        \ + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
+  let l:cur_keyword_str = substitute(a:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
+  return neocomplcache#keyword_filter(l:dir_list, l:cur_keyword_str)
+        \ + neocomplcache#keyword_filter(l:file_list, l:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{

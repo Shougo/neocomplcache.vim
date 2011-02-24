@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2011.
+" Last Modified: 23 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,7 +37,7 @@ function! s:source.initialize()"{{{
   let s:include_cache = {}
   let s:cached_pattern = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
-  
+
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'include_complete', 7)
 
@@ -71,7 +71,7 @@ function! s:source.initialize()"{{{
   if neocomplcache#exists_echodoc()
     call echodoc#register('include_complete', s:doc_dict)
   endif
-  
+
   " Initialize check.
   call s:check_buffer_all()
 endfunction"}}}

@@ -950,6 +950,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-02-23
+- Fixed filename_complete bugs.
+
 2011-02-22
 - Fixed quick match bugs.
 
