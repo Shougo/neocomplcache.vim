@@ -988,8 +988,10 @@ function! neocomplcache#is_win()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! neocomplcache#is_buffer_complete_enabled()"{{{
-  return !has_key(g:neocomplcache_plugin_disable, 'buffer_complete')
-        \ || !g:neocomplcache_plugin_disable['buffer_complete']
+  return    !(has_key(g:neocomplcache_plugin_disable, 'buffer_complete')
+        \     && g:neocomplcache_plugin_disable['buffer_complete'])
+        \ && !(has_key(g:neocomplcache_plugin_disable, 'keyword_complete')
+        \     && g:neocomplcache_plugin_disable['keyword_complete'])
 endfunction"}}}
 function! neocomplcache#exists_echodoc()"{{{
   return exists('g:loaded_echodoc') && g:loaded_echodoc

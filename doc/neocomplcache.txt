@@ -952,6 +952,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-02-23
 - Fixed filename_complete bugs.
+- Fixed buffer_complete error when keyword complete is disabled.
 
 2011-02-22
 - Fixed quick match bugs.
