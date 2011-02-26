@@ -950,6 +950,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-02-25
+- Fixed snippet jump bug.
+
 2011-02-23
 - Fixed filename_complete bugs.
 - Fixed buffer_complete error when keyword complete is disabled.
