@@ -95,6 +95,7 @@ function! neocomplcache#enable() "{{{
         " Clear loaded flag.
         let s:ftplugin_sources[l:source_name].loaded = 0
       elseif l:source.kind ==# 'plugin'
+            \ && neocomplcache#is_keyword_complete_enabled()
         let s:plugin_sources[l:source_name] = l:source
       endif
     endif
@@ -990,7 +991,10 @@ endfunction"}}}
 function! neocomplcache#is_buffer_complete_enabled()"{{{
   return    !(has_key(g:neocomplcache_plugin_disable, 'buffer_complete')
         \     && g:neocomplcache_plugin_disable['buffer_complete'])
-        \ && !(has_key(g:neocomplcache_plugin_disable, 'keyword_complete')
+        \ && neocomplcache#is_keyword_complete_enabled()
+endfunction"}}}
+function! neocomplcache#is_keyword_complete_enabled()"{{{
+  return !(has_key(g:neocomplcache_plugin_disable, 'keyword_complete')
         \     && g:neocomplcache_plugin_disable['keyword_complete'])
 endfunction"}}}
 function! neocomplcache#exists_echodoc()"{{{
