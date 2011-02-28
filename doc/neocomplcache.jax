@@ -599,7 +599,7 @@ neocomplcache#smart_close_popup()			*neocomplcache#smart_close_popup()*
 		|neocomplcache#close_popup()|とは違い、
 		|g:neocomplcache_enable_auto_select|によって挙動を賢く変化させる。
 
-neocomplcache#undo_completion				*neocomplcache#undo_completion()*
+neocomplcache#undo_completion()				*neocomplcache#undo_completion()*
 		inoremap <expr>上で使用する。neocomplcacheによって補完した候
 		補を元に戻す。 Vimには確定した補完をキャンセルする機構がない
 		ため、活用すると便利であろう。
