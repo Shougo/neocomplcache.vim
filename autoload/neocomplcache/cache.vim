@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2010
+" Last Modified: 08 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -381,18 +381,24 @@ function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
 endfunction"}}}
 
 " Check md5.
-let s:is_md5 = exists('*md5#md5')
+try
+  call md5#md5()
+  let s:exists_md5 = 1
+catch
+  let s:exists_md5 = 0
+endtry
+
 function! s:create_hash(dir, str)
   if len(a:dir) + len(a:str) < 150
     let l:hash = substitute(substitute(a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
-  elseif s:is_md5
+  elseif s:exists_md5
     " Use md5.vim.
     let l:hash = md5#md5(a:str)
   else
     " Use simple hash.
     let l:sum = 0
     for i in range(len(a:str))
-      let l:sum += char2nr(a:str[i]) * 2
+      let l:sum += char2nr(a:str[i]) * (i + 1)
     endfor
 
     let l:hash = printf('%x', l:sum)

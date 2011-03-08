@@ -950,6 +950,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-03-08
+- Improved hash function.
+
 2011-03-01
 - Call neocomplcache completion when eskk is ascii mode.
 
