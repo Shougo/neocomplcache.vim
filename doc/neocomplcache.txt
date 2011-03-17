@@ -58,10 +58,10 @@ http://gist.github.com/422503
 INSTALL							*neocomplcache-install*
 
 1: Extract the file and Put files in your Vim directory
-   (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows). 
-2: Execute |:NeoComplCacheEnable| command or 
+   (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows).
+2: Execute |:NeoComplCacheEnable| command or
 let g:neocomplcache_enable_at_startup = 1
-in your .vimrc. 
+in your .vimrc.
 
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
@@ -956,6 +956,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-03-17
 - Improved g:neocomplcache_omni_patterns examples.
+- Added README.
 
 2011-03-08
 - Improved hash function.
