@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Mar 2011.
+" Last Modified: 21 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,12 +62,17 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
           let l:line_cnt = l:print_cache_percent
         endif
         let l:line_cnt -= 1
-        
+
         let l:line_num += 1
       endif
       "}}}
 
       let l:cache = split(l:line, '|||', 1)
+      if len(l:cache[0]) > g:neocomplcache_min_keyword_length
+        " Skip.
+        continue
+      endif
+
       let l:keyword = {
             \ 'word' : l:cache[0], 'abbr' : l:cache[1], 'menu' : l:cache[2],
             \}
@@ -103,7 +108,7 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, complet
       let l:keyword_lists[l:key] = []
     endif
     call add(l:keyword_lists[l:key], l:keyword)
-  endfor 
+  endfor
 
   return l:keyword_lists
 endfunction"}}}
@@ -116,7 +121,7 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
     " File not found.
     return []
   endif
-  
+
   let l:max_lines = len(l:lines)
   let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
 
@@ -181,7 +186,6 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   return l:keyword_lists
 endfunction"}}}
 function! s:load_from_file_fast(lines, pattern, menu)"{{{
-  let l:line_num = 1
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
@@ -316,8 +320,6 @@ endfunction"}}}
 
 function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
   " Create cache directory.
-  call neocomplcache#cache#check_dir(a:cache_dir)
-
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 
   " Create dictionary key.
@@ -336,7 +338,7 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
   " Output cache.
   let l:word_list = []
   for keyword in a:keyword_list
-    call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s', 
+    call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s',
           \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
   endfor
 
@@ -357,23 +359,20 @@ function! neocomplcache#cache#readfile(cache_dir, filename)"{{{
   return filereadable(l:cache_name) ? readfile(l:cache_name) : []
 endfunction"}}}
 function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
-  call neocomplcache#cache#check_dir(a:cache_dir)
-
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 
   call writefile(a:list, l:cache_name)
 endfunction"}}}
 function! neocomplcache#cache#encode_name(cache_dir, filename)
-  let l:dir = printf('%s/%s/', g:neocomplcache_temporary_dir, a:cache_dir) 
-  return l:dir . s:create_hash(l:dir, a:filename)
-endfunction
-function! neocomplcache#cache#check_dir(cache_dir)"{{{
   " Check cache directory.
   let l:cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
   if !isdirectory(l:cache_dir)
     call mkdir(l:cache_dir, 'p')
   endif
-endfunction"}}}
+
+  let l:dir = printf('%s/%s/', g:neocomplcache_temporary_dir, a:cache_dir)
+  return l:dir . s:create_hash(l:dir, a:filename)
+endfunction
 function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
   " Check old cache file.
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
@@ -406,4 +405,21 @@ function! s:create_hash(dir, str)
 
   return l:hash
 endfunction
+
+let s:sdir = fnamemodify(expand('<sfile>'), ':h')
+
+" Async test.
+function! neocomplcache#cache#test_async()
+  let l:filename = substitute(expand('%'), '\\', '/', 'g')
+  let l:cache_name = neocomplcache#cache#encode_name('test_cache', l:filename)
+
+  let l:current = getcwd()
+  lcd `=s:sdir`
+
+  " args: dummy, filename pattern mark minlen maxfilename outputname
+  call vimproc#system(['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim',
+        \ l:cache_name, l:filename, 'vim', 'B', g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width])
+  lcd `=l:current`
+endfunction
+
 " vim: foldmethod=marker

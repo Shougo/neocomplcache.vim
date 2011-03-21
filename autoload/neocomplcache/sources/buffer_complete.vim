@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2011.
+" Last Modified: 21 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! s:source.initialize()"{{{
 
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
-  
+
   " Set completion length.
   call neocomplcache#set_completion_length('buffer_complete', 0)
 
@@ -54,7 +54,7 @@ function! s:source.initialize()"{{{
   if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
     call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
   endif
-  
+
   " Initialize script variables."{{{
   let s:buffer_sources = {}
   let s:filetype_frequencies = {}
