@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Mar 2011.
+" Last Modified: 22 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -165,7 +165,7 @@ endfunction"}}}
 
 function! neocomplcache#sources#buffer_complete#caching_current_cache_line()"{{{
   " Current line caching.
-  
+
   if !s:exists_current_source() || has_key(s:disable_caching_list, bufnr('%'))
     return
   endif
@@ -317,7 +317,7 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
   if !a:is_force && has_key(l:source.rank_lines, l:cache_num)
     return
   endif
-  
+
   " Clear cache line.
   let l:source.rank_lines[l:cache_num] = {}
   let l:rank_lines = l:source.rank_lines[l:cache_num]
@@ -350,18 +350,18 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
     let l:line_num += 1
   endwhile
-  
+
   let l:filetype = neocomplcache#get_context_filetype(1)
   if !has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
         \ || g:neocomplcache_member_prefix_patterns[l:filetype] == ''
     return
   endif
-  
+
   let l:menu = '[B] member'
   let l:keyword_pattern = '\%(\h\w*\%(()\?\)\?\%(' . g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+\h\w*\%(()\?\)\?'
   let l:keyword_pattern2 = '^'.l:keyword_pattern
   let l:member_pattern = '\h\w*\%(()\?\)\?$'
-  
+
   " Cache member pattern.
   let [l:line_num, l:max_lines] = [0, len(l:buflines)]
   while l:line_num < l:max_lines
@@ -394,7 +394,12 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 endfunction"}}}
 
 function! s:initialize_source(srcname)"{{{
-  let l:filename = fnamemodify(bufname(a:srcname), ':t')
+  let l:path = fnamemodify(bufname(a:srcname), ':p')
+  let l:filename = fnamemodify(l:path, ':t')
+  if l:filename == ''
+    let l:filename = '[No Name]'
+    let l:path .= '/[No Name]'
+  endif
 
   " Set cache line count.
   let l:buflines = getbufline(a:srcname, 1, '$')
@@ -437,10 +442,12 @@ function! s:initialize_source(srcname)"{{{
   let l:keyword_pattern = neocomplcache#get_keyword_pattern(l:ft)
 
   let s:buffer_sources[a:srcname] = {
-        \'keyword_cache' : {}, 'rank_lines' : {}, 'member_cache' : {},
-        \'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern, 
-        \'end_line' : l:end_line , 'cache_line_cnt' : l:cache_line_cnt, 
-        \'frequencies' : {}, 'check_sum' : len(join(l:buflines[:4], '\n'))
+        \ 'keyword_cache' : {}, 'rank_lines' : {}, 'member_cache' : {},
+        \ 'name' : l:filename, 'filetype' : l:ft, 'keyword_pattern' : l:keyword_pattern,
+        \ 'end_line' : l:end_line , 'cache_line_cnt' : l:cache_line_cnt,
+        \ 'frequencies' : {}, 'check_sum' : len(join(l:buflines[:4], '\n')),
+        \ 'path' : l:path, 'loaded_cache' : 0,
+        \ 'cache_name' : neocomplcache#cache#encode_name('buffer_cache', l:path),
         \}
 endfunction"}}}
 
@@ -448,54 +455,40 @@ function! s:word_caching(srcname)"{{{
   " Initialize source.
   call s:initialize_source(a:srcname)
 
-  if s:caching_from_cache(a:srcname) == 0
-    " Caching from cache.
-    return
-  endif
-
-  let l:bufname = bufname(str2nr(a:srcname))
-  if fnamemodify(l:bufname, ':t') ==# '[Command Line]'
-    " Ignore caching.
-    return
-  endif
-
-  let l:keyword_cache = s:buffer_sources[a:srcname].keyword_cache
-  for l:keyword in neocomplcache#cache#load_from_file(bufname(str2nr(a:srcname)), s:buffer_sources[a:srcname].keyword_pattern, 'B')
-    let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:keyword_cache, l:key)
-      let l:keyword_cache[l:key] = {}
-    endif
-    let l:keyword_cache[l:key][l:keyword.word] = l:keyword
-  endfor
-endfunction"}}}
-
-function! s:caching_from_cache(srcname)"{{{
-  if getbufvar(a:srcname, '&buftype') =~ 'nofile'
-    return -1
-  endif
-
   let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
 
-  if neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
-    return -1
-  endif
+  if getbufvar(a:srcname, '&buftype') =~ 'nofile'
+        \ || neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
+    let l:filename = bufname(str2nr(a:srcname))
+    let l:source = s:buffer_sources[a:srcname]
 
-  let l:source = s:buffer_sources[a:srcname]
-  for l:keyword in neocomplcache#cache#load_from_cache('buffer_cache', l:srcname)
-    let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:source.keyword_cache, l:key)
-      let l:source.keyword_cache[l:key] = {}
+    if getbufvar(a:srcname, '&buftype') =~ 'nofile'
+          \ || !filereadable(l:source.path)
+      " Create temporary file.
+      call neocomplcache#cache#writefile('buffer_temporary',
+            \ l:source.path, getbufline(a:srcname, 1, '$'))
+      let l:source.path = neocomplcache#cache#encode_name('buffer_temporary', l:source.path)
+      let l:source.cache_name = neocomplcache#cache#encode_name('buffer_cache', l:source.path)
     endif
 
-    let l:source.keyword_cache[l:key][l:keyword.word] = l:keyword
-  endfor 
+    if neocomplcache#has_vimproc()
+      call neocomplcache#cache#async_load_from_file('buffer_cache', l:source.path, l:source.keyword_pattern, 'B')
+    else
+      if l:source.name ==# '[Command Line]'
+        " Ignore caching.
+        return
+      endif
 
-  return 0
+      " Caching from file.
+      call neocomplcache#cache#writefile('buffer_cache', l:source.cache_name,
+            \ neocomplcache#cache#load_from_file(l:source.path, l:source.keyword_pattern, 'B'))
+    endif
+  endif
 endfunction"}}}
 
 function! s:check_changed_buffer(bufnumber)"{{{
   let l:source = s:buffer_sources[a:bufnumber]
-  
+
   if getbufvar(a:bufnumber, '&buftype') =~ 'nofile'
     " Check buffer changed.
     let l:check_sum = len(join(getbufline(a:bufnumber, 1, 5), '\n'))
@@ -535,6 +528,25 @@ function! s:check_source()"{{{
               \         || (getbufvar(l:bufnumber, '&modifiable') && !getbufvar(l:bufnumber, '&readonly') && l:buftype !~ 'help')))
           " Caching.
           call s:word_caching(l:bufnumber)
+        endif
+      endif
+
+      if has_key(s:buffer_sources, l:bufnumber)
+            \ && !s:buffer_sources[l:bufnumber].loaded_cache
+        let l:source = s:buffer_sources[l:bufnumber]
+
+        if filereadable(l:source.cache_name)
+          " Caching from cache.
+          for l:keyword in neocomplcache#cache#load_from_cache('buffer_cache', l:source.path)
+            let l:key = tolower(l:keyword.word[: s:completion_length-1])
+            if !has_key(l:source.keyword_cache, l:key)
+              let l:source.keyword_cache[l:key] = {}
+            endif
+
+            let l:source.keyword_cache[l:key][l:keyword.word] = l:keyword
+          endfor
+
+          let l:source.loaded_cache = 1
         endif
       endif
     endif

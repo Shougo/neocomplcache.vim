@@ -26,17 +26,14 @@
 
 " Cache loader.
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
-  if neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+  let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+  if !filereadable(l:cache_name)
     return []
   endif
 
   let l:keyword_lists = []
-  let l:lines = readfile(neocomplcache#cache#encode_name(a:cache_dir, a:filename))
+  let l:lines = readfile(l:cache_name)
   let l:max_lines = len(l:lines)
-
-  if empty(l:lines)
-    return []
-  endif
 
   if l:max_lines > 3000
     call neocomplcache#print_caching('Caching from cache "' . a:filename . '"... please wait.')
@@ -68,7 +65,7 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
       "}}}
 
       let l:cache = split(l:line, '|||', 1)
-      if len(l:cache[0]) > g:neocomplcache_min_keyword_length
+      if len(l:cache[0]) < g:neocomplcache_min_keyword_length
         " Skip.
         continue
       endif
@@ -376,7 +373,13 @@ endfunction
 function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
   " Check old cache file.
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  return getftime(l:cache_name) == -1 || getftime(l:cache_name) <= getftime(a:filename)
+  let l:ret = getftime(l:cache_name) == -1 || getftime(l:cache_name) <= getftime(a:filename)
+  if l:ret && filereadable(l:cache_name)
+    " Delete old cache.
+    call delete(l:cache_name)
+  endif
+
+  return l:ret
 endfunction"}}}
 
 " Check md5.
@@ -409,23 +412,49 @@ endfunction
 let s:sdir = fnamemodify(expand('<sfile>'), ':p:h')
 
 " Async test.
-function! neocomplcache#cache#test_async()
+function! neocomplcache#cache#test_async()"{{{
   let l:filename = substitute(fnamemodify(expand('%'), ':p'), '\\', '/', 'g')
   let l:cache_name = neocomplcache#cache#encode_name('test_cache', l:filename)
 
   let l:current = getcwd()
   lcd `=s:sdir`
 
+  " Create keyword pattern file.
+  call neocomplcache#cache#writefile('keyword_patterns', 'vim', [neocomplcache#get_keyword_pattern('vim')])
+  let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', 'vim')
+
   " args: dummy, filename pattern mark minlen maxfilename outputname
   let l:argv =
-        \ [l:cache_name, l:filename, 'vim', 'B', g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
+        \ [l:cache_name, l:filename, l:pattern_file_name, 'B', g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
 
-  call vimproc#system(
+  " call vimproc#system(
+  "       \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
+  "       \ + l:argv)
+  call neocomplcache#async_cache#main(l:argv)
+
+  lcd `=l:current`
+endfunction"}}}
+
+function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark)"{{{
+  let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+
+  let l:current = getcwd()
+  lcd `=s:sdir`
+
+  " Create keyword pattern file.
+  call neocomplcache#cache#writefile('keyword_patterns', a:filename, [a:pattern])
+  let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', a:filename)
+
+  " args: dummy, filename pattern mark minlen maxfilename outputname
+  let l:argv =
+        \ [l:cache_name, a:filename, l:pattern_file_name, a:mark, g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
+
+  call vimproc#system_bg(
         \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
         \ + l:argv)
   " call neocomplcache#async_cache#main(l:argv)
 
   lcd `=l:current`
-endfunction
+endfunction"}}}
 
 " vim: foldmethod=marker

@@ -35,8 +35,7 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename)"{{{
   endif
 
   let l:max_lines = len(l:lines)
-  " let l:menu = printf('[%s] %.' . a:maxfilename . 's', a:mark, fnamemodify(a:filename, ':t'))
-  let l:menu = 'hoge'
+  let l:menu = printf('[%s] %.' . a:maxfilename . 's', a:mark, fnamemodify(a:filename, ':t'))
 
   let l:keyword_list = []
   let l:dup_check = {}
@@ -62,15 +61,14 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename)"{{{
 endfunction"}}}
 
 function! neocomplcache#async_cache#main(argv)"{{{
-  " args: outputname filename pattern mark minlen maxfilename
-  let [l:outputname, l:filename, l:filetype, l:mark, l:minlen, l:maxfilename]
+  " args: outputname filename pattern_file_name mark minlen maxfilename
+  let [l:outputname, l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename]
         \ = a:argv
 
-  " let keyword_list = s:load_from_file(filename, pattern, mark, minlen, maxfilename)
-  let l:keyword_list = s:load_from_file(l:filename, '\h\w*', l:mark, l:minlen, l:maxfilename)
+  let l:pattern = get(readfile(l:pattern_file_name), 0, '\h\w*')
+  let l:keyword_list = s:load_from_file(l:filename, l:pattern, l:mark, l:minlen, l:maxfilename)
 
   " Create dictionary key.
-  " for keyword in [{'word':'test'}, {'word':'piyo'}]
   for keyword in l:keyword_list
     if !has_key(keyword, 'kind')
       let keyword.kind = ''

@@ -863,7 +863,7 @@ function! neocomplcache#system(str, ...)"{{{
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
 
-  if !s:exists_vimproc
+  if !neocomplcache#has_vimproc()
     if a:0 == 0
       let l:output = system(l:command)
     else
@@ -882,6 +882,9 @@ function! neocomplcache#system(str, ...)"{{{
   endif
 
   return l:output
+endfunction"}}}
+function! neocomplcache#has_vimproc()"{{{
+  return s:exists_vimproc
 endfunction"}}}
 
 function! neocomplcache#get_cur_text(...)"{{{

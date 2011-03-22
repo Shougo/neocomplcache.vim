@@ -958,6 +958,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Supported cobol.
 - Fixed async_cache.
 - Improved async_cache debug support.
+- Implemented asyncronous caching in buffer_complete.
 
 2011-03-21
 - Implemented async_cache.vim(testing).
