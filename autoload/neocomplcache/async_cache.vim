@@ -61,34 +61,41 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename)"{{{
   return l:keyword_list
 endfunction"}}}
 
-" args: outputname filename pattern mark minlen maxfilename
-let [filename, filetype, mark, minlen, maxfilename]
-      \ = argv()[1:]
+function! neocomplcache#async_cache#main(argv)"{{{
+  " args: outputname filename pattern mark minlen maxfilename
+  let [l:outputname, l:filename, l:filetype, l:mark, l:minlen, l:maxfilename]
+        \ = a:argv
 
-" let keyword_list = s:load_from_file(filename, pattern, mark, minlen, maxfilename)
-let keyword_list = s:load_from_file(filename, '\h\w*', mark, minlen, maxfilename)
+  " let keyword_list = s:load_from_file(filename, pattern, mark, minlen, maxfilename)
+  let l:keyword_list = s:load_from_file(l:filename, '\h\w*', l:mark, l:minlen, l:maxfilename)
 
-" Create dictionary key.
-" for keyword in [{'word':'test'}, {'word':'piyo'}]
-for keyword in keyword_list
-  if !has_key(keyword, 'kind')
-    let keyword.kind = ''
-  endif
-  if !has_key(keyword, 'class')
-    let keyword.class = ''
-  endif
-  if !has_key(keyword, 'abbr')
-    let keyword.abbr = keyword.word
-  endif
+  " Create dictionary key.
+  " for keyword in [{'word':'test'}, {'word':'piyo'}]
+  for keyword in l:keyword_list
+    if !has_key(keyword, 'kind')
+      let keyword.kind = ''
+    endif
+    if !has_key(keyword, 'class')
+      let keyword.class = ''
+    endif
+    if !has_key(keyword, 'abbr')
+      let keyword.abbr = keyword.word
+    endif
+  endfor
 
-  call append('$', printf('%s|||%s|||%s|||%s|||%s',
-        \ keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
-endfor
+  " Output cache.
+  let l:word_list = []
+  for keyword in l:keyword_list
+    call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s',
+          \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
+  endfor
 
-" Output cache.
-1delete _
-write!
+  call writefile(l:word_list, l:outputname)
+endfunction"}}}
 
-qall!
+if argc() == 6
+  call neocomplcache#async_cache#main(argv())
+  qall!
+endif
 
 " vim: foldmethod=marker

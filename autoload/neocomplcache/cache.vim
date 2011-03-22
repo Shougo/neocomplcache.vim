@@ -417,8 +417,14 @@ function! neocomplcache#cache#test_async()
   lcd `=s:sdir`
 
   " args: dummy, filename pattern mark minlen maxfilename outputname
-  call vimproc#system(['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim',
-        \ l:cache_name, l:filename, 'vim', 'B', g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width])
+  let l:argv =
+        \ [l:cache_name, l:filename, 'vim', 'B', g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
+
+  call vimproc#system(
+        \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
+        \ + l:argv)
+  " call neocomplcache#async_cache#main(l:argv)
+
   lcd `=l:current`
 endfunction
 
