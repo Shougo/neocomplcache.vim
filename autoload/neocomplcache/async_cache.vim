@@ -1,9 +1,7 @@
-set cpo&vim
-
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Mar 2011.
+" Last Modified: 22 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -63,23 +61,28 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename)"{{{
   return l:keyword_list
 endfunction"}}}
 
-" args: filename pattern mark minlen maxfilename outputname
-let [l:filename, l:filetype, l:mark, l:minlen, l:maxfilename, l:outputname]
+" args: outputname filename pattern mark minlen maxfilename
+let [filename, filetype, mark, minlen, maxfilename]
       \ = argv()[1:]
 
-" let l:keyword_list = s:load_from_file(l:filename, l:pattern, l:mark, l:minlen)
-let l:keyword_list = s:load_from_file(l:filename, '\h\w*', l:mark, l:minlen)
+" let keyword_list = s:load_from_file(filename, pattern, mark, minlen, maxfilename)
+let keyword_list = s:load_from_file(filename, '\h\w*', mark, minlen, maxfilename)
 
 " Create dictionary key.
 " for keyword in [{'word':'test'}, {'word':'piyo'}]
-for keyword in l:keyword_list
-  let keyword.kind = ''
-  let keyword.class = ''
-  let keyword.abbr = keyword.word
+for keyword in keyword_list
+  if !has_key(keyword, 'kind')
+    let keyword.kind = ''
+  endif
+  if !has_key(keyword, 'class')
+    let keyword.class = ''
+  endif
+  if !has_key(keyword, 'abbr')
+    let keyword.abbr = keyword.word
+  endif
 
-  call append('$', keyword.word)
-  " call append('$', printf('%s|||%s|||%s|||%s|||%s',
-  "       \ keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
+  call append('$', printf('%s|||%s|||%s|||%s|||%s',
+        \ keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
 endfor
 
 " Output cache.

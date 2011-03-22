@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Mar 2011.
+" Last Modified: 22 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -406,11 +406,11 @@ function! s:create_hash(dir, str)
   return l:hash
 endfunction
 
-let s:sdir = fnamemodify(expand('<sfile>'), ':h')
+let s:sdir = fnamemodify(expand('<sfile>'), ':p:h')
 
 " Async test.
 function! neocomplcache#cache#test_async()
-  let l:filename = substitute(expand('%'), '\\', '/', 'g')
+  let l:filename = substitute(fnamemodify(expand('%'), ':p'), '\\', '/', 'g')
   let l:cache_name = neocomplcache#cache#encode_name('test_cache', l:filename)
 
   let l:current = getcwd()
