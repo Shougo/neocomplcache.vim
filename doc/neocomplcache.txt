@@ -957,6 +957,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-03-23
 - Fixed buffer_complete error.
 - Improved caching event.
+- Improved neocomplcache#cache#async_load_from_file().
 
 2011-03-22
 - Supported cobol.

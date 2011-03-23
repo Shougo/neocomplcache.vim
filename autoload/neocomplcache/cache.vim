@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Mar 2011.
+" Last Modified: 23 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -436,25 +436,31 @@ function! neocomplcache#cache#test_async()"{{{
 endfunction"}}}
 
 function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark)"{{{
-  let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+  if neocomplcache#has_vimproc()
+    let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 
-  let l:current = getcwd()
-  lcd `=s:sdir`
+    let l:current = getcwd()
+    lcd `=s:sdir`
 
-  " Create keyword pattern file.
-  call neocomplcache#cache#writefile('keyword_patterns', a:filename, [a:pattern])
-  let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', a:filename)
+    " Create keyword pattern file.
+    call neocomplcache#cache#writefile('keyword_patterns', a:filename, [a:pattern])
+    let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', a:filename)
 
-  " args: dummy, filename pattern mark minlen maxfilename outputname
-  let l:argv =
-        \ [l:cache_name, a:filename, l:pattern_file_name, a:mark, g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
+    " args: dummy, filename pattern mark minlen maxfilename outputname
+    let l:argv =
+          \ [l:cache_name, a:filename, l:pattern_file_name, a:mark, g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
 
-  call vimproc#system_bg(
-        \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
-        \ + l:argv)
-  " call neocomplcache#async_cache#main(l:argv)
+    call vimproc#system_bg(
+          \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
+          \ + l:argv)
+    " call neocomplcache#async_cache#main(l:argv)
 
-  lcd `=l:current`
+    lcd `=l:current`
+  else
+    " Caching from file.
+    call neocomplcache#cache#save_cache(a:cache_dir, a:filename,
+          \ neocomplcache#cache#load_from_file(a:filename, a:pattern, a:mark))
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker
