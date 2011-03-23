@@ -93,7 +93,7 @@ endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if neocomplcache#is_auto_complete() && len(a:cur_keyword_str) < s:completion_length
-    
+
     " Check member prefix pattern.
     let l:filetype = neocomplcache#get_context_filetype()
     if !has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
@@ -114,38 +114,20 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
         let l:keyword_list += values(s:buffer_sources[src].member_cache[l:var_name])
       endif
     endfor
-    
+
     return l:keyword_list
   endif
-  
+
   let l:keyword_list = []
+  for src in s:get_sources_list()
+    let l:keyword_cache = neocomplcache#dictionary_filter(s:buffer_sources[src].keyword_cache, a:cur_keyword_str, s:completion_length)
 
-  let l:current = bufnr('%')
-  
-  if len(a:cur_keyword_str) < s:completion_length ||
-        \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
-    for src in s:get_sources_list()
-      let l:keyword_cache = neocomplcache#keyword_filter(
-            \neocomplcache#unpack_dictionary_dictionary(s:buffer_sources[src].keyword_cache), a:cur_keyword_str)
-      if src == l:current
-        call s:calc_frequency(l:keyword_cache)
-      endif
-      let l:keyword_list += l:keyword_cache
-    endfor
-  else
-    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
-    for src in s:get_sources_list()
-      if has_key(s:buffer_sources[src].keyword_cache, l:key)
-        let l:keyword_cache = neocomplcache#keyword_filter(values(s:buffer_sources[src].keyword_cache[l:key]), a:cur_keyword_str)
+    if src == bufnr('%')
+      call s:calc_frequency(l:keyword_cache)
+    endif
 
-        if src == l:current
-          call s:calc_frequency(l:keyword_cache)
-        endif
-
-        let l:keyword_list += l:keyword_cache
-      endif
-    endfor
-  endif
+    let l:keyword_list += l:keyword_cache
+  endfor
 
   return l:keyword_list
 endfunction"}}}
@@ -531,14 +513,10 @@ function! s:check_source()"{{{
 
         if filereadable(l:source.cache_name)
           " Caching from cache.
-          for l:keyword in neocomplcache#cache#load_from_cache('buffer_cache', l:source.path)
-            let l:key = tolower(l:keyword.word[: s:completion_length-1])
-            if !has_key(l:source.keyword_cache, l:key)
-              let l:source.keyword_cache[l:key] = {}
-            endif
-
-            let l:source.keyword_cache[l:key][l:keyword.word] = l:keyword
-          endfor
+          call neocomplcache#cache#list2index(
+                \ neocomplcache#cache#load_from_cache('buffer_cache', l:source.path),
+                \ l:source.keyword_cache,
+                \ s:completion_length)
 
           let l:source.loaded_cache = 1
         endif
@@ -585,7 +563,7 @@ function! s:save_cache(srcname)"{{{
   endif
 
   " Output buffer.
-  call neocomplcache#cache#save_cache('buffer_cache', l:srcname, neocomplcache#unpack_dictionary_dictionary(s:buffer_sources[a:srcname].keyword_cache))
+  call neocomplcache#cache#save_cache('buffer_cache', l:srcname, neocomplcache#unpack_dictionary(s:buffer_sources[a:srcname].keyword_cache))
 endfunction "}}}
 function! s:save_all_cache()"{{{
   try
@@ -654,7 +632,7 @@ function! s:output_keyword(name)"{{{
   endif
 
   " Output buffer.
-  for keyword in neocomplcache#unpack_dictionary_dictionary(s:buffer_sources[l:number].keyword_cache)
+  for keyword in neocomplcache#unpack_dictionary(s:buffer_sources[l:number].keyword_cache)
     silent put=string(keyword)
   endfor
 endfunction "}}}

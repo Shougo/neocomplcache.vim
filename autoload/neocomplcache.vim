@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Mar 2011.
+" Last Modified: 23 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -778,6 +778,10 @@ function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   return ret
 endfunction"}}}
 function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completion_length)"{{{
+  if empty(a:dictionary)
+    return []
+  endif
+
   if len(a:cur_keyword_str) < a:completion_length ||
         \neocomplcache#check_match_filter(a:cur_keyword_str, a:completion_length)
     return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
@@ -788,22 +792,21 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
       return []
     endif
 
+    let l:list = a:dictionary[l:key]
+    if type(l:list) == type({})
+      " Convert dictionary dictionary.
+      unlet l:list
+      let l:list = values(a:dictionary[l:key])
+    endif
+
     return (len(a:cur_keyword_str) == a:completion_length && &ignorecase)?
-          \ a:dictionary[l:key] : neocomplcache#keyword_filter(copy(a:dictionary[l:key]), a:cur_keyword_str)
+          \ l:list : neocomplcache#keyword_filter(copy(l:list), a:cur_keyword_str)
   endif
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
   let l:ret = []
   for l in values(a:dict)
-    let l:ret += l
-  endfor
-
-  return l:ret
-endfunction"}}}
-function! neocomplcache#unpack_dictionary_dictionary(dict)"{{{
-  let l:ret = []
-  for l in values(a:dict)
-    let l:ret += values(l)
+    let l:ret += type(l) == type([]) ? l : values(l)
   endfor
 
   return l:ret

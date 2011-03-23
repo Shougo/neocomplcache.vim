@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2010
+" Last Modified: 23 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ function! s:source.initialize()"{{{
   " Initialize.
   let s:syntax_list = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('syntax_complete')
-  
+
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'syntax_complete', 8)
 
@@ -47,7 +47,7 @@ function! s:source.initialize()"{{{
   if !isdirectory(g:neocomplcache_temporary_dir . '/syntax_cache')
     call mkdir(g:neocomplcache_temporary_dir . '/syntax_cache')
   endif
-  
+
   " Initialize check.
   call s:caching()
 endfunction"}}}
@@ -60,7 +60,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if neocomplcache#within_comment()
     return []
   endif
-  
+
   let l:list = []
 
   let l:filetype = neocomplcache#get_context_filetype()
@@ -71,7 +71,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
       let s:syntax_list[l:filetype] = l:keyword_lists
     endif
   endif
-  
+
   for l:source in neocomplcache#get_sources_list(s:syntax_list, l:filetype)
     let l:list += neocomplcache#dictionary_filter(l:source, a:cur_keyword_str, s:completion_length)
   endfor

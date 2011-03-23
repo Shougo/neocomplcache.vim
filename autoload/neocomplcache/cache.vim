@@ -28,7 +28,12 @@
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   if !filereadable(l:cache_name)
-    return []
+    " Try a:filename.
+    let l:cache_name = a:filename
+
+    if !filereadable(l:cache_name)
+      return []
+    endif
   endif
 
   let l:keyword_lists = []
@@ -314,6 +319,17 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
 
   return l:keyword_lists
 endfunction"}}}
+function! neocomplcache#cache#list2index(list, dictionary, completion_length)"{{{
+  for l:keyword in a:list
+    let l:key = tolower(l:keyword.word[: a:completion_length-1])
+    if !has_key(a:dictionary, l:key)
+      let a:dictionary[l:key] = {}
+    endif
+    let a:dictionary[l:key][l:keyword.word] = l:keyword
+  endfor
+
+  return a:dictionary
+endfunction"}}}
 
 function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
   " Create cache directory.
@@ -461,6 +477,8 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
     call neocomplcache#cache#save_cache(a:cache_dir, a:filename,
           \ neocomplcache#cache#load_from_file(a:filename, a:pattern, a:mark))
   endif
+
+  return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 endfunction"}}}
 
 " vim: foldmethod=marker
