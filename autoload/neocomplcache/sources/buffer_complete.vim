@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Mar 2011.
+" Last Modified: 23 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -481,7 +481,7 @@ function! s:word_caching(srcname)"{{{
 
       " Caching from file.
       call neocomplcache#cache#writefile('buffer_cache', l:source.cache_name,
-            \ neocomplcache#cache#load_from_file(l:source.path, l:source.keyword_pattern, 'B'))
+            \ values(neocomplcache#cache#load_from_file(l:source.path, l:source.keyword_pattern, 'B')))
     endif
   endif
 endfunction"}}}
