@@ -473,9 +473,12 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
 
     lcd `=l:current`
   else
-    " Caching from file.
-    call neocomplcache#cache#save_cache(a:cache_dir, a:filename,
-          \ neocomplcache#cache#load_from_file(a:filename, a:pattern, a:mark))
+    let l:keyword_list = neocomplcache#cache#load_from_file(a:filename, a:pattern, a:mark)
+
+    if !empty(l:keyword_list)
+      " Caching from file.
+      call neocomplcache#cache#save_cache(a:cache_dir, a:filename, l:keyword_list)
+    endif
   endif
 
   return neocomplcache#cache#encode_name(a:cache_dir, a:filename)

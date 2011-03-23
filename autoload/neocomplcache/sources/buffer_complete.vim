@@ -450,7 +450,6 @@ function! s:word_caching(srcname)"{{{
       call neocomplcache#cache#writefile('buffer_temporary',
             \ l:source.path, getbufline(a:srcname, 1, '$'))
       let l:source.path = neocomplcache#cache#encode_name('buffer_temporary', l:source.path)
-      let l:source.cache_name = neocomplcache#cache#encode_name('buffer_cache', l:source.path)
     endif
 
     if !neocomplcache#has_vimproc() && l:source.name ==# '[Command Line]'
@@ -458,7 +457,8 @@ function! s:word_caching(srcname)"{{{
       return
     endif
 
-    call neocomplcache#cache#async_load_from_file('buffer_cache', l:source.path, l:source.keyword_pattern, 'B')
+    let l:source.cache_name =
+          \ neocomplcache#cache#async_load_from_file('buffer_cache', l:source.path, l:source.keyword_pattern, 'B')
   endif
 endfunction"}}}
 
