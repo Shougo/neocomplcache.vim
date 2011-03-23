@@ -479,7 +479,12 @@ function! s:check_changed_buffer(bufnumber)"{{{
     let l:ft = 'nothing'
   endif
 
-  return s:buffer_sources[a:bufnumber].name != fnamemodify(bufname(a:bufnumber), ':t')
+  let l:filename = fnamemodify(bufname(a:bufnumber), ':t')
+  if l:filename == ''
+    let l:filename = '[No Name]'
+  endif
+
+  return s:buffer_sources[a:bufnumber].name != l:filename
         \ || s:buffer_sources[a:bufnumber].filetype != l:ft
 endfunction"}}}
 
