@@ -37,7 +37,7 @@ let s:source = {
 function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
-    autocmd FileType,BufWritePost * call s:check_source()
+    autocmd FileType,BufWritePost,CursorHold * call s:check_source()
     autocmd CursorHold * call s:rank_caching_current_cache_line(1)
     autocmd InsertEnter,CursorHoldI * call s:rank_caching_current_cache_line(0)
     autocmd InsertLeave * call neocomplcache#sources#buffer_complete#caching_current_cache_line()
