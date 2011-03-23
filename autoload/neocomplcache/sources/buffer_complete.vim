@@ -452,7 +452,7 @@ function! s:word_caching(srcname)"{{{
       let l:source.path = neocomplcache#cache#encode_name('buffer_temporary', l:source.path)
     endif
 
-    if !neocomplcache#has_vimproc() && l:source.name ==# '[Command Line]'
+    if l:source.name ==# '[Command Line]'
       " Ignore caching.
       return
     endif

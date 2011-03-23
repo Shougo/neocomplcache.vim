@@ -959,6 +959,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved caching event.
 - Improved neocomplcache#cache#async_load_from_file().
 - Refactoringed caching routine.
+- Ignore caching command line window.
 
 2011-03-22
 - Supported cobol.
