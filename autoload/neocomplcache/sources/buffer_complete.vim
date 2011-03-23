@@ -480,8 +480,8 @@ function! s:word_caching(srcname)"{{{
       endif
 
       " Caching from file.
-      call neocomplcache#cache#writefile('buffer_cache', l:source.cache_name,
-            \ values(neocomplcache#cache#load_from_file(l:source.path, l:source.keyword_pattern, 'B')))
+      call neocomplcache#cache#save_cache('buffer_cache', l:source.cache_name,
+            \ neocomplcache#cache#load_from_file(l:source.path, l:source.keyword_pattern, 'B'))
     endif
   endif
 endfunction"}}}
