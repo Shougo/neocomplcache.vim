@@ -63,6 +63,15 @@ INSTALL							*neocomplcache-install*
 let g:neocomplcache_enable_at_startup = 1
 in your .vimrc.
 
+							*neocomplcache-asyncronous*
+After neocomplcache Ver.6.0, If installed |vimproc|, neocomplcache making a
+cache asynchronously.
+
+vimproc is distributed below URL:
+http://github.com/Shougo/vimshell/tree/master
+
+To use vimproc, you must compile. Refer to vimproc documentation.
+
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
 
@@ -953,6 +962,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-03-25
+- Added neocomplcache asyncronous description.
 
 2011-03-23
 - Fixed buffer_complete error.

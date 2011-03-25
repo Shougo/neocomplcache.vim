@@ -64,6 +64,17 @@ INSTALL							*neocomplcache-install*
 |:NeoComplCacheEnable|コマンドを実行するか、
 let g:neocomplcache_enable_at_startup = 1 を.vimrc内に記述する。
 
+							*neocomplcache-asyncronous*
+neocomplcache Ver.6.0より、|vimproc|をインストールすれば、非同期にキャッシュ
+を行えるように変更された。|vimproc|がインストールされていない場合、従来通り
+の挙動を示す。
+vimprocの配布先は次の通りである。
+
+http://github.com/Shougo/vimshell/tree/master
+
+vimprocを使用するためには、バイナリをコンパイルしなければならない。
+コンパイル方法については、vimprocのヘルプを参照せよ。
+
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
 
