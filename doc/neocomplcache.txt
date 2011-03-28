@@ -168,10 +168,6 @@ COMMANDS 						*neocomplcache-commands*
 		It is done re-cache automatically when you store a snippet
 		file.
 
-:NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*
-		Print [filetype] snippets.  Print current buffer's filetype
-		snippets when [filetype] omitted.
-
 ------------------------------------------------------------------------------
 VARIABLES 						*neocomplcache-variables*
 
@@ -928,9 +924,6 @@ The placeholder value can't be contained new line. Below snippet is illegal.
 			${3:# do smth}}
 <
 
-When you want to view snippets list, execute |:NeoComplCachePrintSnippets| command.
-
-
 Multi snippet feature is supported in snipMate.
 >
 	snippet ${1:trigger} ${2:description}
@@ -962,6 +955,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-03-28
+- Added neocomplcache snippet source.
+- Deleted :NeoComplCachePrintSnippets command.
 
 2011-03-25
 - Added neocomplcache asyncronous description.
@@ -1873,7 +1870,7 @@ ChangeLog NeoComplCache 4.00-:
     - Improved skk.vim support.
     - Improved lisp keyword pattern.
     - Added clojure support.
-    
+
    4.09:
     - Improved syntax detect in snippets_complete.
     - Improved NeoComplCachePrintSnippets command.
@@ -1893,7 +1890,7 @@ ChangeLog NeoComplCache 4.00-:
     - Fixed wildcard bug.
     - Fixed indent.
     - Supported interactive ocaml.
-    
+
    4.08:
     - Improved keywords in vim_complete.
     - Deleted g:NeoComplCache_NonBufferFileTypeDetect option.
@@ -1904,7 +1901,7 @@ ChangeLog NeoComplCache 4.00-:
     - Improved quickmatch behavior.
     - Fixed complete length bug in omni_complete.
     - Fixed wildcard freeze in filename_complete.
-    
+
    4.07:
     - Improved filaname pattern.
     - Deleted '...' pattern.
@@ -1927,7 +1924,7 @@ ChangeLog NeoComplCache 4.00-:
     - Added completefunc_complete.
     - Fixed neocomplcache#get_cur_text() bug.
     - Fixed unpack dictionary bug in tags_complete.
-    
+
    4.05:
     - Improved snippet alias.
     - Improved analyzing extra args in vim_complete.
@@ -1937,7 +1934,7 @@ ChangeLog NeoComplCache 4.00-:
     - Don't fnamemodify in omni_complete.
     - Improved trunk filename in filename_complete.
     - Fixed complete common string bug.
-    
+
    4.04:
     - Implemented common string completion.
     - Added css snippet file.
@@ -1952,14 +1949,14 @@ ChangeLog NeoComplCache 4.00-:
     - Implemented fast mode when last completion was skipped.
     - Deleted C/C++ omni completion support.
     - Improved caching tag.
-    
+
    4.03:
     - Don't use abs() for Vim7.
     - Changed display interface in snippets_complete.
     - Implemented no options in vim_complete.
     - Improved compatiblity with snipMate.
     - Fixed typo in neocomplcache.jax.
-    
+
    4.02:
     - Added Python snippet.
     - Added g:neocomplcache_tags_filter_patterns option.
@@ -1969,7 +1966,7 @@ ChangeLog NeoComplCache 4.00-:
     - Fixed member fileter error.
     - Fixed fatal include_complete error.
     - Fixed haskell and ocaml patterns.
-    
+
    4.01:
     - Added filename pattern.
     - Fixed in TeX behavior in filename_complete.
@@ -1985,7 +1982,7 @@ ChangeLog NeoComplCache 4.00-:
     - Improved randomize.
     - Changed g:neocomplcache_CalcRankRandomize option as g:neocomplcache_enable_randomize.
     - Fixed save cache error.
-    
+
    4.00:
     - Fixed manual completion error.
     - Deleted g:NeoComplCache_PreviousKeywordCompletion. It's default.

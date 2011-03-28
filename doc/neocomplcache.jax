@@ -35,6 +35,7 @@ Plugins			|neocomplcache-plugins|
   User plugins		  |neocomplcache-user-plugins|
 Snippet			|neocomplcache-snippet|
 Create plugin		|neocomplcache-create-plugin|
+Unite sources		|neocomplcache-unite-sources|
 Changelog		|neocomplcache-changelog|
 
 ==============================================================================
@@ -170,11 +171,6 @@ COMMANDS 						*neocomplcache-commands*
 		成される。 このコマンドでは、neocomplcacheに付属するスニペッ
 		ト補完ファイルを編集する。 スニペット補完ファイルを保存する
 		と、自動的に再キャッシュされる。
-
-:NeoComplCachePrintSnippets [filetype]			*:NeoComplCachePrintSnippets*
-		[filetype]のスニペットをすべて表示する。 [filetype]を省略す
-		ると、カレントバッファのファイルタイプを指定したことになる。
-		スニペットの名前を忘れてしまったときに便利であろう。
 
 ------------------------------------------------------------------------------
 VARIABLES 						*neocomplcache-variables*
@@ -566,15 +562,18 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		いとき、次のプレースホルダにジャンプする。スニペットは
 		neocomplcacheのキーワードパターンで示されるもののみを認識す
 		る。
+		デフォルトではマッピングされていない。
 
 <Plug>(neocomplcache_snippets_force_expand)		*<Plug>(neocomplcache_snippets_force_expand)*
 		カーソル位置にあるスニペットを展開する。スニペットが存在しな
 		いときは無視される。
+		デフォルトではマッピングされていない。
 
 <Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
 		次のプレースホルダにジャンプする。スニペットの展開は行わない。
 		スニペット名を展開したくないときに使う。
-                
+		デフォルトではマッピングされていない。
+
 neocomplcache#manual_filename_complete()		*neocomplcache#manual_filename_complete()*
 		inoremap <expr>上で使用する。neocomplcacheのファイル名補完を
 		手動で呼び出す。 Vim標準のファイル名補完を置き換えるときに使
@@ -637,9 +636,14 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 >
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
-
 <Plug>(neocomplcache_start_unite_complete)		*<Plug>(neocomplcache_start_unite_complete)*
-		|unite|による補完インタフェースを使用する。この機能はまだ実験段階である。
+		|unite|による補完インタフェースを使用する。この機能はまだ実
+		験段階である。手動補完を置き換えることができると思われるが、
+		デフォルトではマッピングされていない。
+
+<Plug>(neocomplcache_start_unite_snippet)		*<Plug>(neocomplcache_start_unite_snippet)*
+		|unite|による補完インタフェースを使用して、スニペットのリス
+		トを参照する。この機能はまだ実験段階である。
 
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
@@ -873,10 +877,6 @@ vnoremapやvmap, mapはselect modeでも有効になるので、変なマッピ�
 			${3:# do smth}}
 <
 
-スニペットの一覧を表示するには|:NeoComplCachePrintSnippets|コマンドを実行する。
-スニペットを忘れたときに便利である。
-
-
 snipMateのmulti snippetにも対応している。
 >
 	snippet ${1:trigger} ${2:description}
@@ -904,6 +904,34 @@ CREATE PLUGIN					*neocomplcache-create-plugin*
 
 この項では、neocomplcacheのプラグインを作成する方法について解説する。 プラグ
 インを自作することで、neocomplcacheの能力は無限大に広がるだろう。
+
+==============================================================================
+UNITE SOURCES						*neocomplcache-unite-sources*
+
+ここでは、neocomplcacheに添付されている、|unite|用sourceについて解説を行なう。
+
+							*neocomplcache-unite-source-neocomplcache*
+neocomplcache
+		neocomplcacheの補完候補を候補とする。候補はcompletion kindで
+		ある。普通、mapping内で
+		|<Plug>(neocomplcache_start_unite_complete)|をマッピングして
+		使用する。
+		例：
+>
+		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
+<
+							*neocomplcache-unite-source-snippet*
+snippet
+		neocomplcacheのsnippetを候補とする。候補はcompletion kindで
+		ある。普通、mapping内で
+		|<Plug>(neocomplcache_start_unite_snippet)|をマッピングして
+		使用する。
+
+source別アクション
+
+snippet							*neocomplcache-unite-action-snippet*
+	expand		スニペットの展開(デフォルト)
+	preview		スニペットの定義を見る
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*

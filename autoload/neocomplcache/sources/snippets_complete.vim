@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Feb 2011.
+" Last Modified: 28 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,7 +74,6 @@ function! s:source.initialize()"{{{
 
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheEditSnippets call s:edit_snippets(<q-args>, 0)
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheEditRuntimeSnippets call s:edit_snippets(<q-args>, 1)
-  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCachePrintSnippets call s:print_snippets(<q-args>)
 
   hi def link NeoComplCacheExpandSnippets Special
 
@@ -107,10 +106,9 @@ endfunction"}}}
 function! s:source.finalize()"{{{
   delcommand NeoComplCacheEditSnippets
   delcommand NeoComplCacheEditRuntimeSnippets
-  delcommand NeoComplCachePrintSnippets
 
   hi clear NeoComplCacheExpandSnippets
-  
+
   if neocomplcache#exists_echodoc()
     call echodoc#unregister('snippets_complete')
   endif
@@ -154,7 +152,7 @@ function! s:doc_dict.search(cur_text)"{{{
     return []
   endif
 
-  let l:snippets = s:get_snippets()
+  let l:snippets = neocomplcache#sources#snippets_complete#get_snippets()
 
   let l:cur_word = s:get_cursor_keyword_snippet(l:snippets, a:cur_text)
   if l:cur_word == ''
@@ -201,7 +199,7 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
 endfunction"}}}
 
 function! neocomplcache#sources#snippets_complete#expandable()"{{{
-  let l:snippets = s:get_snippets()
+  let l:snippets = neocomplcache#sources#snippets_complete#get_snippets()
   let l:cur_text = neocomplcache#get_cur_text(1)
 
   if s:get_cursor_keyword_snippet(l:snippets, l:cur_text) != ''
@@ -304,31 +302,6 @@ function! s:edit_snippets(filetype, isruntime)"{{{
     saveas `=l:filename`
   endif
 endfunction"}}}
-function! s:print_snippets(filetype)"{{{
-  let l:list = values(s:snippets['_'])
-
-  let l:filetype = (a:filetype != '')?    a:filetype : neocomplcache#get_context_filetype(1)
-
-  if l:filetype != ''
-    if !has_key(s:snippets, l:filetype)
-      call s:caching_snippets(l:filetype)
-    endif
-
-    let l:list += values(s:snippets[l:filetype])
-  endif
-
-  for snip in sort(l:list, 's:compare_words')
-    echohl String
-    echo snip.word
-    echohl Special
-    echo snip.menu
-    echohl None
-    echo snip.snip
-    echo ' '
-  endfor
-
-  echohl None
-endfunction"}}}
 
 function! s:caching_snippets(filetype)"{{{
   let l:snippet = {}
@@ -428,28 +401,28 @@ function! s:get_cursor_snippet(snippets, cur_text)"{{{
   return l:cur_word
 endfunction"}}}
 function! s:snippets_force_expand(cur_text, col)"{{{
-  let l:cur_word = s:get_cursor_snippet(s:get_snippets(), a:cur_text)
+  let l:cur_word = s:get_cursor_snippet(neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
   if l:cur_word == ''
     " Not found.
     return
   endif
 
-  call s:snippets_expand(a:cur_text, a:col, l:cur_word)
+  call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, l:cur_word)
 endfunction"}}}
 function! s:snippets_expand_or_jump(cur_text, col)"{{{
-  let l:cur_word = s:get_cursor_keyword_snippet(s:get_snippets(), a:cur_text)
+  let l:cur_word = s:get_cursor_keyword_snippet(neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
   if l:cur_word == ''
     " Not found.
     call s:snippets_jump(a:cur_text, a:col)
     return
   endif
 
-  call s:snippets_expand(a:cur_text, a:col, l:cur_word)
+  call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, l:cur_word)
 endfunction"}}}
-function! s:snippets_expand(cur_text, col, cur_word)"{{{
-  let l:snippets = s:get_snippets()
-  let l:snippet = l:snippets[a:cur_word]
-  let l:cur_text = a:cur_text[: -1-len(a:cur_word)]
+function! neocomplcache#sources#snippets_complete#expand(cur_text, col, trigger_name)"{{{
+  let l:snippets = neocomplcache#sources#snippets_complete#get_snippets()
+  let l:snippet = l:snippets[a:trigger_name]
+  let l:cur_text = a:cur_text[: -1-len(a:trigger_name)]
 
   let l:snip_word = l:snippet.snip
   if l:snip_word =~ '\\\@<!`.*\\\@<!`'
@@ -739,7 +712,7 @@ function! s:eval_snippet(snippet_text)"{{{
 
   return l:snip_word
 endfunction"}}}
-function! s:get_snippets()"{{{
+function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
   " Get buffer filetype.
   let l:ft = neocomplcache#get_context_filetype(1)
 

@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: neocomplcache.vim
+" FILE: snippet.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 28 Mar 2011.
 " License: MIT license  {{{
@@ -24,63 +24,42 @@
 " }}}
 "=============================================================================
 
-function! unite#sources#neocomplcache#define() "{{{
+function! unite#sources#snippet#define() "{{{
   if !exists('*unite#version') || unite#version() < 150
     echoerr 'Your unite.vim is too old.'
     echoerr 'Please install unite.vim Ver.1.5 or above.'
     return []
   endif
 
-  return s:neocomplcache_source
+  return s:source
 endfunction "}}}
 
-" neocomplcache unite source.
-let s:neocomplcache_source = {
-      \ 'name': 'neocomplcache',
+" neocomplcache snippet source.
+let s:source = {
+      \ 'name': 'snippet',
       \ 'hooks' : {},
+      \ 'default_action' : { '*' : 'expand' },
+      \ 'action_table' : {},
       \ }
 
-function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
-  if !neocomplcache#is_enabled()
-    let a:context.source__cur_keyword_pos = -1
-    let a:context.source__complete_words = []
-    return
-  endif
-
-  " Save options.
-  let l:max_list_save = g:neocomplcache_max_list
-  let l:max_keyword_width_save = g:neocomplcache_max_keyword_width
-  let g:neocomplcache_max_list = -1
-  let g:neocomplcache_max_keyword_width = -1
-
-  let [a:context.source__cur_keyword_pos, l:cur_keyword_str, a:context.source__complete_words] =
-        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(neocomplcache#get_cur_text(1)), 1)
-
-  " Restore options.
-  let g:neocomplcache_max_list = l:max_list_save
-  let g:neocomplcache_max_keyword_width = l:max_keyword_width_save
+function! s:source.hooks.on_init(args, context) "{{{
+  let a:context.source__cur_keyword_pos = s:get_keyword_pos(neocomplcache#get_cur_text(1))
+  let a:context.source__snippets = sort(values(neocomplcache#sources#snippets_complete#get_snippets()), 's:compare_words')
 endfunction"}}}
 
-function! s:neocomplcache_source.gather_candidates(args, context) "{{{
+function! s:source.gather_candidates(args, context) "{{{
   let l:keyword_pos = a:context.source__cur_keyword_pos
   let l:list = []
-  for l:keyword in a:context.source__complete_words
+  for l:keyword in a:context.source__snippets
     let l:dict = {
         \   'word' : l:keyword.word,
-        \   'abbr' : printf('%-50s', (has_key(l:keyword, 'abbr') ? l:keyword.abbr : l:keyword.word)),
+        \   'abbr' : printf('%-50s %s', l:keyword.word, l:keyword.menu),
         \   'kind': 'completion',
         \   'action__complete_word' : l:keyword.word,
         \   'action__complete_pos' : l:keyword_pos,
+        \   'source__menu' : l:keyword.menu,
+        \   'source__snip' : l:keyword.snip,
         \ }
-    if has_key(l:keyword, 'kind')
-      let l:dict.abbr .= ' ' . l:keyword.kind
-    endif
-    if has_key(l:keyword, 'menu')
-      let l:dict.abbr .= ' ' . l:keyword.menu
-    endif
-    if has_key(l:keyword, 'info')
-      let l:dict.action__complete_info = l:keyword.info
-    endif
 
     call add(l:list, l:dict)
   endfor
@@ -88,11 +67,58 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
   return l:list
 endfunction "}}}
 
-function! unite#sources#neocomplcache#start_complete() "{{{
-  return printf("\<ESC>:call unite#start(['neocomplcache'],
-        \ { 'auto_preview' : 1, 'col' : %d, 'complete' : 1,
+" Actions"{{{
+let s:action_table = {}
+
+let s:action_table.expand = {
+      \ 'description' : 'expand snippet',
+      \ }
+function! s:action_table.expand.func(candidate)"{{{
+  let l:context = unite#get_context()
+  call neocomplcache#sources#snippets_complete#expand(
+        \ neocomplcache#get_cur_text(1), l:context.col,
+        \ a:candidate.action__complete_word)
+endfunction"}}}
+
+let s:action_table.preview = {
+      \ 'description' : 'preview snippet',
+      \ 'is_selectable' : 1,
+      \ 'is_quit' : 0,
+      \ }
+function! s:action_table.preview.func(candidates)"{{{
+  for snip in a:candidates
+    echohl String
+    echo snip.action__complete_word
+    echohl Special
+    echo snip.source__menu
+    echohl None
+    echo snip.source__snip
+    echo ' '
+  endfor
+endfunction"}}}
+
+let s:source.action_table['*'] = s:action_table
+unlet! s:action_table
+"}}}
+
+function! unite#sources#snippet#start_complete() "{{{
+  return printf("\<ESC>:call unite#start(['snippet'],
+        \ { 'col' : %d, 'complete' : 1,
         \   'input' : neocomplcache#get_cur_text(1),
         \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}
+
+function! s:compare_words(i1, i2)"{{{
+  return a:i1.menu - a:i2.menu
+endfunction"}}}
+function! s:get_keyword_pos(cur_text)"{{{
+  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+  if l:cur_keyword_pos < 0
+    " Empty string.
+    return len(a:cur_text)
+  endif
+
+  return l:cur_keyword_pos
+endfunction"}}}
 
 " vim: foldmethod=marker
