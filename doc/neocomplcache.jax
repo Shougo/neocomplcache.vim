@@ -564,12 +564,17 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		る。
 		デフォルトではマッピングされていない。
 
+<Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
+		次のプレースホルダにジャンプする。プレースホルダが存在しない
+		とき、カーソル位置にあるスニペットを展開する。
+		デフォルトではマッピングされていない。
+
 <Plug>(neocomplcache_snippets_force_expand)		*<Plug>(neocomplcache_snippets_force_expand)*
 		カーソル位置にあるスニペットを展開する。スニペットが存在しな
 		いときは無視される。
 		デフォルトではマッピングされていない。
 
-<Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
+<Plug>(neocomplcache_snippets_force_jump)		*<Plug>(neocomplcache_snippets_force_jump)*
 		次のプレースホルダにジャンプする。スニペットの展開は行わない。
 		スニペット名を展開したくないときに使う。
 		デフォルトではマッピングされていない。
@@ -633,6 +638,7 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 		0 : 見つからない
 		1 : カーソル位置にスニペットのトリガーがある
 		2 : カレントバッファにスニペットのプレースホルダーを発見した
+		3 : どちらも発見した
 >
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
@@ -926,6 +932,10 @@ snippet
 		ある。普通、mapping内で
 		|<Plug>(neocomplcache_start_unite_snippet)|をマッピングして
 		使用する。
+		例：
+>
+		imap <C-s>  <Plug>(neocomplcache_start_unite_complete)
+<
 
 source別アクション
 

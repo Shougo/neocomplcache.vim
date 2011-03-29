@@ -598,11 +598,15 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		Expand a cursor snippet of plural lines. When there is not
 		snippet, jump to the next placeholder.
 
+<Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
+		Jump to the next place holder. When there is not
+		placeholder, Expand a cursor snippet of plural lines.
+
 <Plug>(neocomplcache_snippets_force_expand)		*<Plug>(neocomplcache_snippets_force_expand)*
 		Expand a cursor snippet of plural lines. When there is not
 		snippet, ignore.
 
-<Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
+<Plug>(neocomplcache_snippets_force_jump)		*<Plug>(neocomplcache_snippets_force_jump)*
 		Jump to the next place holder. Do not expand snippet.  When
 		you do not want to expand a snippet name, use this
 		keymapping.
@@ -664,10 +668,11 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 		cursor text is snippets trigger or exists placeholder in
 		current buffer. This function is useful when saving
 		keymappings.
-		Return value is 
+		Return value is
 		0 : not found
 		1 : cursor text is snippets trigger
 		2 : exists placeholder in current buffer
+		3 : both found.
 >
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
@@ -955,6 +960,11 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-03-29
+- Added <Plug>(neocomplcache_snippets_force_jump) keymapping.
+- Changed <Plug>(neocomplcache_snippets_jump) keymapping.
+- Changed neocomplcache#sources#snippets_complete#expandable().
 
 2011-03-28
 - Added neocomplcache snippet source.

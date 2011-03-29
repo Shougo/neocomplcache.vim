@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2011.
+" Last Modified: 29 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -202,16 +202,18 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
   let l:snippets = neocomplcache#sources#snippets_complete#get_snippets()
   let l:cur_text = neocomplcache#get_cur_text(1)
 
+  let l:ret = 0
   if s:get_cursor_keyword_snippet(l:snippets, l:cur_text) != ''
     " Found snippet trigger.
-    return 1
-  elseif search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
-    " Found snippet placeholder.
-    return 2
-  else
-    " Not found.
-    return 0
+    let l:ret += 1
   endif
+
+  if search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
+    " Found snippet placeholder.
+    let l:ret += 2
+  endif
+
+  return l:ret
 endfunction"}}}
 
 function! s:caching()"{{{
@@ -411,13 +413,21 @@ function! s:snippets_force_expand(cur_text, col)"{{{
 endfunction"}}}
 function! s:snippets_expand_or_jump(cur_text, col)"{{{
   let l:cur_word = s:get_cursor_keyword_snippet(neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
-  if l:cur_word == ''
-    " Not found.
-    call s:snippets_jump(a:cur_text, a:col)
-    return
+  if l:cur_word != ''
+    " Found snippet trigger.
+    call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, l:cur_word)
+  else
+    call s:snippets_force_jump(a:cur_text, a:col)
   endif
-
-  call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, l:cur_word)
+endfunction"}}}
+function! s:snippets_jump_or_expand(cur_text, col)"{{{
+  let l:cur_word = s:get_cursor_keyword_snippet(neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
+  if search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
+    " Found snippet placeholder.
+    call s:snippets_force_jump(a:cur_text, a:col)
+  else
+    call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, l:cur_word)
+  endif
 endfunction"}}}
 function! neocomplcache#sources#snippets_complete#expand(cur_text, col, trigger_name)"{{{
   let l:snippets = neocomplcache#sources#snippets_complete#get_snippets()
@@ -459,7 +469,7 @@ function! neocomplcache#sources#snippets_complete#expand(cur_text, col, trigger_
   endif
 
   if l:snip_word =~ '\${\d\+\%(:.\{-}\)\?\\\@<!}'
-    call s:snippets_jump(a:cur_text, a:col)
+    call s:snippets_force_jump(a:cur_text, a:col)
   endif
 
   let &l:iminsert = 0
@@ -513,15 +523,13 @@ function! s:expand_tabline()"{{{
   let s:begin_snippet = line('.')
   let s:end_snippet = line('.') + len(l:tablines) - 1
 endfunction"}}}
-function! s:snippets_jump(cur_text, col)"{{{
+function! s:snippets_force_jump(cur_text, col)"{{{
   if !s:search_snippet_range(s:begin_snippet, s:end_snippet)
     if s:snippet_holder_cnt != 0
       " Search placeholder 0.
       let s:snippet_holder_cnt = 0
       if s:search_snippet_range(s:begin_snippet, s:end_snippet)
-        let &iminsert = 0
-        let &imsearch = 0
-        return
+        return 1
       endif
     endif
 
@@ -530,11 +538,10 @@ function! s:snippets_jump(cur_text, col)"{{{
     let s:end_snippet = 0
     let s:snippet_holder_cnt = 1
 
-    call s:search_outof_range(a:col)
+    return s:search_outof_range(a:col)
   endif
 
-  let &iminsert = 0
-  let &imsearch = 0
+  return 0
 endfunction"}}}
 function! s:search_snippet_range(start, end)"{{{
   call s:substitute_marker(a:start, a:end)
@@ -626,7 +633,7 @@ function! s:search_outof_range(col)"{{{
 
       execute 'normal! v'. repeat('l', l:len) . "\<C-g>"
 
-      return
+      return 1
     endif
 
     if l:pos[2] < col('$')
@@ -634,6 +641,8 @@ function! s:search_outof_range(col)"{{{
     else
       startinsert!
     endif
+
+    return 1
   elseif a:col == 1
     let l:pos[2] = 1
     call setpos('.', l:pos)
@@ -645,6 +654,9 @@ function! s:search_outof_range(col)"{{{
     call setpos('.', l:pos)
     startinsert
   endif
+
+  " Not found.
+  return 0
 endfunction"}}}
 function! s:search_sync_placeholder(start, end, number)"{{{
   let l:line = a:start
@@ -742,9 +754,11 @@ endfunction
 " Plugin key-mappings.
 inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
 snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump_or_expand')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump_or_expand')
 inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
 snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
 
 " vim: foldmethod=marker
