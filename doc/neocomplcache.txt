@@ -961,6 +961,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-03-30
+- Fixed caching bug.
+
 2011-03-29
 - Added <Plug>(neocomplcache_snippets_force_jump) keymapping.
 - Changed <Plug>(neocomplcache_snippets_jump) keymapping.

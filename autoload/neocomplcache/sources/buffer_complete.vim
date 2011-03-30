@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2011.
+" Last Modified: 30 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -441,18 +441,10 @@ function! s:word_caching(srcname)"{{{
 
   if getbufvar(a:srcname, '&buftype') =~ 'nofile'
         \ || neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
-    let l:filename = bufname(str2nr(a:srcname))
     let l:source = s:buffer_sources[a:srcname]
 
-    if getbufvar(a:srcname, '&buftype') =~ 'nofile'
-          \ || !filereadable(l:source.path)
-      " Create temporary file.
-      call neocomplcache#cache#writefile('buffer_temporary',
-            \ l:source.path, getbufline(a:srcname, 1, '$'))
-      let l:source.path = neocomplcache#cache#encode_name('buffer_temporary', l:source.path)
-    endif
-
     if l:source.name ==# '[Command Line]'
+          \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
       " Ignore caching.
       return
     endif

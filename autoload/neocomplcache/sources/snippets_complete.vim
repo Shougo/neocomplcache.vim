@@ -203,6 +203,7 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
   let l:cur_text = neocomplcache#get_cur_text(1)
 
   let l:ret = 0
+
   if s:get_cursor_keyword_snippet(l:snippets, l:cur_text) != ''
     " Found snippet trigger.
     let l:ret += 1
