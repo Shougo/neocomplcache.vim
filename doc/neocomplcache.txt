@@ -42,35 +42,34 @@ Changelog		|neocomplcache-changelog|
 ==============================================================================
 INTRODUCTION						*neocomplcache-introduction*
 
-*neocomplcache* performs keyword completion by making a cache of keyword in
-buffer. Because I implemented it by paying own expenses unlike the keyword
-completion including the Vim composing type, neocomplcache can be customized
-flexibly. Unfortunately neocomplcache may use more memory than other
-plugins.
+*neocomplcache* performs keyword completion by maintaining a cache of keywords in
+the current buffer. Because I implemented it by paying own expenses unlike the
+keyword completion including the Vim composing type, neocomplcache can be
+customized flexibly. Unfortunately neocomplcache may use more memory than
+other plugins.
 
 							*neocomplcache-version5*
-Because all variable names are changed in neocomplcache Ver.5, there is not
-backward compatibility. In the case of the upgrade, you should use the next
+Because all variable names are changed in neocomplcache Ver.5, there is no
+backward compatibility. In the case of an upgrade, you should use the next
 script which Mr.thinca made.
 http://gist.github.com/422503
 
 ==============================================================================
 INSTALL							*neocomplcache-install*
 
-1: Extract the file and Put files in your Vim directory
+1: Extract the file and put files in your Vim directory
    (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows).
-2: Execute |:NeoComplCacheEnable| command or
+2: Execute |:NeoComplCacheEnable| command or set
 let g:neocomplcache_enable_at_startup = 1
 in your .vimrc.
 
 							*neocomplcache-asyncronous*
-After neocomplcache Ver.6.0, If installed |vimproc|, neocomplcache making a
-cache asynchronously.
+With neocomplcache Ver.6.0, if |vimproc| is installed, neocomplcache creates
+the cache asynchronously.
 
-vimproc is distributed below URL:
-http://github.com/Shougo/vimshell/tree/master
+vimproc is distributed at: http://github.com/Shougo/vimshell/tree/master
 
-To use vimproc, you must compile. Refer to vimproc documentation.
+To use vimproc, you must compile it. Refer to the vimproc documentation.
 
 ==============================================================================
 INTERFACE						*neocomplcache-interface*
@@ -599,15 +598,15 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		snippet, jump to the next placeholder.
 
 <Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
-		Jump to the next place holder. When there is not
-		placeholder, Expand a cursor snippet of plural lines.
+		Jump to the next placeholder. If there is no
+		placeholder, expand a multiline cursor snippet.
 
 <Plug>(neocomplcache_snippets_force_expand)		*<Plug>(neocomplcache_snippets_force_expand)*
-		Expand a cursor snippet of plural lines. When there is not
-		snippet, ignore.
+		Expand a multiline cursor snippet. Does nothing if there is not
+		snippet.
 
 <Plug>(neocomplcache_snippets_force_jump)		*<Plug>(neocomplcache_snippets_force_jump)*
-		Jump to the next place holder. Do not expand snippet.  When
+		Jump to the next place holder. Do not expand any snippet. When
 		you do not want to expand a snippet name, use this
 		keymapping.
 
