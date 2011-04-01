@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippet.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2011.
+" Last Modified: 01 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -104,6 +104,7 @@ unlet! s:action_table
 function! unite#sources#snippet#start_complete() "{{{
   return printf("\<ESC>:call unite#start(['snippet'],
         \ { 'col' : %d, 'complete' : 1,
+        \   'direction' : 'rightbelow', 'winheight' : 10,
         \   'input' : neocomplcache#get_cur_text(1),
         \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}
