@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Mar 2011.
+" Last Modified: 03 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -447,6 +447,10 @@ function! neocomplcache#cache#test_async()"{{{
 endfunction"}}}
 
 function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark)"{{{
+  if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+    return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+  endif
+
   if neocomplcache#has_vimproc()
     let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 

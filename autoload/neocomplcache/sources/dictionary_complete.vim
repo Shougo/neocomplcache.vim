@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2011.
+" Last Modified: 03 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,8 +120,10 @@ function! s:recaching(filetype)"{{{
   let l:pattern = neocomplcache#get_keyword_pattern(l:filetype)
   for l:dictionary in split(l:dictionaries, ',')
     if filereadable(l:dictionary)
-      call add(s:async_dictionary_list[l:filetype],
-            \ neocomplcache#cache#async_load_from_file('dictionary_cache', l:dictionary, l:pattern, 'D'))
+      call add(s:async_dictionary_list[l:filetype], {
+            \ 'filename' : l:dictionary,
+            \ 'cachename' : neocomplcache#cache#async_load_from_file('dictionary_cache', l:dictionary, l:pattern, 'D')
+            \ })
     endif
   endfor
 endfunction"}}}
@@ -132,7 +134,7 @@ function! s:check_dictionary(filetype)"{{{
   endif
 
   for l:dictionary in s:async_dictionary_list[a:filetype]
-    if !filereadable(l:dictionary)
+    if !filereadable(l:dictionary.cachename)
       return
     endif
   endfor
@@ -142,7 +144,7 @@ function! s:check_dictionary(filetype)"{{{
 
   let l:keyword_list = []
   for l:dictionary in s:async_dictionary_list[a:filetype]
-    let l:keyword_list += neocomplcache#cache#load_from_cache('dictionary_cache', l:dictionary)
+    let l:keyword_list += neocomplcache#cache#load_from_cache('dictionary_cache', l:dictionary.filename)
   endfor
 
   call neocomplcache#cache#list2index(

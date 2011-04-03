@@ -960,6 +960,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-04-02
+- Fixed dictionary_complete bug.
+- Improved cache.
+
 2011-04-01
 - Improved unite source.
 
