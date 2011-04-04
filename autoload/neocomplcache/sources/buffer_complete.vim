@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Mar 2011.
+" Last Modified: 04 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,7 +93,6 @@ endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if neocomplcache#is_auto_complete() && len(a:cur_keyword_str) < s:completion_length
-
     " Check member prefix pattern.
     let l:filetype = neocomplcache#get_context_filetype()
     if !has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
@@ -114,20 +113,19 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
         let l:keyword_list += values(s:buffer_sources[src].member_cache[l:var_name])
       endif
     endfor
+  else
+    let l:keyword_list = []
+    for src in s:get_sources_list()
+      let l:keyword_cache = neocomplcache#dictionary_filter(
+            \ s:buffer_sources[src].keyword_cache, a:cur_keyword_str, s:completion_length)
 
-    return l:keyword_list
+      if src == bufnr('%')
+        call s:calc_frequency(l:keyword_cache)
+      endif
+
+      let l:keyword_list += l:keyword_cache
+    endfor
   endif
-
-  let l:keyword_list = []
-  for src in s:get_sources_list()
-    let l:keyword_cache = neocomplcache#dictionary_filter(s:buffer_sources[src].keyword_cache, a:cur_keyword_str, s:completion_length)
-
-    if src == bufnr('%')
-      call s:calc_frequency(l:keyword_cache)
-    endif
-
-    let l:keyword_list += l:keyword_cache
-  endfor
 
   return l:keyword_list
 endfunction"}}}

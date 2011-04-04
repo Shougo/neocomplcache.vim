@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2011.
+" Last Modified: 04 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -400,9 +400,6 @@ function! neocomplcache#enable() "{{{
 
   " Set options.
   set completeopt-=menu,preview
-  if !g:neocomplcache_disable_auto_complete
-    set completeopt-=longest
-  endif
   set completeopt+=menuone
 
   " For auto complete keymappings.
@@ -545,6 +542,10 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     call neocomplcache#print_error('Detected set paste! Disabled neocomplcache.')
     return
   endif
+
+  " Set options.
+  set completeopt-=menu,preview,longest
+  set completeopt+=menuone
 
   " Get cursor word.
   let l:cur_text = s:get_cur_text()
@@ -784,7 +785,7 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
   endif
 
   if len(a:cur_keyword_str) < a:completion_length ||
-        \neocomplcache#check_match_filter(a:cur_keyword_str, a:completion_length)
+        \ neocomplcache#check_match_filter(a:cur_keyword_str, a:completion_length)
     return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   else
     let l:key = tolower(a:cur_keyword_str[: a:completion_length-1])
