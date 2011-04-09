@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Apr 2011.
+" Last Modified: 09 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,70 +31,13 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
     return []
   endif
 
-  let l:keyword_lists = []
-  let l:lines = readfile(l:cache_name)
-  let l:max_lines = len(l:lines)
-
-  if l:max_lines > 3000
-    call neocomplcache#print_caching('Caching from cache "' . a:filename . '"... please wait.')
-  endif
-  if l:max_lines > 10000
-    let l:print_cache_percent = l:max_lines / 5
-  elseif l:max_lines > 5000
-    let l:print_cache_percent = l:max_lines / 4
-  elseif l:max_lines > 3000
-    let l:print_cache_percent = l:max_lines / 3
-  else
-    let l:print_cache_percent = -1
-  endif
-  let l:line_cnt = l:print_cache_percent
-
-  try
-    let l:line_num = 1
-    for l:line in l:lines"{{{
-      " Percentage check."{{{
-      if l:print_cache_percent > 0
-        if l:line_cnt == 0
-          call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
-          let l:line_cnt = l:print_cache_percent
-        endif
-        let l:line_cnt -= 1
-
-        let l:line_num += 1
-      endif
-      "}}}
-
-      let l:cache = split(l:line, '|||', 1)
-      if len(l:cache[0]) < g:neocomplcache_min_keyword_length
-        " Skip.
-        continue
-      endif
-
-      let l:keyword = {
-            \ 'word' : l:cache[0], 'abbr' : l:cache[1], 'menu' : l:cache[2],
-            \}
-      if l:cache[3] != ''
-        let l:keyword.kind = l:cache[3]
-      endif
-      if l:cache[4] != ''
-        let l:keyword.class = l:cache[4]
-      endif
-
-      call add(l:keyword_lists, l:keyword)
-    endfor"}}}
-  catch /E684:/
-    call neocomplcache#print_error(v:exception)
-    call neocomplcache#print_error('Error occured while analyzing cache!')
-    let l:cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
-    call neocomplcache#print_error('Please delete cache directory: ' . l:cache_dir)
-    return []
-  endtry
-
-  if l:max_lines > 3000
-    call neocomplcache#print_caching('')
-  endif
-
-  return l:keyword_lists
+  return map(map(readfile(l:cache_name), 'split(v:val, "|||", 1)'), '{
+          \ "word" : v:val[0],
+          \ "abbr" : v:val[1],
+          \ "menu" : v:val[2],
+          \ "kind" : v:val[3],
+          \ "class" : v:val[4],
+          \}')
 endfunction"}}}
 function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, completion_length)"{{{
   let l:keyword_lists = {}
