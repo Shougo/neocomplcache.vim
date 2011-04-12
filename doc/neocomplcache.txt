@@ -960,6 +960,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-04-12
+- Improved compare_rank().
+
 2011-04-09
 - Optimized cache load routine.
 
