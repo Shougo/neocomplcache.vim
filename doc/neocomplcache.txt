@@ -962,6 +962,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-04-12
 - Improved compare_rank().
+- Improved filename_complete.
 
 2011-04-09
 - Optimized cache load routine.
