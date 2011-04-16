@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Apr 2011.
+" Last Modified: 16 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,8 +78,8 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
     if has_key(l:keyword, 'menu')
       let l:dict.abbr .= ' ' . l:keyword.menu
     endif
-    if has_key(l:keyword, 'info')
-      let l:dict.action__complete_info = l:keyword.info
+    if has_key(l:keyword, 'description')
+      let l:dict.action__complete_info = l:keyword.description
     endif
 
     call add(l:list, l:dict)
@@ -89,10 +89,13 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
 endfunction "}}}
 
 function! unite#sources#neocomplcache#start_complete() "{{{
+  if !neocomplcache#is_enabled()
+    return ''
+  endif
+
   return printf("\<ESC>:call unite#start(['neocomplcache'],
-        \ { 'auto_preview' : 1, 'col' : %d, 'complete' : 1,
+        \ { 'col' : %d, 'complete' : 1, 'auto_preview' : 1,
         \   'direction' : 'rightbelow', 'winheight' : 10,
-        \   'input' : neocomplcache#get_cur_text(1),
         \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}
 

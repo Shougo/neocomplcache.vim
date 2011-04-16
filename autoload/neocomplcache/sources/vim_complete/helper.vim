@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2011.
+" Last Modified: 16 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -691,7 +691,7 @@ function! s:get_cmdlist()"{{{
 
     call add(l:keyword_list, {
           \ 'word' : l:word, 'abbr' : l:word . l:prototype,
-          \ 'info' : l:word . l:prototype, 'menu' : l:menu_pattern, 'kind' : 'c'
+          \ 'description' : l:word . l:prototype, 'menu' : l:menu_pattern, 'kind' : 'c'
           \})
   endfor
   let s:global_candidates_list.command_prototypes = l:command_prototypes
@@ -742,7 +742,7 @@ function! s:get_functionlist()"{{{
     if l:word != ''
       let l:keyword_dict[l:word] = {
             \ 'word' : l:word, 'abbr' : l:line,
-            \ 'info' : l:line, 'menu' : l:menu_pattern,
+            \ 'description' : l:line, 'menu' : l:menu_pattern,
             \}
 
       let l:function_prototypes[l:word] = l:orig_line[len(l:word):]
