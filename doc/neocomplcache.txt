@@ -962,6 +962,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-04-17
 - Fixed preview window problem.
+- Fixed expand snippet error.
 
 2011-04-16
 - Fixed unite completion source.
