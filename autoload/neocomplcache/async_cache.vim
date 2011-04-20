@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2011.
+" Last Modified: 20 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,7 +26,7 @@
 
 function! s:main(argv)"{{{
   " args: outputname filename pattern_file_name mark minlen maxfilename
-  let [l:outputname, l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename]
+  let [l:outputname, l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename, l:fileencoding]
         \ = a:argv
 
   let l:pattern = get(readfile(l:pattern_file_name), 0, '\h\w*')
@@ -53,7 +53,7 @@ function! s:main(argv)"{{{
   endfor
 
   if !empty(l:word_list)
-    call writefile(l:word_list, l:outputname)
+    call writefile(map(l:word_list, 'iconv(v:val, &encoding, l:fileencoding)'), l:outputname)
   endif
 endfunction"}}}
 
@@ -165,7 +165,7 @@ function! neocomplcache#async_cache#main(argv)"{{{
   call s:main(a:argv)
 endfunction"}}}
 
-if argc() == 6
+if argc() == 7
   try
     call s:main(argv())
   catch

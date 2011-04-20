@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Apr 2011.
+" Last Modified: 20 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -378,8 +378,10 @@ function! neocomplcache#cache#test_async()"{{{
   let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', 'vim')
 
   " args: dummy, filename pattern mark minlen maxfilename outputname
-  let l:argv =
-        \ [l:cache_name, l:filename, l:pattern_file_name, 'B', g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
+  let l:argv = [
+        \  l:cache_name, l:filename, l:pattern_file_name, 'B',
+        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, &fileencoding
+        \ ]
 
   " call vimproc#system(
   "       \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
@@ -405,8 +407,10 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
     let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', a:filename)
 
     " args: dummy, filename pattern mark minlen maxfilename outputname
-    let l:argv =
-          \ [l:cache_name, a:filename, l:pattern_file_name, a:mark, g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width]
+    let l:argv = [
+          \  l:cache_name, a:filename, l:pattern_file_name, a:mark,
+          \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, &fileencoding
+          \ ]
 
     call vimproc#system_bg(
           \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']

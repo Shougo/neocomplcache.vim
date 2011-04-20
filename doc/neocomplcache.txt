@@ -960,6 +960,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-04-20
+- Fixed asynchronous caching encoding bug.
+
 2011-04-17
 - Fixed preview window problem.
 - Fixed expand snippet error.
