@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2010.
+" Last Modified: 21 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,6 +51,11 @@ endif
 if exists('g:NeoComplCache_KeywordCompletionStartLength')
   echoerr 'g:NeoComplCache_KeywordCompletionStartLength option does not work this version of neocomplcache.'
 endif
+if exists('g:neocomplcache_disable_caching_buffer_name_pattern')
+  echoerr 'g:neocomplcache_disable_caching_buffer_name_pattern option does not work this version of neocomplcache.'
+  echoerr 'Please use g:neocomplcache_disable_caching_file_path_pattern option instead.'
+endif
+
 "}}}
 " Global options definition."{{{
 if !exists('g:neocomplcache_max_list')
@@ -110,8 +115,8 @@ endif
 if !exists('g:neocomplcache_caching_limit_file_size')
   let g:neocomplcache_caching_limit_file_size = 500000
 endif
-if !exists('g:neocomplcache_disable_caching_buffer_name_pattern')
-  let g:neocomplcache_disable_caching_buffer_name_pattern = ''
+if !exists('g:neocomplcache_disable_caching_file_path_pattern')
+  let g:neocomplcache_disable_caching_file_path_pattern = ''
 endif
 if !exists('g:neocomplcache_lock_buffer_name_pattern')
   let g:neocomplcache_lock_buffer_name_pattern = ''

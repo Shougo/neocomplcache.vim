@@ -310,9 +310,9 @@ g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_si
 		
 		初期値は500000となっている。
 
-g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
-		キャッシュを保存しないバッファ名のパターンを正規表現で設定する。
-		空文字列だと無視される。
+g:neocomplcache_disable_caching_file_path_pattern	*g:neocomplcache_disable_caching_file_path_pattern*
+		キャッシュを保存しないバッファのファイルパスのパターンを正規表
+		現で設定する。空文字列だと無視される。
 		
 		初期値は空となっている。
 

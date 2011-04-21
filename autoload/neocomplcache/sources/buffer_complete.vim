@@ -441,8 +441,8 @@ function! s:word_caching(srcname)"{{{
   if neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
     if l:source.name ==# '[Command Line]'
           \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
-          \ || (g:neocomplcache_disable_caching_buffer_name_pattern != ''
-          \      && l:source.name =~ g:neocomplcache_disable_caching_buffer_name_pattern)
+          \ || (g:neocomplcache_disable_caching_file_path_pattern != ''
+          \      && l:srcname =~ g:neocomplcache_disable_caching_file_path_pattern)
       " Ignore caching.
       return
     endif
@@ -548,8 +548,8 @@ function! s:save_cache(srcname)"{{{
 
   let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
   if !filereadable(l:srcname) ||
-        \ (g:neocomplcache_disable_caching_buffer_name_pattern != ''
-        \   && l:bufname =~ g:neocomplcache_disable_caching_buffer_name_pattern)
+        \ (g:neocomplcache_disable_caching_file_path_pattern != ''
+        \   && l:srcname =~ g:neocomplcache_disable_caching_file_path_pattern)
     return
   endif
 

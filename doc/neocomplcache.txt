@@ -313,8 +313,8 @@ g:neocomplcache_caching_limit_file_size			*g:neocomplcache_caching_limit_file_si
 		
 		Default value is 500000.
 
-g:neocomplcache_disable_caching_buffer_name_pattern	*g:neocomplcache_disable_caching_buffer_name_pattern*
-		This variable set a pattern of the buffer name. If matched it,
+g:neocomplcache_disable_caching_file_path_pattern	*g:neocomplcache_disable_caching_file_path_pattern*
+		This variable set a pattern of the buffer file path. If matched it,
 		neocomplcache does not save a cache of the buffer. When it is
 		an empty character string, neocomplcache will ignore.
 		
@@ -962,7 +962,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-04-21
 - Fixed completeopt bug.
-- Changed g:neocomplcache_disable_caching_buffer_name_pattern behavior.
+- Deleted g:neocomplcache_disable_caching_buffer_name_pattern option.
+- Added g:neocomplcache_disable_caching_file_path_pattern option.
 
 2011-04-20
 - Fixed asynchronous caching encoding bug.

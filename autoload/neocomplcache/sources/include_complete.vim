@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Feb 2011.
+" Last Modified: 21 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -188,26 +188,22 @@ function! s:check_buffer(bufname)"{{{
   let l:bufname = fnamemodify((a:bufname == '' ? bufname('%') : a:bufname), ':p')
   let l:bufnumber = bufnr(l:bufname)
   let s:include_info[l:bufnumber] = {}
-  if (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
-        \&& getbufvar(l:bufnumber, '&readonly') == 0
-    let l:filetype = getbufvar(l:bufnumber, '&filetype')
-    if l:filetype == ''
-      let l:filetype = 'nothing'
-    endif
 
-    " Check include.
-    let l:include_files = s:get_buffer_include_files(l:bufnumber)
-    for l:filename in l:include_files
-      if !has_key(s:include_cache, l:filename)
-        " Caching.
-        let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype)
-      endif
-    endfor
-
-    let s:include_info[l:bufnumber].include_files = l:include_files
-  else
-    let s:include_info[l:bufnumber].include_files = []
+  let l:filetype = getbufvar(l:bufnumber, '&filetype')
+  if l:filetype == ''
+    let l:filetype = 'nothing'
   endif
+
+  " Check include.
+  let l:include_files = s:get_buffer_include_files(l:bufnumber)
+  for l:filename in l:include_files
+    if !has_key(s:include_cache, l:filename)
+      " Caching.
+      let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype)
+    endif
+  endfor
+
+  let s:include_info[l:bufnumber].include_files = l:include_files
 endfunction"}}}
 function! s:get_buffer_include_files(bufnumber)"{{{
   let l:filetype = getbufvar(a:bufnumber, '&filetype')
