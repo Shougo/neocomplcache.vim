@@ -441,8 +441,6 @@ function! s:word_caching(srcname)"{{{
   if neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
     if l:source.name ==# '[Command Line]'
           \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
-          \ || (g:neocomplcache_disable_caching_file_path_pattern != ''
-          \      && l:srcname =~ g:neocomplcache_disable_caching_file_path_pattern)
       " Ignore caching.
       return
     endif
@@ -554,8 +552,17 @@ function! s:save_cache(srcname)"{{{
   endif
 
   let l:cache_name = neocomplcache#cache#encode_name('buffer_cache', l:srcname)
+
+  if filereadable(l:cache_name) &&
+        \ (g:neocomplcache_disable_caching_file_path_pattern != ''
+        \   && l:srcname =~ g:neocomplcache_disable_caching_file_path_pattern)
+    " Delete cache file.
+    call delete(l:cache_name)
+    return
+  endif
+
   if getftime(l:cache_name) >= getftime(l:srcname)
-    return -1
+    return
   endif
 
   " Output buffer.
