@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Apr 2011.
+" Last Modified: 21 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -435,14 +435,14 @@ function! s:word_caching(srcname)"{{{
   " Initialize source.
   call s:initialize_source(a:srcname)
 
-  let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
+  let l:source = s:buffer_sources[a:srcname]
+  let l:srcname = fnamemodify(l:source.name, ':p')
 
-  if getbufvar(a:srcname, '&buftype') =~ 'nofile'
-        \ || neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
-    let l:source = s:buffer_sources[a:srcname]
-
+  if neocomplcache#cache#check_old_cache('buffer_cache', l:srcname)
     if l:source.name ==# '[Command Line]'
           \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
+          \ || (g:neocomplcache_disable_caching_buffer_name_pattern != ''
+          \      && l:source.name =~ g:neocomplcache_disable_caching_buffer_name_pattern)
       " Ignore caching.
       return
     endif
@@ -489,7 +489,6 @@ function! s:check_source()"{{{
       let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
       if (!has_key(s:buffer_sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
             \&& !has_key(s:disable_caching_list, l:bufnumber)
-            \&& (g:neocomplcache_disable_caching_buffer_name_pattern == '' || l:bufname !~ g:neocomplcache_disable_caching_buffer_name_pattern)
             \&& !neocomplcache#is_locked(l:bufnumber)
 
         let l:buftype = getbufvar(l:bufnumber, '&buftype')
@@ -548,7 +547,9 @@ function! s:save_cache(srcname)"{{{
   endif
 
   let l:srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
-  if !filereadable(l:srcname)
+  if !filereadable(l:srcname) ||
+        \ (g:neocomplcache_disable_caching_buffer_name_pattern != ''
+        \   && l:bufname =~ g:neocomplcache_disable_caching_buffer_name_pattern)
     return
   endif
 
