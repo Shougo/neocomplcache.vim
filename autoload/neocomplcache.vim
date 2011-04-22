@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2011.
+" Last Modified: 22 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1528,10 +1528,6 @@ function! neocomplcache#smart_close_popup()"{{{
 endfunction
 "}}}
 function! neocomplcache#close_popup()"{{{
-  if !pumvisible()
-    return ''
-  endif
-
   let s:skip_next_complete = 1
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
@@ -1539,14 +1535,10 @@ function! neocomplcache#close_popup()"{{{
   let s:old_complete_words = []
   let s:prev_numbered_dict = {}
 
-  return "\<C-y>"
+  return pumvisible() ? "\<C-y>" : ''
 endfunction
 "}}}
 function! neocomplcache#cancel_popup()"{{{
-  if !pumvisible()
-    return ''
-  endif
-
   let s:skip_next_complete = 1
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
@@ -1554,7 +1546,7 @@ function! neocomplcache#cancel_popup()"{{{
   let s:old_complete_words = []
   let s:prev_numbered_dict = {}
 
-  return "\<C-e>"
+  return pumvisible() ? "\<C-e>" : ''
 endfunction
 "}}}
 

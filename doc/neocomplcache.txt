@@ -960,6 +960,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-04-22
+- Improved close popup.
+
 2011-04-21
 - Fixed completeopt bug.
 - Deleted g:neocomplcache_disable_caching_buffer_name_pattern option.
