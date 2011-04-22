@@ -962,6 +962,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-04-22
 - Improved close popup.
+- Set cpoptions.
 
 2011-04-21
 - Fixed completeopt bug.
