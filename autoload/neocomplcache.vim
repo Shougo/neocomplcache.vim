@@ -25,6 +25,9 @@
 " Version: 6.0, for Vim 7.0
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 " Check vimproc.
 try
   call vimproc#version()
@@ -1914,5 +1917,8 @@ function! s:unite_patterns(pattern_var, filetype)"{{{
   return join(l:keyword_patterns, '\m\|')
 endfunction"}}}
 "}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

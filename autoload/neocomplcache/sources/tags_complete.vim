@@ -24,6 +24,9 @@
 " }}}
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 let s:source = {
       \ 'name' : 'tags_complete',
       \ 'kind' : 'plugin',
@@ -122,5 +125,8 @@ function! s:initialize_tags(filename)"{{{
 
   return l:keyword_lists
 endfunction"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

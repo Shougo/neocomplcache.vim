@@ -24,6 +24,9 @@
 " }}}
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 let s:source = {
       \ 'name' : 'abbrev_complete',
       \ 'kind' : 'plugin',
@@ -62,4 +65,8 @@ endfunction"}}}
 function! neocomplcache#sources#abbrev_complete#define()"{{{
   return s:source
 endfunction"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
+
 " vim: foldmethod=marker

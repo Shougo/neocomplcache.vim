@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Apr 2011.
+" Last Modified: 22 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,6 +23,9 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 function! neocomplcache#sources#dictionary_complete#define()"{{{
   return s:source
@@ -154,5 +157,8 @@ function! s:check_dictionary(filetype)"{{{
 
   call remove(s:async_dictionary_list, a:filetype)
 endfunction"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

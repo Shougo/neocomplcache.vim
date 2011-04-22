@@ -24,6 +24,9 @@
 " }}}
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 if version < 700
   syntax clear
 elseif exists("b:current_syntax")
@@ -69,3 +72,6 @@ hi def link SnippetAlias Identifier
 hi def link SnippetEscape Special
 
 let b:current_syntax = "snippet"
+
+let &cpo = s:save_cpo
+unlet s:save_cpo

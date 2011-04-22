@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2011.
+" Last Modified: 22 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,6 +23,9 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 let s:begin_snippet = 0
 let s:end_snippet = 0
@@ -761,5 +764,8 @@ inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger
 snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
 inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
 snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

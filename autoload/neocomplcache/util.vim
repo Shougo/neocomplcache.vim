@@ -24,6 +24,9 @@
 " }}}
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 " Original function is from mattn.
 " http://github.com/mattn/googlereader-vim/tree/master
 function! neocomplcache#util#truncate(str, num)"{{{
@@ -91,5 +94,8 @@ endfunction"}}}
 function! neocomplcache#util#mb_strlen(str)"{{{
   return strlen(substitute(copy(a:str), '.', 'x', 'g'))
 endfunction"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

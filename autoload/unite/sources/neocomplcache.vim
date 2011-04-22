@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2011.
+" Last Modified: 22 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,6 +23,9 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 function! unite#sources#neocomplcache#define() "{{{
   if !exists('*unite#version') || unite#version() < 150
@@ -98,5 +101,8 @@ function! unite#sources#neocomplcache#start_complete() "{{{
         \   'direction' : 'rightbelow', 'winheight' : 10,
         \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

@@ -24,6 +24,9 @@
 " }}}
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 let s:source = {
       \ 'name' : 'completefunc_complete',
       \ 'kind' : 'complfunc',
@@ -110,5 +113,8 @@ function! s:get_completefunc_list(list)"{{{
 
   return l:comp_list
 endfunction"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker
