@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 26 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -348,7 +348,7 @@ function! neocomplcache#sources#vim_complete#helper#mapping(cur_text, cur_keywor
   if !has_key(s:internal_candidates_list, 'mappings')
     let s:internal_candidates_list.mappings = s:caching_from_dict('mappings', '')
   endif
-  
+
   return s:internal_candidates_list.mappings + s:global_candidates_list.mappings
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#menu(cur_text, cur_keyword_str)"{{{
@@ -757,7 +757,7 @@ function! s:get_functionlist()"{{{
   return l:keyword_dict
 endfunction"}}}
 function! s:get_augrouplist()"{{{
-  " Get function list.
+  " Get augroup list.
   redir => l:redir
   silent! augroup
   redir END
@@ -770,7 +770,7 @@ function! s:get_augrouplist()"{{{
   return l:keyword_list
 endfunction"}}}
 function! s:get_mappinglist()"{{{
-  " Get function list.
+  " Get mapping list.
   redir => l:redir
   silent! map
   redir END
