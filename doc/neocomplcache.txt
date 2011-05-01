@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 6.0
+Version: 6.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -863,9 +863,9 @@ Example:
 	snippet     if
 	abbr        if endif
 	prev_word   '^'
-	if ${1:condition}
-	    ${2}
-	endif
+	    if ${1:condition}
+	        ${2}
+	    endif
 <
 
 By the way, it is warned that the snippet name is already defined by same snippet file.
@@ -961,7 +961,8 @@ ability of neocomplcache will spread by creating plugin by yourself.
 CHANGELOG						*neocomplcache-changelog*
 
 2011-05-01
-- Ver.6.0 is released.
+- Fixed neocomplcache snippet sample.
+- Ver.6.1 development is started.
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.0:

@@ -1,6 +1,6 @@
 *neocomplcache.txt*	究極の自動補完環境
 
-Version: 6.0
+Version: 6.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -753,9 +753,9 @@ neocomplcacheではスニペット機能を内蔵している。 スニペット
 	snippet     if
 	abbr        if endif
 	prev_word   '^'
-	if ${1:condition}
-	    ${2}
-	endif
+	    if ${1:condition}
+	        ${2}
+	    endif
 <
 例えば上記のようなファイルを
 'autoload/neocomplcache/snippet_complete/vim.snip' として保存すると、vimファ
