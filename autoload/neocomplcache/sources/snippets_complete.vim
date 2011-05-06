@@ -356,7 +356,8 @@ function! s:load_snippets(snippet, snippets_file)"{{{
         let l:snippet_pattern = { 'word' : '' }
       endif
 
-      let l:snippet_pattern.name = matchstr(line, '^snippet\s\+\zs.*$')
+      let l:snippet_pattern.name =
+            \ substitute(matchstr(line, '^snippet\s\+\zs.*$'), '\s', '_', 'g')
 
       " Check for duplicated names.
       if has_key(l:dup_check, l:snippet_pattern.name)
@@ -376,7 +377,7 @@ function! s:load_snippets(snippet, snippets_file)"{{{
           let l:snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
         elseif line =~ '^\t'
           let line = substitute(line, '^\s', '', '')
-          let l:snippet_pattern.word .= '<\n>' . 
+          let l:snippet_pattern.word .= '<\n>' .
                 \substitute(line, '^\t\+', repeat('<\\t>', matchend(line, '^\t\+')), '')
         else
           let l:snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')

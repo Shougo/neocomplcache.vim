@@ -884,6 +884,7 @@ vnoremapやvmap, mapはselect modeでも有効になるので、変なマッピ�
 <
 
 snipMateのmulti snippetにも対応している。
+ただし、triggerとdescriptionの間のスペースは'_'に変換される。
 >
 	snippet ${1:trigger} ${2:description}
 	${3}

@@ -964,6 +964,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Changed :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets split behavior.
 - Fixed rails snippet.
 - Added .gitignore file.
+- Fixed snippet like multi snippet behavior.
 
 2011-05-01
 - Fixed neocomplcache snippet sample.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2011.
+" Last Modified: 06 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -573,15 +573,11 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
-      if neocomplcache#is_auto_select()
-        call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
-      else
-        call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-      endif
+      call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
       let s:old_cur_text = l:cur_text
       return
     endif
-  elseif g:neocomplcache_enable_quick_match 
+  elseif g:neocomplcache_enable_quick_match
         \&& !empty(s:old_complete_words)
         \&& l:cur_text =~ l:quick_match_pattern.'$'
         \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
@@ -1771,7 +1767,7 @@ endfunction"}}}
 function! s:get_quick_match_pattern()"{{{
   let l:filetype = neocomplcache#get_context_filetype()
 
-  let l:pattern = has_key(g:neocomplcache_quick_match_patterns, l:filetype)?  
+  let l:pattern = has_key(g:neocomplcache_quick_match_patterns, l:filetype) ?
         \ g:neocomplcache_quick_match_patterns[l:filetype] : g:neocomplcache_quick_match_patterns['default']
 
   return l:pattern
