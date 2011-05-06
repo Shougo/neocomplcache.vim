@@ -539,6 +539,8 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		match the end of the input character string every file type.
 		You can set default input patterns when you appoint
 		'default'.
+		If you set this pattern is empty, neocomplcache is always print
+		quick match candidates.
 		
 		Default value is { 'default' : '-' }.
 
@@ -965,6 +967,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed rails snippet.
 - Added .gitignore file.
 - Fixed snippet like multi snippet behavior.
+- Improved quick match behavior.
 
 2011-05-01
 - Fixed neocomplcache snippet sample.
@@ -2088,7 +2091,7 @@ ChangeLog neocomplcache 3.00-:
     - Fixed snippet expand bug in snippets_complete.
     - Implemented keyword cache in omni_complete.
     - Implemented skip directory in filename_complete.
-    
+
    3.21:
     - Catch error in omni_complete.
     - Deleted Filename() and g:snips_author in snippets_complete.

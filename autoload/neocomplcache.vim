@@ -479,20 +479,6 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
       return -1
     endif
 
-    " Check text was changed.
-    let l:cached_text = s:cur_text
-    if s:get_cur_text() != l:cached_text
-      " Text was changed.
-
-      " Restore options.
-      let s:cur_keyword_pos = -1
-      let &l:completefunc = 'neocomplcache#manual_complete'
-      let s:old_complete_words = s:complete_words
-      let s:complete_words = []
-
-      return -1
-    endif
-
     let s:old_cur_keyword_pos = s:cur_keyword_pos
     let s:cur_keyword_pos = -1
     return s:old_cur_keyword_pos
@@ -577,22 +563,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
       let s:old_cur_text = l:cur_text
       return
     endif
-  elseif g:neocomplcache_enable_quick_match
-        \&& !empty(s:old_complete_words)
-        \&& l:cur_text =~ l:quick_match_pattern.'$'
-        \&& l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'
-
-    " Print quick_match list.
-    let [l:cur_keyword_pos, l:cur_keyword_str] =
-          \ neocomplcache#match_word(l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1])
-    let s:cur_keyword_pos = l:cur_keyword_pos
-    let s:complete_words = s:make_quick_match_list(s:old_complete_words, l:cur_keyword_str)
-
-    " Set function.
-    let &l:completefunc = 'neocomplcache#auto_complete'
-    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-    let s:old_cur_text = l:cur_text
-    return
   elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
         \&& !s:used_match_filter
     if l:cur_text !=# s:moved_cur_text
@@ -612,7 +582,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   " Clear flag.
   let s:used_match_filter = 0
 
-  let l:is_quick_match_list = 0
   let s:prev_numbered_dict = {}
   let s:complete_words = []
   let s:old_complete_words = []
@@ -620,6 +589,16 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'
+
+  let l:is_quick_match_list = g:neocomplcache_enable_quick_match
+        \ && (l:quick_match_pattern == '' ||
+        \      (l:cur_text =~ l:quick_match_pattern.'$'
+        \        && l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'))
+  if l:is_quick_match_list
+    let l:cur_text = l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1]
+    let s:cur_text = l:cur_text
+    let s:old_cur_text = l:cur_text
+  endif
 
   " Get complete result.
   let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] =
@@ -632,15 +611,22 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     return
   endif
 
+  if l:is_quick_match_list
+    let l:complete_words = s:make_quick_match_list(l:complete_words, l:cur_keyword_str)
+
+    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
+  else
+    " Start auto complete.
+    if neocomplcache#is_auto_select()
+      call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
+    else
+      call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
+    endif
+  endif
+
   let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] =
         \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
-  " Start auto complete.
-  if neocomplcache#is_auto_select()
-    call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
-  else
-    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-  endif
   let s:changedtick = b:changedtick
 endfunction"}}}
 

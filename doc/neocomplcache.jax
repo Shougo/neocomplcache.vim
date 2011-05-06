@@ -505,6 +505,8 @@ g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
 		はファイルタイプ毎に入力文字列の末尾にマッチする正規表現で指
 		定されている。 defaultを指定すると、通常時の入力パターンを設
 		定できる。
+		パターンを空文字列にすると、クイックマッチリストが毎回表示され
+		る。
 		
 		初期値は { 'default' : '-' } である。
 
