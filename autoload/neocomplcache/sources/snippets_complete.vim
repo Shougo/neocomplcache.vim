@@ -53,7 +53,13 @@ function! s:source.initialize()"{{{
 
   " Set snippets dir.
   let s:runtime_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/snippets_complete'), '\n')
-  let s:snippets_dir = split(globpath(&runtimepath, 'snippets'), '\n') + s:runtime_dir
+
+  if exists("g:snippets_dir")
+      let s:snippets_dir = split(g:snippets_dir,',') + s:runtime_dir
+  else
+      let s:snippets_dir = split(globpath(&runtimepath, 'snippets'), '\n') + s:runtime_dir
+  endif
+
   if exists('g:neocomplcache_snippets_dir')
     for l:dir in split(g:neocomplcache_snippets_dir, ',')
       let l:dir = expand(l:dir)
