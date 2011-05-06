@@ -888,9 +888,13 @@ vnoremapやvmap, mapはselect modeでも有効になるので、変なマッピ�
 snipMateのmulti snippetにも対応している。
 ただし、triggerとdescriptionの間のスペースは'_'に変換される。
 >
-	snippet ${1:trigger} ${2:description}
-	${3}
+	snippet trigger description1
+		hoge
+	snippet trigger description2
+		piyo
 <
+<C-n>や<C-p>でスニペットを選択し、<Plug>(neocomplcache_snippets_expand)で展開す
+る。
 
 プレースホルダの中にプレースホルダを書くことができる。ただ し、'}'はエスケー
 プしなればならない。 '\'がエスケープ文字になっている。

@@ -931,10 +931,15 @@ The placeholder value can't be contained new line. Below snippet is illegal.
 <
 
 Multi snippet feature is supported in snipMate.
+neocomplcache substitutes trigger and descriptions spaces to '_'.
 >
-	snippet ${1:trigger} ${2:description}
-	${3}
+	snippet trigger description1
+		hoge
+	snippet trigger description2
+		piyo
 <
+You choose snippet <C-n> or <C-p> and expand it with
+|<Plug>(neocomplcache_snippets_expand)| key-mappings.
 
 Nested placeholder feature is supported.
 But must escape inner '}'. '\' is eacape sequence.
@@ -968,6 +973,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added .gitignore file.
 - Fixed snippet like multi snippet behavior.
 - Improved quick match behavior.
+- Improved multi snippet description.
 
 2011-05-01
 - Fixed neocomplcache snippet sample.
@@ -2224,7 +2230,7 @@ ChangeLog neocomplcache 3.00-:
     - Improved manual completion.
     - Fixed filtering bug.
     - Print filename when caching.
-    
+
    3.08:
     - Implemented NeoComplCacheCachingTags command.
     - Disable auto caching in tags_complete.
@@ -2266,7 +2272,7 @@ ChangeLog neocomplcache 3.00-:
     - Changed g:neocomplcache_max_list and g:neocomplcache_QuickMatchmax_list default value.
     - Fixed skip error.
     - Implemented completion skip if previous completion is empty.
-    
+
    3.04:
     - Expand tilde.
     - Use complete_check().
@@ -2307,7 +2313,7 @@ ChangeLog neocomplcache 3.00-:
     - Added xhtml snippet(Thanks just!).
     - Fixed css error.
     - Implemented optional placeholder.
-   
+
    3.00:
     - Implemented multiple keyword.
     - Improved html keyword completion.
