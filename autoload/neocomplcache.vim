@@ -573,10 +573,10 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
-      if neocomplcache#is_auto_select()
+      "if neocomplcache#is_auto_select()
         call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
-      else
-        call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
+      "else
+        "call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
       endif
       let s:old_cur_text = l:cur_text
       return
