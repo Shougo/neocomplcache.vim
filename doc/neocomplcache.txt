@@ -962,6 +962,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-05-06
 - Changed :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets split behavior.
+- Fixed rails snippet.
 
 2011-05-01
 - Fixed neocomplcache snippet sample.
