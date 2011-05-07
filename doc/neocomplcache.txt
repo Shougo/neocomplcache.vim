@@ -967,6 +967,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-05-08
+- Don't split when execute :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets commands.
+
 2011-05-06
 - Changed :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets split behavior.
 - Fixed rails snippet.
