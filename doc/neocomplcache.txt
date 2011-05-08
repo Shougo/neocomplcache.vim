@@ -969,6 +969,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-05-08
 - Don't split when execute :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets commands.
+- Improved quick match behavior.
 
 2011-05-06
 - Changed :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets split behavior.

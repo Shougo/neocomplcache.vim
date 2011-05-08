@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 May 2011.
+" Last Modified: 08 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -408,6 +408,7 @@ function! neocomplcache#enable() "{{{
   " For auto complete keymappings.
   inoremap <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
   inoremap <Plug>(neocomplcache_start_auto_select_complete)   <C-x><C-u><C-p><Down>
+  inoremap <Plug>(neocomplcache_select_quick_match)            <C-x><C-u><C-p><Down><C-y>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)   unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)   unite#sources#snippet#start_complete()
 
@@ -559,7 +560,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
       " Set function.
       let &l:completefunc = 'neocomplcache#auto_complete'
-      call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
+      call feedkeys("\<Plug>(neocomplcache_select_quick_match)")
       let s:old_cur_text = l:cur_text
       return
     endif
