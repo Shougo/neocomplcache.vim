@@ -967,6 +967,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-05-09
+- Fixed asyn caching error.
+
 2011-05-08
 - Don't split when execute :NeoComplCacheEditRuntimeSnippets and :NeoComplCacheEditSnippets commands.
 - Improved quick match behavior.
