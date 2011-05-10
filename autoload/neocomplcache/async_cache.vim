@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2011.
+" Last Modified: 10 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ function! s:main(argv)"{{{
         \ = a:argv
 
   let l:pattern = get(readfile(l:pattern_file_name), 0, '\h\w*')
-  let l:keyword_list = s:load_from_file(l:filename, l:pattern, l:mark, l:minlen, l:maxfilename)
+  let l:keyword_list = s:load_from_file(l:filename, l:pattern, l:mark, l:minlen, l:maxfilename, l:fileencoding)
 
   " Create dictionary key.
   for keyword in l:keyword_list
