@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 May 2011.
+" Last Modified: 11 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,7 +62,7 @@ endfunction"}}}
 
 function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileencoding)"{{{
   if filereadable(a:filename)
-    let l:lines = map(readfile(a:filename), 'iconv(v:val, l:fileencoding, &encoding)')
+    let l:lines = map(readfile(a:filename), 'iconv(v:val, a:fileencoding, &encoding)')
   else
     " File not found.
     return []
