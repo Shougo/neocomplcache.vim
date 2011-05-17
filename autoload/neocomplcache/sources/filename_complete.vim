@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 17 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -77,7 +77,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
-  return s:get_include_files(a:cur_keyword_str) + s:get_glob_files(a:cur_keyword_str)
+  return s:get_include_files(a:cur_keyword_str) + s:get_glob_files(a:cur_keyword_str, &path)
 endfunction"}}
 
 function! s:get_include_files(cur_keyword_str)"{{{
@@ -143,8 +143,8 @@ function! s:get_include_files(cur_keyword_str)"{{{
         \ + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
 endfunction"}}}
 
-function! s:get_glob_files(cur_keyword_str)"{{{
-  let l:path = fnamemodify(bufname('%'), ':p:h') . ',,' . substitute(&path, '.\%(,\|$\)', '', 'g')
+function! s:get_glob_files(cur_keyword_str, path)"{{{
+  let l:path = fnamemodify(bufname('%'), ':p:h') . ',,' . substitute(a:path, '.\%(,\|$\)', '', 'g')
 
   let l:cur_keyword_str = a:cur_keyword_str
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
@@ -226,6 +226,7 @@ function! s:get_glob_files(cur_keyword_str)"{{{
       let l:abbr .= '*'
     endif
     let l:dict.abbr = l:abbr
+    let l:dict.orig = l:dict.word
 
     " Escape word.
     let l:dict.word = escape(l:dict.word, ' *?[]"={}')
@@ -242,6 +243,10 @@ endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
   return s:source
+endfunction"}}}
+
+function! neocomplcache#sources#filename_complete#get_complete_words(cur_keyword_str, path)"{{{
+  return s:get_glob_files(a:cur_keyword_str, a:path)
 endfunction"}}}
 
 let &cpo = s:save_cpo
