@@ -176,8 +176,8 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     endtry
   endif
 
-  let l:fileter_files = deepcopy(l:files)
-  let l:files = neocomplcache#keyword_filter(map(l:fileter_files, '{
+  let l:files = neocomplcache#keyword_filter(map(
+        \ filter(l:files, 'v:val !~ "/\\.\\./"'), '{
         \    "word" : fnamemodify(v:val, ":t"),
         \    "orig" : v:val,
         \ }'),
