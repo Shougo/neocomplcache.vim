@@ -77,7 +77,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
-  return s:get_include_files(a:cur_keyword_str) + s:get_glob_files(a:cur_keyword_str, &path)
+  return s:get_include_files(a:cur_keyword_str) + s:get_glob_files(a:cur_keyword_str, '')
 endfunction"}}
 
 function! s:get_include_files(cur_keyword_str)"{{{
@@ -144,7 +144,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
 endfunction"}}}
 
 function! s:get_glob_files(cur_keyword_str, path)"{{{
-  let l:path = fnamemodify(bufname('%'), ':p:h') . ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
+  let l:path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
 
   let l:cur_keyword_str = a:cur_keyword_str
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
