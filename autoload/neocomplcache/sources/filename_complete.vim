@@ -188,7 +188,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
   endif
 
   let l:files = map(l:files, '{
-        \    "word" : substitute(v:val.orig, '//', '/', 'g'),
+        \    "word" : substitute(v:val.orig, "//", "/", "g"),
         \ }')
 
   if a:cur_keyword_str =~ '^\$\h\w*'
