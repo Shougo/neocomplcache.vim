@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 21 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -296,7 +296,7 @@ function! s:load_from_tags(filename, filetype)"{{{
 
   let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
         \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
-  let l:filename = fnamemodify(a:filename, ':p:.')
+  let l:filename = fnamemodify(a:filename, ':p')
   if neocomplcache#is_win()
     let l:filename = substitute(l:filename, '\\', '/', 'g')
     let l:command = printf('%s -f - %s "%s"', g:neocomplcache_ctags_program, l:args, l:filename)
