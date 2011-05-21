@@ -1,7 +1,7 @@
 all_builtin_terms ; Compiled with all builtin terminals enabled.
 amiga ; Amiga version of Vim.
 arabic ; Compiled with Arabic support |Arabic|.
-arp ; Compiled with ARP support (Amiga).
+ARP ; Compiled with ARP support (Amiga).
 autocmd ; Compiled with autocommand support. |autocommand|
 balloon_eval ; Compiled with |balloon-eval| support.
 balloon_multiline ; GUI supports multiline balloons.
@@ -93,6 +93,7 @@ postscript ; Compiled with PostScript file printing.
 printer ; Compiled with |:hardcopy| support.
 profile ; Compiled with |:profile| support.
 python ; Compiled with Python interface.
+python3 ; Compiled with Python3 interface.
 qnx ; QNX version of Vim.
 quickfix ; Compiled with |quickfix| support.
 reltime ; Compiled with |reltime()| support.

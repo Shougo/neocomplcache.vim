@@ -970,6 +970,15 @@ CHANGELOG						*neocomplcache-changelog*
 2011-05-21
 - Genetate relative path in include_complete.
 
+2011-05-19
+- Improved features dictionary.
+
+2011-05-18
+- Fixed filename_complete.
+
+2011-05-17
+- Added neocomplcache#sources#filename_complete#get_complete_words().
+
 2011-05-11
 - Fixed asyn caching error.
 
