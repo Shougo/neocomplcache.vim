@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 26 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -489,17 +489,18 @@ function! s:check_source()"{{{
     if bufwinnr(l:bufnumber) >= 0
       let l:bufname = fnamemodify(bufname(l:bufnumber), ':p')
       if (!has_key(s:buffer_sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
-            \&& !has_key(s:disable_caching_list, l:bufnumber)
-            \&& !neocomplcache#is_locked(l:bufnumber)
+            \ && !has_key(s:disable_caching_list, l:bufnumber)
+            \ && !neocomplcache#is_locked(l:bufnumber)
+            \ && !getbufvar(l:bufnumber, '&previewwindow')
+            \ && getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
+            \ && (g:neocomplcache_force_caching_buffer_name_pattern == ''
+            \       || l:bufname !~ g:neocomplcache_force_caching_buffer_name_pattern)
+            \ && getbufvar(l:bufnumber, '&modifiable')
+            \ && !getbufvar(l:bufnumber, '&readonly')
+            \ && getbufvar(l:bufnumber, '&buftype') !~ 'help'
 
-        let l:buftype = getbufvar(l:bufnumber, '&buftype')
-        if (g:neocomplcache_force_caching_buffer_name_pattern != '' && l:bufname =~ g:neocomplcache_force_caching_buffer_name_pattern)
-              \ || (getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
-              \     && (l:buftype == ''
-              \         || (getbufvar(l:bufnumber, '&modifiable') && !getbufvar(l:bufnumber, '&readonly') && l:buftype !~ 'help')))
-          " Caching.
-          call s:word_caching(l:bufnumber)
-        endif
+        " Caching.
+        call s:word_caching(l:bufnumber)
       endif
 
       if has_key(s:buffer_sources, l:bufnumber)

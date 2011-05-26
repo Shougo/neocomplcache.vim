@@ -967,6 +967,10 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-05-26
+- Don't caching when open buffer in preview window.
+- Changed caching conditions.
+
 2011-05-21
 - Genetate relative path in include_complete.
 
