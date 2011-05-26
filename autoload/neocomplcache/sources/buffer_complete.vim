@@ -491,7 +491,7 @@ function! s:check_source()"{{{
       if (!has_key(s:buffer_sources, l:bufnumber) || s:check_changed_buffer(l:bufnumber))
             \ && !has_key(s:disable_caching_list, l:bufnumber)
             \ && !neocomplcache#is_locked(l:bufnumber)
-            \ && !getbufvar(l:bufnumber, '&previewwindow')
+            \ && !getwinvar(bufwinnr(l:bufnumber), '&previewwindow')
             \ && getfsize(l:bufname) < g:neocomplcache_caching_limit_file_size
             \ && (g:neocomplcache_force_caching_buffer_name_pattern == ''
             \       || l:bufname !~ g:neocomplcache_force_caching_buffer_name_pattern)
