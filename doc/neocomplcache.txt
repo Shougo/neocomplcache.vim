@@ -967,6 +967,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-05-31
+- Added :NeoComplCacheCachingDictionary in Japanese documentation.
+
 2011-05-29
 - Optimized filename_complete.
 

@@ -116,6 +116,11 @@ COMMANDS 						*neocomplcache-commands*
 		ファがまだキャッシュされていない場合、簡易キャッシュのみを行
 		う。
 
+:NeoComplCacheCachingDictionary [filetype]		*:NeoComplCacheCachingDictionary*
+		[filetype]で示されるディクショナリを再キャッシュする。
+		[filetype]を省略すると、カレントバッファのファイルタイプを指
+		定したことになる。
+
 :NeoComplCacheCachingSyntax [filetype]			*:NeoComplCacheCachingSyntax*
 		[filetype]のシンタックスをもう一度キャッシュする。
 		[filetype]を省略すると、カレントバッファのファイルタイプを指
