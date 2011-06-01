@@ -155,22 +155,33 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
-  try
-    let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-  catch
-    return []
-  endtry
+  if a:path == '' && neocomplcache#has_vimproc() && executable('ls')
+    let l:globs = vimproc#system2('ls '.l:glob, '', 50)
+  else
+    try
+      let l:globs = globpath(l:path, l:glob)
+    catch
+      return []
+    endtry
+  endif
+  let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
 
   if empty(l:files)
     " Add '*' to a delimiter.
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
-    try
-      let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-    catch
-      return []
-    endtry
+    if a:path == '' && neocomplcache#has_vimproc() && executable('ls')
+      let l:globs = vimproc#system2('ls '.l:glob, '', 50)
+    else
+      try
+        let l:globs = globpath(l:path, l:glob)
+      catch
+        return []
+      endtry
+    endif
+
+    let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
   endif
 
   let l:files = neocomplcache#keyword_filter(map(
