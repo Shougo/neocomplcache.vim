@@ -162,7 +162,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
       call s:caching_current_files()
     endif
 
-    let l:files = s:cached_files[getcwd()]
+    let l:files = copy(s:cached_files[getcwd()])
   else
     try
       let l:globs = globpath(l:path, l:glob)
