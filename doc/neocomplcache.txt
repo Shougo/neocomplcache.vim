@@ -969,6 +969,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-01
 - Fixed filename_complete.
+- Improved :NeoComplCacheToggle, :NeoComplCacheLock, :NeoComplCacheUnlock commands.
 
 2011-05-31
 - Added :NeoComplCacheCachingDictionary in Japanese documentation.

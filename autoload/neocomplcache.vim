@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 May 2011.
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -376,11 +376,7 @@ function! neocomplcache#enable() "{{{
   "}}}
 
   " Add commands."{{{
-  command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
   command! -nargs=? Neco call s:display_neco(<q-args>)
-  command! -nargs=0 NeoComplCacheLock call s:lock()
-  command! -nargs=0 NeoComplCacheUnlock call s:unlock()
-  command! -nargs=0 NeoComplCacheToggle call s:toggle_lock()
   command! -nargs=1 NeoComplCacheAutoCompletionLength call s:set_auto_completion_length(<args>)
   "}}}
 
@@ -422,6 +418,11 @@ function! neocomplcache#enable() "{{{
 endfunction"}}}
 
 function! neocomplcache#disable()"{{{
+  if !neocomplcache#is_enabled()
+    echoerr 'neocomplcache is disabled! This command is ignored.'
+    return
+  endif
+
   let s:is_enabled = 0
 
   " Restore options.
@@ -434,9 +435,6 @@ function! neocomplcache#disable()"{{{
 
   delcommand NeoComplCacheDisable
   delcommand Neco
-  delcommand NeoComplCacheLock
-  delcommand NeoComplCacheUnlock
-  delcommand NeoComplCacheToggle
   delcommand NeoComplCacheAutoCompletionLength
 
   for l:source in values(neocomplcache#available_complfuncs())
@@ -1330,17 +1328,32 @@ endfunction"}}}
 "}}}
 
 " Command functions."{{{
-function! s:toggle_lock()"{{{
+function! neocomplcache#toggle_lock()"{{{
+  if !neocomplcache#is_enabled()
+    echoerr 'neocomplcache is disabled! This command is ignored.'
+    return
+  endif
+
   if !has_key(s:complete_lock, bufnr('%')) || !s:complete_lock[bufnr('%')]
-    call s:lock()
+    call neocomplcache#lock()
   else
-    call s:unlock()
+    call neocomplcache#unlock()
   endif
 endfunction"}}}
-function! s:lock()"{{{
+function! neocomplcache#lock()"{{{
+  if !neocomplcache#is_enabled()
+    echoerr 'neocomplcache is disabled! This command is ignored.'
+    return
+  endif
+
   let s:complete_lock[bufnr('%')] = 1
 endfunction"}}}
-function! s:unlock()"{{{
+function! neocomplcache#unlock()"{{{
+  if !neocomplcache#is_enabled()
+    echoerr 'neocomplcache is disabled! This command is ignored.'
+    return
+  endif
+
   let s:complete_lock[bufnr('%')] = 0
 endfunction"}}}
 function! s:display_neco(number)"{{{

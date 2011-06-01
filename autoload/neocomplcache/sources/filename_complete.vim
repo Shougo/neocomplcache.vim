@@ -143,6 +143,8 @@ function! s:get_include_files(cur_keyword_str)"{{{
         \ + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
 endfunction"}}}
 
+let s:cached_files = {}
+
 function! s:get_glob_files(cur_keyword_str, path)"{{{
   let l:path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
 
@@ -155,25 +157,32 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
-  try
-    let l:globs = globpath(l:path, l:glob)
-  catch
-    return []
-  endtry
-  let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
+  if a:path == '' && l:cur_keyword_str !~ '/'
+    if !has_key(s:cached_files, getcwd())
+      call s:caching_current_files()
+    endif
 
-  if empty(l:files)
-    " Add '*' to a delimiter.
-    let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-    let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-
+    let l:files = s:cached_files[getcwd()]
+  else
     try
       let l:globs = globpath(l:path, l:glob)
     catch
       return []
     endtry
-
     let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
+
+    if empty(l:files)
+      " Add '*' to a delimiter.
+      let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
+      let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+
+      try
+        let l:globs = globpath(l:path, l:glob)
+      catch
+        return []
+      endtry
+      let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
+    endif
   endif
 
   let l:files = neocomplcache#keyword_filter(map(
@@ -240,6 +249,10 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
   return l:dir_list + l:file_list
 endfunction"}}}
+function! s:caching_current_files()
+  let s:cached_files[getcwd()] =
+        \ split(substitute(glob('*') . glob('.*'), '\\', '/', 'g'), '\n')
+endfunction
 
 function! neocomplcache#sources#filename_complete#define()"{{{
   return s:source
