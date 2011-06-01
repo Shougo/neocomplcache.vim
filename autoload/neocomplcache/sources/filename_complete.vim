@@ -155,15 +155,11 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
-  if a:path == '' && neocomplcache#has_vimproc() && executable('ls')
-    let l:globs = vimproc#system2('ls '.l:glob, '', 50)
-  else
-    try
-      let l:globs = globpath(l:path, l:glob)
-    catch
-      return []
-    endtry
-  endif
+  try
+    let l:globs = globpath(l:path, l:glob)
+  catch
+    return []
+  endtry
   let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
 
   if empty(l:files)
@@ -171,15 +167,11 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
     let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
 
-    if a:path == '' && neocomplcache#has_vimproc() && executable('ls')
-      let l:globs = vimproc#system2('ls '.l:glob, '', 50)
-    else
-      try
-        let l:globs = globpath(l:path, l:glob)
-      catch
-        return []
-      endtry
-    endif
+    try
+      let l:globs = globpath(l:path, l:glob)
+    catch
+      return []
+    endtry
 
     let l:files = split(substitute(l:globs, '\\', '/', 'g'), '\n')
   endif
