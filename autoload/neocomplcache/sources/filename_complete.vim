@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2011.
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -207,12 +207,6 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
   for l:dict in l:files
     let l:dict.menu = '[F]'
 
-    if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
-      let l:dict.word = l:env . l:dict.word[l:len_env :]
-    elseif a:cur_keyword_str =~ '^\~/'
-      let l:dict.word = substitute(l:dict.word, l:home_pattern, '\~/', '')
-    endif
-
     let l:abbr = l:dict.word
     if isdirectory(l:dict.word)
       let l:abbr .= '/'
@@ -228,6 +222,12 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     endif
     let l:dict.abbr = l:abbr
     let l:dict.orig = l:dict.word
+
+    if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
+      let l:dict.word = l:env . l:dict.word[l:len_env :]
+    elseif a:cur_keyword_str =~ '^\~/'
+      let l:dict.word = substitute(l:dict.word, l:home_pattern, '\~/', '')
+    endif
 
     " Escape word.
     let l:dict.word = escape(l:dict.word, ' *?[]"={}')
