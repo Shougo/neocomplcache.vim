@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 02 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -169,7 +169,7 @@ function! neocomplcache#enable() "{{{
         \ '^\s*-\h\w*()?\|\%(\h\w*:\)*\h\w()\?\|\h[[:alnum:]_@]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'html,xhtml,xml,markdown,eruby',
         \ '</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'css',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'css,stylus',
         \ '[@#.]\?[[:alpha:]_:-][[:alnum:]_:-]*(\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'tags',
         \ '^[^!][^/[:blank:]]*')
@@ -233,7 +233,8 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'cpp', 'c')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'erb', 'ruby,html,xhtml')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'html,xml', 'xhtml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'html,xhtml', 'css')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'html,xhtml', 'css,stylus')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'stylus', 'css')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'xhtml', 'html,xml')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'help', 'vim')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'tex', 'bib')
