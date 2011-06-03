@@ -967,6 +967,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-06-03
+- Fixed filename_complete.
+
 2011-06-02
 - Supported stylus syntax.
 
