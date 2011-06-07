@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 May 2011.
+" Last Modified: 07 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,8 +54,8 @@ function! s:source.initialize()"{{{
   " Set snippets dir.
   let s:runtime_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/snippets_complete'), '\n')
 
-  if exists("g:snippets_dir")
-      let s:snippets_dir = split(g:snippets_dir,',') + s:runtime_dir
+  if exists('g:snippets_dir')
+      let s:snippets_dir = split(g:snippets_dir, ',') + s:runtime_dir
   else
       let s:snippets_dir = split(globpath(&runtimepath, 'snippets'), '\n') + s:runtime_dir
   endif
@@ -69,6 +69,7 @@ function! s:source.initialize()"{{{
       call add(s:snippets_dir, l:dir)
     endfor
   endif
+  call map(s:snippets_dir, 'substitute(v:val, "[\\\\/]$", "", "")')
 
   augroup neocomplcache"{{{
     " Set caching event.
@@ -292,7 +293,7 @@ function! s:edit_snippets(filetype, isruntime)"{{{
 
     let l:filename = s:runtime_dir[0].'/'.l:filetype.'.snip'
   else
-    if empty(s:snippets_dir) 
+    if empty(s:snippets_dir)
       return
     endif
 
