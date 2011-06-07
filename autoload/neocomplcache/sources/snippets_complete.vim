@@ -235,7 +235,7 @@ function! s:caching()"{{{
   endfor
 endfunction"}}}
 
-function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check)"{{{
+function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_file)"{{{
   if has_key(a:snippet_pattern, 'name')
     let l:pattern = s:set_snippet_pattern(a:snippet_pattern)
     let a:snippet_dict[a:snippet_pattern.name] = l:pattern
@@ -249,11 +249,16 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check)"{{{
               \       len(l:alias) > g:neocomplcache_max_keyword_width) ?
               \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
         let l:alias_pattern.abbr = l:abbr
+        let l:alias_pattern.action__path = a:snippets_file
+        let l:alias_pattern.action__directory = a:snippets_file
 
         let a:snippet_dict[alias] = l:alias_pattern
         let a:dup_check[alias] = 1
       endfor
     endif
+
+    let l:snippet = a:snippet_dict[a:snippet_pattern.name]
+    let l:snippet.action__path = a:snippets_file
   endif
 endfunction"}}}
 function! s:set_snippet_pattern(dict)"{{{
@@ -346,7 +351,7 @@ function! s:load_snippets(snippet, snippets_file)"{{{
     elseif line =~ '^snippet\s'
       if has_key(l:snippet_pattern, 'name')
         " Set previous snippet.
-        call s:set_snippet_dict(l:snippet_pattern, a:snippet, l:dup_check)
+        call s:set_snippet_dict(l:snippet_pattern, a:snippet, l:dup_check, a:snippets_file)
         let l:snippet_pattern = { 'word' : '' }
       endif
 
@@ -386,7 +391,7 @@ function! s:load_snippets(snippet, snippets_file)"{{{
   endfor
 
   " Set previous snippet.
-  call s:set_snippet_dict(l:snippet_pattern, a:snippet, l:dup_check)
+  call s:set_snippet_dict(l:snippet_pattern, a:snippet, l:dup_check, a:snippets_file)
 
   return a:snippet
 endfunction"}}}

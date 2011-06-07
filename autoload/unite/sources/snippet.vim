@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippet.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 07 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,6 +34,15 @@ function! unite#sources#snippet#define() "{{{
     return []
   endif
 
+  let l:kind = {
+        \ 'name' : 'snippet',
+        \ 'default_action' : 'expand',
+        \ 'action_table': {},
+        \ 'parents': ['file', 'completion'],
+        \ 'alias_table' : { 'edit' : 'open' },
+        \ }
+  call unite#define_kind(l:kind)
+
   return s:source
 endfunction "}}}
 
@@ -41,7 +50,6 @@ endfunction "}}}
 let s:source = {
       \ 'name': 'snippet',
       \ 'hooks' : {},
-      \ 'default_action' : { '*' : 'expand' },
       \ 'action_table' : {},
       \ }
 
@@ -57,9 +65,11 @@ function! s:source.gather_candidates(args, context) "{{{
     let l:dict = {
         \   'word' : l:keyword.word,
         \   'abbr' : printf('%-50s %s', l:keyword.word, l:keyword.menu),
-        \   'kind': 'completion',
+        \   'kind': 'snippet',
         \   'action__complete_word' : l:keyword.word,
         \   'action__complete_pos' : l:keyword_pos,
+        \   'action__path' : l:keyword.action__path,
+        \   'action__directory' : unite#util#path2directory(l:keyword.action__path),
         \   'source__menu' : l:keyword.menu,
         \   'source__snip' : l:keyword.snip,
         \ }

@@ -969,6 +969,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-07
 - Improved snippet_complete.
+- Improved snippet unite source.
 
 2011-06-03
 - Fixed filename_complete.
