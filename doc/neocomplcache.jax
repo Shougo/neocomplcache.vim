@@ -940,10 +940,11 @@ neocomplcache
 <
 							*neocomplcache-unite-source-snippet*
 snippet
-		neocomplcacheのsnippetを候補とする。候補はcompletion kindで
+		neocomplcacheのsnippetを候補とする。候補はsnippet kindで
 		ある。普通、mapping内で
 		|<Plug>(neocomplcache_start_unite_snippet)|をマッピングして
-		使用する。
+		使用するが、:Unite snippetでも呼び出すことができる。
+		"edit"アクションにより、スニペットの編集を行うことができる。
 		例：
 >
 		imap <C-s>  <Plug>(neocomplcache_start_unite_complete)
@@ -953,6 +954,7 @@ source別アクション
 
 snippet							*neocomplcache-unite-action-snippet*
 	expand		スニペットの展開(デフォルト)
+	edit		スニペットの編集
 	preview		スニペットの定義を見る
 
 ==============================================================================

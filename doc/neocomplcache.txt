@@ -959,6 +959,27 @@ powerless(example: PHP).
 <
 
 ==============================================================================
+UNITE SOURCES						*neocomplcache-unite-sources*
+
+							*neocomplcache-unite-source-neocomplcache*
+neocomplcache
+>
+		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
+<
+							*neocomplcache-unite-source-snippet*
+snippet
+>
+		imap <C-s>  <Plug>(neocomplcache_start_unite_complete)
+<
+
+source actions
+
+snippet							*neocomplcache-unite-action-snippet*
+	expand		Expand snippet(default action)
+	edit		Edit snippet
+	preview		View snippet definition
+
+==============================================================================
 CREATE PLUGIN						*neocomplcache-create-plugin*
 
 In this clause, I comment on a method to make plugin of neocomplcache.  The
@@ -970,6 +991,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-06-07
 - Improved snippet_complete.
 - Improved snippet unite source.
+- Improved snippet source description.
 
 2011-06-03
 - Fixed filename_complete.
