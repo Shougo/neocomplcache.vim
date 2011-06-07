@@ -250,7 +250,7 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_
               \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
         let l:alias_pattern.abbr = l:abbr
         let l:alias_pattern.action__path = a:snippets_file
-        let l:alias_pattern.action__directory = a:snippets_file
+        let l:alias_pattern.action__pattern = '^snippet\s\+' . a:snippet_pattern.name
 
         let a:snippet_dict[alias] = l:alias_pattern
         let a:dup_check[alias] = 1
@@ -259,6 +259,7 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_
 
     let l:snippet = a:snippet_dict[a:snippet_pattern.name]
     let l:snippet.action__path = a:snippets_file
+    let l:snippet.action__pattern = '^snippet\s\+' . a:snippet_pattern.name
   endif
 endfunction"}}}
 function! s:set_snippet_pattern(dict)"{{{

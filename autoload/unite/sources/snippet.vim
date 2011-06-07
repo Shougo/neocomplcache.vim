@@ -38,7 +38,7 @@ function! unite#sources#snippet#define() "{{{
         \ 'name' : 'snippet',
         \ 'default_action' : 'expand',
         \ 'action_table': {},
-        \ 'parents': ['file', 'completion'],
+        \ 'parents': ['jump_list', 'completion'],
         \ 'alias_table' : { 'edit' : 'open' },
         \ }
   call unite#define_kind(l:kind)
@@ -69,7 +69,7 @@ function! s:source.gather_candidates(args, context) "{{{
         \   'action__complete_word' : l:keyword.word,
         \   'action__complete_pos' : l:keyword_pos,
         \   'action__path' : l:keyword.action__path,
-        \   'action__directory' : unite#util#path2directory(l:keyword.action__path),
+        \   'action__pattern' : l:keyword.action__pattern,
         \   'source__menu' : l:keyword.menu,
         \   'source__snip' : l:keyword.snip,
         \ }
