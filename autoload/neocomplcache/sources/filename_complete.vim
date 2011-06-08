@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2011.
+" Last Modified: 08 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,7 +109,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
 
   let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
-  let l:files = split(substitute(globpath(l:path, l:glob, l:path), '\\', '/', 'g'), '\n')
+  let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
 
   let l:dir_list = []
   let l:file_list = []
