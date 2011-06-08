@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2011.
+" Last Modified: 08 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -238,8 +238,10 @@ endfunction"}}}
 function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_file)"{{{
   if has_key(a:snippet_pattern, 'name')
     let l:pattern = s:set_snippet_pattern(a:snippet_pattern)
+    let l:action_pattern = '^snippet\s\+' . a:snippet_pattern.name . '$'
     let a:snippet_dict[a:snippet_pattern.name] = l:pattern
     let a:dup_check[a:snippet_pattern.name] = 1
+
     if has_key(a:snippet_pattern, 'alias')
       for l:alias in a:snippet_pattern.alias
         let l:alias_pattern = copy(l:pattern)
@@ -250,7 +252,7 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_
               \ printf(l:abbr_pattern, l:alias, l:alias[-8:]) : l:alias
         let l:alias_pattern.abbr = l:abbr
         let l:alias_pattern.action__path = a:snippets_file
-        let l:alias_pattern.action__pattern = '^snippet\s\+' . a:snippet_pattern.name
+        let l:alias_pattern.action__pattern = l:action_pattern
 
         let a:snippet_dict[alias] = l:alias_pattern
         let a:dup_check[alias] = 1
@@ -259,7 +261,7 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_
 
     let l:snippet = a:snippet_dict[a:snippet_pattern.name]
     let l:snippet.action__path = a:snippets_file
-    let l:snippet.action__pattern = '^snippet\s\+' . a:snippet_pattern.name
+    let l:snippet.action__pattern = l:action_pattern
   endif
 endfunction"}}}
 function! s:set_snippet_pattern(dict)"{{{

@@ -990,6 +990,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-08
 - Fixed filename_complete error.
+- Improved snippets action pattern.
 
 2011-06-07
 - Improved snippet_complete.
