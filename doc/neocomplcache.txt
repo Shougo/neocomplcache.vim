@@ -988,6 +988,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-06-09
+- Fixed g:snips_author problem.
+
 2011-06-08
 - Fixed filename_complete error.
 - Improved snippets action pattern.

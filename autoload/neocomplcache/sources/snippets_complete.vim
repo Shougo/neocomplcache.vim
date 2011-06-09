@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jun 2011.
+" Last Modified: 09 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,11 +45,6 @@ function! s:source.initialize()"{{{
   let s:begin_snippet = 0
   let s:end_snippet = 0
   let s:snippet_holder_cnt = 1
-
-  " Set snips_author.
-  if !exists('snips_author')
-    let g:snips_author = 'Me'
-  endif
 
   " Set snippets dir.
   let s:runtime_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/snippets_complete'), '\n')
