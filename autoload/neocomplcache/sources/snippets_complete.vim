@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jun 2011.
+" Last Modified: 10 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -315,6 +315,7 @@ endfunction"}}}
 function! s:caching_snippets(filetype)"{{{
   let l:snippet = {}
   let l:snippets_files = split(globpath(join(s:snippets_dir, ','), a:filetype .  '.snip*'), '\n')
+        \ + split(globpath(join(s:snippets_dir, ','), a:filetype .  '_*.snip*'), '\n')
   for snippets_file in l:snippets_files
     call s:load_snippets(l:snippet, snippets_file)
   endfor
