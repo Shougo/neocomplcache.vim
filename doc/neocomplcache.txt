@@ -990,6 +990,8 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-10
 - Improved snippets_complete.
+- Vitalized.
+- Fixed menu problem.
 
 2011-06-09
 - Fixed g:snips_author problem.

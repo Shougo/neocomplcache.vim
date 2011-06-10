@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2011.
+" Last Modified: 10 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,7 +66,8 @@ function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
   endif
 
   let l:max_lines = len(l:lines)
-  let l:menu = printf('[%s] %.' . g:neocomplcache_max_filename_width . 's', a:mark, fnamemodify(a:filename, ':t'))
+  let l:menu = '[' . a:mark . '] ' . neocomplcache#util#strwidthpart(
+        \ fnamemodify(a:filename, ':t'), g:neocomplcache_max_filename_width)
 
   if l:max_lines > 1000
     call neocomplcache#print_caching('Caching from file "' . a:filename . '"... please wait.')
@@ -174,7 +175,7 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   endif
   let l:line_cnt = l:print_cache_percent
 
-  let l:menu_pattern = printf('[%s] %%.%ds %%.%ds', a:mark, g:neocomplcache_max_filename_width, g:neocomplcache_max_filename_width)
+  let l:menu_pattern = '[' . a:mark . '] '
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:line_num = 1
@@ -214,25 +215,34 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
           continue
         endif
 
-        let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature : (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
+        let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature :
+              \ (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
         let l:keyword = {
               \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
               \}
+
+        let keyword.menu = l:menu_pattern .
+              \ neocomplcache#util#strwidthpart(
+              \   fnamemodify(l:tag[1], ':t'),
+              \   g:neocomplcache_max_filename_width)
+              \ . ' ' . l:option.struct .
         if has_key(l:option, 'struct')
-          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
           let keyword.class = l:option.struct
         elseif has_key(l:option, 'class')
-          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
           let keyword.class = l:option.class
         elseif has_key(l:option, 'enum')
-          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
           let keyword.class = l:option.enum
         elseif has_key(l:option, 'union')
-          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.union)
           let keyword.class = l:option.union
         else
-          let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
           let keyword.class = ''
+        endif
+
+        if keyword.class != ''
+          let keyword.menu .= ' ' .
+                \ neocomplcache#util#strwidthpart(
+                \   keyword.class,
+                \   g:neocomplcache_max_filename_width)
         endif
 
         call add(l:keyword_lists, l:keyword)
@@ -386,10 +396,10 @@ function! neocomplcache#cache#test_async()"{{{
         \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, &fileencoding
         \ ]
 
-  " call vimproc#system(
-  "       \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
-  "       \ + l:argv)
-  call neocomplcache#async_cache#main(l:argv)
+  call vimproc#system(
+        \ ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
+        \ + l:argv)
+  " call neocomplcache#async_cache#main(l:argv)
 
   lcd `=l:current`
 endfunction"}}}

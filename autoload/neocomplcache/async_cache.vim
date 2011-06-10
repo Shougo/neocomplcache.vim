@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2011.
+" Last Modified: 10 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,7 +69,8 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileenc
   endif
 
   let l:max_lines = len(l:lines)
-  let l:menu = printf('[%s] %.' . a:maxfilename . 's', a:mark, fnamemodify(a:filename, ':t'))
+  let l:menu = '[' . a:mark . '] ' . s:strwidthpart(
+        \ fnamemodify(a:filename, ':t'), a:maxfilename)
 
   let l:keyword_list = []
   let l:dup_check = {}
@@ -161,6 +162,107 @@ function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilen
 
   return l:keyword_lists
 endfunction"}}}
+
+function! s:truncate(str, width)"{{{
+  " Original function is from mattn.
+  " http://github.com/mattn/googlereader-vim/tree/master
+
+  if a:str =~# '^[\x00-\x7f]*$'
+    return len(a:str) < a:width ?
+          \ printf('%-'.a:width.'s', a:str) : strpart(a:str, 0, a:width)
+  endif
+
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  if width > a:width
+    let ret = s:strwidthpart(ret, a:width)
+    let width = s:wcswidth(ret)
+  endif
+
+  if width < a:width
+    let ret .= repeat(' ', a:width - width)
+  endif
+
+  return ret
+endfunction"}}}
+
+function! s:strchars(str)"{{{
+  return len(substitute(a:str, '.', 'x', 'g'))
+endfunction"}}}
+
+function! s:strwidthpart(str, width)"{{{
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '.$')
+    let ret = ret[: -1 - len(char)]
+    let width -= s:wcwidth(char)
+  endwhile
+
+  return ret
+endfunction"}}}
+function! s:strwidthpart_reverse(str, width)"{{{
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '^.')
+    let ret = ret[len(char) :]
+    let width -= s:wcwidth(char)
+  endwhile
+
+  return ret
+endfunction"}}}
+
+if v:version >= 703
+  " Use builtin function.
+  function! s:wcswidth(str)"{{{
+    return strdisplaywidth(a:str)
+  endfunction"}}}
+  function! s:wcwidth(str)"{{{
+    return strwidth(a:str)
+  endfunction"}}}
+else
+  function! s:wcswidth(str)"{{{
+    if a:str =~# '^[\x00-\x7f]*$'
+      return strlen(a:str)
+    end
+
+    let mx_first = '^\(.\)'
+    let str = a:str
+    let width = 0
+    while 1
+      let ucs = char2nr(substitute(str, mx_first, '\1', ''))
+      if ucs == 0
+        break
+      endif
+      let width += s:wcwidth(ucs)
+      let str = substitute(str, mx_first, '', '')
+    endwhile
+    return width
+  endfunction"}}}
+
+  " UTF-8 only.
+  function! s:wcwidth(ucs)"{{{
+    let ucs = a:ucs
+    if (ucs >= 0x1100
+          \  && (ucs <= 0x115f
+          \  || ucs == 0x2329
+          \  || ucs == 0x232a
+          \  || (ucs >= 0x2e80 && ucs <= 0xa4cf
+          \      && ucs != 0x303f)
+          \  || (ucs >= 0xac00 && ucs <= 0xd7a3)
+          \  || (ucs >= 0xf900 && ucs <= 0xfaff)
+          \  || (ucs >= 0xfe30 && ucs <= 0xfe6f)
+          \  || (ucs >= 0xff00 && ucs <= 0xff60)
+          \  || (ucs >= 0xffe0 && ucs <= 0xffe6)
+          \  || (ucs >= 0x20000 && ucs <= 0x2fffd)
+          \  || (ucs >= 0x30000 && ucs <= 0x3fffd)
+          \  ))
+      return 2
+    endif
+    return 1
+  endfunction"}}}
+endif
 
 function! neocomplcache#async_cache#main(argv)"{{{
   call s:main(a:argv)

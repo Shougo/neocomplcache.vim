@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2011.
+" Last Modified: 10 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -155,7 +155,8 @@ function! neocomplcache#sources#buffer_complete#caching_current_cache_line()"{{{
 
   let l:source = s:buffer_sources[bufnr('%')]
   let l:filename = fnamemodify(l:source.name, ':t')
-  let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
+  let l:menu = '[B] ' . neocomplcache#util#strwidthpart(
+        \ l:filename, g:neocomplcache_max_filename_width)
   let l:keyword_pattern = l:source.keyword_pattern
   let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
   let l:keywords = l:source.keyword_cache
@@ -306,7 +307,8 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
   let l:rank_lines = l:source.rank_lines[l:cache_num]
 
   let l:buflines = getline(l:start_line, l:end_line)
-  let l:menu = printf('[B] %.' . g:neocomplcache_max_filename_width . 's', l:filename)
+  let l:menu = '[B] ' . neocomplcache#util#strwidthpart(
+        \ l:filename, g:neocomplcache_max_filename_width)
   let l:keyword_pattern = l:source.keyword_pattern
   let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
 
@@ -356,7 +358,7 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
       " Next match.
       let l:match = matchend(l:line, l:keyword_pattern, l:match + len(l:match_str))
-      
+
       while l:match_str != ''
         let l:member_name = matchstr(l:match_str, l:member_pattern)
         let l:var_name = l:match_str[ : -len(l:member_name)-1]
