@@ -52,7 +52,7 @@ function! neocomplcache#util#strwidthpart_reverse(...)"{{{
 endfunction"}}}
 
 function! neocomplcache#util#mb_strlen(...)"{{{
-  return call(s:V.mb_strlen, a:000)
+  return call(s:V.strchars, a:000)
 endfunction"}}}
 
 let &cpo = s:save_cpo
