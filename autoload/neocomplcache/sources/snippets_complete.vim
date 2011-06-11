@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2011.
+" Last Modified: 11 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -436,6 +436,16 @@ function! s:snippets_jump_or_expand(cur_text, col)"{{{
 endfunction"}}}
 function! neocomplcache#sources#snippets_complete#expand(cur_text, col, trigger_name)"{{{
   if a:trigger_name == ''
+    let l:pos = getpos('.')
+    let l:pos[2] = len(a:cur_text)+1
+    call setpos('.', l:pos)
+
+    if l:pos[2] < col('$')
+      startinsert
+    else
+      startinsert!
+    endif
+
     return
   endif
 

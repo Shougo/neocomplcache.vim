@@ -995,6 +995,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-11
 - Improved neocomplcache documentation.
+- Fixed snippets expand behavior.
 
 2011-06-10
 - Improved snippets_complete.
