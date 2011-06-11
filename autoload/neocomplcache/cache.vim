@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2011.
+" Last Modified: 12 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -175,7 +175,6 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
   endif
   let l:line_cnt = l:print_cache_percent
 
-  let l:menu_pattern = '[' . a:mark . '] '
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:line_num = 1
@@ -221,11 +220,10 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
               \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
               \}
 
-        let keyword.menu = l:menu_pattern .
+        let keyword.menu = '[' . a:mark . '] ' .
               \ neocomplcache#util#strwidthpart(
               \   fnamemodify(l:tag[1], ':t'),
               \   g:neocomplcache_max_filename_width)
-              \ . ' ' . l:option.struct .
         if has_key(l:option, 'struct')
           let keyword.class = l:option.struct
         elseif has_key(l:option, 'class')

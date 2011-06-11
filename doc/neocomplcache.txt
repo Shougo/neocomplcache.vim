@@ -993,6 +993,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-06-12
+- Fixed load_from_tags() error.
+
 2011-06-11
 - Improved neocomplcache documentation.
 - Fixed snippets expand behavior.
