@@ -598,13 +598,18 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 <Plug>(neocomplcache_snippets_expand)			*<Plug>(neocomplcache_snippets_expand)*
 		Expand a cursor snippet of plural lines. When there is not
 		snippet, jump to the next placeholder.
+		
+		Note: cursor snippet must be match keyword patterns.
+		For example if snippet name is ".", snippets_complete don't expand it.
+		If you expand snippet ".",  Please use
+		|<Plug>(neocomplcache_snippets_force_expand)|.
 
 <Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
 		Jump to the next placeholder. If there is no
 		placeholder, expand a multiline cursor snippet.
 
 <Plug>(neocomplcache_snippets_force_expand)		*<Plug>(neocomplcache_snippets_force_expand)*
-		Expand a multiline cursor snippet. Does nothing if there is not
+		Expand a cursor snippet. Does nothing if there is not
 		snippet.
 
 <Plug>(neocomplcache_snippets_force_jump)		*<Plug>(neocomplcache_snippets_force_jump)*
@@ -987,6 +992,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-06-11
+- Improved neocomplcache documentation.
 
 2011-06-10
 - Improved snippets_complete.

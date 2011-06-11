@@ -570,6 +570,13 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		neocomplcacheのキーワードパターンで示されるもののみを認識す
 		る。
 		デフォルトではマッピングされていない。
+		
+		Note: カーソル位置にあるスニペットはキーワードパターンにマッチしないと展開されない。
+		例えば、"."というスニペットはキーワードパターンにマッチしないので展開されない。
+		もしこのスニペットを展開したい場合、
+		|<Plug>(neocomplcache_snippets_force_expand)|を使用しなけれ
+		ばならない。
+
 
 <Plug>(neocomplcache_snippets_jump)			*<Plug>(neocomplcache_snippets_jump)*
 		次のプレースホルダにジャンプする。プレースホルダが存在しない
