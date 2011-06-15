@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 May 2011.
+" Last Modified: 15 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,8 +46,7 @@ function! s:source.initialize()"{{{
 
   augroup neocomplcache
     " Caching events
-    autocmd FileType * call s:check_buffer_all()
-    autocmd BufWritePost * call s:check_buffer('')
+    autocmd InsertEnter,BufWritePost * call s:check_buffer('')
   augroup END
 
   " Initialize include pattern."{{{
@@ -74,9 +73,6 @@ function! s:source.initialize()"{{{
   if neocomplcache#exists_echodoc()
     call echodoc#register('include_complete', s:doc_dict)
   endif
-
-  " Initialize check.
-  call s:check_buffer_all()
 endfunction"}}}
 
 function! s:source.finalize()"{{{
@@ -175,18 +171,6 @@ function! s:doc_dict.search(cur_text)"{{{
 endfunction"}}}
 "}}}
 
-function! s:check_buffer_all()"{{{
-  let l:bufnumber = 1
-
-  " Check buffer.
-  while l:bufnumber <= bufnr('$')
-    if bufloaded(l:bufnumber) && !has_key(s:include_info, l:bufnumber)
-      call s:check_buffer(bufname(l:bufnumber))
-    endif
-
-    let l:bufnumber += 1
-  endwhile
-endfunction"}}}
 function! s:check_buffer(bufname)"{{{
   let l:bufname = fnamemodify((a:bufname == '' ? bufname('%') : a:bufname), ':p')
   let l:bufnumber = bufnr(l:bufname)
