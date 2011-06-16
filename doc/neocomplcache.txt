@@ -993,6 +993,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-06-16
+- Supported earthquake.
+
 2011-06-15
 - Changed caching timing.
 
