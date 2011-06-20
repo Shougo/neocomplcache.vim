@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2011.
+" Last Modified: 20 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1019,7 +1019,7 @@ function! neocomplcache#head_match(checkstr, headstr)"{{{
   return stridx(a:checkstr, a:headstr) == 0
 endfunction"}}}
 function! neocomplcache#get_source_filetypes(filetype)"{{{
-  let l:filetype = a:filetype == ''? 'nothing' : a:filetype
+  let l:filetype = (a:filetype == '') ? 'nothing' : a:filetype
 
   let l:filetype_dict = {}
 
