@@ -1040,11 +1040,11 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
     endif
   endfor
 
-  return l:filetype_dict
+  return keys(l:filetype_dict)
 endfunction"}}}
 function! neocomplcache#get_sources_list(dictionary, filetype)"{{{
   let l:list = []
-  for l:filetype in keys(neocomplcache#get_source_filetypes(a:filetype))
+  for l:filetype in neocomplcache#get_source_filetypes(a:filetype)
     if has_key(a:dictionary, l:filetype)
       call add(l:list, a:dictionary[l:filetype])
     endif

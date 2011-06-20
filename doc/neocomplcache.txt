@@ -995,6 +995,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-20
 - Fixed dictionary_complete behavior.
+- Improved neocomplcache#get_source_filetypes().
 
 2011-06-16
 - Supported earthquake.

@@ -81,7 +81,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
 
   call s:check_dictionary(l:filetype)
 
-  for l:ft in keys(neocomplcache#get_source_filetypes(l:filetype))
+  for l:ft in neocomplcache#get_source_filetypes(l:filetype)
     for l:source in neocomplcache#get_sources_list(s:dictionary_list, l:ft)
       let l:list += neocomplcache#dictionary_filter(l:source, a:cur_keyword_str, s:completion_length)
     endfor
@@ -96,7 +96,7 @@ function! s:caching()"{{{
   endif
 
   let l:key = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
-  for l:filetype in keys(neocomplcache#get_source_filetypes(l:key))
+  for l:filetype in neocomplcache#get_source_filetypes(l:key)
     if !has_key(s:dictionary_list, l:filetype)
           \ && !has_key(s:async_dictionary_list, l:filetype)
       call s:recaching(l:filetype)

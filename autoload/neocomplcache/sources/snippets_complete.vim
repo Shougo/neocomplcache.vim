@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 20 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -223,7 +223,7 @@ function! neocomplcache#sources#snippets_complete#expandable()"{{{
 endfunction"}}}
 
 function! s:caching()"{{{
-  for l:filetype in keys(neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype(1)))
+  for l:filetype in neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype(1))
     if !has_key(s:snippets, l:filetype)
       call s:caching_snippets(l:filetype)
     endif
