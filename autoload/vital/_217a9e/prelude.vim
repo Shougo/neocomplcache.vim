@@ -44,7 +44,7 @@ function! s:strwidthpart(str, width)"{{{
   while width > a:width
     let char = matchstr(ret, '.$')
     let ret = ret[: -1 - len(char)]
-    let width -= s:wcwidth(char)
+    let width -= s:wcswidth(char)
   endwhile
 
   return ret
@@ -55,7 +55,7 @@ function! s:strwidthpart_reverse(str, width)"{{{
   while width > a:width
     let char = matchstr(ret, '^.')
     let ret = ret[len(char) :]
-    let width -= s:wcwidth(char)
+    let width -= s:wcswidth(char)
   endwhile
 
   return ret
@@ -64,9 +64,6 @@ endfunction"}}}
 if v:version >= 703
   " Use builtin function.
   function! s:wcswidth(str)"{{{
-    return strwidth(a:str)
-  endfunction"}}}
-  function! s:wcwidth(str)"{{{
     return strwidth(a:str)
   endfunction"}}}
 else
