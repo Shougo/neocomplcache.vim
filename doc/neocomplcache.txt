@@ -993,6 +993,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-06-21
+- Fixed is_text_mode.
+
 2011-06-20
 - Fixed dictionary_complete behavior.
 - Improved neocomplcache#get_source_filetypes().

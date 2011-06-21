@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2011.
+" Last Modified: 21 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1077,7 +1077,7 @@ function! neocomplcache#get_plugin_rank(plugin_name)"{{{
   endif
 endfunction"}}}
 function! neocomplcache#get_syn_name(is_trans)"{{{
-  return synIDattr(synID(line('.'), mode() ==# 'i' ? col('.')-1 : col('.'), a:is_trans), 'name')
+  return synIDattr(synIDtrans(synID(line('.'), mode() ==# 'i' ? col('.')-1 : col('.'), a:is_trans)), 'name')
 endfunction"}}}
 
 " For unite source.
