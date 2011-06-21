@@ -64,7 +64,7 @@ endfunction"}}}
 if v:version >= 703
   " Use builtin function.
   function! s:wcswidth(str)"{{{
-    return strdisplaywidth(a:str)
+    return strwidth(a:str)
   endfunction"}}}
   function! s:wcwidth(str)"{{{
     return strwidth(a:str)
@@ -111,10 +111,6 @@ else
     return 1
   endfunction"}}}
 endif
-
-function! s:mb_strlen(str)"{{{
-  return strlen(substitute(copy(a:str), '.', 'x', 'g'))
-endfunction"}}}
 
 let s:is_windows = has('win16') || has('win32') || has('win64')
 let s:is_mac = !s:is_windows && (has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin')
