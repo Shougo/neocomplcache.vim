@@ -224,7 +224,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     endif
 
     let l:abbr = l:dict.word
-    if isdirectory(l:dict.word)
+    if isdirectory(expand(l:dict.word))
       let l:abbr .= '/'
       if g:neocomplcache_enable_auto_delimiter
         let l:dict.word .= '/'
