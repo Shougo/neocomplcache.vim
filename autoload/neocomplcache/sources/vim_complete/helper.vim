@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Apr 2011.
+" Last Modified: 25 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -403,7 +403,7 @@ function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_st
     endfor
     let s:global_candidates_list.variables = l:dict
   endif
-  
+
   if a:cur_keyword_str =~ '^[swtb]:'
     let l:list = values(s:get_cached_script_candidates().variables)
   elseif a:cur_keyword_str =~ '^[vg]:'
@@ -885,7 +885,7 @@ function! s:analyze_function_line(line, keyword_dict, prototype)"{{{
 endfunction"}}}
 function! s:analyze_variable_line(line, keyword_dict)"{{{
   let l:menu_pattern = '[vim] variable'
-  
+
   if a:line =~ '\<\%(let\|for\)\s\+\a[[:alnum:]_:]*'
     " let var = pattern.
     let l:word = matchstr(a:line, '\<\%(let\|for\)\s\+\zs\a[[:alnum:]_:]*')
@@ -902,7 +902,7 @@ function! s:analyze_variable_line(line, keyword_dict)"{{{
   elseif a:line =~ '\<\%(let\|for\)\s\+\[.\{-}\]'
     " let [var1, var2] = pattern.
     let l:words = split(matchstr(a:line, '\<\%(let\|for\)\s\+\[\zs.\{-}\ze\]'), '[,[:space:]]\+')
-      let l:expressions = split(matchstr(a:line, '\<let\s\+\[.\{-}\]\s*=\s*\[\zs.\{-}\ze\]$'), '[,[:space:]]\+')
+      let l:expressions = split(matchstr(a:line, '\<let\s\+\[.\{-}\]\s*=\s*\[\zs.\{-}\ze\]$'), '[,[:space:];]\+')
 
       let i = 0
       while i < len(l:words)
