@@ -73,7 +73,6 @@ function! neocomplcache#enable() "{{{
   let s:old_cur_text = ''
   let s:moved_cur_text = ''
   let s:changedtick = b:changedtick
-  let s:used_match_filter = 0
   let s:context_filetype = ''
   let s:is_text_mode = 0
   let s:within_comment = 0
@@ -459,9 +458,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
     let s:old_complete_words = []
 
-    " Clear flag.
-    let s:used_match_filter = 0
-
     let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] =
           \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(s:get_cur_text()), 1)
     if empty(l:complete_words)
@@ -566,8 +562,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
       let s:old_cur_text = l:cur_text
       return
     endif
-  elseif a:is_moved && !s:used_match_filter
-        \ && g:neocomplcache_enable_cursor_hold_i
+  elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
     if l:cur_text !=# s:moved_cur_text
           \ && !s:is_last_ignore_key_sequences
       let s:moved_cur_text = l:cur_text
@@ -584,9 +579,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     let s:skip_next_complete = 0
     return
   endif
-
-  " Clear flag.
-  let s:used_match_filter = 0
 
   let s:prev_numbered_dict = {}
   let s:complete_words = []
@@ -613,7 +605,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   if empty(l:complete_words)
     let &l:completefunc = 'neocomplcache#manual_complete'
     let s:changedtick = b:changedtick
-    let s:used_match_filter = 0
     return
   endif
 
@@ -696,7 +687,6 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   if l:cur_keyword_str == ''
     return a:list
   elseif neocomplcache#check_match_filter(l:cur_keyword_str)
-    let s:used_match_filter = 1
     " Match filter.
     return filter(a:list, printf("v:val.word =~ %s",
           \string('^' . neocomplcache#keyword_escape(l:cur_keyword_str))))
@@ -822,9 +812,6 @@ function! neocomplcache#add_dictionaries(dictionaries)"{{{
   endfor
 
   return l:ret
-endfunction"}}}
-function! neocomplcache#used_match_filter()"{{{
-  let s:used_match_filter = 1
 endfunction"}}}
 
 " RankOrder."{{{
@@ -1575,9 +1562,6 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
     return ''
   endif
 
-  " Clear flag.
-  let s:used_match_filter = 0
-
   " Set function.
   let &l:completefunc = 'neocomplcache#manual_complete'
 
@@ -1682,7 +1666,6 @@ function! s:on_insert_leave()"{{{
   let s:complete_words = []
   let s:old_complete_words = []
   let s:prev_numbered_dict = {}
-  let s:used_match_filter = 0
   let s:context_filetype = ''
   let s:is_text_mode = 0
   let s:skip_next_complete = 0

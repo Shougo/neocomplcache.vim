@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 28 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -145,7 +145,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
             \ '\C' . substitute(toupper(a:cur_keyword_str), '.', '\0\\l*', 'g')]
         let l:ret += filter(copy(l:list), 'v:val.word =~? ' . string(pat))
       endfor
-      call neocomplcache#used_match_filter()
 
       return l:ret
     endif
