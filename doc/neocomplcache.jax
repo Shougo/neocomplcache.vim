@@ -259,6 +259,15 @@ g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		
 		初期値は0なので、無効になっている。
 
+g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
+		候補の計算を|CursorHoldI|イベント時に行うかどうかを制御する。
+		このオプションが設定されなかった場合、|CursorMovedI|イベン
+		トを使用する。このオプションでは無理矢理タイマーイベントを模
+		倣するので、不具合が生じるかもしれない。加えて、補完時にもた
+		つくことがある。
+		
+		副作用があるので、初期値は0である。
+
 g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		補完候補を出すときに、自動的に一番上の候補を選択するかどうか
 		を制御する。 このオプションを有効化すると、|AutoComplPop|と
@@ -273,7 +282,8 @@ g:neocomplcache_enable_auto_delimiter			*g:neocomplcache_enable_auto_delimiter*
 		初期値は0である。
 
 g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
-		自動補完を開始するための時間を定義する。このオプションは
+		|g:neocomplcache_enable_cursor_hold_i|が有効になっている場合、
+		自動補完を開始するための計算時間を定義する。このオプションは
 		'updatetime'の値を書き換える。
 		
 		初期値は300である。

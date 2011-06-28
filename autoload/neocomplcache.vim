@@ -78,6 +78,7 @@ function! neocomplcache#enable() "{{{
   let s:is_text_mode = 0
   let s:within_comment = 0
   let s:skip_next_complete = 0
+  let s:is_last_ignore_key_sequences = 0
   "}}}
 
   " Initialize sources table."{{{
@@ -565,14 +566,18 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
       let s:old_cur_text = l:cur_text
       return
     endif
-  " elseif a:is_moved && !s:used_match_filter
-  "   if l:cur_text !=# s:moved_cur_text
-  "     let s:moved_cur_text = l:cur_text
-  "     " Ignore key sequences.
-  "     " call feedkeys("\<C-r>\<ESC>", 'n')
-  "     return
-  "   endif
+  elseif a:is_moved && !s:used_match_filter
+        \ && g:neocomplcache_enable_cursor_hold_i
+    if l:cur_text !=# s:moved_cur_text
+          \ && !s:is_last_ignore_key_sequences
+      let s:moved_cur_text = l:cur_text
+      let s:is_last_ignore_key_sequences = 1
+      " Ignore key sequences.
+      call feedkeys("\<C-r>\<ESC>", 'n')
+      return
+    endif
   endif
+  let s:is_last_ignore_key_sequences = 0
 
   let s:old_cur_text = l:cur_text
   if s:skip_next_complete
