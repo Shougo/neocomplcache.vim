@@ -259,12 +259,6 @@ g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
 		
 		Default value is 0.
 
-g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
-		This variable controls whether neocomplcache use |CursorHoldI| event
-		when complete candidates.
-		
-		Default value is 0.
-
 g:neocomplcache_enable_auto_select			*g:neocomplcache_enable_auto_select*
 		When neocomplcache displays candidates, this option controls
 		whether neocomplcache selects the first candidate
@@ -995,6 +989,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-06-25
 - Improved variable analyze.
+- Deleted g:neocomplcache_enable_cursor_hold_i option.
 
 2011-06-23
 - Set tabstop in ftplugin/snippet.vim.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2011.
+" Last Modified: 28 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -565,14 +565,13 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
       let s:old_cur_text = l:cur_text
       return
     endif
-  elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
-        \&& !s:used_match_filter
-    if l:cur_text !=# s:moved_cur_text
-      let s:moved_cur_text = l:cur_text
-      " Dummy cursor move.
-      call feedkeys("a\<BS>", 'n')
-      return
-    endif
+  " elseif a:is_moved && !s:used_match_filter
+  "   if l:cur_text !=# s:moved_cur_text
+  "     let s:moved_cur_text = l:cur_text
+  "     " Ignore key sequences.
+  "     " call feedkeys("\<C-r>\<ESC>", 'n')
+  "     return
+  "   endif
   endif
 
   let s:old_cur_text = l:cur_text
@@ -1661,16 +1660,13 @@ endfunction"}}}
 
 " Event functions."{{{
 function! s:on_hold_i()"{{{
-  if g:neocomplcache_enable_cursor_hold_i
-    call neocomplcache#do_auto_complete(0)
-  endif
+  call neocomplcache#do_auto_complete(0)
 endfunction"}}}
 function! s:on_moved_i()"{{{
   call neocomplcache#do_auto_complete(1)
 endfunction"}}}
 function! s:on_insert_enter()"{{{
   if &updatetime > g:neocomplcache_cursor_hold_i_time
-        \&& g:neocomplcache_enable_cursor_hold_i
     let s:update_time_save = &updatetime
     let &updatetime = g:neocomplcache_cursor_hold_i_time
   endif
@@ -1687,7 +1683,6 @@ function! s:on_insert_leave()"{{{
   let s:skip_next_complete = 0
 
   if &updatetime < s:update_time_save
-        \&& g:neocomplcache_enable_cursor_hold_i
     let &updatetime = s:update_time_save
   endif
 endfunction"}}}
