@@ -64,10 +64,6 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
-  if neocomplcache#within_comment()
-    return -1
-  endif
-
   let l:cur_text = neocomplcache#sources#vim_complete#get_cur_text()
 
   if l:cur_text =~ '^\s*"'
@@ -76,9 +72,9 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   let l:pattern = '\.\%(\h\w*\)\?$\|' . neocomplcache#get_keyword_pattern_end('vim')
-  if l:cur_text !~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
+  if l:cur_text != '' && l:cur_text !~ '^[[:digit:],[:space:][:tab:]$''<>]*\h\w*$'
     let l:command_completion = neocomplcache#sources#vim_complete#helper#get_completion_name(
-          \neocomplcache#sources#vim_complete#get_command(l:cur_text))
+          \ neocomplcache#sources#vim_complete#get_command(l:cur_text))
     if l:command_completion =~ '\%(dir\|file\|shellcmd\)'
       let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
     endif
@@ -130,7 +126,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   elseif l:cur_text =~ '`=[^`]*$'
     " Expression.
     let l:list = neocomplcache#sources#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '^[[:digit:],[:space:]$''<>]*!\s*\f\+$'
+  elseif l:cur_text =~ '^[[:digit:],[:space:][:tab:]$''<>]*!\s*\f\+$'
     " Shell commands.
     let l:list = neocomplcache#sources#vim_complete#helper#shellcmd(l:cur_text, a:cur_keyword_str)
   else

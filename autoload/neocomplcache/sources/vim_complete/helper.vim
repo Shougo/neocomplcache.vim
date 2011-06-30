@@ -205,7 +205,7 @@ function! neocomplcache#sources#vim_complete#helper#colorscheme_args(cur_text, c
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keyword_str)"{{{
   if a:cur_text == '' ||
-        \ a:cur_text =~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
+        \ a:cur_text =~ '^[[:digit:],[:space:][:tab:]$''<>]*\h\w*$'
     " Commands.
 
     " Caching.

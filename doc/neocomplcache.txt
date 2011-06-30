@@ -997,6 +997,8 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved execute completion.
 - Improved autocmd completion.
 - Improved mapping completion.
+- Fixed vim_complete.
+- Improved help include filetype.
 
 2011-06-28
 - Changed g:neocomplcache_enable_cursor_hold_i behavior.
