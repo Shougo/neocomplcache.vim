@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jun 2011.
+" Last Modified: 30 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,7 +57,7 @@ endfunction"}}}
 
 function! s:source.finalize()"{{{
   delcommand NeoComplCacheCachingVim
-  
+
   if neocomplcache#exists_echodoc()
     call echodoc#unregister('vim_complete')
   endif
@@ -133,31 +133,9 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   elseif l:cur_text =~ '^[[:digit:],[:space:]$''<>]*!\s*\f\+$'
     " Shell commands.
     let l:list = neocomplcache#sources#vim_complete#helper#shellcmd(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '^[[:digit:],[:space:]$''<>]*\h\w*$'
+  else
     " Commands.
     let l:list = neocomplcache#sources#vim_complete#helper#command(l:cur_text, a:cur_keyword_str)
-    if bufname('%') ==# '[Command Line]'
-      let l:ret = []
-      " Use ambiguous filter.
-      for pat in [
-            \ '^'.a:cur_keyword_str,
-            \ '\C^' . substitute(toupper(a:cur_keyword_str), '.', '\0\\l*', 'g') . '$',
-            \ '\C' . substitute(toupper(a:cur_keyword_str), '.', '\0\\l*', 'g')]
-        let l:ret += filter(copy(l:list), 'v:val.word =~? ' . string(pat))
-      endfor
-
-      return l:ret
-    endif
-  else
-    " Commands args.
-
-    let l:command = neocomplcache#sources#vim_complete#get_command(l:cur_text)
-    let l:list = neocomplcache#sources#vim_complete#helper#get_command_completion(l:command, l:cur_text, a:cur_keyword_str)
-
-    if l:cur_text =~ '[[(,{]'
-      " Expression.
-      let l:list += neocomplcache#sources#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
-    endif
   endif
 
   return neocomplcache#keyword_filter(l:list, a:cur_keyword_str)

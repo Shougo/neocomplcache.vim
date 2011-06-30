@@ -993,6 +993,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-06-30
+- Improved execute completion.
+
 2011-06-28
 - Changed g:neocomplcache_enable_cursor_hold_i behavior.
 - Deleted obsolute variable.
