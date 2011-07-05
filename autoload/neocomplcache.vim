@@ -666,14 +666,21 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
 
     if l:keyword_escape_orig =~'_[^_]\+$'
       " _abc to a_b_c.
-      let l:last_char = l:keyword_escape_orig[-1:]
       let l:pos = match(l:keyword_escape_orig, '_[^_]\+$')
       let l:keyword_escape .= '\|'
       if l:pos != 0
         let l:keyword_escape .= l:keyword_escape_orig[: l:pos-1]
       endif
-      let l:keyword_escape .= '[^-]*_' . substitute(l:keyword_escape_orig[l:pos+1: -2],
-            \ '\w', '&[^_]*_', 'g') . l:last_char
+      let l:keyword_escape .= (l:keyword_escape_orig =~ '^_') ? '' : '[^_]*_'
+      if l:keyword_escape_orig =~ '^_.$'
+        let l:keyword_escape .= substitute(l:keyword_escape_orig[1],
+              \ '\w', '&[^_]*_', 'g')
+      else
+        let l:last_char = l:keyword_escape_orig[-1:]
+        let l:keyword_escape .= substitute(l:keyword_escape_orig[l:pos+1: -2],
+              \ '\w', '&[^_]*_', 'g') . l:last_char
+      endif
+      let l:keyword_escape = '\%(' . l:keyword_escape . '\)'
     endif
   endif
   if g:neocomplcache_enable_underbar_completion && '-' =~ '\k' && l:keyword_escape =~ '-'
