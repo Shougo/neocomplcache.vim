@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Jun 2011.
+" Last Modified: 05 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -661,7 +661,20 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
 
   " Underbar completion."{{{
   if g:neocomplcache_enable_underbar_completion && l:keyword_escape =~ '_'
+    let l:keyword_escape_orig = l:keyword_escape
     let l:keyword_escape = substitute(l:keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
+
+    if l:keyword_escape_orig =~'_[^_]\+$'
+      " _abc to a_b_c.
+      let l:last_char = l:keyword_escape_orig[-1:]
+      let l:pos = match(l:keyword_escape_orig, '_[^_]\+$')
+      let l:keyword_escape .= '\|'
+      if l:pos != 0
+        let l:keyword_escape .= l:keyword_escape_orig[: l:pos-1]
+      endif
+      let l:keyword_escape .= '[^-]*_' . substitute(l:keyword_escape_orig[l:pos+1: -2],
+            \ '\w', '&[^_]*_', 'g') . l:last_char
+    endif
   endif
   if g:neocomplcache_enable_underbar_completion && '-' =~ '\k' && l:keyword_escape =~ '-'
     let l:keyword_escape = substitute(l:keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
@@ -673,7 +686,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   endif
   "}}}
 
-  "echo l:keyword_escape
+  " echomsg l:keyword_escape
   return l:keyword_escape
 endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{

@@ -297,6 +297,8 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it
 		with 'public_html' when you input it with 'p_h'.
+		And, match 'g:neocomplcache_enable_underbar_completion' with
+		when you input with 'g:neo_euc'.
 		
 		Default value is 0.
 
@@ -992,6 +994,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-07-05
+- Improved underbar completion.
 
 2011-06-30
 - Improved execute completion.

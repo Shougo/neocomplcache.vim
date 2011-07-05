@@ -289,16 +289,17 @@ g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
 
 g:neocomplcache_enable_camel_case_completion		*g:neocomplcache_enable_camel_case_completion*
 		大文字を入力したときに、それを単語の区切りとしてあいまい検索
-		を行うかどうか制御する。 例えば AE と入力したとき、
-		ArgumentsException とマッチするようになる。 1ならば有効にな
+		を行うかどうか制御する。 例えば "AE" と入力したとき、
+		"ArgumentsException" とマッチするようになる。 1ならば有効にな
 		る。
 		
 		副作用があるので、初期値は0となっている。
 
 g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_completion*
-		_を入力したときに、それを単語の区切りとしてあいまい検索を行
-		うかどうか制御する。 例えば p_h と入力したとき、 public_html
-		とマッチするようになる。 1ならば有効になる。
+		_を入力したときに、それを単語の区切りとしてあいまい検索を行うか
+		どうか制御する。 例えば "p_h" と入力したとき、"p*_h"と解釈され
+		"public_html"とマッチするようになる。 1ならば有効になる。さらに、
+		"g:neo_cp"は"g:neo*_c*p"と解釈される。
 		
 		副作用があるので、初期値は0となっている。
 
