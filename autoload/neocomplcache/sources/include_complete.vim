@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2011.
+" Last Modified: 07 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -90,7 +90,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
 
   let l:keyword_list = []
   if len(a:cur_keyword_str) < s:completion_length ||
-        \neocomplcache#check_match_filter(a:cur_keyword_str, s:completion_length)
+        \neocomplcache#check_match_filter(a:cur_keyword_str)
     for l:include in s:include_info[bufnr('%')].include_files
       if !bufloaded(l:include)
         let l:keyword_list += neocomplcache#unpack_dictionary(s:include_cache[l:include])

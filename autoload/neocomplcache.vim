@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jul 2011.
+" Last Modified: 07 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -665,21 +665,22 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     let l:keyword_escape = substitute(l:keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
 
     if l:keyword_escape_orig =~'_[^_]\+$'
-      " _abc to a_b_c.
+      " hoge_abc to hoge_a*_b*_c.
       let l:pos = match(l:keyword_escape_orig, '_[^_]\+$')
       let l:keyword_escape .= '\|'
       if l:pos != 0
         let l:keyword_escape .= l:keyword_escape_orig[: l:pos-1]
       endif
-      let l:keyword_escape .= (l:keyword_escape_orig =~ '^_') ? '' : '[^_]*_'
-      if l:keyword_escape_orig =~ '^_.$'
-        let l:keyword_escape .= substitute(l:keyword_escape_orig[1],
-              \ '\w', '&[^_]*_', 'g')
-      else
-        let l:last_char = l:keyword_escape_orig[-1:]
-        let l:keyword_escape .= substitute(l:keyword_escape_orig[l:pos+1: -2],
-              \ '\w', '&[^_]*_', 'g') . l:last_char
-      endif
+      let l:keyword_escape .= '[^_]*_'
+      let l:last_char = l:keyword_escape_orig[-1:]
+      let l:keyword_escape .= substitute(l:keyword_escape_orig[l:pos+1: -2],
+            \ '[[:alnum:]]', '&[^_]*_', 'g') . l:last_char
+      let l:keyword_escape = '\%(' . l:keyword_escape . '\)'
+    elseif l:keyword_escape_orig =~'[^_]\{2}_$'
+      " abc_ to a*_b*_c.
+      let l:last_char = l:keyword_escape_orig[len(l:keyword_escape_orig)-2]
+      let l:keyword_escape .= '\|' . substitute(l:keyword_escape_orig[: -3],
+            \ '[[:alnum:]]', '&[^_]*_', 'g') . l:last_char
       let l:keyword_escape = '\%(' . l:keyword_escape . '\)'
     endif
   endif
@@ -711,7 +712,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     return a:list
   elseif neocomplcache#check_match_filter(l:cur_keyword_str)
     " Match filter.
-    return filter(a:list, printf("v:val.word =~ %s",
+    return filter(a:list, printf('v:val.word =~ %s',
           \string('^' . neocomplcache#keyword_escape(l:cur_keyword_str))))
   else
     " Use fast filter.
@@ -728,9 +729,8 @@ function! neocomplcache#dup_filter(list)"{{{
 
   return values(l:dict)
 endfunction"}}}
-function! neocomplcache#check_match_filter(cur_keyword_str, ...)"{{{
-  return neocomplcache#keyword_escape(
-        \empty(a:000)? a:cur_keyword_str : a:cur_keyword_str[ : a:1-1]) =~ '[^\\]\*\|\\+'
+function! neocomplcache#check_match_filter(cur_keyword_str)"{{{
+  return neocomplcache#keyword_escape(a:cur_keyword_str) =~ '[^\\]\*\|\\+'
 endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
   if &ignorecase
@@ -790,7 +790,7 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
   endif
 
   if len(a:cur_keyword_str) < a:completion_length ||
-        \ neocomplcache#check_match_filter(a:cur_keyword_str, a:completion_length)
+        \ neocomplcache#check_match_filter(a:cur_keyword_str)
     return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   else
     let l:key = tolower(a:cur_keyword_str[: a:completion_length-1])
