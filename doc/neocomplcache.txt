@@ -995,6 +995,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-09
+- Supported vcs.vim.
+
 2011-07-07
 - Improved underbar completion.
 - Fixed neocomplcache#check_match_filter() behavior.
