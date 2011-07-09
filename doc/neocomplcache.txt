@@ -594,6 +594,14 @@ g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
 		
 		Default value is set by each plugins.
 
+g:neocomplcache_force_overwrite_completefunc		*g:neocomplcache_force_overwrite_completefunc*
+		If this variable is 1, neocomplcache force overwrite
+		'completefunc' option. This variable is useful for other
+		plugin overwrite 'completefunc'.  But other plugin's
+		'completefunc' is disabled.
+		
+		Default value is 0.
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
 
@@ -997,6 +1005,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-07-09
 - Supported vcs.vim.
+- Added g:neocomplcache_force_overwrite_completefunc option.
 
 2011-07-07
 - Improved underbar completion.

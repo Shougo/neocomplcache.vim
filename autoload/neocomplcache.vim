@@ -495,11 +495,6 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 endfunction"}}}
 
 function! neocomplcache#do_auto_complete(is_moved)"{{{
-  if &l:completefunc == ''
-    " Set completefunc.
-    let &l:completefunc = 'neocomplcache#manual_complete'
-  endif
-
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
@@ -507,14 +502,21 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   endif
 
   " Detect completefunc.
-  if &completefunc != 'neocomplcache#manual_complete' && &completefunc != 'neocomplcache#auto_complete'
-    redir => l:output
-      99verbose set completefunc
-    redir END
-    call neocomplcache#print_error(l:output)
-    call neocomplcache#print_error('Another plugin use completefunc! Disabled neocomplcache.')
-    NeoComplCacheLock
-    return
+  if &l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete'
+    if g:neocomplcache_force_overwrite_completefunc
+          \ || &l:completefunc == ''
+      " Set completefunc.
+      let &l:completefunc = 'neocomplcache#manual_complete'
+    else
+      " Warning.
+      redir => l:output
+      99verbose setl completefunc
+      redir END
+      call neocomplcache#print_error(l:output)
+      call neocomplcache#print_error('Another plugin set completefunc! Disabled neocomplcache.')
+      NeoComplCacheLock
+      return
+    endif
   endif
 
   " Detect AutoComplPop.

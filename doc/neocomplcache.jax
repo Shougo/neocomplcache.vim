@@ -561,6 +561,14 @@ g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
 		
 		初期値はそれぞれのプラグインによってセットされる。
 
+g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
+		neocomplcacheが強制的に'completefunc'を上書きするかどうかを
+		設定する。プラグインがcompletefuncを使用していて、
+		neocomplcacheが無効になってしまう場合にセットするとよい。た
+		だし、プラグインの'completefunc'は使用できなくなる。
+		
+		副作用があるので、初期値は0である。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
 
