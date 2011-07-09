@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 09 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,7 +97,7 @@ function! unite#sources#neocomplcache#start_complete() "{{{
   endif
 
   return printf("\<ESC>:call unite#start(['neocomplcache'],
-        \ { 'col' : %d, 'complete' : 1, 'auto_preview' : 1,
+        \ { 'col' : %d, 'complete' : 1,
         \   'direction' : 'rightbelow', 'winheight' : 10,
         \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}

@@ -1006,6 +1006,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-07-09
 - Supported vcs.vim.
 - Added g:neocomplcache_force_overwrite_completefunc option.
+- Fixed unite source error.
 
 2011-07-07
 - Improved underbar completion.
