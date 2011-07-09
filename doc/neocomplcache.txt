@@ -1003,6 +1003,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-10
+- Fixed doc.
+
 2011-07-09
 - Supported vcs.vim.
 - Added g:neocomplcache_force_overwrite_completefunc option.

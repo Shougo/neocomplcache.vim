@@ -561,7 +561,7 @@ g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
 		
 		初期値はそれぞれのプラグインによってセットされる。
 
-g:neocomplcache_plugin_rank				*g:neocomplcache_plugin_rank*
+g:neocomplcache_force_overwrite_completefunc		*g:neocomplcache_force_overwrite_completefunc*
 		neocomplcacheが強制的に'completefunc'を上書きするかどうかを
 		設定する。プラグインがcompletefuncを使用していて、
 		neocomplcacheが無効になってしまう場合にセットするとよい。た
