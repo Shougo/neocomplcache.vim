@@ -602,6 +602,13 @@ g:neocomplcache_force_overwrite_completefunc		*g:neocomplcache_force_overwrite_c
 		
 		Default value is 0.
 
+g:neocomplcache_snippets_complete_disable_runtime_snippets
+							*g:neocomplcache_snippets_complete_disable_runtime_snippets*
+		If this variable is 1, runtime snippets isn't loaded.
+		This variable is useful to avoid conflicting snippets.
+
+		Default value is 0.
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*neocomplcache-key-mappings*
 
@@ -1006,6 +1013,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-07-10
 - Fixed doc.
 - Enabled auto-preview.
+- Added g:neocomplcache_snippets_complete_disable_runtime_snippets option.
 
 2011-07-09
 - Supported vcs.vim.
