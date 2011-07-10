@@ -1005,6 +1005,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-07-10
 - Fixed doc.
+- Enabled auto-preview.
 
 2011-07-09
 - Supported vcs.vim.
