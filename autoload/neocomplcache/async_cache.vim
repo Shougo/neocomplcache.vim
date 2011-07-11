@@ -93,7 +93,8 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileenc
 endfunction"}}}
 
 function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilename)"{{{
-  let l:menu_pattern = printf('[%s] %%.%ds', a:mark, a:maxfilename)
+  let l:menu = '[' . a:mark . ']'
+  let l:menu_pattern = l:menu . printf(' %%.%ds', a:maxfilename)
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:line_num = 1
@@ -138,7 +139,7 @@ function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilen
       elseif has_key(l:option, 'union')
         let keyword.menu = printf(l:menu_pattern, l:option.union)
       else
-        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'))
+        let keyword.menu = l:menu
       endif
 
       call add(l:keyword_lists, l:keyword)
