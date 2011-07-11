@@ -569,8 +569,8 @@ g:neocomplcache_force_overwrite_completefunc		*g:neocomplcache_force_overwrite_c
 		
 		副作用があるので、初期値は0である。
 
-g:neocomplcache_snippets_complete_disable_runtime_snippets
-							*g:neocomplcache_snippets_complete_disable_runtime_snippets*
+g:neocomplcache_snippets_disable_runtime_snippets
+							*g:neocomplcache_snippets_disable_runtime_snippets*
 		この変数を真にすると、neocomplcache runtimeのスニペットは読
 		み込まれない。用意されているスニペットとの干渉を避けるために
 		用いる。neocomplcacheが初期化される前にセットしないと意味は

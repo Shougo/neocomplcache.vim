@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2011.
+" Last Modified: 11 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,14 +46,14 @@ function! s:source.initialize()"{{{
   let s:end_snippet = 0
   let s:snippet_holder_cnt = 1
 
-  if !exists('g:neocomplcache_snippets_complete_disable_runtime_snippets')
-    let g:neocomplcache_snippets_complete_disable_runtime_snippets = 0
+  if !exists('g:neocomplcache_snippets_disable_runtime_snippets')
+    let g:neocomplcache_snippets_disable_runtime_snippets = 0
   endif
 
   let s:snippets_dir = []
   let s:runtime_dir = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/snippets_complete'), '\n')
 
-  if !g:neocomplcache_snippets_complete_disable_runtime_snippets
+  if !g:neocomplcache_snippets_disable_runtime_snippets
     " Set snippets dir.
     let s:snippets_dir += (exists('g:snippets_dir') ?
           \ split(g:snippets_dir, ',') : split(globpath(&runtimepath, 'snippets'), '\n'))

@@ -602,8 +602,8 @@ g:neocomplcache_force_overwrite_completefunc		*g:neocomplcache_force_overwrite_c
 		
 		Default value is 0.
 
-g:neocomplcache_snippets_complete_disable_runtime_snippets
-							*g:neocomplcache_snippets_complete_disable_runtime_snippets*
+g:neocomplcache_snippets_disable_runtime_snippets
+							*g:neocomplcache_snippets_disable_runtime_snippets*
 		If this variable is 1, runtime snippets isn't loaded.
 		This variable is useful to avoid conflicting snippets.
 
@@ -1009,6 +1009,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-07-11
+- Renamed g:neocomplcache_snippets_complete_disable_runtime_snippets to g:neocomplcache_snippets_disable_runtime_snippets.
 
 2011-07-10
 - Fixed doc.
