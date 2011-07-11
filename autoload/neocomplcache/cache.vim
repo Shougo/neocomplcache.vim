@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2011.
+" Last Modified: 12 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,7 +39,6 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
           \ "abbr" : v:val[1],
           \ "menu" : v:val[2],
           \ "kind" : v:val[3],
-          \ "class" : v:val[4],
           \}')
 endfunction"}}}
 function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, completion_length)"{{{
@@ -220,26 +219,23 @@ function! neocomplcache#cache#load_from_tags(cache_dir, filename, tags_list, mar
               \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
               \}
 
-        let keyword.menu = '[' . a:mark . '] ' .
-              \ neocomplcache#util#strwidthpart(
-              \   fnamemodify(l:tag[1], ':t'),
-              \   g:neocomplcache_max_filename_width)
+        let keyword.menu = '[' . a:mark . ']'
         if has_key(l:option, 'struct')
-          let keyword.class = l:option.struct
+          let l:class = l:option.struct
         elseif has_key(l:option, 'class')
-          let keyword.class = l:option.class
+          let l:class = l:option.class
         elseif has_key(l:option, 'enum')
-          let keyword.class = l:option.enum
+          let l:class = l:option.enum
         elseif has_key(l:option, 'union')
-          let keyword.class = l:option.union
+          let l:class = l:option.union
         else
-          let keyword.class = ''
+          let l:class = ''
         endif
 
-        if keyword.class != ''
+        if l:class != ''
           let keyword.menu .= ' ' .
                 \ neocomplcache#util#strwidthpart(
-                \   keyword.class,
+                \   l:class,
                 \   g:neocomplcache_max_filename_width)
         endif
 
@@ -289,9 +285,6 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
     if !has_key(keyword, 'kind')
       let keyword.kind = ''
     endif
-    if !has_key(keyword, 'class')
-      let keyword.class = ''
-    endif
     if !has_key(keyword, 'abbr')
       let keyword.abbr = keyword.word
     endif
@@ -300,8 +293,8 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
   " Output cache.
   let l:word_list = []
   for keyword in a:keyword_list
-    call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s',
-          \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
+    call add(l:word_list, printf('%s|||%s|||%s|||%s',
+          \keyword.word, keyword.abbr, keyword.menu, keyword.kind))
   endfor
 
   call writefile(l:word_list, l:cache_name)

@@ -1010,6 +1010,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-12
+- Optimized memory usage.
+
 2011-07-11
 - Renamed g:neocomplcache_snippets_complete_disable_runtime_snippets to g:neocomplcache_snippets_disable_runtime_snippets.
 

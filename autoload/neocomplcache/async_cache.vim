@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2011.
+" Last Modified: 12 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,9 +40,6 @@ function! s:main(argv)"{{{
     if !has_key(keyword, 'kind')
       let keyword.kind = ''
     endif
-    if !has_key(keyword, 'class')
-      let keyword.class = ''
-    endif
     if !has_key(keyword, 'abbr')
       let keyword.abbr = keyword.word
     endif
@@ -51,8 +48,8 @@ function! s:main(argv)"{{{
   " Output cache.
   let l:word_list = []
   for keyword in l:keyword_list
-    call add(l:word_list, printf('%s|||%s|||%s|||%s|||%s',
-          \keyword.word, keyword.abbr, keyword.menu, keyword.kind, keyword.class))
+    call add(l:word_list, printf('%s|||%s|||%s|||%s',
+          \keyword.word, keyword.abbr, keyword.menu, keyword.kind))
   endfor
 
   if !empty(l:word_list)
@@ -96,7 +93,7 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileenc
 endfunction"}}}
 
 function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilename)"{{{
-  let l:menu_pattern = printf('[%s] %%.%ds %%.%ds', a:mark, a:maxfilename, a:maxfilename)
+  let l:menu_pattern = printf('[%s] %%.%ds', a:mark, a:maxfilename)
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:line_num = 1
@@ -133,20 +130,15 @@ function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilen
             \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
             \}
       if has_key(l:option, 'struct')
-        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.struct)
-        let keyword.class = l:option.struct
+        let keyword.menu = printf(l:menu_pattern, l:option.struct)
       elseif has_key(l:option, 'class')
-        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.class)
-        let keyword.class = l:option.class
+        let keyword.menu = printf(l:menu_pattern, l:option.class)
       elseif has_key(l:option, 'enum')
-        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.enum)
-        let keyword.class = l:option.enum
+        let keyword.menu = printf(l:menu_pattern, l:option.enum)
       elseif has_key(l:option, 'union')
-        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), l:option.union)
-        let keyword.class = l:option.union
+        let keyword.menu = printf(l:menu_pattern, l:option.union)
       else
-        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'), '')
-        let keyword.class = ''
+        let keyword.menu = printf(l:menu_pattern, fnamemodify(l:tag[1], ':t'))
       endif
 
       call add(l:keyword_lists, l:keyword)
