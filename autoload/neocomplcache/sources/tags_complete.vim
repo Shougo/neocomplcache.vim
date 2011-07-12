@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 12 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,6 +34,7 @@ let s:source = {
 
 function! s:source.initialize()"{{{
   " Initialize
+  let s:async_tags_list = {}
   let s:tags_list = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('tags_complete')
 
@@ -54,76 +55,53 @@ function! neocomplcache#sources#tags_complete#define()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
-  if !has_key(s:tags_list, bufnr('%'))
+  if !has_key(s:async_tags_list, bufnr('%'))
+        \ && !has_key(s:tags_list, bufnr('%'))
     call s:caching_tags(bufnr('%'), 0)
   endif
 
-  if empty(s:tags_list[bufnr('%')]) || neocomplcache#within_comment()
+  if neocomplcache#within_comment()
     return []
   endif
-  let l:tags_list = s:tags_list[bufnr('%')]
 
-  let l:keyword_list = []
-  let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
-  if len(a:cur_keyword_str) < s:completion_length || neocomplcache#check_match_filter(l:key)
-    for tags in values(l:tags_list)
-      let l:keyword_list += neocomplcache#unpack_dictionary(tags)
-    endfor
-  else
-    for tags in values(l:tags_list)
-      if has_key(tags, l:key)
-        let l:keyword_list += tags[l:key]
-      endif
-    endfor
+  call neocomplcache#cache#check_cache(
+        \ 'tags_cache', bufnr('%'), s:async_tags_list,
+        \ s:tags_list, s:completion_length)
+
+  if !has_key(s:tags_list, bufnr('%'))
+    return []
   endif
+  let l:keyword_list = neocomplcache#dictionary_filter(
+        \ s:tags_list[bufnr('%')], a:cur_keyword_str, s:completion_length)
 
   return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! s:caching_tags(bufname, force)"{{{
   let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
-  let s:tags_list[l:bufnumber] = {}
+  let s:async_tags_list[l:bufnumber] = []
   for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
     let l:filename = fnamemodify(tags, ':p')
     if filereadable(l:filename)
-          \&& (a:force || getfsize(l:filename) < g:neocomplcache_caching_limit_file_size)
-      let s:tags_list[l:bufnumber][l:filename] = s:initialize_tags(l:filename)
+          \ && (a:force || getfsize(l:filename)
+          \               < g:neocomplcache_caching_limit_file_size)
+      call add(s:async_tags_list[l:bufnumber],
+            \ s:initialize_tags(l:filename))
     endif
   endfor
 endfunction"}}}
 function! s:initialize_tags(filename)"{{{
   " Initialize tags list.
-
-  let l:keyword_lists = neocomplcache#cache#index_load_from_cache('tags_cache', a:filename, s:completion_length)
-  if !empty(l:keyword_lists)
-    return l:keyword_lists
-  endif
-
   let l:ft = &filetype
   if l:ft == ''
     let l:ft = 'nothing'
   endif
 
-  let l:keyword_lists = {}
-  let l:tags_list = readfile(a:filename)
-  if has('iconv') && &termencoding != '' && &termencoding != &encoding
-    let l:tags_list = map(l:tags_list, 'iconv(v:val, "&termencoding", "&encoding")')
-  endif
-  let l:loaded_list = neocomplcache#cache#load_from_tags('tags_cache', a:filename, l:tags_list, 'T', l:ft)
-  if len(l:loaded_list) > 300
-    call neocomplcache#cache#save_cache('tags_cache', a:filename, l:loaded_list)
-  endif
-
-  for l:keyword in l:loaded_list
-    let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:keyword_lists, l:key)
-      let l:keyword_lists[l:key] = []
-    endif
-
-    call add(l:keyword_lists[l:key], l:keyword)
-  endfor 
-
-  return l:keyword_lists
+  return {
+        \ 'filename' : a:filename,
+        \ 'cachename' : neocomplcache#cache#async_load_from_tags(
+        \              'tags_cache', a:filename, l:ft, 'T', 0)
+        \ }
 endfunction"}}}
 
 let &cpo = s:save_cpo

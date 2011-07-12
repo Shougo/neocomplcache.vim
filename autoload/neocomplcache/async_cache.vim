@@ -28,12 +28,15 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! s:main(argv)"{{{
-  " args: outputname filename pattern_file_name mark minlen maxfilename
-  let [l:outputname, l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename, l:fileencoding]
+  " args: funcname, outputname filename pattern_file_name mark minlen maxfilename
+  let [l:funcname, l:outputname, l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename, l:fileencoding]
         \ = a:argv
 
-  let l:pattern = get(readfile(l:pattern_file_name), 0, '\h\w*')
-  let l:keyword_list = s:load_from_file(l:filename, l:pattern, l:mark, l:minlen, l:maxfilename, l:fileencoding)
+  if l:funcname ==# 'load_from_file'
+    let l:keyword_list = s:load_from_file(l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename, l:fileencoding)
+  else
+    let l:keyword_list = s:load_from_tags(l:filename, l:pattern_file_name, l:mark, l:minlen, l:maxfilename, l:fileencoding)
+  endif
 
   " Create dictionary key.
   for keyword in l:keyword_list
@@ -57,7 +60,7 @@ function! s:main(argv)"{{{
   endif
 endfunction"}}}
 
-function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileencoding)"{{{
+function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
   if filereadable(a:filename)
     let l:lines = map(readfile(a:filename), 'iconv(v:val, a:fileencoding, &encoding)')
   else
@@ -65,16 +68,18 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileenc
     return []
   endif
 
+  let l:pattern = get(readfile(a:pattern_file_name), 0, '\h\w*')
+
   let l:max_lines = len(l:lines)
   let l:menu = '[' . a:mark . '] ' . s:strwidthpart(
         \ fnamemodify(a:filename, ':t'), a:maxfilename)
 
   let l:keyword_list = []
   let l:dup_check = {}
-  let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
+  let l:keyword_pattern2 = '^\%('.l:pattern.'\m\)'
 
   for l:line in l:lines"{{{
-    let l:match = match(l:line, a:pattern)
+    let l:match = match(l:line, l:pattern)
     while l:match >= 0"{{{
       let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
 
@@ -85,27 +90,43 @@ function! s:load_from_file(filename, pattern, mark, minlen, maxfilename, fileenc
         let l:dup_check[l:match_str] = 1
       endif
 
-      let l:match = match(l:line, a:pattern, l:match + len(l:match_str))
+      let l:match = match(l:line, l:pattern, l:match + len(l:match_str))
     endwhile"}}}
   endfor"}}}
 
   return l:keyword_list
 endfunction"}}}
 
-function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilename)"{{{
+function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
   let l:menu = '[' . a:mark . ']'
   let l:menu_pattern = l:menu . printf(' %%.%ds', a:maxfilename)
   let l:keyword_lists = []
   let l:dup_check = {}
   let l:line_num = 1
 
-  for l:line in a:tags_list"{{{
+  let [l:args, l:ctags, l:filter_pattern] = readfile(a:pattern_file_name)[: 2]
+  if l:ctags != ''
+    " Create tags file.
+
+    if has('win32') || has('win64')
+      let l:filename = substitute(a:filename, '\\', '/', 'g')
+      let l:command = printf('%s -f - %s "%s"', l:ctags, l:args, l:filename)
+    else
+      let l:command = printf('%s -f /dev/stdout 2>/dev/null %s ''%s''', l:ctags, l:args, a:filename)
+    endif
+    let l:tags_list = split(system(l:command), '\n')
+  else
+    " Use filename.
+    let l:tags_list = readfile(a:filename)
+  endif
+
+  for l:line in l:tags_list"{{{
     let l:tag = split(substitute(l:line, "\<CR>", '', 'g'), '\t', 1)
     " Add keywords.
     if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= a:minlen
           \&& !has_key(l:dup_check, l:tag[0])
       let l:option = {
-            \ 'cmd' : substitute(substitute(l:tag[2], '^\%([/?]\^\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'), 
+            \ 'cmd' : substitute(substitute(l:tag[2], '^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'), 
             \ 'kind' : ''
             \}
       if l:option.cmd =~ '\d\+'
@@ -126,7 +147,9 @@ function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilen
         continue
       endif
 
-      let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature : (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
+      let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature :
+            \ (l:option['kind'] == 'd' || l:option['cmd'] == '')?
+            \ l:tag[0] : l:option['cmd']
       let l:keyword = {
             \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
             \}
@@ -149,8 +172,8 @@ function! s:load_from_tags(filename, tags_list, mark, filetype, minlen, maxfilen
     let l:line_num += 1
   endfor"}}}
 
-  if a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)
-    call filter(l:keyword_lists, g:neocomplcache_tags_filter_patterns[a:filetype])
+  if l:filter_pattern != ''
+    call filter(l:keyword_lists, l:filter_pattern)
   endif
 
   return l:keyword_lists
@@ -261,11 +284,13 @@ function! neocomplcache#async_cache#main(argv)"{{{
   call s:main(a:argv)
 endfunction"}}}
 
-if argc() == 7
+if argc() == 8 &&
+      \ (argv(0) ==# 'load_from_file' || argv(0) ==# 'load_from_tags')
   try
     call s:main(argv())
   catch
-    call writefile([v:exception], expand('~/async_error_log'))
+    call writefile([v:throwpoint, v:exception],
+          \     expand('~/async_error_log'))
   endtry
 
   qall!

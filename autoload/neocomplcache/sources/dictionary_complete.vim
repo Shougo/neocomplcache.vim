@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jun 2011.
+" Last Modified: 12 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,7 +80,8 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   endif
 
   for l:ft in neocomplcache#get_source_filetypes(l:filetype)
-    call s:check_dictionary(l:ft)
+    call neocomplcache#cache#check_cache('dictionary_cache', l:ft, s:async_dictionary_list,
+      \ s:dictionary_list, s:completion_length)
 
     for l:source in neocomplcache#get_sources_list(s:dictionary_list, l:ft)
       let l:list += neocomplcache#dictionary_filter(l:source, a:cur_keyword_str, s:completion_length)
@@ -127,37 +128,11 @@ function! s:recaching(filetype)"{{{
     if filereadable(l:dictionary)
       call add(s:async_dictionary_list[l:filetype], {
             \ 'filename' : l:dictionary,
-            \ 'cachename' : neocomplcache#cache#async_load_from_file('dictionary_cache', l:dictionary, l:pattern, 'D')
+            \ 'cachename' : neocomplcache#cache#async_load_from_file(
+            \       'dictionary_cache', l:dictionary, l:pattern, 'D')
             \ })
     endif
   endfor
-endfunction"}}}
-
-function! s:check_dictionary(filetype)"{{{
-  if !has_key(s:async_dictionary_list, a:filetype)
-    return
-  endif
-
-  for l:dictionary in s:async_dictionary_list[a:filetype]
-    if !filereadable(l:dictionary.cachename)
-      return
-    endif
-  endfor
-
-  " Caching.
-  let s:dictionary_list[a:filetype] = {}
-
-  let l:keyword_list = []
-  for l:dictionary in s:async_dictionary_list[a:filetype]
-    let l:keyword_list += neocomplcache#cache#load_from_cache('dictionary_cache', l:dictionary.filename)
-  endfor
-
-  call neocomplcache#cache#list2index(
-        \ l:keyword_list,
-        \ s:dictionary_list[a:filetype],
-        \ s:completion_length)
-
-  call remove(s:async_dictionary_list, a:filetype)
 endfunction"}}}
 
 let &cpo = s:save_cpo
