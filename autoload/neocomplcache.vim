@@ -209,6 +209,8 @@ function! neocomplcache#enable() "{{{
         \ '[*$@%]\h\w*\|\h\w*\%(()\?\|!!\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'cobol',
         \ '\a[[:alnum:]-]*')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'coq',
+        \ '\h[[:alnum:]_'']*')
   "}}}
 
   " Initialize next keyword patterns."{{{

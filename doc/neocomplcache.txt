@@ -1012,6 +1012,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-07-12
 - Optimized memory usage.
+- Supported coq keyword pattern.
 
 2011-07-11
 - Renamed g:neocomplcache_snippets_complete_disable_runtime_snippets to g:neocomplcache_snippets_disable_runtime_snippets.
