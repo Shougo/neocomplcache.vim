@@ -83,216 +83,6 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, complet
 
   return l:keyword_lists
 endfunction"}}}
-function! neocomplcache#cache#load_from_file(filename, pattern, mark)"{{{
-  if bufloaded(a:filename)
-    let l:lines = getbufline(bufnr(a:filename), 1, '$')
-  elseif filereadable(a:filename)
-    let l:lines = readfile(a:filename)
-  else
-    " File not found.
-    return []
-  endif
-
-  let l:max_lines = len(l:lines)
-  let l:menu = '[' . a:mark . '] ' . neocomplcache#util#strwidthpart(
-        \ fnamemodify(a:filename, ':t'), g:neocomplcache_max_filename_width)
-
-  if l:max_lines > 1000
-    call neocomplcache#print_caching('Caching from file "' . a:filename . '"... please wait.')
-  endif
-  if l:max_lines > 10000
-    let l:print_cache_percent = l:max_lines / 9
-  elseif l:max_lines > 7000
-    let l:print_cache_percent = l:max_lines / 6
-  elseif l:max_lines > 5000
-    let l:print_cache_percent = l:max_lines / 5
-  elseif l:max_lines > 3000
-    let l:print_cache_percent = l:max_lines / 4
-  elseif l:max_lines > 2000
-    let l:print_cache_percent = l:max_lines / 3
-  elseif l:max_lines > 1000
-    let l:print_cache_percent = l:max_lines / 2
-  else
-    return s:load_from_file_fast(l:lines, a:pattern, l:menu)
-  endif
-  let l:line_cnt = l:print_cache_percent
-
-  let l:line_num = 1
-  let l:keyword_lists = []
-  let l:dup_check = {}
-  let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
-
-  for l:line in l:lines"{{{
-    " Percentage check."{{{
-    if l:print_cache_percent > 0
-      if l:line_cnt == 0
-        call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
-        let l:line_cnt = l:print_cache_percent
-      endif
-      let l:line_cnt -= 1
-
-      let l:line_num += 1
-    endif
-    "}}}
-
-    let l:match = match(l:line, a:pattern)
-    while l:match >= 0"{{{
-      let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
-
-      " Ignore too short keyword.
-      if !has_key(l:dup_check, l:match_str) && len(l:match_str) >= g:neocomplcache_min_keyword_length
-        " Append list.
-        call add(l:keyword_lists, { 'word' : l:match_str, 'menu' : l:menu })
-
-        let l:dup_check[l:match_str] = 1
-      endif
-
-      let l:match = match(l:line, a:pattern, l:match + len(l:match_str))
-    endwhile"}}}
-  endfor"}}}
-
-  if l:max_lines > 1000
-    call neocomplcache#print_caching('')
-  endif
-
-  return l:keyword_lists
-endfunction"}}}
-function! s:load_from_file_fast(lines, pattern, menu)"{{{
-  let l:keyword_lists = []
-  let l:dup_check = {}
-  let l:keyword_pattern2 = '^\%('.a:pattern.'\m\)'
-  let l:line = join(a:lines)
-
-  let l:match = match(l:line, a:pattern)
-  while l:match >= 0"{{{
-    let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
-
-    " Ignore too short keyword.
-    if !has_key(l:dup_check, l:match_str) && len(l:match_str) >= g:neocomplcache_min_keyword_length
-      " Append list.
-      call add(l:keyword_lists, { 'word' : l:match_str, 'menu' : a:menu })
-
-      let l:dup_check[l:match_str] = 1
-    endif
-
-    let l:match = match(l:line, a:pattern, l:match + len(l:match_str))
-  endwhile"}}}
-
-  return l:keyword_lists
-endfunction"}}}
-function! neocomplcache#cache#load_from_tags(cache_dir, filename, filetype, mark)"{{{
-  let l:max_lines = len(a:tags_list)
-
-  if l:max_lines > 1000
-    call neocomplcache#print_caching('Caching from tags "' . a:filename . '"... please wait.')
-  endif
-  if l:max_lines > 10000
-    let l:print_cache_percent = l:max_lines / 9
-  elseif l:max_lines > 7000
-    let l:print_cache_percent = l:max_lines / 6
-  elseif l:max_lines > 5000
-    let l:print_cache_percent = l:max_lines / 5
-  elseif l:max_lines > 3000
-    let l:print_cache_percent = l:max_lines / 4
-  elseif l:max_lines > 2000
-    let l:print_cache_percent = l:max_lines / 3
-  elseif l:max_lines > 1000
-    let l:print_cache_percent = l:max_lines / 2
-  else
-    let l:print_cache_percent = -1
-  endif
-  let l:line_cnt = l:print_cache_percent
-
-  let l:keyword_lists = []
-  let l:dup_check = {}
-  let l:line_num = 1
-
-  try
-    for l:line in a:tags_list"{{{
-      " Percentage check."{{{
-      if l:line_cnt == 0
-        call neocomplcache#print_caching(printf('Caching(%s): %d%%', a:filename, l:line_num*100 / l:max_lines))
-        let l:line_cnt = l:print_cache_percent
-      endif
-      let l:line_cnt -= 1"}}}
-
-      let l:tag = split(substitute(l:line, "\<CR>", '', 'g'), '\t', 1)
-      " Add keywords.
-      if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= g:neocomplcache_min_keyword_length
-            \&& !has_key(l:dup_check, l:tag[0])
-        let l:option = {
-              \ 'cmd' : substitute(substitute(l:tag[2], '^\%([/?]\^\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'), 
-              \ 'kind' : ''
-              \}
-        if l:option.cmd =~ '\d\+'
-          let l:option.cmd = l:tag[0]
-        endif
-
-        for l:opt in l:tag[3:]
-          let l:key = matchstr(l:opt, '^\h\w*\ze:')
-          if l:key == ''
-            let l:option['kind'] = l:opt
-          else
-            let l:option[l:key] = matchstr(l:opt, '^\h\w*:\zs.*')
-          endif
-        endfor
-
-        if has_key(l:option, 'file') || (has_key(l:option, 'access') && l:option.access != 'public')
-          let l:line_num += 1
-          continue
-        endif
-
-        let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature :
-              \ (l:option['kind'] == 'd' || l:option['cmd'] == '')?  l:tag[0] : l:option['cmd']
-        let l:keyword = {
-              \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
-              \}
-
-        let keyword.menu = '[' . a:mark . ']'
-        if has_key(l:option, 'struct')
-          let l:class = l:option.struct
-        elseif has_key(l:option, 'class')
-          let l:class = l:option.class
-        elseif has_key(l:option, 'enum')
-          let l:class = l:option.enum
-        elseif has_key(l:option, 'union')
-          let l:class = l:option.union
-        else
-          let l:class = ''
-        endif
-
-        if l:class != ''
-          let keyword.menu .= ' ' .
-                \ neocomplcache#util#strwidthpart(
-                \   l:class,
-                \   g:neocomplcache_max_filename_width)
-        endif
-
-        call add(l:keyword_lists, l:keyword)
-        let l:dup_check[l:tag[0]] = 1
-      endif
-
-      let l:line_num += 1
-    endfor"}}}
-  catch /E684:/
-    call neocomplcache#print_warning('Error occured while analyzing tags!')
-    call neocomplcache#print_warning(v:exception)
-    let l:log_file = g:neocomplcache_temporary_dir . '/' . a:cache_dir . '/error_log'
-    call neocomplcache#print_warning('Please look tags file: ' . l:log_file)
-    call writefile(a:tags_list, l:log_file)
-    return []
-  endtry
-
-  if l:max_lines > 1000
-    call neocomplcache#print_caching('')
-  endif
-
-  if a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)
-    call filter(l:keyword_lists, g:neocomplcache_tags_filter_patterns[a:filetype])
-  endif
-
-  return l:keyword_lists
-endfunction"}}}
 function! neocomplcache#cache#list2index(list, dictionary, completion_length)"{{{
   for l:keyword in a:list
     let l:key = tolower(l:keyword.word[: a:completion_length-1])
@@ -433,15 +223,36 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   let l:pattern_file_name = neocomplcache#cache#encode_name('tags_pattens', a:filename)
 
-  " Create pattern file.
-  let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
-        \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
+  if a:is_create_tags && executable(g:neocomplcache_ctags_program)
+    " Create tags file.
+    let l:tags_file_name = neocomplcache#cache#encode_name('tags_output', a:filename)
+
+    let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
+          \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
+
+    if has('win32') || has('win64')
+      let l:filename = substitute(a:filename, '\\', '/', 'g')
+      let l:command = printf('%s -f "%s" - %s "%s" ',
+            \ g:neocomplcache_ctags_program, l:tags_file_name, l:args, l:filename)
+    else
+      let l:command = printf('%s -f ''%s'' 2>/dev/null %s ''%s''',
+            \ g:neocomplcache_ctags_program, l:tags_file_name, l:args, a:filename)
+    endif
+
+    if neocomplcache#has_vimproc()
+      call vimproc#system_bg(l:command)
+    else
+      call system(l:command)
+    endif
+  else
+    let l:tags_file_name = ''
+  endif
+
   let l:filter_pattern =
         \ (a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)) ?
         \ g:neocomplcache_tags_filter_patterns[a:filetype] : ''
-  let l:ctags = a:is_create_tags ? g:neocomplcache_ctags_program : ''
   call neocomplcache#cache#writefile('tags_pattens', a:filename,
-        \ [l:args, l:ctags, l:filter_pattern])
+        \ [neocomplcache#get_keyword_pattern(), l:tags_file_name, l:filter_pattern])
 
   " args: funcname, outputname, filename filetype mark minlen maxfilename outputname
   let l:argv = [

@@ -104,20 +104,32 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   let l:dup_check = {}
   let l:line_num = 1
 
-  let [l:args, l:ctags, l:filter_pattern] = readfile(a:pattern_file_name)[: 2]
-  if l:ctags != ''
-    " Create tags file.
+  let [l:pattern, l:tags_file_name, l:filter_pattern] =
+        \ readfile(a:pattern_file_name)[: 3]
+  if l:tags_file_name != ''
+    let l:tags_list = []
 
-    if has('win32') || has('win64')
-      let l:filename = substitute(a:filename, '\\', '/', 'g')
-      let l:command = printf('%s -f - %s "%s"', l:ctags, l:args, l:filename)
-    else
-      let l:command = printf('%s -f /dev/stdout 2>/dev/null %s ''%s''', l:ctags, l:args, a:filename)
-    endif
-    let l:tags_list = split(system(l:command), '\n')
+    let i = 0
+    while i < 20
+      " Check output.
+      if filereadable(l:tags_file_name)
+        " Use filename.
+        let l:tags_list = readfile(l:tags_file_name)
+        break
+      endif
+
+      sleep 500m
+      let i += 1
+    endwhile
   else
     " Use filename.
     let l:tags_list = readfile(a:filename)
+  endif
+
+  if empty(l:tags_list)
+    " Filename caching.
+    return s:load_from_file(a:filename, a:pattern_file_name,
+          \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
   endif
 
   for l:line in l:tags_list"{{{

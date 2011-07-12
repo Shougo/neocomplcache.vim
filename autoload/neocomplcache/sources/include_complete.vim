@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2011.
+" Last Modified: 12 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,6 +38,7 @@ function! s:source.initialize()"{{{
   " Initialize
   let s:include_info = {}
   let s:include_cache = {}
+  let s:async_include_cache = {}
   let s:cached_pattern = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
 
@@ -46,7 +47,7 @@ function! s:source.initialize()"{{{
 
   augroup neocomplcache
     " Caching events
-    autocmd InsertEnter,BufWritePost * call s:check_buffer('')
+    autocmd FileType,BufWritePost * call s:check_buffer('')
   augroup END
 
   " Initialize include pattern."{{{
@@ -68,7 +69,7 @@ function! s:source.initialize()"{{{
   endif
 
   " Add command.
-  command! -nargs=? -complete=buffer NeoComplCacheCachingInclude call s:check_buffer(<q-args>)
+  command! -nargs=? -complete=buffer NeoComplCacheCachingInclude call s:caching_include(<q-args>)
 
   if neocomplcache#exists_echodoc()
     call echodoc#register('include_complete', s:doc_dict)
@@ -89,21 +90,17 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   endif
 
   let l:keyword_list = []
-  if len(a:cur_keyword_str) < s:completion_length ||
-        \neocomplcache#check_match_filter(a:cur_keyword_str)
-    for l:include in s:include_info[bufnr('%')].include_files
-      if !bufloaded(l:include)
-        let l:keyword_list += neocomplcache#unpack_dictionary(s:include_cache[l:include])
-      endif
-    endfor
-  else
-    let l:key = tolower(a:cur_keyword_str[: s:completion_length-1])
-    for l:include in s:include_info[bufnr('%')].include_files
-      if !bufloaded(l:include) && has_key(s:include_cache[l:include], l:key)
-        let l:keyword_list += s:include_cache[l:include][l:key]
-      endif
-    endfor
-  endif
+
+  " Check caching.
+  for l:include in s:include_info[bufnr('%')].include_files
+    call neocomplcache#cache#check_cache(
+          \ 'include_cache', l:include, s:async_include_cache,
+          \ s:include_cache, s:completion_length)
+    if has_key(s:include_cache, l:include)
+      let l:keyword_list += neocomplcache#dictionary_filter(
+            \ s:include_cache[l:include], a:cur_keyword_str, s:completion_length)
+    endif
+  endfor
 
   return neocomplcache#keyword_filter(neocomplcache#dup_filter(l:keyword_list), a:cur_keyword_str)
 endfunction"}}}
@@ -147,8 +144,8 @@ function! s:doc_dict.search(cur_text)"{{{
     let l:key = tolower(l:word[: s:completion_length-1])
 
     for l:include in filter(copy(s:include_info[bufnr('%')].include_files),
-          \ 'has_key(s:include_cache[v:val], l:key)')
-      for l:matched in filter(copy(s:include_cache[l:include][l:key]),
+          \ 'has_key(s:include_cache, v:val) && has_key(s:include_cache[v:val], l:key)')
+      for l:matched in filter(values(s:include_cache[l:include][l:key]),
             \ 'v:val.word ==# l:word && has_key(v:val, "kind") && v:val.kind != ""')
         let l:ret = []
 
@@ -171,9 +168,9 @@ function! s:doc_dict.search(cur_text)"{{{
 endfunction"}}}
 "}}}
 
-function! s:check_buffer(bufname)"{{{
-  let l:bufname = fnamemodify((a:bufname == '' ? bufname('%') : a:bufname), ':p')
-  let l:bufnumber = bufnr(l:bufname)
+function! s:check_buffer(bufnumber)"{{{
+  let l:bufnumber = (a:bufnumber == '') ? bufnr('%') : a:bufnumber
+  let l:filename = fnamemodify(bufname(l:bufnumber), ':p')
   let s:include_info[l:bufnumber] = {}
 
   let l:filetype = getbufvar(l:bufnumber, '&filetype')
@@ -181,13 +178,15 @@ function! s:check_buffer(bufname)"{{{
     let l:filetype = 'nothing'
   endif
 
-  " Check include.
-  let l:include_files = s:get_buffer_include_files(l:bufnumber)
+  " Check include files contained bufname.
+  let l:include_files = neocomplcache#util#uniq(s:get_buffer_include_files(l:bufnumber))
+  if getbufvar(l:bufnumber, '&buftype') !~ 'nofile'
+    call add(l:include_files, l:filename)
+  endif
   for l:filename in l:include_files
-    if !has_key(s:include_cache, l:filename)
-      " Caching.
-      let s:include_cache[l:filename] = s:load_from_tags(l:filename, l:filetype)
-    endif
+    " Caching.
+    let s:async_include_cache[l:filename]
+          \ = [ s:initialize_include(l:filename, l:filetype) ]
   endfor
 
   let s:include_info[l:bufnumber].include_files = l:include_files
@@ -266,53 +265,13 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
   return l:include_files
 endfunction"}}}
 
-function! s:load_from_tags(filename, filetype)"{{{
+function! s:initialize_include(filename, filetype)"{{{
   " Initialize include list from tags.
-
-  let l:keyword_lists = s:load_from_cache(a:filename)
-  if !empty(l:keyword_lists) || getfsize(neocomplcache#cache#encode_name('include_cache', a:filename)) == 0
-    return l:keyword_lists
-  endif
-
-  if !executable(g:neocomplcache_ctags_program)
-    return s:load_from_file(a:filename, a:filetype)
-  endif
-
-  let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
-        \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
-  let l:filename = fnamemodify(a:filename, ':p')
-  if neocomplcache#is_win()
-    let l:filename = substitute(l:filename, '\\', '/', 'g')
-    let l:command = printf('%s -f - %s "%s"', g:neocomplcache_ctags_program, l:args, l:filename)
-  else
-    let l:command = printf('%s -f /dev/stdout 2>/dev/null %s ''%s''', g:neocomplcache_ctags_program, l:args, l:filename)
-  endif
-
-  let l:lines = split(neocomplcache#system(l:command), '\n')
-
-  if !empty(l:lines)
-    " Save ctags file.
-    call neocomplcache#cache#writefile('include_tags', a:filename, l:lines)
-  endif
-
-  let l:keyword_lists = {}
-
-  for l:keyword in neocomplcache#cache#load_from_tags('include_cache', a:filename, l:lines, 'I', a:filetype)
-    let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:keyword_lists, l:key)
-      let l:keyword_lists[l:key] = []
-    endif
-
-    call add(l:keyword_lists[l:key], l:keyword)
-  endfor
-
-  call neocomplcache#cache#save_cache('include_cache', a:filename, neocomplcache#unpack_dictionary(l:keyword_lists))
-
-  if empty(l:keyword_lists)
-    return s:load_from_file(a:filename, a:filetype)
-  endif
-
-  return l:keyword_lists
+  return {
+        \ 'filename' : a:filename,
+        \ 'cachename' : neocomplcache#cache#async_load_from_tags(
+        \              'include_cache', a:filename, a:filetype, 'I', 1)
+        \ }
 endfunction"}}}
 function! s:load_from_file(filename, filetype)"{{{
   " Initialize include list from file.
@@ -347,6 +306,16 @@ function! s:load_from_cache(filename)"{{{
   endfor 
 
   return l:keyword_lists
+endfunction"}}}
+function! s:caching_include(bufname)"{{{
+  let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
+  if has_key(s:async_include_cache, l:bufnumber)
+        \ && filereadable(s:async_include_cache[l:bufnumber].cache_name)
+    " Delete old cache.
+    call delete(s:async_include_cache[l:bufnumber].cache_name)
+  endif
+
+  call s:check_buffer(l:bufnumber)
 endfunction"}}}
 
 " Global options definition."{{{

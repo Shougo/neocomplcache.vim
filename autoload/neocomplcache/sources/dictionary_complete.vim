@@ -105,25 +105,33 @@ function! s:caching()"{{{
   endfor
 endfunction"}}}
 
-function! s:recaching(filetype)"{{{
+function! s:caching_dictionary(filetype)
   if a:filetype == ''
     let l:filetype = neocomplcache#get_context_filetype(1)
   else
     let l:filetype = a:filetype
   endif
+  if has_key(s:async_dictionary_list, l:filetype)
+        \ && filereadable(s:async_dictionary_list[l:filetype].cache_name)
+    " Delete old cache.
+    call delete(s:async_dictionary_list[l:filetype].cache_name)
+  endif
 
+  call s:recaching(l:filetype)
+endfunction
+function! s:recaching(filetype)"{{{
   " Caching.
-  if has_key(g:neocomplcache_dictionary_filetype_lists, l:filetype)
-    let l:dictionaries = g:neocomplcache_dictionary_filetype_lists[l:filetype]
-  elseif l:filetype != &filetype || &l:dictionary == ''
+  if has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
+    let l:dictionaries = g:neocomplcache_dictionary_filetype_lists[a:filetype]
+  elseif a:filetype != &filetype || &l:dictionary == ''
     return
   else
     let l:dictionaries = &l:dictionary
   endif
 
-  let s:async_dictionary_list[l:filetype] = []
+  let s:async_dictionary_list[a:filetype] = []
 
-  let l:pattern = neocomplcache#get_keyword_pattern(l:filetype)
+  let l:pattern = neocomplcache#get_keyword_pattern(a:filetype)
   for l:dictionary in split(l:dictionaries, ',')
     if filereadable(l:dictionary)
       call add(s:async_dictionary_list[l:filetype], {

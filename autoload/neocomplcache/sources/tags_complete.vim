@@ -77,19 +77,6 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
-function! s:caching_tags(bufname, force)"{{{
-  let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
-  let s:async_tags_list[l:bufnumber] = []
-  for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
-    let l:filename = fnamemodify(tags, ':p')
-    if filereadable(l:filename)
-          \ && (a:force || getfsize(l:filename)
-          \               < g:neocomplcache_caching_limit_file_size)
-      call add(s:async_tags_list[l:bufnumber],
-            \ s:initialize_tags(l:filename))
-    endif
-  endfor
-endfunction"}}}
 function! s:initialize_tags(filename)"{{{
   " Initialize tags list.
   let l:ft = &filetype
@@ -102,6 +89,25 @@ function! s:initialize_tags(filename)"{{{
         \ 'cachename' : neocomplcache#cache#async_load_from_tags(
         \              'tags_cache', a:filename, l:ft, 'T', 0)
         \ }
+endfunction"}}}
+function! s:caching_tags(bufname, force)"{{{
+  let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
+  if a:force && has_key(s:async_tags_list, l:bufnumber)
+        \ && filereadable(s:async_tags_list[l:bufnumber].cache_name)
+    " Delete old cache.
+    call delete(s:async_tags_list[l:bufnumber].cache_name)
+  endif
+
+  let s:async_tags_list[l:bufnumber] = []
+  for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
+    let l:filename = fnamemodify(tags, ':p')
+    if filereadable(l:filename)
+          \ && (a:force || getfsize(l:filename)
+          \               < g:neocomplcache_caching_limit_file_size)
+      call add(s:async_tags_list[l:bufnumber],
+            \ s:initialize_tags(l:filename))
+    endif
+  endfor
 endfunction"}}}
 
 let &cpo = s:save_cpo
