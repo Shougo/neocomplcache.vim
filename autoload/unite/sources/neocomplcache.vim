@@ -82,7 +82,11 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
       let l:dict.abbr .= ' ' . l:keyword.menu
     endif
     if has_key(l:keyword, 'description')
-      let l:dict.action__complete_info = l:keyword.description
+      if type(l:keyword.description) ==# type(function('tr'))
+        let l:dict.action__complete_info_lazy = l:keyword.description
+      else
+        let l:dict.action__complete_info = l:keyword.description
+      endif
     endif
 
     call add(l:list, l:dict)
