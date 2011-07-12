@@ -134,7 +134,7 @@ function! s:recaching(filetype)"{{{
   let l:pattern = neocomplcache#get_keyword_pattern(a:filetype)
   for l:dictionary in split(l:dictionaries, ',')
     if filereadable(l:dictionary)
-      call add(s:async_dictionary_list[l:filetype], {
+      call add(s:async_dictionary_list[a:filetype], {
             \ 'filename' : l:dictionary,
             \ 'cachename' : neocomplcache#cache#async_load_from_file(
             \       'dictionary_cache', l:dictionary, l:pattern, 'D')
