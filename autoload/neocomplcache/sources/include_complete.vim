@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2011.
+" Last Modified: 13 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,7 +47,7 @@ function! s:source.initialize()"{{{
 
   augroup neocomplcache
     " Caching events
-    autocmd FileType,BufWritePost * call s:check_buffer('')
+    autocmd BufWritePost * call s:check_buffer('')
   augroup END
 
   " Initialize include pattern."{{{
@@ -85,8 +85,12 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
-  if !has_key(s:include_info, bufnr('%')) || neocomplcache#within_comment()
+  if neocomplcache#within_comment()
     return []
+  endif
+
+  if !has_key(s:include_info, bufnr('%'))
+    call s:check_buffer('')
   endif
 
   let l:keyword_list = []
