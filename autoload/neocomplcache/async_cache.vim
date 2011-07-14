@@ -107,17 +107,16 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   let [l:pattern, l:tags_file_name, l:filter_pattern] =
         \ readfile(a:pattern_file_name)[: 3]
   if l:tags_file_name != ''
+    " Check output.
     let l:tags_list = []
 
     let i = 0
-    while i < 20
-      " Check output.
+    while i < 2
       if filereadable(l:tags_file_name)
         " Use filename.
-        let l:tags_list = readfile(l:tags_file_name)
+        let l:tags_list = map(readfile(l:tags_file_name),
+              \ 'iconv(v:val, a:fileencoding, &encoding)')
         break
-      else
-        return []
       endif
 
       sleep 500m
@@ -125,14 +124,14 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
     endwhile
   else
     " Use filename.
-    let l:tags_list = readfile(a:filename)
+    let l:tags_list = map(readfile(a:filename),
+          \ 'iconv(v:val, a:fileencoding, &encoding)')
   endif
 
   if empty(l:tags_list)
     " File caching.
-    return []
-    " return s:load_from_file(a:filename, a:pattern_file_name,
-    "       \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
+    return s:load_from_file(a:filename, a:pattern_file_name,
+          \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
   endif
 
   for l:line in l:tags_list"{{{
@@ -295,10 +294,6 @@ else
   endfunction"}}}
 endif
 
-function! neocomplcache#async_cache#main(argv)"{{{
-  call s:main(a:argv)
-endfunction"}}}
-
 if argc() == 8 &&
       \ (argv(0) ==# 'load_from_file' || argv(0) ==# 'load_from_tags')
   try
@@ -309,6 +304,10 @@ if argc() == 8 &&
   endtry
 
   qall!
+else
+  function! neocomplcache#async_cache#main(argv)"{{{
+    call s:main(a:argv)
+  endfunction"}}}
 endif
 
 " vim: foldmethod=marker
