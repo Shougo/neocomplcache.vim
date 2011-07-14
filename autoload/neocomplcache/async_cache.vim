@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2011.
+" Last Modified: 14 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -127,9 +127,10 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   endif
 
   if empty(l:tags_list)
-    " Filename caching.
-    return s:load_from_file(a:filename, a:pattern_file_name,
-          \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
+    " File caching.
+    return []
+    " return s:load_from_file(a:filename, a:pattern_file_name,
+    "       \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
   endif
 
   for l:line in l:tags_list"{{{
