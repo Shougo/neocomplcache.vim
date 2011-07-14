@@ -116,6 +116,8 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
         " Use filename.
         let l:tags_list = readfile(l:tags_file_name)
         break
+      else
+        return []
       endif
 
       sleep 500m
