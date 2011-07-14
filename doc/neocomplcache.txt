@@ -1010,6 +1010,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-14
+- Fixed include_complete freeze in Windows environment.
+
 2011-07-13
 - Improved include_complete source caching timing.
 

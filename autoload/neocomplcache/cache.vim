@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2011.
+" Last Modified: 14 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ set cpo&vim
 
 " Cache loader.
 function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary,
-      \ keyword_list_dictionary, completion_length)"{{{
+      \ keyword_list_dictionary, completion_length) "{{{
   if !has_key(a:async_cache_dictionary, a:key)
     return
   endif
@@ -167,7 +167,7 @@ catch
   let s:exists_md5 = 0
 endtry
 
-function! s:create_hash(dir, str)
+function! s:create_hash(dir, str)"{{{
   if len(a:dir) + len(a:str) < 150
     let l:hash = substitute(substitute(a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
   elseif s:exists_md5
@@ -184,7 +184,7 @@ function! s:create_hash(dir, str)
   endif
 
   return l:hash
-endfunction
+endfunction"}}}
 
 let s:sdir = fnamemodify(expand('<sfile>'), ':p:h')
 
@@ -228,11 +228,12 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
     let l:tags_file_name = neocomplcache#cache#encode_name('tags_output', a:filename)
 
     let l:args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
-          \ g:neocomplcache_ctags_arguments_list[a:filetype] : g:neocomplcache_ctags_arguments_list['default']
+          \ g:neocomplcache_ctags_arguments_list[a:filetype]
+          \ : g:neocomplcache_ctags_arguments_list['default']
 
     if has('win32') || has('win64')
       let l:filename = substitute(a:filename, '\\', '/', 'g')
-      let l:command = printf('%s -f "%s" - %s "%s" ',
+      let l:command = printf('%s -f "%s" %s "%s" ',
             \ g:neocomplcache_ctags_program, l:tags_file_name, l:args, l:filename)
     else
       let l:command = printf('%s -f ''%s'' 2>/dev/null %s ''%s''',
@@ -261,7 +262,7 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
         \ ]
   return s:async_load(l:argv, a:cache_dir, a:filename)
 endfunction"}}}
-function! s:async_load(argv, cache_dir, filename)
+function! s:async_load(argv, cache_dir, filename)"{{{
   if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
     return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   endif
@@ -281,7 +282,7 @@ function! s:async_load(argv, cache_dir, filename)
   lcd `=l:current`
 
   return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-endfunction
+endfunction"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
