@@ -1013,6 +1013,9 @@ CHANGELOG						*neocomplcache-changelog*
 2011-07-16
 - Improved python include filetype.
 
+2011-07-15
+- Fixed php delimiter pattern.
+
 2011-07-14
 - Fixed include_complete freeze in Windows environment.
 
