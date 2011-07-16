@@ -416,6 +416,14 @@ g:neocomplcache_dictionary_filetype_lists		*g:neocomplcache_dictionary_filetype_
 		
 		初期値は空である。
 
+g:neocomplcache_dictionary_patterns			*g:neocomplcache_dictionary_patterns*
+		辞書ファイルのキーワードパターンを指定するためのディクショナ
+		リ。キーにファイルタイプ、値にキーワードもしこの変数が空の場
+		合、neocomplcacheは|g:neocomplcache_keyword_patterns|を代わ
+		りに使用する。
+
+		初期値は空である。
+
 g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists*
 		ファイルタイプに内包される別のファイルタイプを定義する。
 		中身はディクショナリのリストであり、次の内容を持つ。
