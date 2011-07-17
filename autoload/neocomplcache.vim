@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2011.
+" Last Modified: 17 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -116,7 +116,8 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'lisp,scheme,clojure,int-gosh,int-clisp,int-clj',
         \ '[[:alpha:]+*/@$_=.!?-][[:alnum:]+*/@$_:=.!?-]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ruby,int-irb',
-        \ '^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?\%(()\?\|\s\?\%(do\|{\)\s\?\)\?')
+        \ '^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?')
+        " \ '^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'php',
         \ '</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\h\w*\%(\%(\\\|::\)\w*\)*\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'perl,int-perlsh',
@@ -128,7 +129,8 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'pasm',
         \ '[=]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'vim,help',
-        \ '\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<SID>\%(\h\w*(\?\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
+        \ '\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<SID>\%(\h\w*\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?')
+        " \ '\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<SID>\%(\h\w*(\?\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'tex',
         \ '\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:_]*\*\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'sh,zsh,int-zsh,int-bash,int-sh',

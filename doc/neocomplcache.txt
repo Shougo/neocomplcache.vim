@@ -1020,6 +1020,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-07-17
 - Added g:neocomplcache_dictionary_patterns option.
+- Changed keyword_pattern(experimental).
 
 2011-07-16
 - Improved python include filetype.
