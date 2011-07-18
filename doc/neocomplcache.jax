@@ -733,6 +733,9 @@ include_complete.vim					*include_complete*
 		に加えるプラグイン。 いちいちタグファイルや辞書ファイルを用意し
 		なくて良いので便利である。 ただし、'path'や'include',
 		'includeexpr'が適切に設定されている必要がある。
+		vimprocがインストールされていると非同期にキャッシュを行うが、そ
+		うでない場合、キャッシュには時間がかかるため、
+		|:NeoComplCacheCachingInclude|を実行しないとキャッシュしない。
                 
 vim_complete.vim					*vim_complete*
 		文脈を解析し、VimScriptのオムニ補完を行う。
