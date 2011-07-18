@@ -1018,6 +1018,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-18
+- Disabled auto caching in include_complete when vimproc is not installed.
+
 2011-07-17
 - Added g:neocomplcache_dictionary_patterns option.
 - Changed keyword_pattern(experimental).

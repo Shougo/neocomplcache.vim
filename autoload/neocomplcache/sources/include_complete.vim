@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2011.
+" Last Modified: 18 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,10 +45,12 @@ function! s:source.initialize()"{{{
   " Set rank.
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'include_complete', 7)
 
-  augroup neocomplcache
-    " Caching events
-    autocmd BufWritePost * call s:check_buffer('')
-  augroup END
+  if neocomplcache#has_vimproc()
+    augroup neocomplcache
+      " Caching events
+      autocmd BufWritePost * call s:check_buffer('')
+    augroup END
+  endif
 
   " Initialize include pattern."{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_include_patterns, 'java,haskell', '^import')
@@ -89,7 +91,8 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     return []
   endif
 
-  if !has_key(s:include_info, bufnr('%'))
+  if !has_key(s:include_info, bufnr('%')) && neocomplcache#has_vimproc()
+    " Auto caching.
     call s:check_buffer('')
   endif
 
