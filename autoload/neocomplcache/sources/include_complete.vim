@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jul 2011.
+" Last Modified: 20 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -91,7 +91,11 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     return []
   endif
 
-  if !has_key(s:include_info, bufnr('%')) && neocomplcache#has_vimproc()
+  if !has_key(s:include_info, bufnr('%'))
+    if !neocomplcache#has_vimproc()
+      return []
+    endif
+
     " Auto caching.
     call s:check_buffer('')
   endif

@@ -1021,6 +1021,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-20
+- Fixed include_complete error.
+
 2011-07-18
 - Disabled auto caching in include_complete when vimproc is not installed.
 
