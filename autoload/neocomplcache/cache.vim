@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jul 2011.
+" Last Modified: 22 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -213,9 +213,10 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
   call neocomplcache#cache#writefile('keyword_patterns', a:filename, [a:pattern])
 
   " args: funcname, outputname, filename pattern mark minlen maxfilename outputname
+  let l:fileencoding = &fileencoding == '' ? &encoding : &fileencoding
   let l:argv = [
         \  'load_from_file', l:cache_name, a:filename, l:pattern_file_name, a:mark,
-        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, &fileencoding
+        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, l:fileencoding
         \ ]
   return s:async_load(l:argv, a:cache_dir, a:filename)
 endfunction"}}}
@@ -256,9 +257,10 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
         \ [neocomplcache#get_keyword_pattern(), l:tags_file_name, l:filter_pattern])
 
   " args: funcname, outputname, filename filetype mark minlen maxfilename outputname
+  let l:fileencoding = &fileencoding == '' ? &encoding : &fileencoding
   let l:argv = [
         \  'load_from_tags', l:cache_name, a:filename, l:pattern_file_name, a:mark,
-        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, &fileencoding
+        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, l:fileencoding
         \ ]
   return s:async_load(l:argv, a:cache_dir, a:filename)
 endfunction"}}}
@@ -270,11 +272,12 @@ function! s:async_load(argv, cache_dir, filename)"{{{
   let l:current = getcwd()
   lcd `=s:sdir`
 
-  if neocomplcache#has_vimproc()
   " if 0
+  if neocomplcache#has_vimproc()
     let l:args = ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
           \ + a:argv
     call vimproc#system_bg(l:args)
+    " call vimproc#system(l:args)
     " call system(join(l:args))
   else
     call neocomplcache#async_cache#main(a:argv)
