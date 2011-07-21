@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2011.
+" Last Modified: 21 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -130,7 +130,6 @@ function! neocomplcache#enable() "{{{
         \ '[=]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'vim,help',
         \ '\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<SID>\%(\h\w*\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?')
-        " \ '\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<SID>\%(\h\w*(\?\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*\%(!\|()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'tex',
         \ '\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:_]*\*\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'sh,zsh,int-zsh,int-bash,int-sh',
@@ -140,9 +139,11 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ps1,int-powershell',
         \ '\[\h\%([[:alnum:]_.]*\]::\)\?\|[$%@.]\?[[:alpha:]_.:-][[:alnum:]_.:-]*\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'c',
-        \ '^\s*#\s*\h\w*\|\h\w*\%(()\?\)\?')
+        \ '^\s*#\s*\h\w*\|\h\w*')
+        " \ '^\s*#\s*\h\w*\|\h\w*\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'cpp',
-        \ '^\s*#\s*\h\w*\|\h\w*\%(::\w*\)*\%(()\?\|<>\?\)\?')
+        \ '^\s*#\s*\h\w*\|\h\w*\%(::\w*\)*')
+        " \ '^\s*#\s*\h\w*\|\h\w*\%(::\w*\)*\%(()\?\|<>\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'objc',
         \ '^\s*#\s*\h\w*\|\h\w*\%(()\?\|<>\?\|:\)\?\|@\h\w*\%(()\?\)\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'objcpp',
@@ -224,7 +225,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'perl6',
         \'\h\w*>')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'vim,help',
-        \'\w*:\]\|[[:alnum:]_-]*[)>=]')
+        \'\w*()\?\|\w*:\]\|[[:alnum:]_-]*[)>=]')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'tex',
         \'\h\w*\*\?[*[{}]')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'html,xhtml,xml,mkd',
@@ -274,8 +275,8 @@ function! neocomplcache#enable() "{{{
     let g:neocomplcache_filetype_include_lists = {}
   endif
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'c,cpp', [
-        \ {'filetype' : 'masm', 'start' : '_*asm\s*\%(\n\s*\)\?{', 'end' : '}'},
-        \ {'filetype' : 'masm', 'start' : '_*asm\s*\h\w*', 'end' : '$'},
+        \ {'filetype' : 'masm', 'start' : '_*asm_*\s\+\h\w*', 'end' : '$'},
+        \ {'filetype' : 'masm', 'start' : '_*asm_*\s*\%(\n\s*\)\?{', 'end' : '}'},
         \ {'filetype' : 'gas', 'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
         \])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'd', [

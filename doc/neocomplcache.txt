@@ -1021,6 +1021,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-07-21
+- Fixed keyword pattern.
+
 2011-07-20
 - Fixed include_complete error.
 
