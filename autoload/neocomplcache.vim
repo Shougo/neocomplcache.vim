@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jul 2011.
+" Last Modified: 22 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -60,6 +60,7 @@ function! neocomplcache#enable() "{{{
   let s:ftplugin_sources = {}
   let s:loaded_ftplugin_sources = {}
   let s:complete_lock = {}
+  let s:plugins_lock = {}
   let s:auto_completion_length = {}
   let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
@@ -986,9 +987,19 @@ function! neocomplcache#is_enabled()"{{{
 endfunction"}}}
 function! neocomplcache#is_locked(...)"{{{
   let l:bufnr = a:0 > 0 ? a:1 : bufnr('%')
-  return !s:is_enabled 
+  return !s:is_enabled
         \ || (has_key(s:complete_lock, l:bufnr) && s:complete_lock[l:bufnr])
         \ || (g:neocomplcache_lock_buffer_name_pattern != '' && bufname(l:bufnr) =~ g:neocomplcache_lock_buffer_name_pattern)
+endfunction"}}}
+function! neocomplcache#is_plugin_locked(plugin_name)"{{{
+  if !s:is_enabled
+    return 1
+  endif
+
+  let l:bufnr = bufnr('%')
+  return has_key(s:plugins_lock, l:bufnr)
+        \ && has_key(s:plugins_lock[l:bufnr], a:plugin_name)
+        \ && s:plugins_lock[l:bufnr][a:plugin_name]
 endfunction"}}}
 function! neocomplcache#is_auto_select()"{{{
   return g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
@@ -1114,6 +1125,7 @@ function! neocomplcache#get_complete_result(cur_text, ...)"{{{
   for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
     if (has_key(g:neocomplcache_plugin_disable, l:complfunc_name) && g:neocomplcache_plugin_disable[l:complfunc_name])
         \ || (neocomplcache#is_eskk_enabled() && eskk#get_mode() !=# 'ascii' && l:complfunc_name !=# 'omni_complete')
+        \ || neocomplcache#is_plugin_locked(l:complfunc_name)
       " Skip plugin.
       continue
     endif
@@ -1160,9 +1172,9 @@ function! neocomplcache#get_complete_result(cur_text, ...)"{{{
 
       if !empty(l:words)
         let l:complete_result[l:complfunc_name] = {
-              \ 'complete_words' : l:words, 
-              \ 'cur_keyword_pos' : l:cur_keyword_pos, 
-              \ 'cur_keyword_str' : l:cur_keyword_str, 
+              \ 'complete_words' : l:words,
+              \ 'cur_keyword_pos' : l:cur_keyword_pos,
+              \ 'cur_keyword_str' : l:cur_keyword_str,
               \}
       endif
     endif
@@ -1370,7 +1382,7 @@ function! neocomplcache#toggle_lock()"{{{
     call neocomplcache#unlock()
   endif
 endfunction"}}}
-function! neocomplcache#lock()"{{{
+function! neocomplcache#lock(...)"{{{
   if !neocomplcache#is_enabled()
     echoerr 'neocomplcache is disabled! This command is ignored.'
     return
@@ -1378,13 +1390,37 @@ function! neocomplcache#lock()"{{{
 
   let s:complete_lock[bufnr('%')] = 1
 endfunction"}}}
-function! neocomplcache#unlock()"{{{
+function! neocomplcache#unlock(...)"{{{
   if !neocomplcache#is_enabled()
     echoerr 'neocomplcache is disabled! This command is ignored.'
     return
   endif
 
   let s:complete_lock[bufnr('%')] = 0
+endfunction"}}}
+function! neocomplcache#lock_plugin(plugin_name)"{{{
+  if !neocomplcache#is_enabled()
+    echoerr 'neocomplcache is disabled! This command is ignored.'
+    return
+  endif
+
+  if !has_key(s:plugins_lock, bufnr('%'))
+    let s:plugins_lock[bufnr('%')] = {}
+  endif
+
+  let s:plugins_lock[bufnr('%')][a:plugin_name] = 1
+endfunction"}}}
+function! neocomplcache#unlock_plugin(plugin_name)"{{{
+  if !neocomplcache#is_enabled()
+    echoerr 'neocomplcache is disabled! This command is ignored.'
+    return
+  endif
+
+  if !has_key(s:plugins_lock, bufnr('%'))
+    let s:plugins_lock[bufnr('%')] = {}
+  endif
+
+  let s:plugins_lock[bufnr('%')][a:plugin_name] = 0
 endfunction"}}}
 function! s:display_neco(number)"{{{
   let l:cmdheight_save = &cmdheight

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 22 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -64,6 +64,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     if (has_key(g:neocomplcache_plugin_disable, l:name)
         \ && g:neocomplcache_plugin_disable[l:name])
         \ || len(a:cur_keyword_str) < neocomplcache#get_completion_length(l:name)
+        \ || neocomplcache#is_plugin_locked(l:name)
       " Skip plugin.
       continue
     endif

@@ -100,6 +100,13 @@ COMMANDS 						*neocomplcache-commands*
 :NeoComplCacheUnlock					*:NeoComplCacheUnlock*
 		Unlock neocomplcache.
 
+:NeoComplCacheLockPlugin {plugin-name}			*:NeoComplCacheLockPlugin*
+		Disable {plugin-name} plugin completion. Disable state is
+		buffer local.
+
+:NeoComplCacheUnlockPlugin {plugin-name}		*:NeoComplCacheUnlockPlugin*
+		Unlock {plugin-name} plugin completion.
+
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		Change start length of automatic completion.
 		This length is buffer local.
@@ -1023,6 +1030,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-07-22
 - Fixed asyncronous caching bug.
+- Added :NeoComplCacheLockPlugin and :NeoComplCacheUnlockPlugin commands.
 
 2011-07-21
 - Fixed keyword pattern.

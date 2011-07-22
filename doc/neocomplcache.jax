@@ -96,7 +96,7 @@ COMMANDS 						*neocomplcache-commands*
 :Neco [{anim-number}] 					*:Neco*
 		？？？
 
-:NeoComplCacheLock					*:NeoComplCacheLock*
+:NeoComplCacheLock [{plugin-name}]			*:NeoComplCacheLock*
 		自動補完にロックをかけ、自動補完しないようにする。 自動補完
 		をロックしていたとしても、手動補完は使用できる。 自動補完を
 		一時的に無効にしたい場合に有効。 ロック状態はバッファローカ
@@ -104,6 +104,13 @@ COMMANDS 						*neocomplcache-commands*
 
 :NeoComplCacheUnlock					*:NeoComplCacheUnlock*
 		自動補完にかけたロックを解除する。
+
+:NeoComplCacheLockPlugin {plugin-name}			*:NeoComplCacheLockPlugin*
+		{plugin-name}で指定されたプラグインの補完を無効にする。無効化状
+		態はバッファローカルである。
+
+:NeoComplCacheUnlockPlugin {plugin-name}		*:NeoComplCacheUnlockPlugin*
+		{plugin-name}にかけたロックを解除する。
 
 :NeoComplCacheAutoCompletionLength			*:NeoComplCacheAutoCompletionLength*
 		自動補完する文字数を一時的に変更する。
