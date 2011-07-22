@@ -274,7 +274,8 @@ function! s:async_load(argv, cache_dir, filename)"{{{
 
   " if 0
   if neocomplcache#has_vimproc()
-    let l:args = ['vim', '-u', 'NONE', '-i', 'NONE', '-N', '-S', 'async_cache.vim']
+    let l:args = ['vim', '-u', 'NONE', '-i', 'NONE', '-n',
+          \       '-N', '-S', 'async_cache.vim']
           \ + a:argv
     call vimproc#system_bg(l:args)
     " call vimproc#system(l:args)
