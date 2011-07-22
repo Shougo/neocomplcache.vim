@@ -1032,6 +1032,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Fixed asyncronous caching bug.
 - Added :NeoComplCacheLockPlugin and :NeoComplCacheUnlockPlugin commands.
 - Don't use swapfile in asyncronous caching.
+- Fixed filename_complete.
 
 2011-07-21
 - Fixed keyword pattern.
