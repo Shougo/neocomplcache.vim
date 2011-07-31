@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2011.
+" Last Modified: 31 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -184,7 +184,10 @@ function! s:caching_from_syn(filetype)"{{{
   endfor
 
   " Save syntax cache.
-  call neocomplcache#cache#save_cache('syntax_cache', &filetype, neocomplcache#unpack_dictionary(l:keyword_lists))
+  let l:unpack_lists = neocomplcache#unpack_dictionary(l:keyword_lists)
+  if !empty(l:unpack_lists)
+    call neocomplcache#cache#save_cache('syntax_cache', &filetype, l:unpack_lists)
+  endif
 
   call neocomplcache#print_caching('')
 
