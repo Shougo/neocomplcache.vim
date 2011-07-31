@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2011.
+" Last Modified: 31 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -902,7 +902,7 @@ endfunction"}}}
 
 function! neocomplcache#get_cur_text(...)"{{{
   " Return cached text.
-  return (a:0 == 0 && mode() ==# 'i') ? s:cur_text : s:get_cur_text()
+  return (a:0 == 0 && mode() ==# 'i' && exists('s:cur_text')) ? s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_next_keyword()"{{{
   " Get next keyword.
