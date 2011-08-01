@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2011.
+" Last Modified: 01 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -63,12 +63,16 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
     return []
   endif
 
-  return map(map(readfile(l:cache_name), 'split(v:val, "|||", 1)'), '{
+  try
+    return map(map(readfile(l:cache_name), 'split(v:val, "|||", 1)'), '{
           \ "word" : v:val[0],
           \ "abbr" : v:val[1],
           \ "menu" : v:val[2],
           \ "kind" : v:val[3],
           \}')
+  catch /^Vim\%((\a\+)\)\=:E684:/
+    return []
+  endtry
 endfunction"}}}
 function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, completion_length)"{{{
   let l:keyword_lists = {}
@@ -101,11 +105,14 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
 
   " Create dictionary key.
   for keyword in a:keyword_list
+    if !has_key(keyword, 'abbr')
+      let keyword.abbr = keyword.word
+    endif
     if !has_key(keyword, 'kind')
       let keyword.kind = ''
     endif
-    if !has_key(keyword, 'abbr')
-      let keyword.abbr = keyword.word
+    if !has_key(keyword, 'menu')
+      let keyword.menu = ''
     endif
   endfor
 

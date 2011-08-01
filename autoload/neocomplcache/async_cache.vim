@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2011.
+" Last Modified: 01 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,11 +40,14 @@ function! s:main(argv)"{{{
 
   " Create dictionary key.
   for keyword in l:keyword_list
+    if !has_key(keyword, 'abbr')
+      let keyword.abbr = keyword.word
+    endif
     if !has_key(keyword, 'kind')
       let keyword.kind = ''
     endif
-    if !has_key(keyword, 'abbr')
-      let keyword.abbr = keyword.word
+    if !has_key(keyword, 'menu')
+      let keyword.menu = ''
     endif
   endfor
 
