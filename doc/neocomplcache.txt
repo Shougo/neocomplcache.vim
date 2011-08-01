@@ -1030,6 +1030,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-08-01
 - Improved cache loading.
+- Improved vim_complete.
 
 2011-07-31
 - Fixed get_cur_text error.

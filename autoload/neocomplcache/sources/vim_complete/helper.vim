@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2011.
+" Last Modified: 01 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -240,7 +240,8 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
 
     let l:list = neocomplcache#sources#vim_complete#helper#get_command_completion(l:command, l:cur_text, a:cur_keyword_str)
 
-    if a:cur_text =~ '[[(,{]'
+    if a:cur_text =~
+          \'[[(,{]\|`=[^`]*$'
       " Expression.
       let l:list += neocomplcache#sources#vim_complete#helper#expression(a:cur_text, a:cur_keyword_str)
     endif

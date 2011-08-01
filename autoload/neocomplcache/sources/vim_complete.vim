@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Jun 2011.
+" Last Modified: 01 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -123,9 +123,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   elseif a:cur_keyword_str =~ '^\$'
     " Environment.
     let l:list = neocomplcache#sources#vim_complete#helper#environment(l:cur_text, a:cur_keyword_str)
-  elseif l:cur_text =~ '`=[^`]*$'
-    " Expression.
-    let l:list = neocomplcache#sources#vim_complete#helper#expression(l:cur_text, a:cur_keyword_str)
   elseif l:cur_text =~ '^[[:digit:],[:space:][:tab:]$''<>]*!\s*\f\+$'
     " Shell commands.
     let l:list = neocomplcache#sources#vim_complete#helper#shellcmd(l:cur_text, a:cur_keyword_str)
