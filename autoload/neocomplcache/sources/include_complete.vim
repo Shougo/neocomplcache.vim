@@ -103,7 +103,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   let l:keyword_list = []
 
   " Check caching.
-  for l:include in values(s:include_info[bufnr('%')].include_files)
+  for l:include in s:include_info[bufnr('%')].include_files
     call neocomplcache#cache#check_cache(
           \ 'include_cache', l:include, s:async_include_cache,
           \ s:include_cache, s:completion_length)
@@ -122,7 +122,7 @@ endfunction"}}}
 
 function! neocomplcache#sources#include_complete#get_include_files(bufnumber)"{{{
   if has_key(s:include_info, a:bufnumber)
-    return values(s:include_info[a:bufnumber].include_files)
+    return s:include_info[a:bufnumber].include_files
   else
     return []
   endif
@@ -154,7 +154,7 @@ function! s:doc_dict.search(cur_text)"{{{
   for l:word in reverse(l:words)
     let l:key = tolower(l:word[: s:completion_length-1])
 
-    for l:include in filter(values(s:include_info[bufnr('%')].include_files),
+    for l:include in filter(copy(s:include_info[bufnr('%')].include_files),
           \ 'has_key(s:include_cache, v:val) && has_key(s:include_cache[v:val], l:key)')
       for l:matched in filter(values(s:include_cache[l:include][l:key]),
             \ 'v:val.word ==# l:word && has_key(v:val, "kind") && v:val.kind != ""')
@@ -190,7 +190,7 @@ function! s:check_buffer(bufnumber)"{{{
 
   if !has_key(s:include_info, l:bufnumber)
     " Initialize.
-    let s:include_info[l:bufnumber] = { 'include_files' : {} }
+    let s:include_info[l:bufnumber] = { 'include_files' : [] }
   endif
 
   " Check include files contained bufname.
@@ -199,18 +199,16 @@ function! s:check_buffer(bufnumber)"{{{
     call add(l:include_files, l:filename)
   endif
 
-  let l:old_include_files = s:include_info[l:bufnumber].include_files
-
-  let s:include_info[l:bufnumber].include_files = {}
   for l:filename in l:include_files
-    if !has_key(l:old_include_files, l:filename)
+    if neocomplcache#cache#check_old_cache('include_cache', l:filename)
+          \ || !has_key(s:include_cache, l:filename)
       " Caching.
       let s:async_include_cache[l:filename]
             \ = [ s:initialize_include(l:filename, l:filetype) ]
     endif
-
-    let s:include_info[l:bufnumber].include_files[l:filename] = l:filename
   endfor
+
+  let s:include_info[l:bufnumber].include_files = l:include_files
 endfunction"}}}
 function! s:get_buffer_include_files(bufnumber)"{{{
   let l:filetype = getbufvar(a:bufnumber, '&filetype')
@@ -336,7 +334,8 @@ function! s:caching_include(bufname)"{{{
     call delete(s:async_include_cache[l:bufnumber].cache_name)
   endif
 
-  let s:include_info[l:bufnumber].include_files = {}
+  " Initialize.
+  let s:include_info[l:bufnumber] = { 'include_files' : [] }
 
   call s:check_buffer(l:bufnumber)
 endfunction"}}}

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Aug 2011.
+" Last Modified: 02 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,9 +58,7 @@ function! s:main(argv)"{{{
           \keyword.word, keyword.abbr, keyword.menu, keyword.kind))
   endfor
 
-  if !empty(l:word_list)
-    call writefile(l:word_list, l:outputname)
-  endif
+  call writefile(l:word_list, l:outputname)
 endfunction"}}}
 
 function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
