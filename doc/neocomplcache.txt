@@ -1028,6 +1028,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-08-03
+- Improved neocomplcache#get_syn_name().
+
 2011-08-02
 - Fixed include_complete caching.
 
