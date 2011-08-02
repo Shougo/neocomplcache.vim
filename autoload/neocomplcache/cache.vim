@@ -197,6 +197,10 @@ let s:sdir = fnamemodify(expand('<sfile>'), ':p:h')
 
 " Async test.
 function! neocomplcache#cache#test_async()"{{{
+  if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+    return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+  endif
+
   let l:filename = substitute(fnamemodify(expand('%'), ':p'), '\\', '/', 'g')
   let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', 'vim')
   let l:cache_name = neocomplcache#cache#encode_name('test_cache', l:filename)
@@ -213,6 +217,10 @@ function! neocomplcache#cache#test_async()"{{{
 endfunction"}}}
 
 function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark)"{{{
+  if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+    return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+  endif
+
   let l:pattern_file_name = neocomplcache#cache#encode_name('keyword_patterns', a:filename)
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 
@@ -228,6 +236,10 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
   return s:async_load(l:argv, a:cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype, mark, is_create_tags)"{{{
+  if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+    return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+  endif
+
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   let l:pattern_file_name = neocomplcache#cache#encode_name('tags_pattens', a:filename)
 
@@ -272,10 +284,6 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
   return s:async_load(l:argv, a:cache_dir, a:filename)
 endfunction"}}}
 function! s:async_load(argv, cache_dir, filename)"{{{
-  if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
-    return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  endif
-
   let l:current = getcwd()
   lcd `=s:sdir`
 
