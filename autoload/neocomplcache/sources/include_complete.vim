@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jul 2011.
+" Last Modified: 02 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,7 +103,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   let l:keyword_list = []
 
   " Check caching.
-  for l:include in s:include_info[bufnr('%')].include_files
+  for l:include in values(s:include_info[bufnr('%')].include_files)
     call neocomplcache#cache#check_cache(
           \ 'include_cache', l:include, s:async_include_cache,
           \ s:include_cache, s:completion_length)
@@ -122,7 +122,7 @@ endfunction"}}}
 
 function! neocomplcache#sources#include_complete#get_include_files(bufnumber)"{{{
   if has_key(s:include_info, a:bufnumber)
-    return s:include_info[a:bufnumber].include_files
+    return values(s:include_info[a:bufnumber].include_files)
   else
     return []
   endif
@@ -154,7 +154,7 @@ function! s:doc_dict.search(cur_text)"{{{
   for l:word in reverse(l:words)
     let l:key = tolower(l:word[: s:completion_length-1])
 
-    for l:include in filter(copy(s:include_info[bufnr('%')].include_files),
+    for l:include in filter(values(s:include_info[bufnr('%')].include_files),
           \ 'has_key(s:include_cache, v:val) && has_key(s:include_cache[v:val], l:key)')
       for l:matched in filter(values(s:include_cache[l:include][l:key]),
             \ 'v:val.word ==# l:word && has_key(v:val, "kind") && v:val.kind != ""')
@@ -182,11 +182,15 @@ endfunction"}}}
 function! s:check_buffer(bufnumber)"{{{
   let l:bufnumber = (a:bufnumber == '') ? bufnr('%') : a:bufnumber
   let l:filename = fnamemodify(bufname(l:bufnumber), ':p')
-  let s:include_info[l:bufnumber] = {}
 
   let l:filetype = getbufvar(l:bufnumber, '&filetype')
   if l:filetype == ''
     let l:filetype = 'nothing'
+  endif
+
+  if !has_key(s:include_info, l:bufnumber)
+    " Initialize.
+    let s:include_info[l:bufnumber] = { 'include_files' : {} }
   endif
 
   " Check include files contained bufname.
@@ -194,13 +198,19 @@ function! s:check_buffer(bufnumber)"{{{
   if getbufvar(l:bufnumber, '&buftype') !~ 'nofile'
     call add(l:include_files, l:filename)
   endif
-  for l:filename in l:include_files
-    " Caching.
-    let s:async_include_cache[l:filename]
-          \ = [ s:initialize_include(l:filename, l:filetype) ]
-  endfor
 
-  let s:include_info[l:bufnumber].include_files = l:include_files
+  let l:old_include_files = s:include_info[l:bufnumber].include_files
+
+  let s:include_info[l:bufnumber].include_files = {}
+  for l:filename in l:include_files
+    if !has_key(l:old_include_files, l:filename)
+      " Caching.
+      let s:async_include_cache[l:filename]
+            \ = [ s:initialize_include(l:filename, l:filetype) ]
+    endif
+
+    let s:include_info[l:bufnumber].include_files[l:filename] = l:filename
+  endfor
 endfunction"}}}
 function! s:get_buffer_include_files(bufnumber)"{{{
   let l:filetype = getbufvar(a:bufnumber, '&filetype')
@@ -325,6 +335,8 @@ function! s:caching_include(bufname)"{{{
     " Delete old cache.
     call delete(s:async_include_cache[l:bufnumber].cache_name)
   endif
+
+  let s:include_info[l:bufnumber].include_files = {}
 
   call s:check_buffer(l:bufnumber)
 endfunction"}}}
