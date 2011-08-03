@@ -1031,6 +1031,7 @@ CHANGELOG						*neocomplcache-changelog*
 2011-08-03
 - Improved neocomplcache#get_syn_name().
 - Fixed check uname.
+- Improved filename_complete.
 
 2011-08-02
 - Fixed include_complete caching.

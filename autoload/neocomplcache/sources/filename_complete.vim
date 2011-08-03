@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2011.
+" Last Modified: 03 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,27 +83,16 @@ endfunction"}}
 function! s:get_include_files(cur_keyword_str)"{{{
   let l:filetype = neocomplcache#get_context_filetype()
 
-  " Check include path.
+  " Check include pattern.
   let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
         \g:neocomplcache_include_patterns[l:filetype] : &include
-  if l:pattern == ''
+  let l:line = neocomplcache#get_cur_text()
+  if l:pattern == '' || l:line !~ l:pattern
     return []
   endif
+
   let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
         \g:neocomplcache_include_paths[l:filetype] : &path
-  if has_key(g:neocomplcache_include_suffixes, l:filetype)
-    let l:suffixes = &l:suffixesadd
-  endif
-
-  " Restore option.
-  if has_key(g:neocomplcache_include_suffixes, l:filetype)
-    let &l:suffixesadd = l:suffixes
-  endif
-
-  let l:line = neocomplcache#get_cur_text()
-  if l:line !~ l:pattern
-    return []
-  endif
 
   let l:match_end = matchend(l:line, l:pattern)
   let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
