@@ -143,6 +143,11 @@ COMMANDS 						*neocomplcache-commands*
 		省略すると、カレントバッファのファイルタイプを指定したことにな
 		る。
 
+:NeoComplCacheCachingSnippets [filetype]		*:NeoComplCacheCachingSnippets*
+		[filetype]のスニペットファイルを再キャッシュする。 [filetype]を
+		省略すると、カレントバッファのファイルタイプを指定したことにな
+		る。
+
 :NeoComplCacheDisableCaching [bufname]			*:NeoComplCacheDisableCaching*
 		[bufname]で示されるバッファをキャッシュしないようにする。 バッ
 		ファのキャッシュは削除されるので注意。 [bufname]を省略すると、

@@ -125,12 +125,16 @@ COMMANDS 						*neocomplcache-commands*
 		Caching [filetype] dictionary file.
 		Select current buffer filetype when [filetype] omitted.
 
-:NeoComplCacheCachingTags [filetype]			*:NeoComplCacheCachingTags*
-		Caching [filetype] tags file.
-		Select current buffer filetype when [filetype] omitted.
+:NeoComplCacheCachingTags [bufname]			*:NeoComplCacheCachingTags*
+		Caching [bufname] tags file.
+		Select current buffer filetype when [bufname] omitted.
 
-:NeoComplCacheCachingInclude [filetype]			*:NeoComplCacheCachingInclude*
-		Caching [filetype] include file.
+:NeoComplCacheCachingInclude [bufname]			*:NeoComplCacheCachingInclude*
+		Caching [bufname] include file.
+		Select current buffer name when [bufname] omitted.
+
+:NeoComplCacheCachingSnippets [filetype]		*:NeoComplCacheCachingSnippets*
+		Caching [filetype] snippet file.
 		Select current buffer filetype when [filetype] omitted.
 
 :NeoComplCacheCachingDisable [bufname]			*:NeoComplCacheCachingDisable*
@@ -1027,6 +1031,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-08-04
+- Added :NeoComplCacheCachingSnippets command.
 
 2011-08-03
 - Improved neocomplcache#get_syn_name().
