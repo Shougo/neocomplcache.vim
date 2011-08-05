@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2011.
+" Last Modified: 05 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -92,13 +92,8 @@ function! s:initialize_tags(filename)"{{{
 endfunction"}}}
 function! s:caching_tags(bufname, force)"{{{
   let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
-  if a:force && has_key(s:async_tags_list, l:bufnumber)
-        \ && filereadable(s:async_tags_list[l:bufnumber].cache_name)
-    " Delete old cache.
-    call delete(s:async_tags_list[l:bufnumber].cache_name)
-  endif
 
-  let s:async_tags_list[l:bufnumber] = []
+  let s:async_tags_list[l:bufnumber] = {}
   for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
     let l:filename = fnamemodify(tags, ':p')
     if filereadable(l:filename)
