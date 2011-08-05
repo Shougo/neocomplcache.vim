@@ -93,7 +93,7 @@ endfunction"}}}
 function! s:caching_tags(bufname, force)"{{{
   let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
 
-  let s:async_tags_list[l:bufnumber] = {}
+  let s:async_tags_list[l:bufnumber] = []
   for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
     let l:filename = fnamemodify(tags, ':p')
     if filereadable(l:filename)
