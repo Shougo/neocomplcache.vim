@@ -1032,6 +1032,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-08-06
+- Optimized dictionary filter.
+
 2011-08-05
 - Fixed tags caching error.
 

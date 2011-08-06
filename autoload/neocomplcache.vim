@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Aug 2011.
+" Last Modified: 06 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -741,6 +741,11 @@ endfunction"}}}
 function! neocomplcache#check_match_filter(cur_keyword_str)"{{{
   return neocomplcache#keyword_escape(a:cur_keyword_str) =~ '[^\\]\*\|\\+'
 endfunction"}}}
+function! neocomplcache#check_completion_length_match(cur_keyword_str, completion_length)"{{{
+  return neocomplcache#keyword_escape(
+        \ a:cur_keyword_str[: a:completion_length-1]) =~
+        \'[^\\]\*\|\\+\|\\%(\|\\|'
+endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
   if &ignorecase
     let l:expr = printf('!stridx(tolower(v:val.word), %s)', string(tolower(a:cur_keyword_str)))
@@ -799,7 +804,8 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
   endif
 
   if len(a:cur_keyword_str) < a:completion_length ||
-        \ neocomplcache#check_match_filter(a:cur_keyword_str)
+        \ neocomplcache#check_completion_length_match(
+        \   a:cur_keyword_str, a:completion_length)
     return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   else
     let l:key = tolower(a:cur_keyword_str[: a:completion_length-1])
