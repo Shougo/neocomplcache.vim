@@ -100,40 +100,36 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let l:match_end = matchend(l:line, l:pattern)
   let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
 
+  " Path search.
   let l:glob = (l:cur_keyword_str !~ '\*$')?
         \ l:cur_keyword_str . '*' : l:cur_keyword_str
-  let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
-  if (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
-    let l:files = l:files[: g:neocomplcache_max_list - 1]
-  endif
-
+  let l:cwd = getcwd()
   let l:dir_list = []
   let l:file_list = []
-  for word in l:files
-    let l:dict = { 'word' : word, 'menu' : '[F]' }
+  for subpath in filter(map(split(l:path, ','),
+        \ 'substitute(v:val, "\\\\", "/", "g")'), 'isdirectory(v:val)')
+    let l:dir = (l:path == '.') ? l:cwd : subpath
+    lcd `=l:dir`
 
-    " Path search.
-    for subpath in map(split(l:path, ','), 'substitute(v:val, "\\\\", "/", "g")')
-      if subpath != '' && neocomplcache#head_match(word, subpath . '/')
-        let l:dict.word = l:dict.word[len(subpath)+1 : ]
-        break
+    for word in split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
+      let l:dict = { 'word' : word, 'menu' : '[F]' }
+
+      let l:abbr = l:dict.word
+      if isdirectory(l:word)
+        let l:abbr .= '/'
+        if g:neocomplcache_enable_auto_delimiter
+          let l:dict.word .= '/'
+        endif
       endif
+      let l:dict.abbr = l:abbr
+
+      " Escape word.
+      let l:dict.word = escape(l:dict.word, ' *?[]"={}')
+
+      call add(isdirectory(l:word) ? l:dir_list : l:file_list, l:dict)
     endfor
-
-    let l:abbr = l:dict.word
-    if isdirectory(l:word)
-      let l:abbr .= '/'
-      if g:neocomplcache_enable_auto_delimiter
-        let l:dict.word .= '/'
-      endif
-    endif
-    let l:dict.abbr = l:abbr
-
-    " Escape word.
-    let l:dict.word = escape(l:dict.word, ' *?[]"={}')
-
-    call add(isdirectory(l:word) ? l:dir_list : l:file_list, l:dict)
   endfor
+  lcd `=l:cwd`
 
   return neocomplcache#keyword_filter(l:dir_list, a:cur_keyword_str)
         \ + neocomplcache#keyword_filter(l:file_list, a:cur_keyword_str)
