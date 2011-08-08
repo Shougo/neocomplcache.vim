@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2011.
+" Last Modified: 08 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -243,7 +243,12 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
   let l:cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   let l:pattern_file_name = neocomplcache#cache#encode_name('tags_pattens', a:filename)
 
-  if a:is_create_tags && executable(g:neocomplcache_ctags_program)
+  if a:is_create_tags
+    if !executable(g:neocomplcache_ctags_program)
+      echoerr 'Create tags error! Please install ' . g:neocomplcache_ctags_program . '.'
+      return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+    endif
+
     " Create tags file.
     let l:tags_file_name = neocomplcache#cache#encode_name('tags_output', a:filename)
 
@@ -266,7 +271,7 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
       call system(l:command)
     endif
   else
-    let l:tags_file_name = ''
+    let l:tags_file_name = '$dummy$'
   endif
 
   let l:filter_pattern =

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2011.
+" Last Modified: 08 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -107,7 +107,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
 
   let [l:pattern, l:tags_file_name, l:filter_pattern] =
         \ readfile(a:pattern_file_name)[: 3]
-  if l:tags_file_name != ''
+  if l:tags_file_name !=# '$dummy$'
     " Check output.
     let l:tags_list = []
 

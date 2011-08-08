@@ -324,7 +324,9 @@ function! s:caching_include(bufname)"{{{
   endif
 
   " Initialize.
-  let s:include_info[l:bufnumber] = { 'include_files' : [] }
+  if has_key(s:include_info, l:bufnumber)
+    call remove(s:include_info, l:bufnumber)
+  endif
 
   call s:check_buffer(l:bufnumber, 1)
 endfunction"}}}
