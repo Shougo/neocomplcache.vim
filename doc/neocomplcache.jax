@@ -503,7 +503,13 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		
 		初期値は複雑なので、autoload/neocomplcache/sources/include_complete.vimの
 		s:source.initialize()を参照せよ。
-                
+
+g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
+		インクルード補完が非同期に生成するプロセス数の上限を設定する。
+		この値を0にすると非同期にプロセスを生成することはない。
+
+		初期値は20である。
+
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		include_completeやtags_complete,
 		buffer_completeがメンバを認識するための

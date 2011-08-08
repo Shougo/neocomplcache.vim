@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2011.
+" Last Modified: 08 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,12 +43,12 @@ function! s:source.initialize()"{{{
   let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
 
   " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'include_complete', 7)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'include_complete', 8)
 
   if neocomplcache#has_vimproc()
     augroup neocomplcache
       " Caching events
-      autocmd BufWritePost * call s:check_buffer('')
+      autocmd BufWritePost * call s:check_buffer('', 0)
     augroup END
   endif
 
@@ -64,6 +64,9 @@ function! s:source.initialize()"{{{
   " Initialize suffixes pattern."{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_include_suffixes, 'haskell', '.hs')
   "}}}
+  if !exists('g:neocomplcache_include_max_processes')
+    let g:neocomplcache_include_max_processes = 20
+  endif
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/include_cache')
@@ -97,7 +100,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
     endif
 
     " Auto caching.
-    call s:check_buffer('')
+    call s:check_buffer('', 0)
   endif
 
   let l:keyword_list = []
@@ -179,7 +182,7 @@ function! s:doc_dict.search(cur_text)"{{{
 endfunction"}}}
 "}}}
 
-function! s:check_buffer(bufnumber)"{{{
+function! s:check_buffer(bufnumber, is_force)"{{{
   let l:bufnumber = (a:bufnumber == '') ? bufnr('%') : a:bufnumber
   let l:filename = fnamemodify(bufname(l:bufnumber), ':p')
 
@@ -199,9 +202,19 @@ function! s:check_buffer(bufnumber)"{{{
     call add(l:include_files, l:filename)
   endif
 
+  if g:neocomplcache_include_max_processes < 0
+    return
+  endif
+
   for l:filename in l:include_files
     if neocomplcache#cache#check_old_cache('include_cache', l:filename)
           \ || !has_key(s:include_cache, l:filename)
+      if !a:is_force && has_key(s:async_include_cache, l:filename)
+            \ && len(s:async_include_cache[l:filename])
+            \            >= g:neocomplcache_include_max_processes
+        break
+      endif
+
       " Caching.
       let s:async_include_cache[l:filename]
             \ = [ s:initialize_include(l:filename, l:filetype) ]
@@ -292,40 +305,6 @@ function! s:initialize_include(filename, filetype)"{{{
         \              'include_cache', a:filename, a:filetype, 'I', 1)
         \ }
 endfunction"}}}
-function! s:load_from_file(filename, filetype)"{{{
-  " Initialize include list from file.
-
-  let l:keyword_lists = {}
-  let l:loaded_list = neocomplcache#cache#load_from_file(a:filename, neocomplcache#get_keyword_pattern(), 'I')
-  if len(l:loaded_list) > 300
-    call neocomplcache#cache#save_cache('include_cache', a:filename, l:loaded_list)
-  endif
-
-  for l:keyword in l:loaded_list
-    let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:keyword_lists, l:key)
-      let l:keyword_lists[l:key] = []
-    endif
-    call add(l:keyword_lists[l:key], l:keyword)
-  endfor"}}}
-
-  return l:keyword_lists
-endfunction"}}}
-function! s:load_from_cache(filename)"{{{
-  let l:keyword_lists = {}
-
-  for l:keyword in neocomplcache#cache#load_from_cache('include_cache', a:filename)
-    let l:keyword.dup = 1
-    
-    let l:key = tolower(l:keyword.word[: s:completion_length-1])
-    if !has_key(l:keyword_lists, l:key)
-      let l:keyword_lists[l:key] = []
-    endif
-    call add(l:keyword_lists[l:key], l:keyword)
-  endfor 
-
-  return l:keyword_lists
-endfunction"}}}
 function! s:caching_include(bufname)"{{{
   let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
   if has_key(s:async_include_cache, l:bufnumber)
@@ -337,7 +316,7 @@ function! s:caching_include(bufname)"{{{
   " Initialize.
   let s:include_info[l:bufnumber] = { 'include_files' : [] }
 
-  call s:check_buffer(l:bufnumber)
+  call s:check_buffer(l:bufnumber, 1)
 endfunction"}}}
 
 " Global options definition."{{{

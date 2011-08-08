@@ -509,7 +509,7 @@ g:neocomplcache_include_paths				*g:neocomplcache_include_paths*
 		Because it is complicated, refer to s:source.initialize() in
 		autoload/neocomplcache/sources/include_complete.vim for the
 		initial value.
-                
+
 g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		It is the expression string of the line analysis to perform
 		to acquire an include file name.  When there is not it,
@@ -520,7 +520,7 @@ g:neocomplcache_include_exprs				*g:neocomplcache_include_exprs*
 		Because it is complicated, refer to s:source.initialize() in
 		autoload/neocomplcache/sources/include_complete.vim for the
 		initial value.
-                
+
 g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		This variable appoints the pattern of the include command.
 		When there is not it, 'include' is used.  Refer to 'include'
@@ -530,6 +530,12 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		Because it is complicated, refer to s:source.initialize() in
 		autoload/neocomplcache/sources/include_complete.vim for the
 		initial value.
+
+g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
+		This variable appoints the max number of include processes.
+		When this variable is 0, include process will be disabled.
+		
+		Default value is 20.
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		This variable appoints a keyword pattern to complete a member
@@ -1031,6 +1037,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+2011-08-08
+- Added g:neocomplcache_include_max_processes option.
 
 2011-08-06
 - Optimized dictionary filter.
