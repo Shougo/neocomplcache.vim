@@ -193,22 +193,30 @@ function! s:check_buffer(bufnumber, is_force)"{{{
 
   if !has_key(s:include_info, l:bufnumber)
     " Initialize.
-    let s:include_info[l:bufnumber] = { 'include_files' : [] }
+    let s:include_info[l:bufnumber] = {
+          \ 'include_files' : [], 'lines' : [],
+          \ }
   endif
 
-  " Check include files contained bufname.
-  let l:include_files = neocomplcache#util#uniq(s:get_buffer_include_files(l:bufnumber))
-  if getbufvar(l:bufnumber, '&buftype') !~ 'nofile'
-    call add(l:include_files, l:filename)
+  if s:include_info[l:bufnumber].lines !=# getbufline(l:bufnumber, 1, 100)
+    let s:include_info[l:bufnumber].lines = getbufline(l:bufnumber, 1, 100)
+
+    " Check include files contained bufname.
+    let l:include_files =
+          \ neocomplcache#util#uniq(s:get_buffer_include_files(l:bufnumber))
+
+    if getbufvar(l:bufnumber, '&buftype') !~ 'nofile'
+      call add(l:include_files, l:filename)
+    endif
+    let s:include_info[l:bufnumber].include_files = l:include_files
   endif
 
-  if g:neocomplcache_include_max_processes < 0
+  if g:neocomplcache_include_max_processes <= 0
     return
   endif
 
-  for l:filename in l:include_files
-    if neocomplcache#cache#check_old_cache('include_cache', l:filename)
-          \ || !has_key(s:include_cache, l:filename)
+  for l:filename in s:include_info[l:bufnumber].include_files
+    if a:is_force || !has_key(s:include_cache, l:filename)
       if !a:is_force && has_key(s:async_include_cache, l:filename)
             \ && len(s:async_include_cache[l:filename])
             \            >= g:neocomplcache_include_max_processes
@@ -220,8 +228,6 @@ function! s:check_buffer(bufnumber, is_force)"{{{
             \ = [ s:initialize_include(l:filename, l:filetype) ]
     endif
   endfor
-
-  let s:include_info[l:bufnumber].include_files = l:include_files
 endfunction"}}}
 function! s:get_buffer_include_files(bufnumber)"{{{
   let l:filetype = getbufvar(a:bufnumber, '&filetype')
