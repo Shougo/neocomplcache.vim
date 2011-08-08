@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Aug 2011.
+" Last Modified: 08 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -77,28 +77,35 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
-  return s:get_include_files(a:cur_keyword_str) + s:get_glob_files(a:cur_keyword_str, '')
-endfunction"}}
-
-function! s:get_include_files(cur_keyword_str)"{{{
   let l:filetype = neocomplcache#get_context_filetype()
 
   " Check include pattern.
   let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
         \g:neocomplcache_include_patterns[l:filetype] : &include
   let l:line = neocomplcache#get_cur_text()
-  if l:pattern == '' || l:line !~ l:pattern
-    return []
-  endif
+  return (l:pattern == '' || l:line !~ l:pattern) ?
+        \ s:get_glob_files(a:cur_keyword_str, '') :
+        \ s:get_include_files(a:cur_keyword_str)
+endfunction"}}
+
+function! s:get_include_files(cur_keyword_str)"{{{
+  let l:filetype = neocomplcache#get_context_filetype()
 
   let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
         \g:neocomplcache_include_paths[l:filetype] : &path
 
+  let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
+        \g:neocomplcache_include_patterns[l:filetype] : &include
+  let l:line = neocomplcache#get_cur_text()
   let l:match_end = matchend(l:line, l:pattern)
   let l:cur_keyword_str = matchstr(l:line[l:match_end :], '\f\+')
 
-  let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+  let l:glob = (l:cur_keyword_str !~ '\*$')?
+        \ l:cur_keyword_str . '*' : l:cur_keyword_str
   let l:files = split(substitute(globpath(l:path, l:glob), '\\', '/', 'g'), '\n')
+  if (neocomplcache#is_auto_complete() && len(l:files) > g:neocomplcache_max_list)
+    let l:files = l:files[: g:neocomplcache_max_list - 1]
+  endif
 
   let l:dir_list = []
   let l:file_list = []
