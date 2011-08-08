@@ -486,7 +486,8 @@ g:neocomplcache_disable_select_mode_mappings		*g:neocomplcache_disable_select_mo
 		Default value is 1.
 
 g:neocomplcache_ctags_program				*g:neocomplcache_ctags_program*
-		It is the path to the ctags command.
+		It is the path to the ctags command.  If this command is not
+		installed, include_complete is disabled.
 		
 		Default value is "ctags".
 
@@ -1042,6 +1043,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Added g:neocomplcache_include_max_processes option.
 - Improved filename_complete.
 - Improved async tags.
+- Fixed include complete caching.
 
 2011-08-06
 - Optimized dictionary filter.

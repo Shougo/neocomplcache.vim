@@ -469,6 +469,8 @@ g:neocomplcache_disable_select_mode_mappings		*g:neocomplcache_disable_select_mo
 
 g:neocomplcache_ctags_program				*g:neocomplcache_ctags_program*
 		include_completeなどがタグ生成に使用するctagsコマンドへのパスを指定する。
+		この実行ファイルが存在しない場合、include_completeはキャッシュ
+		を生成しない。
 		
 		初期値は"ctags"である。
 
