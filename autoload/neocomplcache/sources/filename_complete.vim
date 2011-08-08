@@ -81,7 +81,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{
 
   " Check include pattern.
   let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
-        \g:neocomplcache_include_patterns[l:filetype] : &include
+        \ g:neocomplcache_include_patterns[l:filetype] : &include
   let l:line = neocomplcache#get_cur_text()
   return (l:pattern == '' || l:line !~ l:pattern) ?
         \ s:get_glob_files(a:cur_keyword_str, '') :

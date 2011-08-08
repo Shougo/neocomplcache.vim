@@ -195,11 +195,13 @@ function! s:check_buffer(bufnumber, is_force)"{{{
     " Initialize.
     let s:include_info[l:bufnumber] = {
           \ 'include_files' : [], 'lines' : [],
+          \ 'async_files' : {},
           \ }
   endif
+  let l:include_info = s:include_info[l:bufnumber]
 
-  if s:include_info[l:bufnumber].lines !=# getbufline(l:bufnumber, 1, 100)
-    let s:include_info[l:bufnumber].lines = getbufline(l:bufnumber, 1, 100)
+  if l:include_info.lines !=# getbufline(l:bufnumber, 1, 100)
+    let l:include_info.lines = getbufline(l:bufnumber, 1, 100)
 
     " Check include files contained bufname.
     let l:include_files =
@@ -208,15 +210,16 @@ function! s:check_buffer(bufnumber, is_force)"{{{
     if getbufvar(l:bufnumber, '&buftype') !~ 'nofile'
       call add(l:include_files, l:filename)
     endif
-    let s:include_info[l:bufnumber].include_files = l:include_files
+    let l:include_info.include_files = l:include_files
   endif
 
   if g:neocomplcache_include_max_processes <= 0
     return
   endif
 
-  for l:filename in s:include_info[l:bufnumber].include_files
-    if a:is_force || !has_key(s:include_cache, l:filename)
+  for l:filename in l:include_info.include_files
+    if (a:is_force || !has_key(l:include_info.async_files, l:filename))
+          \ && !has_key(s:include_cache, l:filename)
       if !a:is_force && has_key(s:async_include_cache, l:filename)
             \ && len(s:async_include_cache[l:filename])
             \            >= g:neocomplcache_include_max_processes
@@ -226,6 +229,7 @@ function! s:check_buffer(bufnumber, is_force)"{{{
       " Caching.
       let s:async_include_cache[l:filename]
             \ = [ s:initialize_include(l:filename, l:filetype) ]
+      let l:include_info.async_files[l:filename] = 1
     endif
   endfor
 endfunction"}}}
