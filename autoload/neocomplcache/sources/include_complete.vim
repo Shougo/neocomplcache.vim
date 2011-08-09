@@ -250,8 +250,7 @@ function! s:get_buffer_include_files(bufnumber)"{{{
     " Initialize python path pattern.
     call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'python',
           \ neocomplcache#system('python -', 'import sys;sys.stdout.write(",".join(sys.path))'))
-  elseif l:filetype == 'cpp'
-        \ && !neocomplcache#is_win()
+  elseif l:filetype == 'cpp' && isdirectory('/usr/include/c++')
     " Add cpp path.
     call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'cpp',
           \ getbufvar(a:bufnumber, '&path') . ',/usr/include/c++/*')
