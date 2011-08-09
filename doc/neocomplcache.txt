@@ -1039,6 +1039,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-08-09
+- Improved include filename complete.
+
 2011-08-08
 - Added g:neocomplcache_include_max_processes option.
 - Improved filename_complete.

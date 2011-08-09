@@ -258,14 +258,14 @@ function! s:get_buffer_include_files(bufnumber)"{{{
   endif
 
   let l:pattern = has_key(g:neocomplcache_include_patterns, l:filetype) ?
-        \g:neocomplcache_include_patterns[l:filetype] : getbufvar(a:bufnumber, '&include')
+        \ g:neocomplcache_include_patterns[l:filetype] : getbufvar(a:bufnumber, '&include')
   if l:pattern == ''
     return []
   endif
   let l:path = has_key(g:neocomplcache_include_paths, l:filetype) ?
-        \g:neocomplcache_include_paths[l:filetype] : getbufvar(a:bufnumber, '&path')
+        \ g:neocomplcache_include_paths[l:filetype] : getbufvar(a:bufnumber, '&path')
   let l:expr = has_key(g:neocomplcache_include_exprs, l:filetype) ?
-        \g:neocomplcache_include_exprs[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
+        \ g:neocomplcache_include_exprs[l:filetype] : getbufvar(a:bufnumber, '&includeexpr')
   if has_key(g:neocomplcache_include_suffixes, l:filetype)
     let l:suffixes = &l:suffixesadd
   endif
@@ -303,7 +303,7 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
 
         if (a:filetype == 'c' || a:filetype == 'cpp') && a:nestlevel < 1
           let l:include_files += s:get_include_files(a:nestlevel + 1, readfile(l:filename)[:100],
-                \a:filetype, a:pattern, a:path, a:expr)
+                \ a:filetype, a:pattern, a:path, a:expr)
         endif
       endif
     endif
