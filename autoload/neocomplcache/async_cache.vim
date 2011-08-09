@@ -105,8 +105,8 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   let l:dup_check = {}
   let l:line_num = 1
 
-  let [l:pattern, l:tags_file_name, l:filter_pattern] =
-        \ readfile(a:pattern_file_name)[: 3]
+  let [l:pattern, l:tags_file_name, l:filter_pattern, l:filetype] =
+        \ readfile(a:pattern_file_name)[: 4]
   if l:tags_file_name !=# '$dummy$'
     " Check output.
     let l:tags_list = []
@@ -137,18 +137,22 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
 
   for l:line in l:tags_list"{{{
     let l:tag = split(substitute(l:line, "\<CR>", '', 'g'), '\t', 1)
+    let l:opt = join(l:tag[2:], "\<TAB>")
+    let l:cmd = matchstr(l:opt, '.*/;"')
+
     " Add keywords.
     if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= a:minlen
           \&& !has_key(l:dup_check, l:tag[0])
       let l:option = {
-            \ 'cmd' : substitute(substitute(l:tag[2], '^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'), 
+            \ 'cmd' : substitute(substitute(l:cmd,
+            \'^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'),
             \ 'kind' : ''
             \}
       if l:option.cmd =~ '\d\+'
         let l:option.cmd = l:tag[0]
       endif
 
-      for l:opt in l:tag[3:]
+      for l:opt in split(l:opt[len(l:cmd):], '\t', 1)
         let l:key = matchstr(l:opt, '^\h\w*\ze:')
         if l:key == ''
           let l:option['kind'] = l:opt
@@ -163,11 +167,15 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
       endif
 
       let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature :
-            \ (l:option['kind'] == 'd' || l:option['cmd'] == '')?
+            \ (l:option['kind'] == 'd' || l:option['cmd'] == '') ?
             \ l:tag[0] : l:option['cmd']
+      let l:abbr = substitute(l:abbr, '\s\+', ' ', 'g')
       " Substitute "namespace foobar" to "foobar <namespace>".
       let l:abbr = substitute(l:abbr,
-            \'^\(namespace\|class\|struct\|enum\|union\)\(.*\)$', '\2 <\1>', '')
+            \'^\(namespace\|class\|struct\|enum\|union\)\s\+\(.*\)$', '\2 <\1>', '')
+      " Substitute typedef.
+      let l:abbr = substitute(l:abbr, '^typedef\s\+\(.*\)\s\+\(\h\w*\%(::\w*\)*\);\?$', '\2 <typedef \1>', 'g')
+
       let l:keyword = {
             \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
             \ }

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2011.
+" Last Modified: 09 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -278,7 +278,7 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
         \ (a:filetype != '' && has_key(g:neocomplcache_tags_filter_patterns, a:filetype)) ?
         \ g:neocomplcache_tags_filter_patterns[a:filetype] : ''
   call neocomplcache#cache#writefile('tags_pattens', a:filename,
-        \ [neocomplcache#get_keyword_pattern(), l:tags_file_name, l:filter_pattern])
+        \ [neocomplcache#get_keyword_pattern(), l:tags_file_name, l:filter_pattern, a:filetype])
 
   " args: funcname, outputname, filename filetype mark minlen maxfilename outputname
   let l:fileencoding = &fileencoding == '' ? &encoding : &fileencoding
