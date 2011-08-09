@@ -144,8 +144,9 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
     if l:line !~ '^!' && len(l:tag) >= 3 && len(l:tag[0]) >= a:minlen
           \&& !has_key(l:dup_check, l:tag[0])
       let l:option = {
-            \ 'cmd' : substitute(substitute(l:cmd,
-            \'^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'), '\\\\', '\\', 'g'),
+            \ 'cmd' : substitute(substitute(substitute(l:cmd,
+            \'^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'),
+            \ '\\\\', '\\', 'g'), '\\/', '/', 'g')
             \ 'kind' : ''
             \}
       if l:option.cmd =~ '\d\+'
