@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2011.
+" Last Modified: 09 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -165,9 +165,12 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
       let l:abbr = has_key(l:option, 'signature')? l:tag[0] . l:option.signature :
             \ (l:option['kind'] == 'd' || l:option['cmd'] == '')?
             \ l:tag[0] : l:option['cmd']
+      " Substitute "namespace foobar" to "foobar <namespace>".
+      let l:abbr = substitute(l:abbr,
+            \'^\(namespace\|class\|struct\|enum\|union\)\(.*\)$', '\2 <\1>', '')
       let l:keyword = {
             \ 'word' : l:tag[0], 'abbr' : l:abbr, 'kind' : l:option['kind'], 'dup' : 1,
-            \}
+            \ }
       if has_key(l:option, 'struct')
         let keyword.menu = printf(l:menu_pattern, l:option.struct)
       elseif has_key(l:option, 'class')
