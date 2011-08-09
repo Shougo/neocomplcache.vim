@@ -1041,6 +1041,7 @@ CHANGELOG						*neocomplcache-changelog*
 - Improved include filename complete.
 - Deleted underbar completion enhancements.
 - Improved default keyword patterns.
+- Fixed path search.
 
 2011-08-08
 - Added g:neocomplcache_include_max_processes option.
