@@ -113,9 +113,11 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let l:bufdirectory = fnamemodify(expand('%'), ':p:h')
   let l:dir_list = []
   let l:file_list = []
-  for subpath in filter(map(split(l:path, ','),
-        \ 'substitute(v:val, "\\\\", "/", "g")'), 'isdirectory(v:val)')
-    let l:dir = (l:path == '.') ? l:bufdirectory : subpath
+  for subpath in map(split(l:path, ','), 'substitute(v:val, "\\\\", "/", "g")')
+    let l:dir = (subpath == '.') ? l:bufdirectory : subpath
+    if !isdirectory(l:dir)
+      continue
+    endif
     lcd `=l:dir`
 
     for word in split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
