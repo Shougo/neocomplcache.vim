@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Aug 2011.
+" Last Modified: 09 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -672,26 +672,6 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   if g:neocomplcache_enable_underbar_completion && l:keyword_escape =~ '_'
     let l:keyword_escape_orig = l:keyword_escape
     let l:keyword_escape = substitute(l:keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
-
-    if l:keyword_escape_orig =~'_[^_]\+$'
-      " hoge_abc to hoge_a*_b*_c.
-      let l:pos = match(l:keyword_escape_orig, '_[^_]\+$')
-      let l:keyword_escape .= '\|'
-      if l:pos != 0
-        let l:keyword_escape .= l:keyword_escape_orig[: l:pos-1]
-      endif
-      let l:keyword_escape .= '[^_]*_'
-      let l:last_char = l:keyword_escape_orig[-1:]
-      let l:keyword_escape .= substitute(l:keyword_escape_orig[l:pos+1: -2],
-            \ '[[:alnum:]]', '&[^_]*_', 'g') . l:last_char
-      let l:keyword_escape = '\%(' . l:keyword_escape . '\)'
-    elseif l:keyword_escape_orig =~'[^_]\{2}_$'
-      " abc_ to a*_b*_c.
-      let l:last_char = l:keyword_escape_orig[len(l:keyword_escape_orig)-2]
-      let l:keyword_escape .= '\|' . substitute(l:keyword_escape_orig[: -3],
-            \ '[[:alnum:]]', '&[^_]*_', 'g') . l:last_char
-      let l:keyword_escape = '\%(' . l:keyword_escape . '\)'
-    endif
   endif
   if g:neocomplcache_enable_underbar_completion && '-' =~ '\k' && l:keyword_escape =~ '-'
     let l:keyword_escape = substitute(l:keyword_escape, '[^-]\zs-', '[^-]*-', 'g')

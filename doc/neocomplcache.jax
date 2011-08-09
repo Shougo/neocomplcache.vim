@@ -310,8 +310,7 @@ g:neocomplcache_enable_camel_case_completion		*g:neocomplcache_enable_camel_case
 g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_completion*
 		_を入力したときに、それを単語の区切りとしてあいまい検索を行うか
 		どうか制御する。 例えば "p_h" と入力したとき、"p*_h"と解釈され
-		"public_html"とマッチするようになる。 1ならば有効になる。さらに、
-		"g:neo_cp"は"g:neo*_c*p"と解釈される。
+		"public_html"とマッチするようになる。 1ならば有効になる。
 		
 		副作用があるので、初期値は0となっている。
 
