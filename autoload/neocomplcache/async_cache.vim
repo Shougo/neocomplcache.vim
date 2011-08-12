@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Aug 2011.
+" Last Modified: 12 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -146,7 +146,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
       let l:option = {
             \ 'cmd' : substitute(substitute(substitute(l:cmd,
             \'^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'),
-            \ '\\\\', '\\', 'g'), '\\/', '/', 'g')
+            \ '\\\\', '\\', 'g'), '\\/', '/', 'g'),
             \ 'kind' : ''
             \}
       if l:option.cmd =~ '\d\+'
