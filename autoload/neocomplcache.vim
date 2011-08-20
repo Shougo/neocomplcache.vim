@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Aug 2011.
+" Last Modified: 20 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -429,7 +429,7 @@ endfunction"}}}
 
 function! neocomplcache#disable()"{{{
   if !neocomplcache#is_enabled()
-    echoerr 'neocomplcache is disabled! This command is ignored.'
+    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1357,7 +1357,7 @@ endfunction"}}}
 " Command functions."{{{
 function! neocomplcache#toggle_lock()"{{{
   if !neocomplcache#is_enabled()
-    echoerr 'neocomplcache is disabled! This command is ignored.'
+    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1369,7 +1369,7 @@ function! neocomplcache#toggle_lock()"{{{
 endfunction"}}}
 function! neocomplcache#lock(...)"{{{
   if !neocomplcache#is_enabled()
-    echoerr 'neocomplcache is disabled! This command is ignored.'
+    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1377,7 +1377,7 @@ function! neocomplcache#lock(...)"{{{
 endfunction"}}}
 function! neocomplcache#unlock(...)"{{{
   if !neocomplcache#is_enabled()
-    echoerr 'neocomplcache is disabled! This command is ignored.'
+    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1385,7 +1385,7 @@ function! neocomplcache#unlock(...)"{{{
 endfunction"}}}
 function! neocomplcache#lock_plugin(plugin_name)"{{{
   if !neocomplcache#is_enabled()
-    echoerr 'neocomplcache is disabled! This command is ignored.'
+    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1397,7 +1397,7 @@ function! neocomplcache#lock_plugin(plugin_name)"{{{
 endfunction"}}}
 function! neocomplcache#unlock_plugin(plugin_name)"{{{
   if !neocomplcache#is_enabled()
-    echoerr 'neocomplcache is disabled! This command is ignored.'
+    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1615,7 +1615,7 @@ endfunction"}}}
 function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   let l:sources = neocomplcache#available_sources()
   if !has_key(l:sources, a:complfunc_name)
-    echoerr printf("Invalid completefunc name %s is given.", a:complfunc_name)
+    call neocomplcache#print_warning(printf("Invalid completefunc name %s is given.", a:complfunc_name))
     return ''
   endif
 
@@ -1625,7 +1625,7 @@ function! neocomplcache#start_manual_complete(complfunc_name)"{{{
   " Get complete result.
   let l:dict = {}
   let l:dict[a:complfunc_name] = l:sources[a:complfunc_name]
-  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] = 
+  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] =
         \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(s:get_cur_text(), l:dict), 0)
 
   " Restore function.

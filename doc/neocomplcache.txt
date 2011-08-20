@@ -1037,6 +1037,9 @@ ability of neocomplcache will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
+2011-08-20
+- Improved warning message.
+
 2011-08-12
 - Fixed tag caching error.
 
