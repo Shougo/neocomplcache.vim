@@ -1039,6 +1039,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 2011-08-20
 - Improved warning message.
+- Released Ver.6.1.
 
 2011-08-12
 - Fixed tag caching error.
