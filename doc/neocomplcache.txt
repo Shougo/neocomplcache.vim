@@ -1039,6 +1039,7 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
 2011-08-26
 - Ver.6.2 development is started.
 - Fixed include_complete error.
