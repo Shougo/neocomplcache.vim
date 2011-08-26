@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 6.1
+Version: 6.2
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -1036,6 +1036,15 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+------------------------------------------------------------------------------
+ChangeLog neocomplcache 6.2:
+2011-08-26
+- Ver.6.2 development is started.
+- Fixed include_complete error.
+
+------------------------------------------------------------------------------
+ChangeLog neocomplcache 6.1:
 
 2011-08-20
 - Improved warning message.
