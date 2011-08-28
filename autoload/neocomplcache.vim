@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Aug 2011.
+" Last Modified: 28 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,7 +66,6 @@ function! neocomplcache#enable() "{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_cur_keyword_pos = -1
-  let s:quick_match_keywordpos = -1
   let s:old_complete_words = []
   let s:update_time_save = &updatetime
   let s:prev_numbered_dict = {}
@@ -370,13 +369,6 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_text_mode_filetypes, 'text,help,tex,gitcommit,nothing,vcs-commit', 1)
   "}}}
 
-  " Initialize quick match patterns."{{{
-  if !exists('g:neocomplcache_quick_match_patterns')
-    let g:neocomplcache_quick_match_patterns = {}
-  endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_quick_match_patterns, 'default', '-')
-  "}}}
-
   " Initialize tags filter patterns."{{{
   if !exists('g:neocomplcache_tags_filter_patterns')
     let g:neocomplcache_tags_filter_patterns = {}
@@ -414,7 +406,6 @@ function! neocomplcache#enable() "{{{
   " For auto complete keymappings.
   inoremap <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
   inoremap <Plug>(neocomplcache_start_auto_select_complete)   <C-x><C-u><C-p><Down>
-  inoremap <Plug>(neocomplcache_select_quick_match)            <C-x><C-u><C-p><Down><C-y>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)   unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)   unite#sources#snippet#start_complete()
 
@@ -480,22 +471,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 endfunction"}}}
 
 function! neocomplcache#auto_complete(findstart, base)"{{{
-  if a:findstart
-    if !neocomplcache#is_enabled()
-      return -1
-    endif
-
-    let s:old_cur_keyword_pos = s:cur_keyword_pos
-    let s:cur_keyword_pos = -1
-    return s:old_cur_keyword_pos
-  else
-    " Restore option.
-    let &l:completefunc = 'neocomplcache#manual_complete'
-    let s:old_complete_words = s:complete_words
-    let s:complete_words = []
-
-    return s:old_complete_words
-  endif
+  return neocomplcache#manual_complete(a:findstart, a:base)
 endfunction"}}}
 
 function! neocomplcache#do_auto_complete(is_moved)"{{{
@@ -506,7 +482,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   endif
 
   " Detect completefunc.
-  if &l:completefunc != 'neocomplcache#manual_complete' && &l:completefunc != 'neocomplcache#auto_complete'
+  if &l:completefunc != 'neocomplcache#manual_complete'
     if g:neocomplcache_force_overwrite_completefunc
           \ || &l:completefunc == ''
       " Set completefunc.
@@ -555,23 +531,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     return
   endif
 
-  let l:quick_match_pattern = s:get_quick_match_pattern()
-  if g:neocomplcache_enable_quick_match && l:cur_text =~ l:quick_match_pattern.'[a-z0-9;,./]$'
-    " Select quick_match list.
-    let l:complete_words = s:select_quick_match_list(l:cur_text[-1:])
-    let s:prev_numbered_dict = {}
-
-    if !empty(l:complete_words)
-      let s:complete_words = l:complete_words
-      let s:cur_keyword_pos = s:old_cur_keyword_pos
-
-      " Set function.
-      let &l:completefunc = 'neocomplcache#auto_complete'
-      call feedkeys("\<Plug>(neocomplcache_select_quick_match)")
-      let s:old_cur_text = l:cur_text
-      return
-    endif
-  elseif a:is_moved && g:neocomplcache_enable_cursor_hold_i
+  if a:is_moved && g:neocomplcache_enable_cursor_hold_i
     if l:cur_text !=# s:moved_cur_text
           \ && !s:is_last_ignore_key_sequences
       let s:moved_cur_text = l:cur_text
@@ -594,44 +554,14 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   let s:old_complete_words = []
   let s:changedtick = b:changedtick
 
-  " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'
 
-  let l:is_quick_match_list = g:neocomplcache_enable_quick_match
-        \ && (l:quick_match_pattern == '' ||
-        \      (l:cur_text =~ l:quick_match_pattern.'$'
-        \        && l:cur_text !~ l:quick_match_pattern . l:quick_match_pattern.'$'))
-  if l:is_quick_match_list
-    let l:cur_text = l:cur_text[: -len(matchstr(l:cur_text, l:quick_match_pattern.'$'))-1]
-    let s:cur_text = l:cur_text
-    let s:old_cur_text = l:cur_text
-  endif
-
-  " Get complete result.
-  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] =
-        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(l:cur_text), 1)
-
-  if empty(l:complete_words)
-    let &l:completefunc = 'neocomplcache#manual_complete'
-    let s:changedtick = b:changedtick
-    return
-  endif
-
-  if l:is_quick_match_list
-    let l:complete_words = s:make_quick_match_list(l:complete_words, l:cur_keyword_str)
-
-    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
+  " Start auto complete.
+  if neocomplcache#is_auto_select()
+    call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
   else
-    " Start auto complete.
-    if neocomplcache#is_auto_select()
-      call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
-    else
-      call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-    endif
+    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
   endif
-
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] =
-        \[l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
 
   let s:changedtick = b:changedtick
 endfunction"}}}
@@ -1762,59 +1692,6 @@ endfunction"}}}
 "}}}
 
 " Internal helper functions."{{{
-function! s:make_quick_match_list(list, cur_keyword_str)"{{{
-  let l:keys = {}
-  for [l:key, l:number] in items(g:neocomplcache_quick_match_table)
-    let l:keys[l:number] = l:key
-  endfor
-
-  " Save options.
-  let l:ignorecase_save = &ignorecase
-
-  if neocomplcache#is_text_mode()
-    let &ignorecase = 1
-  elseif g:neocomplcache_enable_smart_case && a:cur_keyword_str =~ '\u'
-    let &ignorecase = 0
-  else
-    let &ignorecase = g:neocomplcache_enable_ignore_case
-  endif
-
-  " Add number.
-  let l:num = 0
-  let l:qlist = {}
-  for keyword in neocomplcache#keyword_filter(a:list, a:cur_keyword_str)
-    if has_key(l:keys, l:num)
-      let l:keyword = deepcopy(l:keyword)
-      let keyword.abbr = printf('%s: %s', l:keys[l:num], keyword.abbr)
-      let l:qlist[l:num] = keyword
-    endif
-
-    let l:num += 1
-  endfor
-
-  let &ignorecase = l:ignorecase_save
-
-  " Save numbered dicts.
-  let s:prev_numbered_dict = l:qlist
-
-  return values(l:qlist)
-endfunction"}}}
-function! s:select_quick_match_list(key)"{{{
-  if !has_key(g:neocomplcache_quick_match_table, a:key)
-    return []
-  endif
-
-  return has_key(s:prev_numbered_dict, g:neocomplcache_quick_match_table[a:key]) ?
-        \ [ s:prev_numbered_dict[g:neocomplcache_quick_match_table[a:key]] ] : []
-endfunction"}}}
-function! s:get_quick_match_pattern()"{{{
-  let l:filetype = neocomplcache#get_context_filetype()
-
-  let l:pattern = has_key(g:neocomplcache_quick_match_patterns, l:filetype) ?
-        \ g:neocomplcache_quick_match_patterns[l:filetype] : g:neocomplcache_quick_match_patterns['default']
-
-  return l:pattern
-endfunction"}}}
 function! s:get_cur_text()"{{{
   "let s:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
   let s:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
