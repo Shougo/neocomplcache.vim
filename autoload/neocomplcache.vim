@@ -483,7 +483,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   " Detect completefunc.
   if &l:completefunc != 'neocomplcache#manual_complete'
-        \ || &l:completefunc != 'neocomplcache#auto_complete'
+        \ && &l:completefunc != 'neocomplcache#auto_complete'
     if g:neocomplcache_force_overwrite_completefunc
           \ || &l:completefunc == ''
       " Set completefunc.
