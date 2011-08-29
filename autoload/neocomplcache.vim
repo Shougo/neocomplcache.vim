@@ -449,6 +449,8 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
     if !neocomplcache#is_enabled()
+      let s:complete_words = []
+
       " Restore function.
       let &l:completefunc = 'neocomplcache#manual_complete'
       return -1
@@ -460,6 +462,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     let &l:completefunc = 'neocomplcache#manual_complete'
 
     if empty(l:complete_words)
+      let s:complete_words = []
       return -1
     endif
     let s:complete_words = l:complete_words
