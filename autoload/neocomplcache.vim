@@ -449,6 +449,7 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
     if !neocomplcache#is_enabled()
+      let s:cur_keyword_str = ''
       let s:complete_words = []
 
       " Restore function.
@@ -462,9 +463,12 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     let &l:completefunc = 'neocomplcache#manual_complete'
 
     if empty(l:complete_words)
+      let s:cur_keyword_str = ''
       let s:complete_words = []
       return -1
     endif
+
+    let s:cur_keyword_str = l:cur_keyword_str
     let s:complete_words = l:complete_words
 
     return l:cur_keyword_pos
@@ -530,6 +534,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   " Prevent infinity loop.
   if l:cur_text == '' || l:cur_text == s:old_cur_text
         \|| (!neocomplcache#is_eskk_enabled() && exists('b:skk_on') && b:skk_on)
+    let s:cur_keyword_str = ''
     let s:complete_words = []
     return
   endif
@@ -552,7 +557,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     return
   endif
 
-  let s:complete_words = []
   let s:changedtick = b:changedtick
 
   let &l:completefunc = 'neocomplcache#auto_complete'
@@ -1568,7 +1572,7 @@ function! neocomplcache#complete_common_string()"{{{
 
   let l:common_str = l:complete_words[0].word
   for keyword in l:complete_words[1:]
-    while !neocomplcache#head_match(keyword.word, l:common_str) 
+    while !neocomplcache#head_match(keyword.word, l:common_str)
       let l:common_str = l:common_str[: -2]
     endwhile
   endfor
