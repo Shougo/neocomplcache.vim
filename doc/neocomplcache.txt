@@ -1021,6 +1021,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed auto select.
 - Deleted obsolute features.
 - Fixed s:cur_keyword_str.
+- Refactoringed.
 
 2011-08-28
 - Supported Vim 7.3.289.

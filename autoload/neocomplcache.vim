@@ -1038,31 +1038,33 @@ function! neocomplcache#get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
 
-  let l:complfuncs = a:0 == 0 ? extend(copy(neocomplcache#available_complfuncs()), neocomplcache#available_loaded_ftplugins()) : a:1
+  let l:sources = get(a:000, 0, extend(copy(neocomplcache#available_complfuncs()),
+        \ neocomplcache#available_loaded_ftplugins()))
 
-  " Try complfuncs completion."{{{
+  " Try source completion."{{{
   let l:complete_result = {}
-  for [l:complfunc_name, l:complfunc] in items(l:complfuncs)
-    if (has_key(g:neocomplcache_plugin_disable, l:complfunc_name) && g:neocomplcache_plugin_disable[l:complfunc_name])
-        \ || (neocomplcache#is_eskk_enabled() && eskk#get_mode() !=# 'ascii' && l:complfunc_name !=# 'omni_complete')
-        \ || neocomplcache#is_plugin_locked(l:complfunc_name)
+  for [l:source_name, l:source] in items(l:sources)
+    if (has_key(g:neocomplcache_plugin_disable, l:source_name) && g:neocomplcache_plugin_disable[l:source_name])
+        \ || (neocomplcache#is_eskk_enabled() && eskk#get_mode() !=# 'ascii' && l:source_name !=# 'omni_complete')
+        \ || neocomplcache#is_plugin_locked(l:source_name)
       " Skip plugin.
       continue
     endif
 
     try
-      let l:cur_keyword_pos = l:complfunc.get_keyword_pos(a:cur_text)
+      let l:cur_keyword_pos = l:source.get_keyword_pos(a:cur_text)
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
-      call neocomplcache#print_error('Plugin name is ' . l:complfunc_name)
+      call neocomplcache#print_error('Plugin name is ' . l:source_name)
       return
     endtry
 
     if l:cur_keyword_pos >= 0
       let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-      if neocomplcache#util#mb_strlen(l:cur_keyword_str) < neocomplcache#get_completion_length(l:complfunc_name)
+      if neocomplcache#util#mb_strlen(l:cur_keyword_str)
+            \ < neocomplcache#get_completion_length(l:source_name)
         " Skip.
         continue
       endif
@@ -1079,19 +1081,19 @@ function! neocomplcache#get_complete_result(cur_text, ...)"{{{
       endif
 
       try
-        let l:words = l:complfunc.get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
+        let l:words = l:source.get_complete_words(l:cur_keyword_pos, l:cur_keyword_str)
       catch
         call neocomplcache#print_error(v:throwpoint)
         call neocomplcache#print_error(v:exception)
         call neocomplcache#print_error('Error occured in complfunc''s get_complete_words()!')
-        call neocomplcache#print_error('Plugin name is ' . l:complfunc_name)
+        call neocomplcache#print_error('Plugin name is ' . l:source_name)
         return
       endtry
 
       let &ignorecase = l:ignorecase_save
 
       if !empty(l:words)
-        let l:complete_result[l:complfunc_name] = {
+        let l:complete_result[l:source_name] = {
               \ 'complete_words' : l:words,
               \ 'cur_keyword_pos' : l:cur_keyword_pos,
               \ 'cur_keyword_str' : l:cur_keyword_str,
@@ -1128,7 +1130,7 @@ function! neocomplcache#integrate_completion(complete_result, is_sort)"{{{
 
   " Append prefix.
   let l:complete_words = []
-  for [l:complfunc_name, l:result] in items(a:complete_result)
+  for [l:source_name, l:result] in items(a:complete_result)
     let l:result.complete_words = deepcopy(l:result.complete_words)
     if l:result.cur_keyword_pos > l:cur_keyword_pos
       let l:prefix = l:cur_keyword_str[: l:result.cur_keyword_pos - l:cur_keyword_pos - 1]
@@ -1138,7 +1140,7 @@ function! neocomplcache#integrate_completion(complete_result, is_sort)"{{{
       endfor
     endif
 
-    let l:base_rank = neocomplcache#get_plugin_rank(l:complfunc_name)
+    let l:base_rank = neocomplcache#get_plugin_rank(l:source_name)
 
     for l:keyword in l:result.complete_words
       let l:word = l:keyword.word
@@ -1150,7 +1152,8 @@ function! neocomplcache#integrate_completion(complete_result, is_sort)"{{{
       endif
     endfor
 
-    let l:complete_words += s:remove_next_keyword(l:complfunc_name, l:result.complete_words)
+    let l:complete_words += s:remove_next_keyword(
+          \ l:source_name, l:result.complete_words)
   endfor
 
   " Sort.
