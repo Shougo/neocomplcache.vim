@@ -404,8 +404,9 @@ function! neocomplcache#enable() "{{{
   set completeopt+=menuone
 
   " For auto complete keymappings.
-  inoremap <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
-  imap <Plug>(neocomplcache_start_auto_select_complete)       <C-x><C-u><C-p><Down>
+  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
+  inoremap <silent> <Plug>(neocomplcache_start_auto_select_complete)
+        \ <C-x><C-u><C-p><C-r>=neocomplcache#popup_post()<CR>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)   unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)   unite#sources#snippet#start_complete()
 
@@ -1689,6 +1690,9 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
   endif"}}}
 
   return l:list
+endfunction"}}}
+function! neocomplcache#popup_post()"{{{
+  return pumvisible() ? "\<Down>" : ""
 endfunction"}}}
 "}}}
 

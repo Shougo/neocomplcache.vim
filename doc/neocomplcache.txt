@@ -1018,6 +1018,7 @@ ChangeLog neocomplcache 6.2:
 2011-08-29
 - Fixed warning.
 - Fixed detect completefunc.
+- Fixed auto select.
 
 2011-08-28
 - Supported Vim 7.3.289.
