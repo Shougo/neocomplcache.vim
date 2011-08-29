@@ -62,13 +62,10 @@ function! neocomplcache#enable() "{{{
   let s:complete_lock = {}
   let s:plugins_lock = {}
   let s:auto_completion_length = {}
-  let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:old_cur_keyword_pos = -1
-  let s:old_complete_words = []
   let s:update_time_save = &updatetime
-  let s:prev_numbered_dict = {}
   let s:cur_text = ''
   let s:old_cur_text = ''
   let s:moved_cur_text = ''
@@ -452,13 +449,16 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
     if !neocomplcache#is_enabled()
+      " Restore function.
+      let &l:completefunc = 'neocomplcache#manual_complete'
       return -1
     endif
 
-    let s:old_complete_words = []
-
     let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] =
           \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(s:get_cur_text()), 1)
+    " Restore function.
+    let &l:completefunc = 'neocomplcache#manual_complete'
+
     if empty(l:complete_words)
       return -1
     endif
@@ -466,7 +466,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
     return l:cur_keyword_pos
   else
-    let s:old_complete_words = s:complete_words
     return s:complete_words
   endif
 endfunction"}}}
@@ -529,7 +528,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
   if l:cur_text == '' || l:cur_text == s:old_cur_text
         \|| (!neocomplcache#is_eskk_enabled() && exists('b:skk_on') && b:skk_on)
     let s:complete_words = []
-    let s:old_complete_words = []
     return
   endif
 
@@ -551,9 +549,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     return
   endif
 
-  let s:prev_numbered_dict = {}
   let s:complete_words = []
-  let s:old_complete_words = []
   let s:changedtick = b:changedtick
 
   let &l:completefunc = 'neocomplcache#auto_complete'
@@ -1511,72 +1507,20 @@ endfunction
 "}}}
 function! neocomplcache#close_popup()"{{{
   let s:skip_next_complete = 1
-  let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
-  let s:old_complete_words = []
-  let s:prev_numbered_dict = {}
 
   return pumvisible() ? "\<C-y>" : ''
 endfunction
 "}}}
 function! neocomplcache#cancel_popup()"{{{
   let s:skip_next_complete = 1
-  let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
-  let s:old_complete_words = []
-  let s:prev_numbered_dict = {}
 
   return pumvisible() ? "\<C-e>" : ''
 endfunction
 "}}}
-
-" Wrapper functions.
-function! neocomplcache#manual_filename_complete()"{{{
-  return neocomplcache#start_manual_complete('filename_complete')
-endfunction"}}}
-function! neocomplcache#manual_omni_complete()"{{{
-  return neocomplcache#start_manual_complete('omni_complete')
-endfunction"}}}
-function! neocomplcache#manual_keyword_complete()"{{{
-  return neocomplcache#start_manual_complete('keyword_complete')
-endfunction"}}}
-
-" Manual complete wrapper.
-function! neocomplcache#start_manual_complete(complfunc_name)"{{{
-  let l:sources = neocomplcache#available_sources()
-  if !has_key(l:sources, a:complfunc_name)
-    call neocomplcache#print_warning(printf("Invalid completefunc name %s is given.", a:complfunc_name))
-    return ''
-  endif
-
-  " Set function.
-  let &l:completefunc = 'neocomplcache#manual_complete'
-
-  " Get complete result.
-  let l:dict = {}
-  let l:dict[a:complfunc_name] = l:sources[a:complfunc_name]
-  let [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words] =
-        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(s:get_cur_text(), l:dict), 0)
-
-  " Restore function.
-  let &l:completefunc = 'neocomplcache#auto_complete'
-
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [l:cur_keyword_pos, l:cur_keyword_str, l:complete_words]
-
-  " Start complete.
-  return "\<C-x>\<C-u>\<C-p>"
-endfunction"}}}
-function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words)"{{{
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
-
-  " Set function.
-  let &l:completefunc = 'neocomplcache#auto_complete'
-
-  " Start complete.
-  return "\<C-x>\<C-u>\<C-p>"
-endfunction"}}}
 
 function! neocomplcache#undo_completion()"{{{
   if !exists(':NeoComplCacheDisable')
@@ -1611,7 +1555,7 @@ function! neocomplcache#complete_common_string()"{{{
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
-  let l:complete_words = neocomplcache#keyword_filter(copy(s:old_complete_words), l:cur_keyword_str)
+  let l:complete_words = neocomplcache#keyword_filter(copy(s:complete_words), l:cur_keyword_str)
 
   if empty(l:complete_words)
     let &ignorecase = l:ignorecase_save
@@ -1650,11 +1594,8 @@ function! s:on_insert_enter()"{{{
   endif
 endfunction"}}}
 function! s:on_insert_leave()"{{{
-  let s:cur_keyword_pos = -1
   let s:cur_keyword_str = ''
   let s:complete_words = []
-  let s:old_complete_words = []
-  let s:prev_numbered_dict = {}
   let s:context_filetype = ''
   let s:is_text_mode = 0
   let s:skip_next_complete = 0

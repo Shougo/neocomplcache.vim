@@ -51,39 +51,6 @@ function! neocomplcache#sources#completefunc_complete#define()"{{{
   return s:source
 endfunction"}}}
 
-function! neocomplcache#sources#completefunc_complete#call_completefunc(funcname)"{{{
-  let l:cur_text = neocomplcache#get_cur_text()
-
-  " Save pos.
-  let l:pos = getpos('.')
-  let l:line = getline('.')
-
-  let l:cur_keyword_pos = call(a:funcname, [1, ''])
-
-  " Restore pos.
-  call setpos('.', l:pos)
-
-  if l:cur_keyword_pos < 0
-    return ''
-  endif
-  let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
-
-  let l:pos = getpos('.')
-
-  let l:list = call(a:funcname, [0, l:cur_keyword_str])
-
-  call setpos('.', l:pos)
-
-  if empty(l:list)
-    return ''
-  endif
-
-  let l:list = s:get_completefunc_list(l:list)
-
-  " Start manual complete.
-  return neocomplcache#start_manual_complete_list(l:cur_keyword_pos, l:cur_keyword_str, l:list)
-endfunction"}}}
-
 function! s:get_completefunc_list(list)"{{{
   let l:comp_list = []
 
