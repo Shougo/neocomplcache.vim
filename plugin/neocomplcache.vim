@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2011.
+" Last Modified: 29 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,7 +61,7 @@ if exists('g:neocomplcache_disable_caching_buffer_name_pattern')
   echoerr 'g:neocomplcache_disable_caching_buffer_name_pattern option does not work this version of neocomplcache.'
   echoerr 'Please use g:neocomplcache_disable_caching_file_path_pattern option instead.'
 endif
-if !exists('g:neocomplcache_enable_quick_match')
+if exists('g:neocomplcache_enable_quick_match')
   echoerr 'g:neocomplcache_enable_quick_match option does not work this version of neocomplcache.'
 endif
 "}}}

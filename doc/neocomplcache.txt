@@ -1015,6 +1015,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-08-29
+- Fixed warning.
+
 2011-08-28
 - Supported Vim 7.3.289.
 - Deleted quick match feature.
