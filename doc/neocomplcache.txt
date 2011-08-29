@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 6.1
+Version: 6.2
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -261,14 +261,6 @@ g:neocomplcache_enable_wildcard				*g:neocomplcache_enable_wildcard*
 		card character '*' for input-saving.
 		
 		Default value is 1.
-
-g:neocomplcache_enable_quick_match			*g:neocomplcache_enable_quick_match*
-		For input-saving, this variable controls whether you can
-		choose a candidate with a alphabet or number displayed
-		beside a candidate after '-'.  When you input 'ho-a',
-		neocomplcache will select candidate 'a'.
-		
-		Default value is 0.
 
 g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		This variable controls whether neocomplcache use |CursorHoldI| event
@@ -558,23 +550,6 @@ g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
 <
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
-
-g:neocomplcache_quick_match_patterns			*g:neocomplcache_quick_match_patterns*
-		This option records an input pattern to display a quick
-		match list.  This is appointed in regular expression to
-		match the end of the input character string every file type.
-		You can set default input patterns when you appoint
-		'default'.
-		If you set this pattern is empty, neocomplcache is always print
-		quick match candidates.
-		
-		Default value is { 'default' : '-' }.
-
-g:neocomplcache_quick_match_table			*g:neocomplcache_quick_match_table*
-		It is the table of the candidates of an input letter and quick
-		match list.
-		
-		Because it is complicated, refer to plugin/neocomplcache.vim.
 
 g:neocomplcache_omni_functions				*g:neocomplcache_omni_functions*
 		This dictionary which appoints |omni_complete| call
@@ -1036,6 +1011,20 @@ ability of neocomplcache will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
+
+------------------------------------------------------------------------------
+ChangeLog neocomplcache 6.2:
+
+2011-08-28
+- Supported Vim 7.3.289.
+- Deleted quick match feature.
+
+2011-08-26
+- Ver.6.2 development is started.
+- Fixed include_complete error.
+
+------------------------------------------------------------------------------
+ChangeLog neocomplcache 6.1:
 
 2011-08-20
 - Improved warning message.

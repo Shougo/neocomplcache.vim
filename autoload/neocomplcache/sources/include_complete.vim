@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Aug 2011.
+" Last Modified: 26 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -95,10 +95,6 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   endif
 
   if !has_key(s:include_info, bufnr('%'))
-    if !neocomplcache#has_vimproc()
-      return []
-    endif
-
     " Auto caching.
     call s:check_buffer('', 0)
   endif
@@ -183,17 +179,8 @@ endfunction"}}}
 "}}}
 
 function! s:check_buffer(bufnumber, is_force)"{{{
-  if !executable(g:neocomplcache_ctags_program)
-    return
-  endif
-
   let l:bufnumber = (a:bufnumber == '') ? bufnr('%') : a:bufnumber
   let l:filename = fnamemodify(bufname(l:bufnumber), ':p')
-
-  let l:filetype = getbufvar(l:bufnumber, '&filetype')
-  if l:filetype == ''
-    let l:filetype = 'nothing'
-  endif
 
   if !has_key(s:include_info, l:bufnumber)
     " Initialize.
@@ -202,6 +189,12 @@ function! s:check_buffer(bufnumber, is_force)"{{{
           \ 'async_files' : {},
           \ }
   endif
+
+  if !executable(g:neocomplcache_ctags_program)
+        \ || (!a:is_force && !neocomplcache#has_vimproc())
+    return
+  endif
+
   let l:include_info = s:include_info[l:bufnumber]
 
   if l:include_info.lines !=# getbufline(l:bufnumber, 1, 100)
@@ -220,6 +213,11 @@ function! s:check_buffer(bufnumber, is_force)"{{{
 
   if g:neocomplcache_include_max_processes <= 0
     return
+  endif
+
+  let l:filetype = getbufvar(l:bufnumber, '&filetype')
+  if l:filetype == ''
+    let l:filetype = 'nothing'
   endif
 
   for l:filename in l:include_info.include_files
