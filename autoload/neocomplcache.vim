@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2011.
+" Last Modified: 29 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -405,7 +405,7 @@ function! neocomplcache#enable() "{{{
 
   " For auto complete keymappings.
   inoremap <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
-  inoremap <Plug>(neocomplcache_start_auto_select_complete)   <C-x><C-u><C-p><Down>
+  imap <Plug>(neocomplcache_start_auto_select_complete)       <C-x><C-u><C-p><Down>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)   unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)   unite#sources#snippet#start_complete()
 
@@ -483,6 +483,7 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
 
   " Detect completefunc.
   if &l:completefunc != 'neocomplcache#manual_complete'
+        \ || &l:completefunc != 'neocomplcache#auto_complete'
     if g:neocomplcache_force_overwrite_completefunc
           \ || &l:completefunc == ''
       " Set completefunc.
