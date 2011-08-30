@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2011.
+" Last Modified: 30 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,12 @@ let s:source = {
 
 function! s:source.initialize()"{{{
   " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'keyword_complete', 5)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank,
+        \ 'keyword_complete', 5)
+
+  " Set completion length.
+  call neocomplcache#set_completion_length('keyword_complete',
+        \ g:neocomplcache_auto_completion_start_length)
 
   " Initialize.
   for l:plugin in values(neocomplcache#available_plugins())
@@ -49,10 +54,6 @@ endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-  if l:cur_keyword_pos < 0
-    " Empty string.
-    return len(a:cur_text)
-  endif
 
   return l:cur_keyword_pos
 endfunction"}}}

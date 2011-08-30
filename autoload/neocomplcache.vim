@@ -523,11 +523,6 @@ function! neocomplcache#do_auto_complete()"{{{
     return
   endif
 
-  " Set options.
-  set completeopt-=menu
-  set completeopt-=longest
-  set completeopt+=menuone
-
   " Get cursor word.
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
@@ -544,9 +539,23 @@ function! neocomplcache#do_auto_complete()"{{{
     return
   endif
 
+  let &l:completefunc = 'neocomplcache#auto_complete'
+
+  " Get cur_keyword_pos.
+  let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(
+        \ neocomplcache#get_complete_result_pos(l:cur_text))
+  if l:cur_keyword_pos < 0
+    let &l:completefunc = 'neocomplcache#manual_complete'
+    " Not found.
+    return
+  endif
+
   let s:changedtick = b:changedtick
 
-  let &l:completefunc = 'neocomplcache#auto_complete'
+  " Set options.
+  set completeopt-=menu
+  set completeopt-=longest
+  set completeopt+=menuone
 
   " Start auto complete.
   if neocomplcache#is_auto_select()
@@ -1021,6 +1030,75 @@ function! neocomplcache#get_syn_name(is_trans)"{{{
 endfunction"}}}
 
 " For unite source.
+function! neocomplcache#get_complete_result_pos(cur_text, ...)"{{{
+  " Set context filetype.
+  call s:set_context_filetype()
+
+  let l:sources = copy(get(a:000, 0, extend(copy(neocomplcache#available_complfuncs()),
+        \ neocomplcache#available_loaded_ftplugins())))
+  if neocomplcache#is_eskk_enabled() && eskk#get_mode() !=# 'ascii'
+    " omni_complete only.
+    let l:sources = filter(l:sources, 'v:key ==# "omni_complete"')
+  endif
+  call filter(l:sources,
+        \ '!(has_key(g:neocomplcache_plugin_disable, v:key)
+        \     && g:neocomplcache_plugin_disable[v:key])
+        \  && !neocomplcache#is_plugin_locked(v:key)')
+
+  " Try source completion."{{{
+  let l:complete_result = {}
+  for [l:source_name, l:source] in items(l:sources)
+    try
+      let l:cur_keyword_pos = l:source.get_keyword_pos(a:cur_text)
+    catch
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
+      call neocomplcache#print_error('Plugin name is ' . l:source_name)
+      return
+    endtry
+
+    if l:cur_keyword_pos < 0
+      continue
+    endif
+
+    let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
+    if neocomplcache#util#mb_strlen(l:cur_keyword_str)
+          \ < neocomplcache#get_completion_length(l:source_name)
+      " Skip.
+      continue
+    endif
+
+    let l:complete_result[l:source_name] = {
+          \ 'complete_words' : [],
+          \ 'cur_keyword_pos' : l:cur_keyword_pos,
+          \ 'cur_keyword_str' : l:cur_keyword_str,
+          \}
+  endfor
+  "}}}
+
+  return l:complete_result
+endfunction"}}}
+function! neocomplcache#get_cur_keyword_pos(complete_result)"{{{
+  if empty(a:complete_result)
+    if neocomplcache#get_cur_text() =~ '\s\+$'
+          \ && neocomplcache#is_buffer_complete_enabled()
+      " Caching current cache line.
+      call neocomplcache#sources#buffer_complete#caching_current_cache_line()
+    endif
+
+    return -1
+  endif
+
+  let l:cur_keyword_pos = col('.')
+  for l:result in values(a:complete_result)
+    if l:cur_keyword_pos > l:result.cur_keyword_pos
+      let l:cur_keyword_pos = l:result.cur_keyword_pos
+    endif
+  endfor
+
+  return l:cur_keyword_pos
+endfunction"}}}
 function! neocomplcache#get_complete_result(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()

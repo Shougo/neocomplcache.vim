@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2011.
+" Last Modified: 30 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ endif
 
 let s:source = {
       \ 'name' : 'buffer_complete',
-      \ 'kind' : 'plugin',
+      \ 'kind' : 'complfunc',
       \}
 
 function! s:source.initialize()"{{{
@@ -92,41 +92,52 @@ function! s:source.finalize()"{{{
   let s:buffer_sources = {}
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str)"{{{
-  if neocomplcache#is_auto_complete() && len(a:cur_keyword_str) < s:completion_length
-    " Check member prefix pattern.
-    let l:filetype = neocomplcache#get_context_filetype()
-    if !has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
-          \ || g:neocomplcache_member_prefix_patterns[l:filetype] == ''
-      return []
+function! s:source.get_keyword_pos(cur_text)"{{{
+  " Check member prefix pattern.
+  let l:filetype = neocomplcache#get_context_filetype()
+  if has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
+        \ && g:neocomplcache_member_prefix_patterns[l:filetype] != ''
+    let l:var_pos = match(a:cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
+          \ g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+$')
+    if l:var_pos >= 0
+      return l:var_pos
     endif
+  endif
 
+  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+  if neocomplcache#is_auto_complete()
+        \ && neocomplcache#util#mb_strlen(l:cur_keyword_str)
+        \      < g:neocomplcache_auto_completion_start_length
+    return -1
+  endif
+
+  return l:cur_keyword_pos
+endfunction"}}}
+
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+  " Check member prefix pattern.
+  let l:filetype = neocomplcache#get_context_filetype()
+  if has_key(g:neocomplcache_member_prefix_patterns, l:filetype)
+        \ && g:neocomplcache_member_prefix_patterns[l:filetype] != ''
     let l:cur_text = neocomplcache#get_cur_text()
     let l:var_name = matchstr(l:cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
           \ g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+$')
-    if l:var_name == ''
-      return []
+    if l:var_name != ''
+      return s:get_member_list(l:cur_text, l:var_name)
+    endif
+  endif
+
+  let l:keyword_list = []
+  for src in s:get_sources_list()
+    let l:keyword_cache = neocomplcache#dictionary_filter(
+          \ s:buffer_sources[src].keyword_cache, a:cur_keyword_str, s:completion_length)
+
+    if src == bufnr('%')
+      call s:calc_frequency(l:keyword_cache)
     endif
 
-    let l:keyword_list = []
-    for src in s:get_sources_list()
-      if has_key(s:buffer_sources[src].member_cache, l:var_name)
-        let l:keyword_list += values(s:buffer_sources[src].member_cache[l:var_name])
-      endif
-    endfor
-  else
-    let l:keyword_list = []
-    for src in s:get_sources_list()
-      let l:keyword_cache = neocomplcache#dictionary_filter(
-            \ s:buffer_sources[src].keyword_cache, a:cur_keyword_str, s:completion_length)
-
-      if src == bufnr('%')
-        call s:calc_frequency(l:keyword_cache)
-      endif
-
-      let l:keyword_list += l:keyword_cache
-    endfor
-  endif
+    let l:keyword_list += l:keyword_cache
+  endfor
 
   return l:keyword_list
 endfunction"}}}
@@ -283,6 +294,17 @@ function! s:get_sources_list()"{{{
   endfor
 
   return l:sources_list
+endfunction"}}}
+
+function! s:get_member_list(cur_text, var_name)"{{{
+  let l:keyword_list = []
+  for src in s:get_sources_list()
+    if has_key(s:buffer_sources[src].member_cache, l:var_name)
+      let l:keyword_list += values(s:buffer_sources[src].member_cache[l:var_name])
+    endif
+  endfor
+
+  return l:keyword_list
 endfunction"}}}
 
 function! s:rank_caching_current_cache_line(is_force)"{{{
