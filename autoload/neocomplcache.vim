@@ -1266,6 +1266,10 @@ endfunction"}}}
 function! s:set_complete_results_words(complete_results)"{{{
   " Try source completion.
   for [l:source_name, result] in items(a:complete_results)
+    if complete_check()
+      return
+    endif
+
     " Save options.
     let l:ignorecase_save = &ignorecase
 

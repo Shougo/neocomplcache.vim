@@ -1020,6 +1020,7 @@ ChangeLog neocomplcache 6.2:
 - Refactoringed.
 - Fixed auto complete flicker.
 - Improved gather candidates interface.
+- Supported complete_check().
 
 2011-08-29
 - Fixed warning.
