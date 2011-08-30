@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2011.
+" Last Modified: 30 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,8 +56,14 @@ function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
   let g:neocomplcache_max_list = -1
   let g:neocomplcache_max_keyword_width = -1
 
-  let [a:context.source__cur_keyword_pos, l:cur_keyword_str, a:context.source__complete_words] =
-        \ neocomplcache#integrate_completion(neocomplcache#get_complete_result(neocomplcache#get_cur_text(1)), 1)
+  let l:cur_text = neocomplcache#get_cur_text(1)
+  let l:complete_results = neocomplcache#get_complete_results_pos(
+        \ l:cur_text)
+  let a:context.source__cur_keyword_pos =
+        \ neocomplcache#get_cur_keyword_pos(l:complete_results)
+  let a:context.source__complete_words = neocomplcache#get_complete_words(
+        \ l:complete_results, 1, a:context.source__cur_keyword_pos,
+        \ l:cur_text[a:context.source__cur_keyword_pos :])
 
   " Restore options.
   let g:neocomplcache_max_list = l:max_list_save

@@ -1019,6 +1019,7 @@ ChangeLog neocomplcache 6.2:
 2011-08-30
 - Refactoringed.
 - Fixed auto complete flicker.
+- Improved gather candidates interface.
 
 2011-08-29
 - Fixed warning.
