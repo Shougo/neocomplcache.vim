@@ -81,7 +81,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text, l:pattern)
-  if neocomplcache#is_auto_complete()
+  if a:cur_text !~ '\.\%(\h\w*\)\?$' && neocomplcache#is_auto_complete()
         \ && neocomplcache#util#mb_strlen(l:cur_keyword_str)
         \      < g:neocomplcache_auto_completion_start_length
     return -1
