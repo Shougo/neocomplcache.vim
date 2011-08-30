@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2011.
+" Last Modified: 30 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,7 +74,6 @@ function! neocomplcache#enable() "{{{
   let s:is_text_mode = 0
   let s:within_comment = 0
   let s:skip_next_complete = 0
-  let s:is_last_ignore_key_sequences = 0
   "}}}
 
   " Initialize sources table."{{{
@@ -481,7 +480,7 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
   return neocomplcache#manual_complete(a:findstart, a:base)
 endfunction"}}}
 
-function! neocomplcache#do_auto_complete(is_moved)"{{{
+function! neocomplcache#do_auto_complete()"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
@@ -538,18 +537,6 @@ function! neocomplcache#do_auto_complete(is_moved)"{{{
     let s:complete_words = []
     return
   endif
-
-  if a:is_moved && g:neocomplcache_enable_cursor_hold_i
-    if l:cur_text !=# s:moved_cur_text
-          \ && !s:is_last_ignore_key_sequences
-      let s:moved_cur_text = l:cur_text
-      let s:is_last_ignore_key_sequences = 1
-      " Ignore key sequences.
-      call feedkeys("\<C-r>\<ESC>", 'n')
-      return
-    endif
-  endif
-  let s:is_last_ignore_key_sequences = 0
 
   let s:old_cur_text = l:cur_text
   if s:skip_next_complete
@@ -1592,10 +1579,14 @@ endfunction"}}}
 
 " Event functions."{{{
 function! s:on_hold_i()"{{{
-  call neocomplcache#do_auto_complete(0)
+  if g:neocomplcache_enable_cursor_hold_i
+    call neocomplcache#do_auto_complete()
+  endif
 endfunction"}}}
 function! s:on_moved_i()"{{{
-  call neocomplcache#do_auto_complete(1)
+  if !g:neocomplcache_enable_cursor_hold_i
+    call neocomplcache#do_auto_complete()
+  endif
 endfunction"}}}
 function! s:on_insert_enter()"{{{
   if &updatetime > g:neocomplcache_cursor_hold_i_time
