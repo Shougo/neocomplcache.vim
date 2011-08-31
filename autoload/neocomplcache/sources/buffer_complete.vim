@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2011.
+" Last Modified: 31 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -299,8 +299,8 @@ endfunction"}}}
 function! s:get_member_list(cur_text, var_name)"{{{
   let l:keyword_list = []
   for src in s:get_sources_list()
-    if has_key(s:buffer_sources[src].member_cache, l:var_name)
-      let l:keyword_list += values(s:buffer_sources[src].member_cache[l:var_name])
+    if has_key(s:buffer_sources[src].member_cache, a:var_name)
+      let l:keyword_list += values(s:buffer_sources[src].member_cache[a:var_name])
     endif
   endfor
 

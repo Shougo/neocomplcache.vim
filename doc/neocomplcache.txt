@@ -1016,6 +1016,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-08-31
+- Fixed get member list error.
+
 2011-08-30
 - Refactoringed.
 - Fixed auto complete flicker.
