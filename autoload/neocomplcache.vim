@@ -502,7 +502,7 @@ function! neocomplcache#do_auto_complete()"{{{
         \ || neocomplcache#is_locked()
         \ || (g:neocomplcache_enable_auto_select
         \         && !neocomplcache#is_eskk_enabled()
-        \         && has('multi_byte_ime') && &l:iminsert)
+        \         && exists('&l:iminsert') && &l:iminsert)
     return
   endif
 

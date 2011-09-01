@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2011.
+" Last Modified: 01 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,6 +53,17 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   " Not Filename pattern.
   if a:cur_text =~
         \'\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+    return -1
+  endif
+
+  " Check include pattern.
+  let l:pattern = exists('g:neocomplcache_include_patterns') &&
+        \ has_key(g:neocomplcache_include_patterns, l:filetype) ?
+        \ g:neocomplcache_include_patterns[l:filetype] :
+        \ getbufvar(bufnr('%'), '&include')
+  if neocomplcache#is_auto_complete()
+        \ && l:pattern !~ a:cur_text && a:cur_text !~ '/'
+    " Skip filename completion.
     return -1
   endif
 

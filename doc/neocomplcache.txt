@@ -1022,6 +1022,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed restore function.
 - Fixed for rubycomplete.vim.
 - Fixed auto select.
+- Improved filename_complete behavior.
 
 2011-08-31
 - Fixed get member list error.
