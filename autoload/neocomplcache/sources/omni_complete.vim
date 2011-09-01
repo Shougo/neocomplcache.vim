@@ -137,9 +137,12 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 
   " Save pos.
   let l:pos = getpos('.')
-  let l:line = getline('.')
 
-  call setline('.', l:cur_text)
+  if l:is_wildcard
+    let l:line = getline('.')
+
+    call setline('.', l:cur_text)
+  endif
 
   try
     let l:cur_keyword_pos = call(l:omnifunc, [1, ''])
@@ -149,7 +152,9 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endtry
 
   " Restore pos.
-  call setline('.', l:line)
+  if l:is_wildcard
+    call setline('.', l:line)
+  endif
   call setpos('.', l:pos)
 
   return l:cur_keyword_pos
@@ -183,25 +188,27 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:cur_keyword_str = a:cur_keyword_str
   endif
 
-  try
+  if l:omnifunc ==# 'rubycomplete#Complete' && l:is_wildcard
     let l:line = getline('.')
-    let l:cur_text = neocomplcache#get_cur_text()
 
-    if l:omnifunc ==# 'rubycomplete#Complete' && l:is_wildcard
-      let l:cur_text = l:cur_text[: match(l:cur_text, '\%(\*\w\+\)\+$') - 1]
-    endif
+    let l:cur_text =
+          \ l:cur_text[: match(neocomplcache#get_cur_text(), '\%(\*\w\+\)\+$') - 1]
 
     call setline('.', l:cur_text)
+  endif
 
+  try
     let l:list = call(l:omnifunc,
           \ [0, l:omnifunc ==# 'rubycomplete#Complete' ?
           \ '' : l:cur_keyword_str])
-
-    call setline('.', l:line)
   catch
     call neocomplcache#print_error(v:exception)
     let l:list = []
   endtry
+
+  if l:omnifunc ==# 'rubycomplete#Complete' && l:is_wildcard
+    call setline('.', l:line)
+  endif
   call setpos('.', l:pos)
 
   if empty(l:list)
