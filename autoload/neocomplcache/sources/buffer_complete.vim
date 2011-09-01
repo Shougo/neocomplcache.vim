@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2011.
+" Last Modified: 01 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -99,15 +99,15 @@ function! s:source.get_keyword_pos(cur_text)"{{{
         \ && g:neocomplcache_member_prefix_patterns[l:filetype] != ''
     let l:var_pos = match(a:cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
           \ g:neocomplcache_member_prefix_patterns[l:filetype] . '\m\)\)\+$')
-    if l:var_pos >= 0
-      return l:var_pos
-    endif
+  else
+    let l:var_pos = -1
   endif
 
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-  if neocomplcache#is_auto_complete()
+  if l:var_pos >= 0 ||
+        \ (neocomplcache#is_auto_complete()
         \ && neocomplcache#util#mb_strlen(l:cur_keyword_str)
-        \      < g:neocomplcache_auto_completion_start_length
+        \      < g:neocomplcache_auto_completion_start_length)
     return -1
   endif
 
