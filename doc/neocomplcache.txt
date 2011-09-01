@@ -1021,6 +1021,7 @@ ChangeLog neocomplcache 6.2:
 - Use unite#start_complete().
 - Fixed restore function.
 - Fixed for rubycomplete.vim.
+- Fixed auto select.
 
 2011-08-31
 - Fixed get member list error.
