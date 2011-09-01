@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2011.
+" Last Modified: 01 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -194,8 +194,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       call setline('.', l:cur_text[: match(l:cur_text, '\%(\*\w\+\)\+$') - 1])
     endif
 
-    let l:list = call(l:omnifunc,
-          \ [0, (l:omnifunc ==# 'rubycomplete#Complete')? '' : l:cur_keyword_str])
+    let l:list = call(l:omnifunc, [0, l:cur_keyword_str])
 
     if l:omnifunc ==# 'rubycomplete#Complete' && l:is_wildcard
       call setline('.', l:line)
