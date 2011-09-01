@@ -1018,6 +1018,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-09-01
 - Fixed ruby omni complete default pattern.
+- Use unite#start_complete().
 
 2011-08-31
 - Fixed get member list error.
