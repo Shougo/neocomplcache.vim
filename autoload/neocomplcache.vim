@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2011.
+" Last Modified: 03 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1157,7 +1157,7 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
 
   " Sort.
   if !neocomplcache#is_eskk_enabled() && a:is_sort
-    call sort(l:complete_words, 'neocomplcache#compare_rank')
+    call sort(l:complete_words, g:neocomplcache_compare_function)
   endif
 
   " Check dup and set icase.

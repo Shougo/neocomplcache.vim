@@ -347,6 +347,11 @@ g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_auto_se
 		
 		Default value is ''.
 
+g:neocomplcache_compare_function			*g:neocomplcache_compare_function*
+		This variable set compare candidates function.
+		
+		Default value is 'neocomplcache#compare_rank'.
+
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		This variable appoints the pass of the snippet files which
 		user defined.  It cuts the directory by plural appointment
@@ -1015,6 +1020,9 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
+2011-09-03
+- Added g:neocomplcache_compare_function option.
 
 2011-09-01
 - Fixed ruby omni complete default pattern.

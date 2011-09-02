@@ -346,6 +346,11 @@ g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_disable
 		
 		初期値は空となっている。
 
+g:neocomplcache_compare_function			*g:neocomplcache_compare_function*
+		neocomplcacheがsortに使用する比較関数名を指定する。
+		
+		初期値は"neocomplcache#compare_rank"である。
+
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。 カ
 		ンマ区切りで複数のディレクトリを設定可能。 ここで指定したディ
