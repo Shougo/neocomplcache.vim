@@ -504,9 +504,6 @@ function! neocomplcache#do_auto_complete()"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
-        \ || (g:neocomplcache_enable_auto_select
-        \         && !neocomplcache#is_eskk_enabled()
-        \         && exists('&l:iminsert') && &l:iminsert)
     return
   endif
 
@@ -549,8 +546,13 @@ function! neocomplcache#do_auto_complete()"{{{
   " Get cursor word.
   let l:cur_text = s:get_cur_text()
   " Prevent infinity loop.
-  if l:cur_text == '' || l:cur_text == s:old_cur_text
-        \|| (!neocomplcache#is_eskk_enabled() && exists('b:skk_on') && b:skk_on)
+  if l:cur_text == ''
+        \ || l:cur_text == s:old_cur_text
+        \ || (!neocomplcache#is_eskk_enabled()
+        \            && exists('b:skk_on') && b:skk_on)
+        \ || (!neocomplcache#is_eskk_enabled()
+        \            && g:neocomplcache_enable_auto_select
+        \            && char2nr(split(l:cur_text, '\zs')[-1]) > 0x80)
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
