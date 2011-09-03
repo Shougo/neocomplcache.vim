@@ -472,16 +472,20 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     return l:cur_keyword_pos
   endif
 
-  " Set cur_text temporary.
-  let l:cur_text = neocomplcache#get_cur_text()
-  let l:old_line = getline('.')
-  call setline('.', l:cur_text)
+  if &l:modifiable
+    " Set cur_text temporary.
+    let l:cur_text = neocomplcache#get_cur_text()
+    let l:old_line = getline('.')
+    call setline('.', l:cur_text)
+  endif
 
   let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
   let l:complete_words = neocomplcache#get_complete_words(
         \ s:complete_results, 1, l:cur_keyword_pos, a:base)
 
-  call setline('.', l:old_line)
+  if &l:modifiable
+    call setline('.', l:old_line)
+  endif
 
   " Restore function.
   let &l:completefunc = 'neocomplcache#manual_complete'

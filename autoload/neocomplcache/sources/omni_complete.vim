@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2011.
+" Last Modified: 03 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -138,7 +138,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   " Save pos.
   let l:pos = getpos('.')
 
-  if l:is_wildcard
+  if l:is_wildcard && &l:modifiable
     let l:line = getline('.')
 
     call setline('.', l:cur_text)
@@ -152,7 +152,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endtry
 
   " Restore pos.
-  if l:is_wildcard
+  if l:is_wildcard && &l:modifiable
     call setline('.', l:line)
   endif
   call setpos('.', l:pos)
@@ -188,7 +188,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:cur_keyword_str = a:cur_keyword_str
   endif
 
-  if l:omnifunc ==# 'rubycomplete#Complete' && l:is_wildcard
+  if l:omnifunc ==# 'rubycomplete#Complete'
+        \ && l:is_wildcard && &l:modifiable
     let l:line = getline('.')
 
     let l:cur_text =
@@ -206,7 +207,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let l:list = []
   endtry
 
-  if l:omnifunc ==# 'rubycomplete#Complete' && l:is_wildcard
+  if l:omnifunc ==# 'rubycomplete#Complete'
+        \ && l:is_wildcard && &l:modifiable
     call setline('.', l:line)
   endif
   call setpos('.', l:pos)
