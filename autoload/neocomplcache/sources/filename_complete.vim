@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2011.
+" Last Modified: 06 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,7 +62,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
         \ g:neocomplcache_include_patterns[l:filetype] :
         \ getbufvar(bufnr('%'), '&include')
   if neocomplcache#is_auto_complete()
-        \ && l:pattern !~ a:cur_text && a:cur_text !~ '/'
+        \ && a:cur_text !~ l:pattern && a:cur_text !~ '/'
     " Skip filename completion.
     return -1
   endif
