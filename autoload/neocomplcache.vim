@@ -1086,7 +1086,7 @@ function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
       call neocomplcache#print_error('Plugin name is ' . l:source_name)
-      return
+      return l:complete_results
     endtry
 
     if l:cur_keyword_pos < 0
