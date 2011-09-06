@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2011.
+" Last Modified: 06 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -458,6 +458,12 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     " Get cur_keyword_pos.
     let l:complete_results = neocomplcache#get_complete_results_pos(s:get_cur_text())
     let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(l:complete_results)
+
+    if neocomplcache#get_cur_text() =~ '\s\+$'
+          \ && neocomplcache#is_buffer_complete_enabled()
+      " Caching current cache line.
+      call neocomplcache#sources#buffer_complete#caching_current_cache_line()
+    endif
 
     if l:cur_keyword_pos < 0
       let s:cur_keyword_str = ''
@@ -1106,16 +1112,6 @@ function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
   return l:complete_results
 endfunction"}}}
 function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
-  if empty(a:complete_results)
-    if neocomplcache#get_cur_text() =~ '\s\+$'
-          \ && neocomplcache#is_buffer_complete_enabled()
-      " Caching current cache line.
-      call neocomplcache#sources#buffer_complete#caching_current_cache_line()
-    endif
-
-    return -1
-  endif
-
   let l:cur_keyword_pos = col('.')
   for l:result in values(a:complete_results)
     if l:cur_keyword_pos > l:result.cur_keyword_pos

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2011.
+" Last Modified: 06 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -157,6 +157,10 @@ endfunction"}}}
 
 function! neocomplcache#sources#buffer_complete#caching_current_cache_line()"{{{
   " Current line caching.
+  return s:caching_current_buffer(line('.')-1, line('.')+1)
+endfunction"}}}
+function! s:caching_current_buffer(start, end)"{{{
+  " Current line caching.
 
   if !s:exists_current_source() || has_key(s:disable_caching_list, bufnr('%'))
     return
@@ -170,7 +174,7 @@ function! neocomplcache#sources#buffer_complete#caching_current_cache_line()"{{{
   let l:keyword_pattern2 = '^\%('.l:keyword_pattern.'\m\)'
   let l:keywords = l:source.keyword_cache
 
-  let l:line = join(getline(line('.')-1, line('.')+1))
+  let l:line = join(getline(a:start, a:end))
   let l:match = match(l:line, l:keyword_pattern)
   while l:match >= 0"{{{
     let l:match_str = matchstr(l:line, l:keyword_pattern2, l:match)
@@ -475,7 +479,8 @@ function! s:word_caching(srcname)"{{{
     endif
 
     let l:source.cache_name =
-          \ neocomplcache#cache#async_load_from_file('buffer_cache', l:source.path, l:source.keyword_pattern, 'B')
+          \ neocomplcache#cache#async_load_from_file(
+          \     'buffer_cache', l:source.path, l:source.keyword_pattern, 'B')
   endif
 endfunction"}}}
 
@@ -615,6 +620,7 @@ function! s:caching_buffer(name)"{{{
 
   " Word recaching.
   call s:word_caching(l:number)
+  call s:caching_current_buffer(1, line('$'))
 endfunction"}}}
 function! s:print_source(name)"{{{
   if a:name == ''

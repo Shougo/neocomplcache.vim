@@ -1021,6 +1021,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-09-06
+- Improved caching buffer.
+
 2011-09-03
 - Added g:neocomplcache_compare_function option.
 - Fixed modifiable error.
