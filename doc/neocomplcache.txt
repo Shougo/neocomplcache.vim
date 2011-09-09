@@ -352,6 +352,15 @@ g:neocomplcache_compare_function			*g:neocomplcache_compare_function*
 		
 		Default value is 'neocomplcache#compare_rank'.
 
+g:neocomplcache_enable_prefetch				*g:neocomplcache_enable_prefetch*
+		This variable controls whether neocomplcache prefetch.
+		This variable is non 0, neocomplcache don't flick in auto completion.
+		Note: This variable has side effect.
+		Partial function (ex: |complete_check()|) is disabled in
+		completefunc.
+		
+		Default value is 0.
+
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		This variable appoints the pass of the snippet files which
 		user defined.  It cuts the directory by plural appointment
@@ -1020,6 +1029,9 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
+2011-09-09
+- Added g:neocomplcache_enable_prefetch option.
 
 2011-09-08
 - Improved text mode.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2011.
+" Last Modified: 09 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -75,6 +75,7 @@ function! neocomplcache#enable() "{{{
   let s:is_text_mode = 0
   let s:within_comment = 0
   let s:skip_next_complete = 0
+  let s:is_prefetch = 1
   "}}}
 
   " Initialize sources table."{{{
@@ -485,9 +486,16 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     call setline('.', l:cur_text)
   endif
 
-  let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
-  let l:complete_words = neocomplcache#get_complete_words(
-        \ s:complete_results, 1, l:cur_keyword_pos, a:base)
+  if s:is_prefetch && !empty(s:complete_words)
+    " Use prefetch words.
+    let l:complete_words = s:complete_words
+
+    let s:is_prefetch = 0
+  else
+    let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
+    let l:complete_words = neocomplcache#get_complete_words(
+          \ s:complete_results, 1, l:cur_keyword_pos, a:base)
+  endif
 
   if &l:modifiable
     call setline('.', l:old_line)
@@ -573,12 +581,26 @@ function! neocomplcache#do_auto_complete()"{{{
   let &l:completefunc = 'neocomplcache#auto_complete'
 
   " Get cur_keyword_pos.
-  let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(
-        \ neocomplcache#get_complete_results_pos(l:cur_text))
+  let l:complete_results = neocomplcache#get_complete_results_pos(l:cur_text)
+  let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(l:complete_results)
   if l:cur_keyword_pos < 0
     let &l:completefunc = 'neocomplcache#manual_complete'
     " Not found.
     return
+  endif
+
+  if g:neocomplcache_enable_prefetch
+    " Do prefetch.
+    let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
+    let l:complete_words = neocomplcache#get_complete_words(
+          \ l:complete_results, 1, l:cur_keyword_pos, l:cur_keyword_str)
+    if empty(l:complete_words)
+      " Skip completion.
+      return
+    endif
+
+    let s:complete_words = l:complete_words
+    let s:is_prefetch = 1
   endif
 
   let s:changedtick = b:changedtick

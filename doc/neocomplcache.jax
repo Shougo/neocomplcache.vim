@@ -351,6 +351,15 @@ g:neocomplcache_compare_function			*g:neocomplcache_compare_function*
 		
 		初期値は"neocomplcache#compare_rank"である。
 
+g:neocomplcache_enable_prefetch				*g:neocomplcache_enable_prefetch*
+		neocomplcacheが自動補完を呼び出す前に、前持って補完候補の計算をする
+		かどうか制御する。これを有効にした場合、補完候補がないときのチラツ
+		キを抑えることができる。
+		Note: ただし、補完関数外で補完を呼ぶことになるため、
+		|complete_check()|などが使えなくなるという副作用がある。
+		
+		初期値は0となっており、この機能は無効になっている。
+
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。 カ
 		ンマ区切りで複数のディレクトリを設定可能。 ここで指定したディ
