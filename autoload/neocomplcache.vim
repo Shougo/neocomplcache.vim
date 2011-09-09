@@ -1746,8 +1746,9 @@ function! s:set_context_filetype()"{{{
 
   " Set text mode or not.
   let l:syn_name = neocomplcache#get_syn_name(1)
-  let s:is_text_mode = (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype) && g:neocomplcache_text_mode_filetypes[s:context_filetype])
-        \ || l:syn_name ==# 'Constant'
+  let s:is_text_mode =
+        \ (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype)
+        \ && g:neocomplcache_text_mode_filetypes[s:context_filetype])
   let s:within_comment = (l:syn_name ==# 'Comment')
 
   " Set filetype plugins.
