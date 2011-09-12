@@ -1030,6 +1030,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-09-12
+- Fixed g:neocomplcache_enable_prefetch behavior.
+
 2011-09-10
 - Improved g:neocomplcache_enable_prefetch behavior.
 

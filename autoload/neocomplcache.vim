@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Sep 2011.
+" Last Modified: 12 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -75,7 +75,7 @@ function! neocomplcache#enable() "{{{
   let s:is_text_mode = 0
   let s:within_comment = 0
   let s:skip_next_complete = 0
-  let s:is_prefetch = 1
+  let s:is_prefetch = 0
   "}}}
 
   " Initialize sources table."{{{
@@ -405,8 +405,6 @@ function! neocomplcache#enable() "{{{
   inoremap <silent> <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
   inoremap <silent> <Plug>(neocomplcache_start_auto_select_complete)
         \ <C-x><C-u><C-p><C-r>=neocomplcache#popup_post()<CR>
-  inoremap <silent> <Plug>(neocomplcache_start_auto_select_complete2)
-        \ <C-x><C-u><C-p><Down>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)   unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)   unite#sources#snippet#start_complete()
 
@@ -614,9 +612,7 @@ function! neocomplcache#do_auto_complete()"{{{
 
   " Start auto complete.
   if neocomplcache#is_auto_select()
-    call feedkeys(g:neocomplcache_enable_prefetch ?
-          \ "\<Plug>(neocomplcache_start_auto_select_complete2)" :
-          \ "\<Plug>(neocomplcache_start_auto_select_complete)")
+    call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
   else
     call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
   endif
