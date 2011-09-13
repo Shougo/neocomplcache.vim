@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2011.
+" Last Modified: 13 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,6 +70,9 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   " Filename pattern.
   let l:pattern = neocomplcache#get_keyword_pattern_end('filename')
   let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text, l:pattern)
+  if neocomplcache#is_sources_complete() && l:cur_keyword_pos < 0
+    let l:cur_keyword_pos = len(a:cur_text)
+  endif
 
   " Not Filename pattern.
   if neocomplcache#is_win() && l:filetype == 'tex' && l:cur_keyword_str =~ '\\'

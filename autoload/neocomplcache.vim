@@ -76,6 +76,7 @@ function! neocomplcache#enable() "{{{
   let s:within_comment = 0
   let s:skip_next_complete = 0
   let s:is_prefetch = 0
+  let s:use_sources = {}
   "}}}
 
   " Initialize sources table."{{{
@@ -502,6 +503,57 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   endif
 
   " Restore function.
+  let &l:completefunc = 'neocomplcache#manual_complete'
+
+  let s:complete_words = l:complete_words
+  let s:cur_keyword_str = a:base
+
+  return l:complete_words
+endfunction"}}}
+
+function! neocomplcache#sources_manual_complete(findstart, base)"{{{
+  if a:findstart
+    if !neocomplcache#is_enabled()
+      let s:cur_keyword_str = ''
+      let s:complete_words = []
+      let &l:completefunc = 'neocomplcache#manual_complete'
+      return -1
+    endif
+
+    " Get cur_keyword_pos.
+    let l:complete_results = neocomplcache#get_complete_results_pos(
+          \ s:get_cur_text(), s:use_sources)
+    let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(l:complete_results)
+
+    if l:cur_keyword_pos < 0
+      let s:cur_keyword_str = ''
+      let s:complete_words = []
+      let s:complete_results = {}
+      let &l:completefunc = 'neocomplcache#manual_complete'
+
+      return -1
+    endif
+
+    let s:complete_results = l:complete_results
+
+    return l:cur_keyword_pos
+  endif
+
+  if &l:modifiable
+    " Set cur_text temporary.
+    let l:cur_text = neocomplcache#get_cur_text()
+    let l:old_line = getline('.')
+    call setline('.', l:cur_text)
+  endif
+
+  let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
+  let l:complete_words = neocomplcache#get_complete_words(
+        \ s:complete_results, 1, l:cur_keyword_pos, a:base)
+
+  if &l:modifiable
+    call setline('.', l:old_line)
+  endif
+
   let &l:completefunc = 'neocomplcache#manual_complete'
 
   let s:complete_words = l:complete_words
@@ -981,6 +1033,9 @@ endfunction"}}}
 function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
 endfunction"}}}
+function! neocomplcache#is_sources_complete()"{{{
+  return &l:completefunc == 'neocomplcache#sources_manual_complete'
+endfunction"}}}
 function! neocomplcache#is_eskk_enabled()"{{{
   return exists('*eskk#is_enabled') && eskk#is_enabled()
 endfunction"}}}
@@ -1098,10 +1153,12 @@ function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
     " omni_complete only.
     let l:sources = filter(l:sources, 'v:key ==# "omni_complete"')
   endif
-  call filter(l:sources,
-        \ '!(has_key(g:neocomplcache_plugin_disable, v:key)
-        \     && g:neocomplcache_plugin_disable[v:key])
-        \  && !neocomplcache#is_plugin_locked(v:key)')
+  if a:0 < 1
+    call filter(l:sources,
+          \ '!(has_key(g:neocomplcache_plugin_disable, v:key)
+          \     && g:neocomplcache_plugin_disable[v:key])
+          \  && !neocomplcache#is_plugin_locked(v:key)')
+  endif
 
   " Try source completion."{{{
   let l:complete_results = {}
@@ -1121,8 +1178,9 @@ function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
     endif
 
     let l:cur_keyword_str = a:cur_text[l:cur_keyword_pos :]
-    if neocomplcache#util#mb_strlen(l:cur_keyword_str)
-          \ < neocomplcache#get_completion_length(l:source_name)
+    if neocomplcache#is_auto_complete() &&
+          \ neocomplcache#util#mb_strlen(l:cur_keyword_str)
+          \     < neocomplcache#get_completion_length(l:source_name)
       " Skip.
       continue
     endif
@@ -1656,6 +1714,52 @@ function! neocomplcache#complete_common_string()"{{{
 
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:cur_keyword_str)) . l:common_str
+endfunction"}}}
+
+" Wrapper functions.
+function! neocomplcache#manual_filename_complete()"{{{
+  return neocomplcache#start_manual_complete('filename_complete')
+endfunction"}}}
+function! neocomplcache#manual_omni_complete()"{{{
+  return neocomplcache#start_manual_complete('omni_complete')
+endfunction"}}}
+function! neocomplcache#manual_keyword_complete()"{{{
+  return neocomplcache#start_manual_complete('keyword_complete')
+endfunction"}}}
+
+" Manual complete wrapper.
+function! neocomplcache#start_manual_complete(sources)"{{{
+  " Set context filetype.
+  call s:set_context_filetype()
+
+  " Set function.
+  let &l:completefunc = 'neocomplcache#sources_manual_complete'
+
+  let s:use_sources = {}
+  let l:all_sources = extend(copy(neocomplcache#available_complfuncs()),
+        \ neocomplcache#available_loaded_ftplugins())
+  for l:source_name in type(a:sources) == type([]) ?
+   \ a:sources : [a:sources]
+    if has_key(l:all_sources, l:source_name)
+      let s:use_sources[l:source_name] = l:all_sources[l:source_name]
+    else
+      call neocomplcache#print_warning(printf(
+            \ "Invalid completefunc name %s is given.", a:complfunc_name))
+      return ''
+    endif
+  endfor
+
+  " Start complete.
+  return "\<C-x>\<C-u>\<C-p>"
+endfunction"}}}
+function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words)"{{{
+  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
+
+  " Set function.
+  let &l:completefunc = 'neocomplcache#auto_complete'
+
+  " Start complete.
+  return "\<C-x>\<C-u>\<C-p>"
 endfunction"}}}
 "}}}
 
