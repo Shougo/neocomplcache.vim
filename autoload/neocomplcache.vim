@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 13 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -596,11 +596,16 @@ function! neocomplcache#do_auto_complete()"{{{
           \ l:complete_results, 1, l:cur_keyword_pos, l:cur_keyword_str)
     if empty(l:complete_words)
       " Skip completion.
+      let s:complete_words = []
+      let s:is_prefetch = 0
       return
     endif
 
     let s:complete_words = l:complete_words
     let s:is_prefetch = 1
+  else
+    let s:complete_words = []
+    let s:is_prefetch = 0
   endif
 
   let s:changedtick = b:changedtick
