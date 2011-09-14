@@ -1030,6 +1030,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-09-14
+- Fixed cur_keyword_pos problem.
+
 2011-09-13
 - Re-implemented neocomplcache#start_manual_complete().
 

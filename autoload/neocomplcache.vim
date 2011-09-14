@@ -461,11 +461,11 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     let l:complete_results = neocomplcache#get_complete_results_pos(s:get_cur_text())
     let l:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(l:complete_results)
 
-    " if neocomplcache#get_cur_text() =~ '\s\+$'
-    "       \ && neocomplcache#is_buffer_complete_enabled()
-    "   " Caching current cache line.
-    "   call neocomplcache#sources#buffer_complete#caching_current_cache_line()
-    " endif
+    if neocomplcache#get_cur_text() =~ '\s\+$'
+          \ && neocomplcache#is_buffer_complete_enabled()
+      " Caching current cache line.
+      call neocomplcache#sources#buffer_complete#caching_current_cache_line()
+    endif
 
     if l:cur_keyword_pos < 0
       let s:cur_keyword_str = ''
@@ -1197,6 +1197,10 @@ function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
   return l:complete_results
 endfunction"}}}
 function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
+  if empty(a:complete_results)
+    return -1
+  endif
+
   let l:cur_keyword_pos = col('.')
   for l:result in values(a:complete_results)
     if l:cur_keyword_pos > l:result.cur_keyword_pos
