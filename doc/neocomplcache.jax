@@ -269,7 +269,7 @@ g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		候補の計算を|CursorHoldI|イベント時に行うかどうかを制御する。
 		このオプションが設定されなかった場合、|CursorMovedI|イベン
 		トを使用する。
-		Note: このオプションは、Vim 7.3.289未満では使用しないほうが良い。
+		Note: このオプションは、Vim 7.3.311未満では使用しないほうが良い。
 		
 		副作用があるので、初期値は0である。
 

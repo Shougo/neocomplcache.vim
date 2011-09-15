@@ -265,7 +265,7 @@ g:neocomplcache_enable_wildcard				*g:neocomplcache_enable_wildcard*
 g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		This variable controls whether neocomplcache use |CursorHoldI| event
 		when complete candidates.
-		Note: You should not use this option if less than Vim 7.3.289.
+		Note: You should not use this option if less than Vim 7.3.311.
 		
 		Default value is 0.
 
@@ -1032,6 +1032,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-09-15
 - Improved prefetch.
+- Supported Vim 7.3.311.
 
 2011-09-14
 - Fixed cur_keyword_pos problem.

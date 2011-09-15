@@ -508,7 +508,9 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   let s:complete_words = l:complete_words
   let s:cur_keyword_str = a:base
 
-  return l:complete_words
+  return (v:version > 703 || v:version == 703 && has('patch311')) ?
+        \ { 'words' : l:complete_words, 'refresh' : 'always' }
+        \ : l:complete_words
 endfunction"}}}
 
 function! neocomplcache#sources_manual_complete(findstart, base)"{{{
