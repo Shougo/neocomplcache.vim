@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Sep 2011.
+" Last Modified: 15 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1785,11 +1785,13 @@ function! s:on_insert_enter()"{{{
   endif
 endfunction"}}}
 function! s:on_insert_leave()"{{{
+  let s:cur_text = ''
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:context_filetype = ''
   let s:is_text_mode = 0
   let s:skip_next_complete = 0
+  let s:is_prefetch = 0
 
   if &updatetime < s:update_time_save
     let &updatetime = s:update_time_save
