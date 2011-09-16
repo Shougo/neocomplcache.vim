@@ -649,6 +649,7 @@ function! neocomplcache#do_auto_complete()"{{{
     let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
     let l:complete_words = neocomplcache#get_complete_words(
           \ l:complete_results, 1, l:cur_keyword_pos, l:cur_keyword_str)
+    call neocomplcache#print_debug(len(l:complete_words))
     if empty(l:complete_words)
       " Skip completion.
       let s:complete_words = []
@@ -1140,6 +1141,11 @@ function! neocomplcache#get_syn_name(is_trans)"{{{
   return len(getline('.')) < 200 ?
         \ synIDattr(synIDtrans(synID(line('.'), mode() ==# 'i' ?
         \          col('.')-1 : col('.'), a:is_trans)), 'name') : ''
+endfunction"}}}
+function! neocomplcache#print_debug(expr)"{{{
+  if g:neocomplcache_enable_debug
+    echomsg string(a:expr)
+  endif
 endfunction"}}}
 
 " For unite source.
