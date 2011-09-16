@@ -649,9 +649,10 @@ function! neocomplcache#do_auto_complete()"{{{
     let l:cur_keyword_str = l:cur_text[l:cur_keyword_pos :]
     let l:complete_words = neocomplcache#get_complete_words(
           \ l:complete_results, 1, l:cur_keyword_pos, l:cur_keyword_str)
-    call neocomplcache#print_debug(len(l:complete_words))
+
     if empty(l:complete_words)
       " Skip completion.
+      let &l:completefunc = 'neocomplcache#manual_complete'
       let s:complete_words = []
       let s:is_prefetch = 0
       return
@@ -1373,7 +1374,7 @@ endfunction"}}}
 function! s:set_complete_results_words(complete_results)"{{{
   " Try source completion.
   for [l:source_name, result] in items(a:complete_results)
-    if complete_check()
+    if !g:neocomplcache_enable_prefetch && complete_check()
       return
     endif
 
