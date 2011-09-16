@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -453,6 +453,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if !neocomplcache#is_enabled()
       let s:cur_keyword_str = ''
       let s:complete_words = []
+      let s:is_prefetch = 0
       let &l:completefunc = 'neocomplcache#manual_complete'
       return -1
     endif
@@ -470,6 +471,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if l:cur_keyword_pos < 0
       let s:cur_keyword_str = ''
       let s:complete_words = []
+      let s:is_prefetch = 0
       let s:complete_results = {}
       let &l:completefunc = 'neocomplcache#manual_complete'
       return -1
@@ -483,8 +485,6 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   if s:is_prefetch && !empty(s:complete_words)
     " Use prefetch words.
     let l:complete_words = s:complete_words
-
-    let s:is_prefetch = 0
   else
     if &l:modifiable
       " Set cur_text temporary.
@@ -507,6 +507,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
   let s:complete_words = l:complete_words
   let s:cur_keyword_str = a:base
+  let s:is_prefetch = 0
 
   return (v:version > 703 || v:version == 703 && has('patch311')) ?
         \ { 'words' : l:complete_words, 'refresh' : 'always' }
@@ -656,12 +657,9 @@ function! neocomplcache#do_auto_complete()"{{{
     endif
 
     let s:complete_words = l:complete_words
-    let s:is_prefetch = 1
-  else
-    let s:complete_words = []
-    let s:is_prefetch = 0
   endif
 
+  let s:is_prefetch = g:neocomplcache_enable_prefetch
   let s:changedtick = b:changedtick
 
   " Set options.

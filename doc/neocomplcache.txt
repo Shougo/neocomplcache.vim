@@ -1030,6 +1030,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-09-16
+- Fixed prefetch.
+
 2011-09-15
 - Improved prefetch.
 - Supported Vim 7.3.311.
