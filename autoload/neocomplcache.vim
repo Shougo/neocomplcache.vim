@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 18 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -503,9 +503,12 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   let s:cur_keyword_str = a:base
   let s:is_prefetch = 0
 
-  return (v:version > 703 || v:version == 703 && has('patch311')) ?
-        \ { 'words' : l:complete_words, 'refresh' : 'always' }
-        \ : l:complete_words
+  return l:complete_words
+
+  " Note: This settings is disabled by resolved repeat-register problem.
+  " return (v:version > 703 || v:version == 703 && has('patch311')) ?
+  "       \ { 'words' : l:complete_words, 'refresh' : 'always' }
+  "       \ : l:complete_words
 endfunction"}}}
 
 function! neocomplcache#sources_manual_complete(findstart, base)"{{{

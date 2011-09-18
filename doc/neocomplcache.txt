@@ -1030,6 +1030,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-09-18
+- Disabled refresh by resolved repeat-register problem.
+
 2011-09-16
 - Fixed prefetch.
 - Improved caching current line.
