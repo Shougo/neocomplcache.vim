@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippet.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,14 +34,14 @@ function! unite#sources#snippet#define() "{{{
     return []
   endif
 
-  let l:kind = {
+  let kind = {
         \ 'name' : 'snippet',
         \ 'default_action' : 'expand',
         \ 'action_table': {},
         \ 'parents': ['jump_list', 'completion'],
         \ 'alias_table' : { 'edit' : 'open' },
         \ }
-  call unite#define_kind(l:kind)
+  call unite#define_kind(kind)
 
   return s:source
 endfunction "}}}
@@ -59,25 +59,25 @@ function! s:source.hooks.on_init(args, context) "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  let l:keyword_pos = a:context.source__cur_keyword_pos
-  let l:list = []
-  for l:keyword in a:context.source__snippets
-    let l:dict = {
-        \   'word' : l:keyword.word,
-        \   'abbr' : printf('%-50s %s', l:keyword.word, l:keyword.menu),
+  let keyword_pos = a:context.source__cur_keyword_pos
+  let list = []
+  for keyword in a:context.source__snippets
+    let dict = {
+        \   'word' : keyword.word,
+        \   'abbr' : printf('%-50s %s', keyword.word, keyword.menu),
         \   'kind': 'snippet',
-        \   'action__complete_word' : l:keyword.word,
-        \   'action__complete_pos' : l:keyword_pos,
-        \   'action__path' : l:keyword.action__path,
-        \   'action__pattern' : l:keyword.action__pattern,
-        \   'source__menu' : l:keyword.menu,
-        \   'source__snip' : l:keyword.snip,
+        \   'action__complete_word' : keyword.word,
+        \   'action__complete_pos' : keyword_pos,
+        \   'action__path' : keyword.action__path,
+        \   'action__pattern' : keyword.action__pattern,
+        \   'source__menu' : keyword.menu,
+        \   'source__snip' : keyword.snip,
         \ }
 
-    call add(l:list, l:dict)
+    call add(list, dict)
   endfor
 
-  return l:list
+  return list
 endfunction "}}}
 
 " Actions"{{{
@@ -87,9 +87,9 @@ let s:action_table.expand = {
       \ 'description' : 'expand snippet',
       \ }
 function! s:action_table.expand.func(candidate)"{{{
-  let l:context = unite#get_context()
+  let context = unite#get_context()
   call neocomplcache#sources#snippets_complete#expand(
-        \ neocomplcache#get_cur_text(1), l:context.col,
+        \ neocomplcache#get_cur_text(1), context.col,
         \ a:candidate.action__complete_word)
 endfunction"}}}
 
@@ -126,13 +126,13 @@ function! s:compare_words(i1, i2)"{{{
   return a:i1.menu - a:i2.menu
 endfunction"}}}
 function! s:get_keyword_pos(cur_text)"{{{
-  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-  if l:cur_keyword_pos < 0
+  let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+  if cur_keyword_pos < 0
     " Empty string.
     return len(a:cur_text)
   endif
 
-  return l:cur_keyword_pos
+  return cur_keyword_pos
 endfunction"}}}
 
 let &cpo = s:save_cpo

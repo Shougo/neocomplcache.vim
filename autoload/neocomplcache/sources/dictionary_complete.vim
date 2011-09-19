@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jul 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -77,24 +77,24 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
-  let l:list = []
+  let list = []
 
-  let l:filetype = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
+  let filetype = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
   if neocomplcache#is_text_mode() && !has_key(s:dictionary_list, 'text')
     " Caching.
     call s:caching()
   endif
 
-  for l:ft in neocomplcache#get_source_filetypes(l:filetype)
-    call neocomplcache#cache#check_cache('dictionary_cache', l:ft, s:async_dictionary_list,
+  for ft in neocomplcache#get_source_filetypes(filetype)
+    call neocomplcache#cache#check_cache('dictionary_cache', ft, s:async_dictionary_list,
       \ s:dictionary_list, s:completion_length)
 
-    for l:source in neocomplcache#get_sources_list(s:dictionary_list, l:ft)
-      let l:list += neocomplcache#dictionary_filter(l:source, a:cur_keyword_str, s:completion_length)
+    for source in neocomplcache#get_sources_list(s:dictionary_list, ft)
+      let list += neocomplcache#dictionary_filter(source, a:cur_keyword_str, s:completion_length)
     endfor
   endfor
 
-  return l:list
+  return list
 endfunction"}}}
 
 function! s:caching()"{{{
@@ -102,50 +102,50 @@ function! s:caching()"{{{
     return
   endif
 
-  let l:key = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
-  for l:filetype in neocomplcache#get_source_filetypes(l:key)
-    if !has_key(s:dictionary_list, l:filetype)
-          \ && !has_key(s:async_dictionary_list, l:filetype)
-      call s:recaching(l:filetype)
+  let key = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
+  for filetype in neocomplcache#get_source_filetypes(key)
+    if !has_key(s:dictionary_list, filetype)
+          \ && !has_key(s:async_dictionary_list, filetype)
+      call s:recaching(filetype)
     endif
   endfor
 endfunction"}}}
 
 function! s:caching_dictionary(filetype)
   if a:filetype == ''
-    let l:filetype = neocomplcache#get_context_filetype(1)
+    let filetype = neocomplcache#get_context_filetype(1)
   else
-    let l:filetype = a:filetype
+    let filetype = a:filetype
   endif
-  if has_key(s:async_dictionary_list, l:filetype)
-        \ && filereadable(s:async_dictionary_list[l:filetype].cache_name)
+  if has_key(s:async_dictionary_list, filetype)
+        \ && filereadable(s:async_dictionary_list[filetype].cache_name)
     " Delete old cache.
-    call delete(s:async_dictionary_list[l:filetype].cache_name)
+    call delete(s:async_dictionary_list[filetype].cache_name)
   endif
 
-  call s:recaching(l:filetype)
+  call s:recaching(filetype)
 endfunction
 function! s:recaching(filetype)"{{{
   " Caching.
   if has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
-    let l:dictionaries = g:neocomplcache_dictionary_filetype_lists[a:filetype]
+    let dictionaries = g:neocomplcache_dictionary_filetype_lists[a:filetype]
   elseif a:filetype != &filetype || &l:dictionary == ''
     return
   else
-    let l:dictionaries = &l:dictionary
+    let dictionaries = &l:dictionary
   endif
 
   let s:async_dictionary_list[a:filetype] = []
 
-  let l:pattern = has_key(g:neocomplcache_dictionary_patterns, a:filetype) ?
+  let pattern = has_key(g:neocomplcache_dictionary_patterns, a:filetype) ?
         \ g:neocomplcache_dictionary_patterns[a:filetype] :
         \ neocomplcache#get_keyword_pattern(a:filetype)
-  for l:dictionary in split(l:dictionaries, ',')
-    if filereadable(l:dictionary)
+  for dictionary in split(dictionaries, ',')
+    if filereadable(dictionary)
       call add(s:async_dictionary_list[a:filetype], {
-            \ 'filename' : l:dictionary,
+            \ 'filename' : dictionary,
             \ 'cachename' : neocomplcache#cache#async_load_from_file(
-            \       'dictionary_cache', l:dictionary, l:pattern, 'D')
+            \       'dictionary_cache', dictionary, pattern, 'D')
             \ })
     endif
   endfor

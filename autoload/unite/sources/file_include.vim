@@ -2,7 +2,7 @@
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 "          manga_osyo (Original)
-" Last Modified: 22 Apr 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,7 +45,7 @@ function! s:source.hooks.on_init(args, context)"{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context)"{{{
-  let l:files = map(a:context.source__include_files, '{
+  let files = map(a:context.source__include_files, '{
         \ "word" : unite#util#substitute_path_separator(v:val),
         \ "abbr" : unite#util#substitute_path_separator(v:val),
         \ "source" : "file_include",
@@ -53,18 +53,18 @@ function! s:source.gather_candidates(args, context)"{{{
         \ "action__path" : v:val
         \ }')
 
-  for word in l:files
+  for word in files
     " Path search.
     for path in map(split(a:context.source__path, ','),
           \ 'unite#util#substitute_path_separator(v:val)')
       if path != '' && neocomplcache#head_match(word.word, path . '/')
-        let l:word.abbr = l:word.abbr[len(path)+1 : ]
+        let word.abbr = word.abbr[len(path)+1 : ]
         break
       endif
     endfor
   endfor
 
-  return l:files
+  return files
 endfunction"}}}
 
 let &cpo = s:save_cpo

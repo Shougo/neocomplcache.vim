@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,36 +71,36 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if !has_key(s:tags_list, bufnr('%'))
     return []
   endif
-  let l:keyword_list = neocomplcache#dictionary_filter(
+  let keyword_list = neocomplcache#dictionary_filter(
         \ s:tags_list[bufnr('%')], a:cur_keyword_str, s:completion_length)
 
-  return neocomplcache#keyword_filter(l:keyword_list, a:cur_keyword_str)
+  return neocomplcache#keyword_filter(keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
 function! s:initialize_tags(filename)"{{{
   " Initialize tags list.
-  let l:ft = &filetype
-  if l:ft == ''
-    let l:ft = 'nothing'
+  let ft = &filetype
+  if ft == ''
+    let ft = 'nothing'
   endif
 
   return {
         \ 'filename' : a:filename,
         \ 'cachename' : neocomplcache#cache#async_load_from_tags(
-        \              'tags_cache', a:filename, l:ft, 'T', 0)
+        \              'tags_cache', a:filename, ft, 'T', 0)
         \ }
 endfunction"}}}
 function! s:caching_tags(bufname, force)"{{{
-  let l:bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
+  let bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
 
-  let s:async_tags_list[l:bufnumber] = []
-  for tags in split(getbufvar(l:bufnumber, '&tags'), ',')
-    let l:filename = fnamemodify(tags, ':p')
-    if filereadable(l:filename)
-          \ && (a:force || getfsize(l:filename)
+  let s:async_tags_list[bufnumber] = []
+  for tags in split(getbufvar(bufnumber, '&tags'), ',')
+    let filename = fnamemodify(tags, ':p')
+    if filereadable(filename)
+          \ && (a:force || getfsize(filename)
           \               < g:neocomplcache_caching_limit_file_size)
-      call add(s:async_tags_list[l:bufnumber],
-            \ s:initialize_tags(l:filename))
+      call add(s:async_tags_list[bufnumber],
+            \ s:initialize_tags(filename))
     endif
   endfor
 endfunction"}}}

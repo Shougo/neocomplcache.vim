@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,52 +42,52 @@ function! s:source.initialize()"{{{
         \ g:neocomplcache_auto_completion_start_length)
 
   " Initialize.
-  for l:plugin in values(neocomplcache#available_plugins())
-    call l:plugin.initialize()
+  for plugin in values(neocomplcache#available_plugins())
+    call plugin.initialize()
   endfor
 endfunction"}}}
 function! s:source.finalize()"{{{
-  for l:plugin in values(neocomplcache#available_plugins())
-    call l:plugin.finalize()
+  for plugin in values(neocomplcache#available_plugins())
+    call plugin.finalize()
   endfor
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
-  let [l:cur_keyword_pos, l:cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+  let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
 
-  return l:cur_keyword_pos
+  return cur_keyword_pos
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   " Get keyword list.
-  let l:cache_keyword_list = []
-  for [l:name, l:plugin] in items(neocomplcache#available_plugins())
-    if (has_key(g:neocomplcache_plugin_disable, l:name)
-        \ && g:neocomplcache_plugin_disable[l:name])
-        \ || len(a:cur_keyword_str) < neocomplcache#get_completion_length(l:name)
-        \ || neocomplcache#is_plugin_locked(l:name)
+  let cache_keyword_list = []
+  for [name, plugin] in items(neocomplcache#available_plugins())
+    if (has_key(g:neocomplcache_plugin_disable, name)
+        \ && g:neocomplcache_plugin_disable[name])
+        \ || len(a:cur_keyword_str) < neocomplcache#get_completion_length(name)
+        \ || neocomplcache#is_plugin_locked(name)
       " Skip plugin.
       continue
     endif
 
     try
-      let l:list = l:plugin.get_keyword_list(a:cur_keyword_str)
+      let list = plugin.get_keyword_list(a:cur_keyword_str)
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error('Error occured in plugin''s get_keyword_list()!')
-      call neocomplcache#print_error('Plugin name is ' . l:name)
+      call neocomplcache#print_error('Plugin name is ' . name)
       return []
     endtry
 
-    let l:rank = neocomplcache#get_plugin_rank(l:name)
-    for l:keyword in l:list
-      let l:keyword.rank = l:rank
+    let rank = neocomplcache#get_plugin_rank(name)
+    for keyword in list
+      let keyword.rank = rank
     endfor
-    let l:cache_keyword_list += l:list
+    let cache_keyword_list += list
   endfor
 
-  return l:cache_keyword_list
+  return cache_keyword_list
 endfunction"}}}
 
 function! neocomplcache#sources#keyword_complete#define()"{{{

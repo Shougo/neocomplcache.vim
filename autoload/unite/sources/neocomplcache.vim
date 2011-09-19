@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,54 +51,54 @@ function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
   endif
 
   " Save options.
-  let l:max_list_save = g:neocomplcache_max_list
-  let l:max_keyword_width_save = g:neocomplcache_max_keyword_width
+  let max_list_save = g:neocomplcache_max_list
+  let max_keyword_width_save = g:neocomplcache_max_keyword_width
   let g:neocomplcache_max_list = -1
   let g:neocomplcache_max_keyword_width = -1
 
-  let l:cur_text = neocomplcache#get_cur_text(1)
-  let l:complete_results = neocomplcache#get_complete_results_pos(
-        \ l:cur_text)
+  let cur_text = neocomplcache#get_cur_text(1)
+  let complete_results = neocomplcache#get_complete_results_pos(
+        \ cur_text)
   let a:context.source__cur_keyword_pos =
-        \ neocomplcache#get_cur_keyword_pos(l:complete_results)
+        \ neocomplcache#get_cur_keyword_pos(complete_results)
   let a:context.source__complete_words = neocomplcache#get_complete_words(
-        \ l:complete_results, 1, a:context.source__cur_keyword_pos,
-        \ l:cur_text[a:context.source__cur_keyword_pos :])
+        \ complete_results, 1, a:context.source__cur_keyword_pos,
+        \ cur_text[a:context.source__cur_keyword_pos :])
 
   " Restore options.
-  let g:neocomplcache_max_list = l:max_list_save
-  let g:neocomplcache_max_keyword_width = l:max_keyword_width_save
+  let g:neocomplcache_max_list = max_list_save
+  let g:neocomplcache_max_keyword_width = max_keyword_width_save
 endfunction"}}}
 
 function! s:neocomplcache_source.gather_candidates(args, context) "{{{
-  let l:keyword_pos = a:context.source__cur_keyword_pos
-  let l:list = []
-  for l:keyword in a:context.source__complete_words
-    let l:dict = {
-        \   'word' : l:keyword.word,
-        \   'abbr' : printf('%-50s', (has_key(l:keyword, 'abbr') ? l:keyword.abbr : l:keyword.word)),
+  let keyword_pos = a:context.source__cur_keyword_pos
+  let list = []
+  for keyword in a:context.source__complete_words
+    let dict = {
+        \   'word' : keyword.word,
+        \   'abbr' : printf('%-50s', (has_key(keyword, 'abbr') ? keyword.abbr : keyword.word)),
         \   'kind': 'completion',
-        \   'action__complete_word' : l:keyword.word,
-        \   'action__complete_pos' : l:keyword_pos,
+        \   'action__complete_word' : keyword.word,
+        \   'action__complete_pos' : keyword_pos,
         \ }
-    if has_key(l:keyword, 'kind')
-      let l:dict.abbr .= ' ' . l:keyword.kind
+    if has_key(keyword, 'kind')
+      let dict.abbr .= ' ' . keyword.kind
     endif
-    if has_key(l:keyword, 'menu')
-      let l:dict.abbr .= ' ' . l:keyword.menu
+    if has_key(keyword, 'menu')
+      let dict.abbr .= ' ' . keyword.menu
     endif
-    if has_key(l:keyword, 'description')
-      if type(l:keyword.description) ==# type(function('tr'))
-        let l:dict.action__complete_info_lazy = l:keyword.description
+    if has_key(keyword, 'description')
+      if type(keyword.description) ==# type(function('tr'))
+        let dict.action__complete_info_lazy = keyword.description
       else
-        let l:dict.action__complete_info = l:keyword.description
+        let dict.action__complete_info = keyword.description
       endif
     endif
 
-    call add(l:list, l:dict)
+    call add(list, dict)
   endfor
 
-  return l:list
+  return list
 endfunction "}}}
 
 function! unite#sources#neocomplcache#start_complete() "{{{

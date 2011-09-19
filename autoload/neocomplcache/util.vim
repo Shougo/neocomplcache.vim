@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,14 +55,14 @@ function! neocomplcache#util#mb_strlen(...)"{{{
   return call(s:V.strchars, a:000)
 endfunction"}}}
 function! neocomplcache#util#uniq(list)"{{{
-  let l:dict = {}
-  for l:item in a:list
-    if !has_key(l:dict, l:item)
-      let l:dict[l:item] = l:item
+  let dict = {}
+  for item in a:list
+    if !has_key(dict, item)
+      let dict[item] = item
     endif
   endfor
 
-  return values(l:dict)
+  return values(dict)
 endfunction"}}}
 
 let &cpo = s:save_cpo

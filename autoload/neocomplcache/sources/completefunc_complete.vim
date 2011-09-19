@@ -52,33 +52,33 @@ function! neocomplcache#sources#completefunc_complete#define()"{{{
 endfunction"}}}
 
 function! s:get_completefunc_list(list)"{{{
-  let l:comp_list = []
+  let comp_list = []
 
   " Convert string list.
   for str in filter(copy(a:list), 'type(v:val) == '.type(''))
-    let l:dict = { 'word' : str, 'menu' : '[C]' }
+    let dict = { 'word' : str, 'menu' : '[C]' }
 
-    call add(l:comp_list, l:dict)
+    call add(comp_list, dict)
   endfor
 
-  for l:comp in filter(a:list, 'type(v:val) != '.type(''))
-    let l:dict = {
-          \'word' : l:comp.word, 'menu' : '[C]', 
-          \'abbr' : has_key(l:comp, 'abbr')? l:comp.abbr : l:comp.word
+  for comp in filter(a:list, 'type(v:val) != '.type(''))
+    let dict = {
+          \'word' : comp.word, 'menu' : '[C]', 
+          \'abbr' : has_key(comp, 'abbr')? comp.abbr : comp.word
           \}
 
-    if has_key(l:comp, 'kind')
-      let l:dict.kind = l:comp.kind
+    if has_key(comp, 'kind')
+      let dict.kind = comp.kind
     endif
 
-    if has_key(l:comp, 'menu')
-      let l:dict.menu .= ' ' . l:comp.menu
+    if has_key(comp, 'menu')
+      let dict.menu .= ' ' . comp.menu
     endif
 
-    call add(l:comp_list, l:dict)
+    call add(comp_list, dict)
   endfor
 
-  return l:comp_list
+  return comp_list
 endfunction"}}}
 
 let &cpo = s:save_cpo
