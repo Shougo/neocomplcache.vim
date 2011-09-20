@@ -740,7 +740,7 @@ EXAMPLES						*neocomplcache-examples*
 	    \ 'vimshell' : $HOME.'/.vimshell_hist',
 	    \ 'scheme' : $HOME.'/.gosh_completions'
 	        \ }
-		
+	
 	" Define keyword.
 	if !exists('g:neocomplcache_keyword_patterns')
 	    let g:neocomplcache_keyword_patterns = {}
@@ -766,6 +766,12 @@ EXAMPLES						*neocomplcache-examples*
 	inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
 	inoremap <expr><C-y>  neocomplcache#close_popup()
 	inoremap <expr><C-e>  neocomplcache#cancel_popup()
+	
+	" For cursor moving in insert mode(Not recommended)
+	inoremap <expr><Left>  neocomplcache#close_popup() . "\<Left>"
+	inoremap <expr><Right> neocomplcache#close_popup() . "\<Right>"
+	inoremap <expr><Up>    neocomplcache#close_popup() . "\<Up>"
+	inoremap <expr><Down>  neocomplcache#close_popup() . "\<Down>"
 	
 	" AutoComplPop like behavior.
 	"let g:neocomplcache_enable_auto_select = 1
@@ -1032,6 +1038,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-09-21
 - Added tcl support.
+- Improved examples.
 
 2011-09-19
 - Refactored local variable names.
