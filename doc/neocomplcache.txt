@@ -1039,6 +1039,7 @@ ChangeLog neocomplcache 6.2:
 2011-09-21
 - Added tcl support.
 - Improved examples.
+- Fixed omni_complete.
 
 2011-09-19
 - Refactored local variable names.
