@@ -101,7 +101,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
           \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
   else
     let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-    if var_pos < 0 && neocomplcache#is_auto_complete()
+    if neocomplcache#is_auto_complete()
           \ && neocomplcache#util#mb_strlen(cur_keyword_str)
           \      < g:neocomplcache_auto_completion_start_length
       return -1
