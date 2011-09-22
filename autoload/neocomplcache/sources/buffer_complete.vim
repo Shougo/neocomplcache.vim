@@ -391,7 +391,7 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
         if !has_key(source.member_cache, var_name)
           let source.member_cache[var_name] = {}
         endif
-        if !has_key(source.member_cache[var_name], member_name)
+        if member_name != '' && !has_key(source.member_cache[var_name], member_name)
           let source.member_cache[var_name][member_name] =
                 \ { 'word' : member_name, 'menu' : menu }
         endif
