@@ -1038,6 +1038,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-09-22
 - Fixed for Vim 7.3.319.
+- Fixed member completion.
 
 2011-09-21
 - Added tcl support.

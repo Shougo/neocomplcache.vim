@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2011.
+" Last Modified: 22 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,17 +97,15 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   let filetype = neocomplcache#get_context_filetype()
   if has_key(g:neocomplcache_member_prefix_patterns, filetype)
         \ && g:neocomplcache_member_prefix_patterns[filetype] != ''
-    let var_pos = match(a:cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
+    let cur_keyword_pos = matchend(a:cur_text, '\%(\h\w*\%(()\)\?\%(' .
           \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
   else
-    let var_pos = -1
-  endif
-
-  let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-  if var_pos < 0 && neocomplcache#is_auto_complete()
-        \ && neocomplcache#util#mb_strlen(cur_keyword_str)
-        \      < g:neocomplcache_auto_completion_start_length
-    return -1
+    let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+    if var_pos < 0 && neocomplcache#is_auto_complete()
+          \ && neocomplcache#util#mb_strlen(cur_keyword_str)
+          \      < g:neocomplcache_auto_completion_start_length
+      return -1
+    endif
   endif
 
   return cur_keyword_pos
@@ -119,7 +117,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   if has_key(g:neocomplcache_member_prefix_patterns, filetype)
         \ && g:neocomplcache_member_prefix_patterns[filetype] != ''
     let cur_text = neocomplcache#get_cur_text()
-    let var_name = matchstr(cur_text, '\%(\h\w*\%(()\?\)\?\%(' .
+    let var_name = matchstr(cur_text, '\%(\h\w*\%(()\)\?\%(' .
           \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
     if var_name != ''
       return s:get_member_list(cur_text, var_name)
@@ -372,7 +370,7 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
   let menu = '[B] member'
   let keyword_pattern = '\%(\h\w*\%(()\?\)\?\%(' . g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+\h\w*\%(()\?\)\?'
   let keyword_pattern2 = '^'.keyword_pattern
-  let member_pattern = '\h\w*\%(()\?\)\?$'
+  let member_pattern = '\h\w*\%(()\)\?$'
 
   " Cache member pattern.
   let [line_num, max_lines] = [0, len(buflines)]
@@ -394,7 +392,8 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
           let source.member_cache[var_name] = {}
         endif
         if !has_key(source.member_cache[var_name], member_name)
-          let source.member_cache[var_name][member_name] = { 'word' : member_name, 'menu' : menu }
+          let source.member_cache[var_name][member_name] =
+                \ { 'word' : member_name, 'menu' : menu }
         endif
 
         let match_str = matchstr(var_name, keyword_pattern2)
