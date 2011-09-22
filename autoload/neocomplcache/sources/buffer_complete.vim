@@ -386,12 +386,15 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
       while match_str != ''
         let member_name = matchstr(match_str, member_pattern)
+        if member_name == ''
+          break
+        endif
         let var_name = match_str[ : -len(member_name)-1]
 
         if !has_key(source.member_cache, var_name)
           let source.member_cache[var_name] = {}
         endif
-        if member_name != '' && !has_key(source.member_cache[var_name], member_name)
+        if !has_key(source.member_cache[var_name], member_name)
           let source.member_cache[var_name][member_name] =
                 \ { 'word' : member_name, 'menu' : menu }
         endif
