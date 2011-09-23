@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2011.
+" Last Modified: 24 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -371,9 +371,9 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
   endif
 
   let menu = '[B] member'
-  let keyword_pattern = '\%(\h\w*\%(()\?\)\?\%(' . g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+\h\w*\%(()\?\)\?'
+  let keyword_pattern = '\%(\h\w*\%(()\)\?\%(' . g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+\h\w*\%(()\?\)\?'
   let keyword_pattern2 = '^'.keyword_pattern
-  let member_pattern = '\h\w*\%(()\)\?$'
+  let member_pattern = '\h\w*\%(()\?\)\?$'
 
   " Cache member pattern.
   let [line_num, max_lines] = [0, len(buflines)]
