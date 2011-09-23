@@ -520,12 +520,19 @@ g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
 		初期値は20である。
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
-		include_completeやtags_complete,
-		buffer_completeがメンバを認識するための
-		パターンを記録する。これはファイルタイプ毎に正規表現で指定
-		されている。
+		buffer_completeがメンバを認識するためのプレフィクスパターン
+		を記録する。これはファイルタイプ毎に正規表現で指定されている。
+		もしファイルタイプのキーが存在しない場合、メンバ補完は無効化される。
 		
-		初期値は複雑なので、autoload/neocomplcache.vimのneocomplcache#enable()を参照せよ。
+		初期値は複雑なので、autoload/neocomplcache/sources/buffer_complete.vimを参照せよ。
+
+g:neocomplcache_member_patterns				*g:neocomplcache_member_patterns*
+		buffer_completeがメンバを認識するためのパターンを記録する。
+		これはファイルタイプ毎に正規表現で指定されている。
+		もしファイルタイプのキーが存在しない場合、ファイルタイプ
+		"default"の値がセットされる。
+
+		初期値は複雑なので、autoload/neocomplcache/sources/buffer_complete.vimを参照せよ。
 
 g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
 		関数をスマートに補完するための区切り文字パターンを定義する。

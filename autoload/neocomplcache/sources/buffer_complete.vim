@@ -59,6 +59,28 @@ function! s:source.initialize()"{{{
     call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
   endif
 
+  " Initialize member prefix patterns."{{{
+  if !exists('g:neocomplcache_member_prefix_patterns')
+    let g:neocomplcache_member_prefix_patterns = {}
+  endif
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
+        \'c,cpp,objc,objcpp', '\.\|->')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
+        \'perl,php', '->')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
+        \'cs,java,javascript,d,vim,ruby,python,perl6,scala,vb', '\.')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
+        \'lua', '\.\|:')
+  "}}}
+
+  " Initialize member patterns."{{{
+  if !exists('g:neocomplcache_member_patterns')
+    let g:neocomplcache_member_patterns = {}
+  endif
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_patterns,
+        \'default', '\h\w*\%(()\?\)\?')
+  "}}}
+
   " Initialize script variables."{{{
   let s:buffer_sources = {}
   let s:filetype_frequencies = {}
@@ -97,7 +119,8 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   let filetype = neocomplcache#get_context_filetype()
   if has_key(g:neocomplcache_member_prefix_patterns, filetype)
         \ && g:neocomplcache_member_prefix_patterns[filetype] != ''
-    let cur_keyword_pos = matchend(a:cur_text, '\%(\h\w*\%(()\)\?\%(' .
+    let cur_keyword_pos = matchend(a:cur_text,
+          \ '\%(' . s:get_member_pattern(filetype) . '\%(' .
           \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
     if cur_keyword_pos >= 0
       return cur_keyword_pos
@@ -120,7 +143,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   if has_key(g:neocomplcache_member_prefix_patterns, filetype)
         \ && g:neocomplcache_member_prefix_patterns[filetype] != ''
     let cur_text = neocomplcache#get_cur_text()
-    let var_name = matchstr(cur_text, '\%(\h\w*\%(()\)\?\%(' .
+    let var_name = matchstr(cur_text,
+          \ '\%(' . s:get_member_pattern(filetype) . '\%(' .
           \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
     if var_name != ''
       return s:get_member_list(cur_text, var_name)
@@ -130,7 +154,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let keyword_list = []
   for src in s:get_sources_list()
     let keyword_cache = neocomplcache#dictionary_filter(
-          \ s:buffer_sources[src].keyword_cache, a:cur_keyword_str, s:completion_length)
+          \ s:buffer_sources[src].keyword_cache,
+          \ a:cur_keyword_str, s:completion_length)
 
     if src == bufnr('%')
       call s:calc_frequency(keyword_cache)
@@ -371,9 +396,12 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
   endif
 
   let menu = '[B] member'
-  let keyword_pattern = '\%(\h\w*\%(()\)\?\%(' . g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+\h\w*\%(()\?\)\?'
+  let keyword_pattern =
+        \ '\%(' . s:get_member_pattern(filetype) . '\%('
+        \ . g:neocomplcache_member_prefix_patterns[filetype]
+        \ . '\m\)\)\+' . s:get_member_pattern(filetype)
   let keyword_pattern2 = '^'.keyword_pattern
-  let member_pattern = '\h\w*\%(()\?\)\?$'
+  let member_pattern = s:get_member_pattern(filetype) . '$'
 
   " Cache member pattern.
   let [line_num, max_lines] = [0, len(buflines)]
@@ -607,6 +635,12 @@ function! s:save_all_cache()"{{{
     call writefile([v:exception . ' ' . v:throwpoint], error_file)
     call neocomplcache#print_error('Please check error file: ' . error_file)
   endtry
+endfunction"}}}
+
+function! s:get_member_pattern(filetype)"{{{
+  return has_key(g:neocomplcache_member_patterns, a:filetype) ?
+        \ g:neocomplcache_member_patterns[a:filetype] :
+        \ g:neocomplcache_member_patterns['default']
 endfunction"}}}
 
 " Command functions."{{{

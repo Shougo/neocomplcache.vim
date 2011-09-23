@@ -544,12 +544,24 @@ g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
 		Default value is 20.
 
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
-		This variable appoints a keyword pattern to complete a member
-		in include_complete and tags_complete and buffer_complete.
+		This variable appoints a prefix pattern to complete a member
+		in buffer_complete.
 		This is appointed in regular expression every file type.
+		If filetype key is not set, disable member completion.
 		
-		Because it is complicated, refer to neocomplcache#enable() in
-		autoload/neocomplcache.vim for the initial value.
+		Because it is complicated, refer in
+		autoload/neocomplcache/sources/buffer_complete.vim for the
+		initial value.
+
+g:neocomplcache_member_patterns				*g:neocomplcache_member_patterns*
+		This variable appoints a keyword pattern to complete a member
+		in buffer_complete.
+		This is appointed in regular expression every file type.
+		If filetype key is not set, use filetype "default" setting.
+		
+		Because it is complicated, refer in
+		autoload/neocomplcache/sources/buffer_complete.vim for the
+		initial value.
 
 g:neocomplcache_delimiter_patterns			*g:neocomplcache_delimiter_patterns*
 		This variable appoints a delimiter pattern to smart complete a
@@ -1038,6 +1050,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-09-24
 - Fixed member complete.
+- Added g:neocomplcache_member_patterns option.
 
 2011-09-23
 - Fixed buffer_complete bug.
