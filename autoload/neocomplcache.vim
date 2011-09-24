@@ -108,109 +108,161 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'default',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'default',
         \'\k\+')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'filename',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'filename',
         \'\%(\\[^[:alnum:].-]\|\f\)\+')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'lisp,scheme,clojure,int-gosh,int-clisp,int-clj',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'lisp,scheme,clojure,int-gosh,int-clisp,int-clj',
         \'[[:alpha:]+*/@$_=.!?-][[:alnum:]+*/@$_:=.!?-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ruby,int-irb',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'ruby,int-irb',
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'php',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\h\w*\%(\%(\\\|::\)\w*\)*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'perl,int-perlsh',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'perl,int-perlsh',
         \'<\h\w*>\?\|[$@%&*]\h\w*\|\h\w*\%(::\w*\)*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'perl6,int-perl6',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'perl6,int-perl6',
         \'<\h\w*>\?\|[$@%&][!.*?]\?\h[[:alnum:]_-]*\|\h[[:alnum:]_-]*\%(::[[:alnum:]_-]*\)*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'pir',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'pir',
         \'[$@%.=]\?\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'pasm',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'pasm',
         \'[=]\?\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'vim,help',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'vim,help',
         \'\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?\|<SID>\%(\h\w*\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'tex',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'tex',
         \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:_]*\*\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'sh,zsh,int-zsh,int-bash,int-sh',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'sh,zsh,int-zsh,int-bash,int-sh',
         \'\$\w\+\|[[:alpha:]_.-][[:alnum:]_.-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'vimshell',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'vimshell',
         \'\$\$\?\w*\|[[:alpha:]_.\\/~-][[:alnum:]_.\\/~-]*\|\d\+\%(\.\d\+\)\+')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ps1,int-powershell',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'ps1,int-powershell',
         \'\[\h\%([[:alnum:]_.]*\]::\)\?\|[$%@.]\?[[:alpha:]_.:-][[:alnum:]_.:-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'c',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'c',
         \'^\s*#\s*\h\w*\|\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'cpp',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'cpp',
         \'^\s*#\s*\h\w*\|\h\w*\%(::\w*\)*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'objc',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'objc',
         \'^\s*#\s*\h\w*\|\h\w*\|@\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'objcpp',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'objcpp',
         \'^\s*#\s*\h\w*\|\h\w*\%(::\w*\)*\|@\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'objj',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'objj',
         \'\h\w*\|@\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'd',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'d',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'python,int-python,int-ipython',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'python,int-python,int-ipython',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'cs',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'cs',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'java',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'java',
         \'[@]\?\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'javascript,actionscript,int-js,int-kjs',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'javascript,actionscript,int-js,int-kjs,int-rhino',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'coffee,int-coffee',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'coffee,int-coffee',
         \'@\h\w*\|\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'awk',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'awk',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'haskell,int-ghci',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'haskell,int-ghci',
         \'\%(\u\w*\.\)\+[[:alnum:]_'']*\|[[:alpha:]_''][[:alnum:]_'']*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'ml,ocaml,int-ocaml,int-sml,int-smlsharp',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'ml,ocaml,int-ocaml,int-sml,int-smlsharp',
         \'[''`#.]\?\h[[:alnum:]_'']*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'erlang,int-erl',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'erlang,int-erl',
         \'^\s*-\h\w*\|\%(\h\w*:\)*\h\w\|\h[[:alnum:]_@]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'html,xhtml,xml,markdown,eruby',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'html,xhtml,xml,markdown,eruby',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'css,stylus',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'css,stylus',
         \'[@#.]\?[[:alpha:]_:-][[:alnum:]_:-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'tags',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'tags',
         \'^[^!][^/[:blank:]]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'pic',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'pic',
         \'^\s*#\h\w*\|\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'arm',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'arm',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'asmh8300',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'asmh8300',
         \'[[:alpha:]_.][[:alnum:]_.]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'masm',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'masm',
         \'\.\h\w*\|[[:alpha:]_@?$][[:alnum:]_@?$]*\|\h\w*:\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'nasm',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'nasm',
         \'^\s*\[\h\w*\|[%.]\?\h\w*\|\%(\.\.@\?\|%[%$!]\)\%(\h\w*\)\?\|\h\w*:\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'asm',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'asm',
         \'[%$.]\?\h\w*\%(\$\h\w*\)\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'gas',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'gas',
         \'[$.]\?\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'gdb,int-gdb',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'gdb,int-gdb',
         \'$\h\w*\|[[:alnum:]:._-]\+')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'make',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'make',
         \'[[:alpha:]_.-][[:alnum:]_.-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'scala,int-scala',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'scala,int-scala',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'int-termtter',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'int-termtter',
         \'\h[[:alnum:]_/-]*\|\$\a\+\|#\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'int-earthquake',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'int-earthquake',
         \'\h[[:alnum:]_/-]*\|\$\a\+\|[:#]\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'dosbatch,int-cmdproxy',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'dosbatch,int-cmdproxy',
         \'\$\w+\|[[:alpha:]_./-][[:alnum:]_.-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'vb',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'vb',
         \'\a[[:alnum:]]*\|#\a[[:alnum:]]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'lua',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'lua',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'zimbu',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \ 'zimbu',
         \'\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'konoha',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'konoha',
         \'[*$@%]\h\w*\|\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'cobol',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'cobol',
         \'\a[[:alnum:]-]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'coq',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'coq',
         \'\h[[:alnum:]_'']*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns, 'tcl',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'tcl',
         \'[.-]\h\w*\|\h\w*')
   "}}}
 
@@ -234,76 +286,115 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_same_filetype_lists')
     let g:neocomplcache_same_filetype_lists = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'c', 'cpp')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'cpp', 'c')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'erb', 'ruby,html,xhtml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'html,xml', 'xhtml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'html,xhtml', 'css,stylus')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'stylus', 'css')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'xhtml', 'html,xml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'help', 'vim')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'tex', 'bib')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'lingr-say', 'lingr-messages,lingr-members')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'c', 'cpp')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'cpp', 'c')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'erb', 'ruby,html,xhtml')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'html,xml', 'xhtml')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'html,xhtml', 'css,stylus')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'stylus', 'css')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'xhtml', 'html,xml')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'help', 'vim')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'tex', 'bib')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'lingr-say', 'lingr-messages,lingr-members')
 
   " Interactive filetypes.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-irb', 'ruby')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-ghci,int-hugs', 'haskell')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-python,int-ipython', 'python')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-gosh', 'scheme')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-clisp', 'lisp')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-erl', 'erlang')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-zsh', 'zsh')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-bash', 'bash')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-sh', 'sh')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-cmdproxy', 'dosbatch')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-powershell', 'powershell')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-perlsh', 'perl')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-perl6', 'perl6')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-ocaml', 'ocaml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-clj', 'clojure')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-sml,int-smlsharp', 'sml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-js,int-kjs', 'javascript')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-coffee', 'coffee')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-gdb', 'gdb')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists, 'int-scala', 'scala')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-irb', 'ruby')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-ghci,int-hugs', 'haskell')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-python,int-ipython', 'python')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-gosh', 'scheme')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-clisp', 'lisp')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-erl', 'erlang')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-zsh', 'zsh')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-bash', 'bash')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-sh', 'sh')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-cmdproxy', 'dosbatch')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-powershell', 'powershell')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-perlsh', 'perl')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-perl6', 'perl6')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-ocaml', 'ocaml')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-clj', 'clojure')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-sml,int-smlsharp', 'sml')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-js,int-kjs,int-rhino', 'javascript')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-coffee', 'coffee')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-gdb', 'gdb')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-scala', 'scala')
   "}}}
 
   " Initialize include filetype lists."{{{
   if !exists('g:neocomplcache_filetype_include_lists')
     let g:neocomplcache_filetype_include_lists = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'c,cpp', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'c,cpp', [
         \ {'filetype' : 'masm', 'start' : '_*asm_*\s\+\h\w*', 'end' : '$'},
         \ {'filetype' : 'masm', 'start' : '_*asm_*\s*\%(\n\s*\)\?{', 'end' : '}'},
         \ {'filetype' : 'gas', 'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'd', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'd', [
         \ {'filetype' : 'masm', 'start' : 'asm\s*\%(\n\s*\)\?{', 'end' : '}'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'perl6', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'perl6', [
         \ {'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'vimshell', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'vimshell', [
         \ {'filetype' : 'vim', 'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
         \ {'filetype' : 'vim', 'start' : ' :\w*', 'end' : '\n'},
         \ {'filetype' : 'vim', 'start' : ' vexe\s\+', 'end' : '\n'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'eruby', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'eruby', [
         \ {'filetype' : 'ruby', 'start' : '<%[=#]\?', 'end' : '%>'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'vim', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'vim', [
         \ {'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'},
         \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'html,xhtml', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'html,xhtml', [
         \ {'filetype' : 'javascript', 'start' : '<script type="text/javascript">', 'end' : '</script>'},
         \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'python', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'python', [
         \ {'filetype' : 'vim', 'start' : 'vim.command\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
         \ {'filetype' : 'vim', 'start' : 'vim.eval\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists, 'help', [
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'help', [
         \ {'filetype' : 'vim', 'start' : '^>', 'end' : '^<'},
         \])
   "}}}
@@ -312,24 +403,25 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_delimiter_patterns')
     let g:neocomplcache_delimiter_patterns = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'vim,help',
-        \['#'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'erlang,lisp,int-clisp',
-        \[':'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'lisp,int-clisp',
-        \['/', ':'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'clojure,int-clj',
-        \['/', '\.'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'perl,cpp',
-        \['::'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'php',
-        \['\', '::'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'java,d,javascript,actionscript,ruby,eruby,haskell,int-ghci,coffee,zimbu,konoha',
-        \['\.'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'lua',
-        \['\.', ':'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns, 'perl6',
-        \['\.', '::'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'vim,help', ['#'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'erlang,lisp,int-clisp', [':'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'lisp,int-clisp', ['/', ':'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'clojure,int-clj', ['/', '\.'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'perl,cpp', ['::'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'php', ['\', '::'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'java,d,javascript,actionscript,ruby,eruby,haskell,int-ghci,coffee,zimbu,konoha',
+        \ ['\.'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'lua', ['\.', ':'])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_delimiter_patterns,
+        \ 'perl6', ['\.', '::'])
   "}}}
 
   " Initialize ctags arguments."{{{
