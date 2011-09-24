@@ -472,20 +472,9 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     " Use prefetch words.
     let complete_words = s:complete_words
   else
-    if &l:modifiable
-      " Set cur_text temporary.
-      let cur_text = neocomplcache#get_cur_text()
-      let old_line = getline('.')
-      call setline('.', cur_text)
-    endif
-
     let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
     let complete_words = neocomplcache#get_complete_words(
           \ s:complete_results, 1, cur_keyword_pos, a:base)
-
-    if &l:modifiable
-      call setline('.', old_line)
-    endif
   endif
 
   " Restore function.
