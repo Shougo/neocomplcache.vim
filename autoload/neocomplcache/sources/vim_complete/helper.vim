@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 26 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -461,7 +461,7 @@ function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_st
   " Caching.
   if !has_key(s:global_candidates_list, 'variables')
     let dict = {}
-    for var in extend(s:caching_from_dict('variables', ''), s:get_variablelist())
+    for var in s:get_variablelist(g:, 'g:') + s:get_variablelist(v:, 'v:')
       let dict[var.word] = var
     endfor
     let s:global_candidates_list.variables = dict
@@ -469,6 +469,10 @@ function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_st
 
   if a:cur_keyword_str =~ '^[swtb]:'
     let list = values(s:get_cached_script_candidates().variables)
+    if a:cur_keyword_str !~ '^s:'
+      let prefix = matchstr(a:cur_keyword_str, '^[swtb]:')
+      let list += s:get_variablelist(eval(prefix), prefix)
+    endif
   elseif a:cur_keyword_str =~ '^[vg]:'
     let list = values(s:global_candidates_list.variables)
   else
@@ -608,11 +612,7 @@ function! s:get_script_candidates(bufnumber)"{{{
     elseif line =~ var_pattern
       while line =~ var_pattern
         let var_name = matchstr(line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
-        if var_name =~ '^[btwg]:'
-          let candidates_dict = s:global_candidates_list.dictionary_variables
-        else
-          let candidates_dict = dictionary_variable_dict
-        endif
+        let candidates_dict = dictionary_variable_dict
         if !has_key(candidates_dict, var_name)
           let candidates_dict[var_name] = {}
         endif
@@ -624,8 +624,9 @@ function! s:get_script_candidates(bufnumber)"{{{
     endif
   endfor
 
-  return { 'functions' : function_dict, 'variables' : variable_dict, 
-        \'function_prototypes' : function_prototypes, 'dictionary_variables' : dictionary_variable_dict }
+  return { 'functions' : function_dict, 'variables' : variable_dict,
+        \ 'function_prototypes' : function_prototypes,
+        \ 'dictionary_variables' : dictionary_variable_dict }
 endfunction"}}}
 
 function! s:caching_from_dict(dict_name, kind)"{{{
@@ -765,28 +766,12 @@ function! s:get_cmdlist()"{{{
 
   return keyword_list
 endfunction"}}}
-function! s:get_variablelist()"{{{
-  " Get variable list.
-  redir => redir
-  silent! let
-  redir END
-
-  let keyword_list = []
-  let menu_pattern = '[vim] variable'
+function! s:get_variablelist(dict, prefix)"{{{
   let kind_dict = ['0', '""', '()', '[]', '{}', '.']
-  for line in split(redir, '\n')
-    let word = matchstr(line, '^\a[[:alnum:]_:]*')
-    if word !~ '^\a:'
-      let word = 'g:' . word
-    elseif word =~ '[^gv]:'
-      continue
-    endif
-    call add(keyword_list, {
-          \ 'word' : word, 'menu' : menu_pattern,
-          \ 'kind' : exists(word)? kind_dict[type(eval(word))] : ''
-          \})
-  endfor
-  return keyword_list
+  return values(map(copy(a:dict), '{
+        \ "word" : a:prefix.v:key, "menu" : "[vim] variable",
+        \ "kind" : kind_dict[type(v:val)],
+        \}'))
 endfunction"}}}
 function! s:get_functionlist()"{{{
   " Get function list.
