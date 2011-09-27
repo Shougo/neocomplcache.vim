@@ -1048,6 +1048,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-09-27
+- Improved mappings dictionary.
+
 2011-09-26
 - Improved vim_complete variables anaylze.
 

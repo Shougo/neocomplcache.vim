@@ -51,3 +51,21 @@
 <kDivide> ; keypad /
 <kEnter> ; keypad Enter
 <kPoint> ; keypad Decimal point
+<LeftMouse>     ; Left mouse click
+<A-LeftMouse>   ; Left mouse click with Alt
+<C-LeftMouse>   ; Left mouse click with Ctrl
+<S-LeftMouse>   ; Left mouse click with Shift
+<2-LeftMouse>   ; Double left mouse click
+<3-LeftMouse>   ; Triple left mouse click
+<4-LeftMouse>   ; Quad left mouse click
+<LeftDrag>      ; Left mouse drag
+<LeftRelease>   ; Left mouse release
+<MiddleMouse>   ; Middle mouse click
+<MiddleDrag>    ; Middle mouse drag
+<MiddleRelease> ; Middle mouse drag
+<RightMouse>    ; Right mouse click
+<A-RightMouse>  ; Right mouse click with Alt
+<S-RightMouse>  ; Right mouse click with Shift
+<C-RightMouse>  ; Right mouse click with Ctrl
+<RightDrag>     ; Right mouse drag
+<RightRelease>  ; Right mouse release
