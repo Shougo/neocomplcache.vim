@@ -219,11 +219,9 @@ function! s:initialize_source(srcname)"{{{
     let ft = 'nothing'
   endif
 
-  let keyword_pattern = neocomplcache#get_keyword_pattern(ft)
-
   let s:member_sources[a:srcname] = {
-        \ 'member_cache' : {},
-        \ 'name' : filename, 'filetype' : ft, 'keyword_pattern' : keyword_pattern,
+        \ 'member_cache' : {}, 'filetype' : ft,
+        \ 'keyword_pattern' : neocomplcache#get_keyword_pattern(ft),
         \}
 endfunction"}}}
 
