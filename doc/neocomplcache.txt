@@ -1056,6 +1056,9 @@ ChangeLog neocomplcache 6.2:
 2011-10-04
 - Added member_complete source.
 
+2011-10-01
+- Supported info in omni_complete.
+
 2011-09-29
 - Fixed php snippet.
 
