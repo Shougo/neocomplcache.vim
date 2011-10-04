@@ -818,12 +818,17 @@ PLUGINS							*neocomplcache-plugins*
 Neocomplcache reads automatically the plugin saved in an
 autoload/neocomplcache/sources directory.
 
+keyword_complete.vim					*keyword_complete*
+		This plugin collects keywords from dictionaries... etc, and to
+		use for completion.  Because the plugin offer the basic
+		function of neocomplcache, neocomplcache does not work normally
+		when you delete this plugin.
+
 buffer_complete.vim					*buffer_complete*
-		This plugin collects keywords from buffers and
-		dictionaries, and to use for completion.  Because the
-		plugin offer the basic function of neocomplcache,
-		neocomplcache does not work normally when you delete this
-		plugin.
+		This plugin collects keywords from buffer.
+
+member_complete.vim					*member_complete*
+		This plugin collects use of member variables from buffer.
 
 snippets_complete.vim					*snippets_complete*
 		This plugin analyzes snippet files for completion.  The
@@ -1047,6 +1052,9 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
+2011-10-04
+- Added member_complete source.
 
 2011-09-29
 - Fixed php snippet.

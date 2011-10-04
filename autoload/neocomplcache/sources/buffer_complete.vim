@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Sep 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,43 +43,24 @@ function! s:source.initialize()"{{{
     autocmd InsertEnter * call s:check_source()
     autocmd CursorHold * call s:rank_caching_current_cache_line(1)
     autocmd CursorHold * call s:check_deleted_buffer()
-    autocmd InsertEnter,CursorHoldI * call s:rank_caching_current_cache_line(0)
-    autocmd InsertLeave * call neocomplcache#sources#buffer_complete#caching_current_cache_line()
+    autocmd InsertEnter,CursorHoldI *
+          \ call s:rank_caching_current_cache_line(0)
+    autocmd InsertLeave *
+          \ call neocomplcache#sources#buffer_complete#caching_current_cache_line()
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
   " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'buffer_complete', 4)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank,
+        \ 'buffer_complete', 4)
 
   " Set completion length.
-  call neocomplcache#set_completion_length('buffer_complete', 0)
+  call neocomplcache#set_completion_length('buffer_complete', 2)
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
     call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
   endif
-
-  " Initialize member prefix patterns."{{{
-  if !exists('g:neocomplcache_member_prefix_patterns')
-    let g:neocomplcache_member_prefix_patterns = {}
-  endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'c,cpp,objc,objcpp', '\.\|->')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'perl,php', '->')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'cs,java,javascript,d,vim,ruby,python,perl6,scala,vb', '\.')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'lua', '\.\|:')
-  "}}}
-
-  " Initialize member patterns."{{{
-  if !exists('g:neocomplcache_member_patterns')
-    let g:neocomplcache_member_patterns = {}
-  endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_patterns,
-        \'default', '\h\w*\%(()\?\)\?')
-  "}}}
 
   " Initialize script variables."{{{
   let s:buffer_sources = {}
@@ -115,42 +96,12 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
-  " Check member prefix pattern.
-  let filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_member_prefix_patterns, filetype)
-        \ && g:neocomplcache_member_prefix_patterns[filetype] != ''
-    let cur_keyword_pos = matchend(a:cur_text,
-          \ '\%(' . s:get_member_pattern(filetype) . '\%(' .
-          \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
-    if cur_keyword_pos >= 0
-      return cur_keyword_pos
-    endif
-  endif
-
   let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-  if neocomplcache#is_auto_complete()
-        \ && neocomplcache#util#mb_strlen(cur_keyword_str)
-        \      < g:neocomplcache_auto_completion_start_length
-    return -1
-  endif
 
   return cur_keyword_pos
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  " Check member prefix pattern.
-  let filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_member_prefix_patterns, filetype)
-        \ && g:neocomplcache_member_prefix_patterns[filetype] != ''
-    let cur_text = neocomplcache#get_cur_text()
-    let var_name = matchstr(cur_text,
-          \ '\%(' . s:get_member_pattern(filetype) . '\%(' .
-          \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+$')
-    if var_name != ''
-      return s:get_member_list(cur_text, var_name)
-    endif
-  endif
-
   let keyword_list = []
   for src in s:get_sources_list()
     let keyword_cache = neocomplcache#dictionary_filter(
@@ -311,29 +262,20 @@ function! s:get_sources_list()"{{{
   let sources_list = []
 
   let filetypes_dict = {}
-  for filetype in neocomplcache#get_source_filetypes(neocomplcache#get_context_filetype())
+  for filetype in neocomplcache#get_source_filetypes(
+        \ neocomplcache#get_context_filetype())
     let filetypes_dict[filetype] = 1
   endfor
 
   for key in keys(s:buffer_sources)
-    if has_key(filetypes_dict, s:buffer_sources[key].filetype) || bufnr('%') == key
+    if has_key(filetypes_dict, s:buffer_sources[key].filetype)
+          \ || bufnr('%') == key
           \ || (bufname('%') ==# '[Command Line]' && bufnr('#') == key)
       call add(sources_list, key)
     endif
   endfor
 
   return sources_list
-endfunction"}}}
-
-function! s:get_member_list(cur_text, var_name)"{{{
-  let keyword_list = []
-  for src in s:get_sources_list()
-    if has_key(s:buffer_sources[src].member_cache, a:var_name)
-      let keyword_list += values(s:buffer_sources[src].member_cache[a:var_name])
-    endif
-  endfor
-
-  return keyword_list
 endfunction"}}}
 
 function! s:rank_caching_current_cache_line(is_force)"{{{
@@ -384,54 +326,6 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
       " Next match.
       let match = match(line, keyword_pattern, match + len(match_str))
-    endwhile"}}}
-
-    let line_num += 1
-  endwhile
-
-  let filetype = neocomplcache#get_context_filetype(1)
-  if !has_key(g:neocomplcache_member_prefix_patterns, filetype)
-        \ || g:neocomplcache_member_prefix_patterns[filetype] == ''
-    return
-  endif
-
-  let menu = '[B] member'
-  let keyword_pattern =
-        \ '\%(' . s:get_member_pattern(filetype) . '\%('
-        \ . g:neocomplcache_member_prefix_patterns[filetype]
-        \ . '\m\)\)\+' . s:get_member_pattern(filetype)
-  let keyword_pattern2 = '^'.keyword_pattern
-  let member_pattern = s:get_member_pattern(filetype) . '$'
-
-  " Cache member pattern.
-  let [line_num, max_lines] = [0, len(buflines)]
-  while line_num < max_lines
-    let line = buflines[line_num]
-    let match = match(line, keyword_pattern)
-
-    while match >= 0"{{{
-      let match_str = matchstr(line, keyword_pattern2, match)
-
-      " Next match.
-      let match = matchend(line, keyword_pattern, match + len(match_str))
-
-      while match_str != ''
-        let member_name = matchstr(match_str, member_pattern)
-        if member_name == ''
-          break
-        endif
-        let var_name = match_str[ : -len(member_name)-1]
-
-        if !has_key(source.member_cache, var_name)
-          let source.member_cache[var_name] = {}
-        endif
-        if !has_key(source.member_cache[var_name], member_name)
-          let source.member_cache[var_name][member_name] =
-                \ { 'word' : member_name, 'menu' : menu }
-        endif
-
-        let match_str = matchstr(var_name, keyword_pattern2)
-      endwhile
     endwhile"}}}
 
     let line_num += 1
@@ -487,7 +381,7 @@ function! s:initialize_source(srcname)"{{{
   let keyword_pattern = neocomplcache#get_keyword_pattern(ft)
 
   let s:buffer_sources[a:srcname] = {
-        \ 'keyword_cache' : {}, 'rank_lines' : {}, 'member_cache' : {},
+        \ 'keyword_cache' : {}, 'rank_lines' : {},
         \ 'name' : filename, 'filetype' : ft, 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : end_line , 'cache_line_cnt' : cache_line_cnt,
         \ 'frequencies' : {}, 'check_sum' : len(join(buflines[:4], '\n')),
@@ -635,12 +529,6 @@ function! s:save_all_cache()"{{{
     call writefile([v:exception . ' ' . v:throwpoint], error_file)
     call neocomplcache#print_error('Please check error file: ' . error_file)
   endtry
-endfunction"}}}
-
-function! s:get_member_pattern(filetype)"{{{
-  return has_key(g:neocomplcache_member_patterns, a:filetype) ?
-        \ g:neocomplcache_member_patterns[a:filetype] :
-        \ g:neocomplcache_member_patterns['default']
 endfunction"}}}
 
 " Command functions."{{{

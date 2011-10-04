@@ -800,9 +800,16 @@ PLUGINS							*neocomplcache-plugins*
 neocomplcacheにより自動的に読み込まれる。
 
 keyword_complete.vim					*keyword_complete*
-		バッファやディクショナリからキーワードを収集し、補完に利用す
-		るプラグイン。 neocomplcacheの基本機能も提供しているため、こ
-		のプラグインを削除すると neocomplcacheは正常に動作しない。
+		ディクショナリなどからキーワードを収集し、補完に利用するプラグ
+		イン。 neocomplcacheの基本機能も提供しているため、このプラグイ
+		ンを削除すると neocomplcacheは正常に動作しない。
+
+buffer_complete.vim					*buffer_complete*
+		バッファからキーワードを収集するプラグイン。並び換えに使用する
+		ため、単語の使用頻度の解析も担っている。
+
+member_complete.vim					*member_complete*
+		バッファからメンバ変数の使用を検出し、候補とする。
 
 snippets_complete.vim					*snippets_complete*
 		スニペット補完ファイルからスニペットを読み込み、補完に利用す
