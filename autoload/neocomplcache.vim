@@ -543,8 +543,12 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     endif
 
     " Get cur_keyword_pos.
-    let complete_results = neocomplcache#get_complete_results_pos(s:get_cur_text())
-    let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(complete_results)
+    if s:is_prefetch && !empty(s:complete_results)
+      " Use prefetch results.
+    else
+      let s:complete_results = neocomplcache#get_complete_results(s:get_cur_text())
+    endif
+    let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
 
     if cur_keyword_pos < 0
       let s:cur_keyword_str = ''
@@ -555,30 +559,21 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       return -1
     endif
 
-    let s:complete_results = complete_results
-
     return cur_keyword_pos
-  endif
-
-  if s:is_prefetch && !empty(s:complete_words)
-    " Use prefetch words.
-    let complete_words = s:complete_words
-  else
-    let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
-    let complete_words = neocomplcache#get_complete_words(
-          \ s:complete_results, 1, cur_keyword_pos, a:base)
   endif
 
   " Restore function.
   let &l:completefunc = 'neocomplcache#manual_complete'
 
-  let s:complete_words = complete_words
+  let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
+  let s:complete_words = neocomplcache#get_complete_words(
+          \ s:complete_results, 1, cur_keyword_pos, a:base)
   let s:cur_keyword_str = a:base
   let s:is_prefetch = 0
 
   return (v:version > 703 || v:version == 703 && has('patch319')) ?
-        \ { 'words' : complete_words, 'refresh' : 'always' }
-        \ : complete_words
+        \ { 'words' : s:complete_words, 'refresh' : 'always' }
+        \ : s:complete_words
 endfunction"}}}
 
 function! neocomplcache#sources_manual_complete(findstart, base)"{{{
@@ -591,7 +586,7 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
     endif
 
     " Get cur_keyword_pos.
-    let complete_results = neocomplcache#get_complete_results_pos(
+    let complete_results = neocomplcache#get_complete_results(
           \ s:get_cur_text(), s:use_sources)
     let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(complete_results)
 
@@ -609,20 +604,9 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
     return cur_keyword_pos
   endif
 
-  if &l:modifiable
-    " Set cur_text temporary.
-    let cur_text = neocomplcache#get_cur_text()
-    let old_line = getline('.')
-    call setline('.', cur_text)
-  endif
-
   let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
   let complete_words = neocomplcache#get_complete_words(
         \ s:complete_results, 1, cur_keyword_pos, a:base)
-
-  if &l:modifiable
-    call setline('.', old_line)
-  endif
 
   let &l:completefunc = 'neocomplcache#manual_complete'
 
@@ -708,30 +692,18 @@ function! neocomplcache#do_auto_complete()"{{{
 
   let &l:completefunc = 'neocomplcache#auto_complete'
 
-  " Get cur_keyword_pos.
-  let complete_results = neocomplcache#get_complete_results_pos(cur_text)
-  let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(complete_results)
-  if cur_keyword_pos < 0
-    let &l:completefunc = 'neocomplcache#manual_complete'
-    " Not found.
-    return
-  endif
-
   if g:neocomplcache_enable_prefetch
     " Do prefetch.
-    let cur_keyword_str = cur_text[cur_keyword_pos :]
-    let complete_words = neocomplcache#get_complete_words(
-          \ complete_results, 1, cur_keyword_pos, cur_keyword_str)
+    let s:complete_results =
+          \ neocomplcache#get_complete_results(s:get_cur_text())
 
-    if empty(complete_words)
+    if empty(s:complete_results)
       " Skip completion.
       let &l:completefunc = 'neocomplcache#manual_complete'
       let s:complete_words = []
       let s:is_prefetch = 0
       return
     endif
-
-    let s:complete_words = complete_words
   endif
 
   let s:is_prefetch = g:neocomplcache_enable_prefetch
@@ -1222,7 +1194,7 @@ function! neocomplcache#print_debug(expr)"{{{
 endfunction"}}}
 
 " For unite source.
-function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
+function! neocomplcache#get_complete_results(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
 
@@ -1273,7 +1245,10 @@ function! neocomplcache#get_complete_results_pos(cur_text, ...)"{{{
   endfor
   "}}}
 
-  return complete_results
+  call s:set_complete_results_words(complete_results)
+
+  return filter(complete_results,
+        \ '!empty(v:val.complete_words)')
 endfunction"}}}
 function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
   if empty(a:complete_results)
@@ -1291,8 +1266,6 @@ function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
 endfunction"}}}
 function! neocomplcache#get_complete_words(complete_results, is_sort,
       \ cur_keyword_pos, cur_keyword_str) "{{{
-  call s:set_complete_results_words(a:complete_results)
-
   let frequencies = neocomplcache#is_buffer_complete_enabled() ?
         \ neocomplcache#sources#buffer_complete#get_frequencies() : {}
 

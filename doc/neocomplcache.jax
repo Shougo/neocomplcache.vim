@@ -358,7 +358,7 @@ g:neocomplcache_enable_prefetch				*g:neocomplcache_enable_prefetch*
 		Note: ただし、補完関数外で補完を呼ぶことになるため、
 		|complete_check()|などが使えなくなるという副作用がある。
 		
-		初期値は0となっており、この機能は無効になっている。
+		初期値は1となっており、この機能は有効になっている。
 
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		ユーザが定義したスニペット補完ファイルのパスを指定する。 カ

@@ -359,7 +359,7 @@ g:neocomplcache_enable_prefetch				*g:neocomplcache_enable_prefetch*
 		Partial function (ex: |complete_check()|) is disabled in
 		completefunc.
 		
-		Default value is 0.
+		Default value is 1.
 
 g:neocomplcache_snippets_dir				*g:neocomplcache_snippets_dir*
 		This variable appoints the pass of the snippet files which
@@ -1055,6 +1055,8 @@ ChangeLog neocomplcache 6.2:
 
 2011-10-07
 - Improved syntax_complete caching.
+- Improved g:neocomplcache_enable_prefetch behavior.
+- Changed g:neocomplcache_enable_prefetch behavior default value.
 
 2011-10-05
 - Fixed filename_complete.
