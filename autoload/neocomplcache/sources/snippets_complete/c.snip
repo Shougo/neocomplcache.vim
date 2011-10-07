@@ -81,6 +81,7 @@ snippet main
 
 # #include <...>
 snippet inc
+alias   #inc, #include
     #include <${1:stdio}.h>${0}
 # #include "..."
 snippet Inc
@@ -93,6 +94,7 @@ abbr #ifndef ... #define ... #endif
     #endif${0}
 
 snippet def
+alias   #def, #define
     #define 
 
 # Include-Guard

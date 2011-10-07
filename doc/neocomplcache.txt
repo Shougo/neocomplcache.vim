@@ -1057,6 +1057,7 @@ ChangeLog neocomplcache 6.2:
 - Improved syntax_complete caching.
 - Improved g:neocomplcache_enable_prefetch behavior.
 - Changed g:neocomplcache_enable_prefetch behavior default value.
+- Improved some snippets.
 
 2011-10-05
 - Fixed filename_complete.
