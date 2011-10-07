@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 07 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -247,22 +247,23 @@ function! s:get_buffer_include_files(bufnumber)"{{{
         \ && executable('python')
     " Initialize python path pattern.
     call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'python',
-          \ neocomplcache#system('python -', 'import sys;sys.stdout.write(",".join(sys.path))'))
+          \ neocomplcache#system('python -',
+          \ 'import sys;sys.stdout.write(",".join(sys.path))'))
   elseif filetype == 'cpp' && isdirectory('/usr/include/c++')
     " Add cpp path.
     call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'cpp',
           \ getbufvar(a:bufnumber, '&path') . ',/usr/include/c++/*')
   endif
 
-  let pattern = has_key(g:neocomplcache_include_patterns, filetype) ?
-        \ g:neocomplcache_include_patterns[filetype] : getbufvar(a:bufnumber, '&include')
+  let pattern = get(g:neocomplcache_include_patterns, filetype,
+        \ getbufvar(a:bufnumber, '&include'))
   if pattern == ''
     return []
   endif
-  let path = has_key(g:neocomplcache_include_paths, filetype) ?
-        \ g:neocomplcache_include_paths[filetype] : getbufvar(a:bufnumber, '&path')
-  let expr = has_key(g:neocomplcache_include_exprs, filetype) ?
-        \ g:neocomplcache_include_exprs[filetype] : getbufvar(a:bufnumber, '&includeexpr')
+  let path = get(g:neocomplcache_include_paths, filetype,
+        \ getbufvar(a:bufnumber, '&path'))
+  let expr = get(g:neocomplcache_include_exprs, filetype,
+        \ getbufvar(a:bufnumber, '&includeexpr'))
   if has_key(g:neocomplcache_include_suffixes, filetype)
     let suffixes = &l:suffixesadd
   endif
@@ -273,7 +274,8 @@ function! s:get_buffer_include_files(bufnumber)"{{{
     lcd `=fnamemodify(bufname(a:bufnumber), ':p:h')`
   endif
 
-  let include_files = s:get_include_files(0, getbufline(a:bufnumber, 1, 100), filetype, pattern, path, expr)
+  let include_files = s:get_include_files(0,
+        \ getbufline(a:bufnumber, 1, 100), filetype, pattern, path, expr)
 
   lcd `=cwd_save`
 
