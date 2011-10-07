@@ -35,6 +35,7 @@ abbr        while () {}
     }
 
 snippet     do_while
+alias       do
     do {
         ${0:/* code */}
     } while (${1:/* condition */});
@@ -48,6 +49,7 @@ abbr        switch () {}
     }
 
 snippet     function
+alias       func
 abbr        func() {}
     ${1:void} ${2:func_name}(${3}) {
         ${0}
@@ -84,10 +86,11 @@ snippet inc
 alias   #inc, #include
     #include <${1:stdio}.h>${0}
 # #include "..."
-snippet Inc
+snippet inc2
+alias   #inc2, #include2
     #include "${1:}.h"${0}
 
-snippet Def
+snippet ifndef
 abbr #ifndef ... #define ... #endif
     #ifndef $1
     #define ${1:SYMBOL} ${2:value}
@@ -124,3 +127,8 @@ snippet comment
 alias /*
     /* ${1:comment} */
     ${0}
+
+snippet sizeof
+alias size
+    sizeof(${0})
+
