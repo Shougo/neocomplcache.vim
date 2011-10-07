@@ -1053,6 +1053,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-07
+- Improved syntax_complete caching.
+
 2011-10-05
 - Fixed filename_complete.
 

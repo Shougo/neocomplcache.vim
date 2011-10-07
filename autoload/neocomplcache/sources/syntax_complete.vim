@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 07 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,13 +93,19 @@ function! s:caching()"{{{
 
   for filetype in neocomplcache#get_source_filetypes(&filetype)
     if !has_key(s:syntax_list, filetype)
-      let keyword_lists = neocomplcache#cache#index_load_from_cache('syntax_cache', filetype, s:completion_length)
-      if !empty(keyword_lists)
-        " Caching from cache.
-        let s:syntax_list[filetype] = keyword_lists
-      elseif filetype == &filetype
-        " Caching from syn list.
-        let s:syntax_list[filetype] = s:caching_from_syn(filetype)
+      " Check old cache.
+      let cache_name = neocomplcache#cache#encode_name('syntax_cache', &filetype)
+      let syntax_files = split(
+            \ globpath(&runtimepath, 'syntax/'.&filetype.'.vim'), '\n')
+      if getftime(cache_name) < 0 || (!empty(syntax_files)
+            \ && getftime(cache_name) <= getftime(syntax_files[0]))
+        if filetype ==# &filetype
+          " Caching from syn list.
+          let s:syntax_list[filetype] = s:caching_from_syn(filetype)
+        endif
+      else
+        let s:syntax_list[filetype] = neocomplcache#cache#index_load_from_cache(
+            \ 'syntax_cache', filetype, s:completion_length)
       endif
     endif
   endfor
@@ -117,7 +123,8 @@ function! s:recaching(filetype)"{{{
 endfunction"}}}
 
 function! s:caching_from_syn(filetype)"{{{
-  call neocomplcache#print_caching('Caching syntax "' . a:filetype . '"... please wait.')
+  call neocomplcache#print_caching(
+        \ 'Caching syntax "' . a:filetype . '"... please wait.')
 
   " Get current syntax list.
   redir => syntax_list
@@ -129,7 +136,7 @@ function! s:caching_from_syn(filetype)"{{{
   endif
 
   let group_name = ''
-  let keyword_pattern = neocomplcache#get_keyword_pattern()
+  let keyword_pattern = neocomplcache#get_keyword_pattern(a:filetype)
 
   let dup_check = {}
   let menu = '[S] '
@@ -138,7 +145,8 @@ function! s:caching_from_syn(filetype)"{{{
   for line in split(syntax_list, '\n')
     if line =~ '^\h\w\+'
       " Change syntax group name.
-      let menu = printf('[S] %.'. g:neocomplcache_max_filename_width.'s', matchstr(line, '^\h\w\+'))
+      let menu = printf('[S] %.'.
+            \ g:neocomplcache_max_filename_width.'s', matchstr(line, '^\h\w\+'))
       let line = substitute(line, '^\h\w\+\s*xxx', '', '')
     endif
 
@@ -154,7 +162,7 @@ function! s:caching_from_syn(filetype)"{{{
     if line =~ '^\s*match'
       let line = s:substitute_candidate(matchstr(line, '/\zs[^/]\+\ze/'))
     elseif line =~ '^\s*start='
-      let line = 
+      let line =
             \s:substitute_candidate(matchstr(line, 'start=/\zs[^/]\+\ze/')) . ' ' .
             \s:substitute_candidate(matchstr(line, 'end=/zs[^/]\+\ze/'))
     endif
@@ -164,7 +172,8 @@ function! s:caching_from_syn(filetype)"{{{
     let match_str = matchstr(line, keyword_pattern, match_num)
     while match_str != ''
       " Ignore too short keyword.
-      if len(match_str) >= g:neocomplcache_min_syntax_length && !has_key(dup_check, match_str)
+      if len(match_str) >= g:neocomplcache_min_syntax_length
+            \ && !has_key(dup_check, match_str)
             \&& match_str =~ '^[[:print:]]\+$'
         let keyword = { 'word' : match_str, 'menu' : menu }
 
