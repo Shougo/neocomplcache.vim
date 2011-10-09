@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2011.
+" Last Modified: 09 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -270,14 +270,17 @@ function! s:get_buffer_include_files(bufnumber)"{{{
 
   " Change current directory.
   let cwd_save = getcwd()
-  if isdirectory(fnamemodify(bufname(a:bufnumber), ':p:h'))
-    lcd `=fnamemodify(bufname(a:bufnumber), ':p:h')`
+  let buffer_dir = fnamemodify(bufname(a:bufnumber), ':p:h')
+  if isdirectory(buffer_dir)
+    lcd `=buffer_dir`
   endif
 
   let include_files = s:get_include_files(0,
         \ getbufline(a:bufnumber, 1, 100), filetype, pattern, path, expr)
 
-  lcd `=cwd_save`
+  if isdirectory(buffer_dir)
+    lcd `=cwd_save`
+  endif
 
   " Restore option.
   if has_key(g:neocomplcache_include_suffixes, filetype)

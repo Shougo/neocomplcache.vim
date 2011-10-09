@@ -1053,6 +1053,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-09
+- Fixed include_complete error.
+
 2011-10-07
 - Improved syntax_complete caching.
 - Improved g:neocomplcache_enable_prefetch behavior.
