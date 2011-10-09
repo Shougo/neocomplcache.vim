@@ -1056,6 +1056,7 @@ ChangeLog neocomplcache 6.2:
 2011-10-09
 - Fixed include_complete error.
 - Fixed finalize error.
+- Added C++11 snippets.
 
 2011-10-07
 - Improved syntax_complete caching.

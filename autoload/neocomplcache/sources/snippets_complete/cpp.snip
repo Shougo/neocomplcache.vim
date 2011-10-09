@@ -18,3 +18,20 @@ abbr        try catch
         ${3}
     }
 
+# range based for ( C++11 feature )
+snippet     for_CPP11
+abbr        for (:) {}
+    for (${1:var} : ${2:container}) {
+        ${0}
+    }
+
+# lambda expression ( C++11 feature )
+snippet     lambda
+abbr        [](){}
+    [${1}](${2})${3}{ ${4} }
+
+# scoped enumeration ( C++11 feature )
+snippet     enum_scoped
+abbr        enum struct {}
+    enum struct { ${1} }
+
