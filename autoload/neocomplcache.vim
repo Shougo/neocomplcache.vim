@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2011.
+" Last Modified: 09 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -498,7 +498,9 @@ function! neocomplcache#enable() "{{{
 
   " Initialize.
   for source in values(neocomplcache#available_complfuncs())
-    call source.initialize()
+    if has_key(source, 'initialize')
+      call source.initialize()
+    endif
   endfor
 endfunction"}}}
 
@@ -523,11 +525,15 @@ function! neocomplcache#disable()"{{{
   delcommand NeoComplCacheAutoCompletionLength
 
   for source in values(neocomplcache#available_complfuncs())
-    call source.finalize()
+    if has_key(source, 'finalize')
+      call source.finalize()
+    endif
   endfor
   for source in values(neocomplcache#available_ftplugins())
     if source.loaded
-      call source.finalize()
+      if has_key(source, 'finalize')
+        call source.finalize()
+      endif
     endif
   endfor
 endfunction"}}}
