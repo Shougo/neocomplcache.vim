@@ -202,10 +202,9 @@ g:neocomplcache_max_keyword_width			*g:neocomplcache_max_keyword_width*
 		
 		Default value is 50.
 
-g:neocomplcache_max_filename_width			*g:neocomplcache_max_filename_width*
-		This variable controls the indication width of a file name
-		displayed in a pop-up menu.  The case beyond this value is
-		cut down.
+g:neocomplcache_max_menu_width				*g:neocomplcache_max_menu_width*
+		This variable controls the indication width of a menu displayed
+		in a pop-up menu.  The case beyond this value is cut down.
 		
 		Default value is 15.
 
@@ -1041,6 +1040,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed variables initialize.
 - Deleted g:neocomplcache_force_caching_buffer_name_pattern option.
 - Deleted g:neocomplcache_disable_auto_select_buffer_name_pattern option.
+- Renamed g:neocomplcache_max_filename_width to g:neocomplcache_max_menu_width.
 
 2011-10-09
 - Fixed include_complete error.

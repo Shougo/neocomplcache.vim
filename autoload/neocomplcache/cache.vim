@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 10 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -211,7 +211,7 @@ function! neocomplcache#cache#test_async()"{{{
   " args: funcname, outputname, filename pattern mark minlen maxfilename outputname
   let argv = [
         \  'load_from_file', cache_name, filename, pattern_file_name, '[B]',
-        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, &fileencoding
+        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_menu_width, &fileencoding
         \ ]
   return s:async_load(argv, 'test_cache', filename)
 endfunction"}}}
@@ -231,7 +231,7 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
   let fileencoding = &fileencoding == '' ? &encoding : &fileencoding
   let argv = [
         \  'load_from_file', cache_name, a:filename, pattern_file_name, a:mark,
-        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, fileencoding
+        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_menu_width, fileencoding
         \ ]
   return s:async_load(argv, a:cache_dir, a:filename)
 endfunction"}}}
@@ -284,7 +284,7 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
   let fileencoding = &fileencoding == '' ? &encoding : &fileencoding
   let argv = [
         \  'load_from_tags', cache_name, a:filename, pattern_file_name, a:mark,
-        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_filename_width, fileencoding
+        \  g:neocomplcache_min_keyword_length, g:neocomplcache_max_menu_width, fileencoding
         \ ]
   return s:async_load(argv, a:cache_dir, a:filename)
 endfunction"}}}

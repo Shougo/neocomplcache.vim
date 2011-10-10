@@ -213,8 +213,8 @@ g:neocomplcache_max_keyword_width			*g:neocomplcache_max_keyword_width*
 		
 		初期値は50である。
 
-g:neocomplcache_max_filename_width			*g:neocomplcache_max_filename_width*
-		ポップアップメニューで表示されるファイル名の表示幅を制御する。
+g:neocomplcache_max_menu_width				*g:neocomplcache_max_menu_width*
+		ポップアップメニューで表示されるメニュー領域の表示幅を制御する。
 		これを超えた場合は切り詰められる。
 		
 		初期値は15である。

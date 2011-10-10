@@ -145,7 +145,7 @@ function! s:caching_current_buffer(start, end)"{{{
   let source = s:buffer_sources[bufnr('%')]
   let filename = fnamemodify(source.name, ':t')
   let menu = '[B] ' . neocomplcache#util#strwidthpart(
-        \ filename, g:neocomplcache_max_filename_width)
+        \ filename, g:neocomplcache_max_menu_width)
   let keyword_pattern = source.keyword_pattern
   let keyword_pattern2 = '^\%('.keyword_pattern.'\m\)'
   let keywords = source.keyword_cache
@@ -303,7 +303,7 @@ function! s:rank_caching_current_cache_line(is_force)"{{{
 
   let buflines = getline(start_line, end_line)
   let menu = '[B] ' . neocomplcache#util#strwidthpart(
-        \ filename, g:neocomplcache_max_filename_width)
+        \ filename, g:neocomplcache_max_menu_width)
   let keyword_pattern = source.keyword_pattern
   let keyword_pattern2 = '^\%('.keyword_pattern.'\m\)'
 

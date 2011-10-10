@@ -64,6 +64,10 @@ endif
 if exists('g:neocomplcache_enable_quick_match')
   echoerr 'g:neocomplcache_enable_quick_match option does not work this version of neocomplcache.'
 endif
+if exists('g:neocomplcache_max_filename_width')
+  echoerr 'g:neocomplcache_max_filename_width option does not work this version of neocomplcache.'
+  echoerr 'Please use g:neocomplcache_max_menu_width option instead.'
+endif
 "}}}
 
 " Global options definition."{{{
@@ -71,8 +75,8 @@ let g:neocomplcache_max_list =
       \ get(g:, 'neocomplcache_max_list', 100)
 let g:neocomplcache_max_keyword_width =
       \ get(g:, 'neocomplcache_max_keyword_width', 50)
-let g:neocomplcache_max_filename_width =
-      \ get(g:, 'neocomplcache_max_filename_width', 15)
+let g:neocomplcache_max_menu_width =
+      \ get(g:, 'neocomplcache_max_menu_width', 15)
 let g:neocomplcache_auto_completion_start_length =
       \ get(g:, 'neocomplcache_auto_completion_start_length', 2)
 let g:neocomplcache_manual_completion_start_length =
