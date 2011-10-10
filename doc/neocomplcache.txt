@@ -247,7 +247,7 @@ g:neocomplcache_enable_smart_case			*g:neocomplcache_enable_smart_case*
 		When a capital letter is included in input, neocomplcache do
 		not ignore the upper- and lowercase.
 		
-		Default value is 0.
+		Default value is 'infercase'.
 
 g:neocomplcache_disable_auto_complete			*g:neocomplcache_disable_auto_complete*
 		This variable controls whether you invalidate automatic
@@ -328,22 +328,6 @@ g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_patt
 		This variable set a pattern of the buffer name. If matched it,
 		neocomplcache does not complete automatically. When it is an
 		empty character string, neocomplcache will ignore.
-		
-		Default value is ''.
-
-g:neocomplcache_force_caching_buffer_name_pattern	*g:neocomplcache_force_caching_buffer_name_pattern*
-		This variable set a pattern of the buffer name. If matched it,
-		neocomplcache will ignore 'readonly' or 'nomodifiable' options
-		and make a cache of the buffer. When it is an empty character
-		string, neocomplcache will ignore.
-		
-		Default value is ''.
-
-g:neocomplcache_disable_auto_select_buffer_name_pattern	*g:neocomplcache_auto_select_buffer_name_pattern*
-		This variable set a pattern of the buffer name. If matched it,
-		neocomplcache disable |g:neocomplcache_enable_auto_select|.
-		When it is an empty character string, neocomplcache will
-		ignore.
 		
 		Default value is ''.
 
@@ -1052,6 +1036,11 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
+2011-10-10
+- Fixed variables initialize.
+- Deleted g:neocomplcache_force_caching_buffer_name_pattern option.
+- Deleted g:neocomplcache_disable_auto_select_buffer_name_pattern option.
 
 2011-10-09
 - Fixed include_complete error.
