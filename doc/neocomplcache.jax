@@ -623,6 +623,14 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		スニペット名を展開したくないときに使う。
 		デフォルトではマッピングされていない。
 
+neocomplcache#start_manual_complete([{sources}])	*neocomplcache#start_manual_complete()*
+		inoremap <expr>上で使用する。neocomplcacheの補完を手動で呼び出
+		す。 Vim標準の補完を置き換えるときに使う。
+		{sources}を指定すると、そのsourceの補完を呼び出す。
+		{sources}はsourceの名前もしくは名前のリストである。
+>
+		inoremap <expr><Tab>  neocomplcache#start_manual_complete()
+<
 neocomplcache#manual_filename_complete()		*neocomplcache#manual_filename_complete()*
 		inoremap <expr>上で使用する。neocomplcacheのファイル名補完を
 		手動で呼び出す。 Vim標準のファイル名補完を置き換えるときに使

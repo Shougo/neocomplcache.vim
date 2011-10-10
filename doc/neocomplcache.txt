@@ -643,6 +643,15 @@ KEY MAPPINGS 						*neocomplcache-key-mappings*
 		you do not want to expand a snippet name, use this
 		keymapping.
 
+neocomplcache#start_manual_complete([{sources}])	*neocomplcache#start_manual_complete()*
+		Use this function on inoremap <expr>.  The keymapping call the
+		completion of neocomplcache.  When you rearrange the completion
+		of the Vim standard, you use it.
+		If you give {sources} argument, neocomplcache call {sources}.
+		{sources} is name of source or list of sources name.
+>
+		inoremap <expr><Tab>  neocomplcache#start_manual_complete()
+<
 neocomplcache#manual_filename_complete()		*neocomplcache#manual_filename_complete()*
 		Use this function on inoremap <expr>.  The keymapping call
 		the file name completion of neocomplcache.  When you
@@ -1041,6 +1050,8 @@ ChangeLog neocomplcache 6.2:
 - Deleted g:neocomplcache_force_caching_buffer_name_pattern option.
 - Deleted g:neocomplcache_disable_auto_select_buffer_name_pattern option.
 - Renamed g:neocomplcache_max_filename_width to g:neocomplcache_max_menu_width.
+- Added neocomplcache#start_manual_complete().
+- Fixed auto complete behavior.
 
 2011-10-09
 - Fixed include_complete error.

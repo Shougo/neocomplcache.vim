@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Oct 2011.
+" Last Modified: 10 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -587,7 +587,6 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
     if !neocomplcache#is_enabled()
       let s:cur_keyword_str = ''
       let s:complete_words = []
-      let &l:completefunc = 'neocomplcache#manual_complete'
       return -1
     endif
 
@@ -600,7 +599,6 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
       let s:cur_keyword_str = ''
       let s:complete_words = []
       let s:complete_results = {}
-      let &l:completefunc = 'neocomplcache#manual_complete'
 
       return -1
     endif
@@ -613,8 +611,6 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
   let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
   let complete_words = neocomplcache#get_complete_words(
         \ s:complete_results, 1, cur_keyword_pos, a:base)
-
-  let &l:completefunc = 'neocomplcache#manual_complete'
 
   let s:complete_words = complete_words
   let s:cur_keyword_str = a:base
@@ -1790,7 +1786,7 @@ function! neocomplcache#manual_keyword_complete()"{{{
 endfunction"}}}
 
 " Manual complete wrapper.
-function! neocomplcache#start_manual_complete(sources)"{{{
+function! neocomplcache#start_manual_complete(...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
 
@@ -1800,8 +1796,9 @@ function! neocomplcache#start_manual_complete(sources)"{{{
   let s:use_sources = {}
   let all_sources = extend(copy(neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())
-  for source_name in type(a:sources) == type([]) ?
-   \ a:sources : [a:sources]
+  let sources = get(a:000, 0, keys(all_sources))
+  for source_name in type(sources) == type([]) ?
+   \ sources : [sources]
     if has_key(all_sources, source_name)
       let s:use_sources[source_name] = all_sources[source_name]
     else
