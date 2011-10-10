@@ -1076,8 +1076,6 @@ function! neocomplcache#is_plugin_locked(plugin_name)"{{{
 endfunction"}}}
 function! neocomplcache#is_auto_select()"{{{
   return g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
-        \ && (g:neocomplcache_disable_auto_select_buffer_name_pattern == ''
-        \     || bufname('%') !~ g:neocomplcache_disable_auto_select_buffer_name_pattern)
 endfunction"}}}
 function! neocomplcache#is_auto_complete()"{{{
   return &l:completefunc == 'neocomplcache#auto_complete'
