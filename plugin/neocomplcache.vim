@@ -26,7 +26,7 @@
 " GetLatestVimScripts: 2620 1 :AutoInstall: neocomplcache
 "=============================================================================
 
-if v:version < 720
+if v:version < 702
   echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
   finish
 elseif exists('g:loaded_neocomplcache')
