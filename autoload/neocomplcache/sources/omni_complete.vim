@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Oct 2011.
+" Last Modified: 12 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -251,7 +251,7 @@ function! s:get_omni_list(list)"{{{
     endif
 
     if has_key(omni, 'info')
-      let dict.kind = omni.info
+      let dict.info = omni.info
     endif
 
     call add(omni_list, dict)

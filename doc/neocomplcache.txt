@@ -1047,6 +1047,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-10-11
 - Fixed for Vim 7.2.
+- Fixed omni_complete preview window.
 
 2011-10-10
 - Fixed variables initialize.
