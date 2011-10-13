@@ -31,10 +31,7 @@ if v:version < 702
   finish
 elseif exists('g:loaded_neocomplcache')
   finish
-endif
-
-" Sudo check.
-if $SUDO_USER != ''
+elseif $SUDO_USER != ''
   echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
   echoerr 'neocomplcache is disabled.'
   finish
