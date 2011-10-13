@@ -33,15 +33,15 @@ elseif exists('g:loaded_neocomplcache')
   finish
 endif
 
-let s:save_cpo = &cpo
-set cpo&vim
-
 " Sudo check.
 if $SUDO_USER != ''
   echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
   echoerr 'neocomplcache is disabled.'
   finish
 endif
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
 command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
