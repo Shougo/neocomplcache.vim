@@ -561,15 +561,11 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let s:complete_results = {}
-      let &l:completefunc = 'neocomplcache#manual_complete'
       return -1
     endif
 
     return cur_keyword_pos
   endif
-
-  " Restore function.
-  let &l:completefunc = 'neocomplcache#manual_complete'
 
   let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
   let s:complete_words = neocomplcache#get_complete_words(

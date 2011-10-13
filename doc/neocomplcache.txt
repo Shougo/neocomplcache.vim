@@ -1050,6 +1050,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed for g:neocomplcache_enable_auto_select.
 - Improved filtering behavior.
 - Detect sudo vim.
+- Fixed restore completefunc problem.
 
 2011-10-11
 - Fixed for Vim 7.2.
