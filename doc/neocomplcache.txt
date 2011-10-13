@@ -1045,6 +1045,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-13
+- Fixed for IM Problem.
+
 2011-10-11
 - Fixed for Vim 7.2.
 - Fixed omni_complete preview window.
