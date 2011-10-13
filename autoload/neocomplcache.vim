@@ -577,7 +577,8 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   let s:cur_keyword_str = a:base
   let s:is_prefetch = 0
 
-  return (v:version > 703 || v:version == 703 && has('patch319')) ?
+  return (v:version > 703 || v:version == 703 && has('patch319'))
+        \ && !g:neocomplcache_enable_auto_select ?
         \ { 'words' : s:complete_words, 'refresh' : 'always' }
         \ : s:complete_words
 endfunction"}}}
