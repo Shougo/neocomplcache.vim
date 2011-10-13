@@ -577,10 +577,17 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   let s:cur_keyword_str = a:base
   let s:is_prefetch = 0
 
-  return (v:version > 703 || v:version == 703 && has('patch319'))
-        \ && !g:neocomplcache_enable_auto_select ?
-        \ { 'words' : s:complete_words, 'refresh' : 'always' }
-        \ : s:complete_words
+  if (v:version > 703 || v:version == 703 && has('patch319'))
+    let dict = { 'words' : s:complete_words }
+
+    if !g:neocomplcache_enable_auto_select
+      let dict.refresh = 'always'
+    endif
+
+    return dict
+  else
+    return s:complete_words
+  endif
 endfunction"}}}
 
 function! neocomplcache#sources_manual_complete(findstart, base)"{{{
