@@ -1049,6 +1049,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed for IM Problem.
 - Fixed for g:neocomplcache_enable_auto_select.
 - Improved filtering behavior.
+- Detect sudo vim.
 
 2011-10-11
 - Fixed for Vim 7.2.

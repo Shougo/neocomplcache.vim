@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Oct 2011.
+" Last Modified: 13 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,6 +35,13 @@ endif
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+" Sudo check.
+if $SUDO_USER != ''
+  echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
+  echoerr 'neocomplcache is disabled.'
+  finish
+endif
 
 command! -nargs=0 NeoComplCacheEnable call neocomplcache#enable()
 command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
