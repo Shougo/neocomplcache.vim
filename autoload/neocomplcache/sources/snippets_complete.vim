@@ -760,10 +760,11 @@ function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
   " Get buffer filetype.
   let filetype = neocomplcache#get_context_filetype(1)
 
-  let snippets = copy(s:snippets['_'])
+  let snippets = {}
   for source in neocomplcache#get_sources_list(s:snippets, filetype)
       call extend(snippets, source, 'keep')
   endfor
+  call extend(snippets, copy(s:snippets['_']), 'keep')
 
   return snippets
 endfunction"}}}
