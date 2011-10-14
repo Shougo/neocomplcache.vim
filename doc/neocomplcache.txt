@@ -1048,6 +1048,7 @@ ChangeLog neocomplcache 6.2:
 2011-10-14
 - Fixed filter.
 - Improved calc frequencies.
+- Fixed neocomplcache#sources#snippets_complete#get_snippets().
 
 2011-10-13
 - Fixed for IM Problem.

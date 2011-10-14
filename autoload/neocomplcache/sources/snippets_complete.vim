@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 14 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -758,23 +758,12 @@ function! s:eval_snippet(snippet_text)"{{{
 endfunction"}}}
 function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
   " Get buffer filetype.
-  let ft = neocomplcache#get_context_filetype(1)
+  let filetype = neocomplcache#get_context_filetype(1)
 
   let snippets = copy(s:snippets['_'])
-  for t in split(ft, '\.')
-    if has_key(s:snippets, t)
-      call extend(snippets, s:snippets[t])
-    endif
+  for source in neocomplcache#get_sources_list(s:snippets, filetype)
+      call extend(snippets, source)
   endfor
-
-  " Get same filetype.
-  if has_key(g:neocomplcache_same_filetype_lists, ft)
-    for same_ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
-      if has_key(s:snippets, same_ft)
-        call extend(snippets, s:snippets[same_ft], 'keep')
-      endif
-    endfor
-  endif
 
   return snippets
 endfunction"}}}
