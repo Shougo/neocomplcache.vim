@@ -791,8 +791,9 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     return a:list
   elseif neocomplcache#check_match_filter(cur_keyword_str)
     " Match filter.
-    return filter(a:list, printf('v:val.word =~ %s && v:val.word !=# cur_keyword_str',
-          \string('^' . neocomplcache#keyword_escape(cur_keyword_str))))
+    return filter(a:list, printf(
+          \ 'v:val.word =~ %s && v:val.word !=# cur_keyword_str',
+          \ string('^' . neocomplcache#keyword_escape(cur_keyword_str))))
   else
     " Use fast filter.
     return neocomplcache#head_filter(a:list, cur_keyword_str)
@@ -818,16 +819,14 @@ function! neocomplcache#check_completion_length_match(cur_keyword_str, completio
 endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
   if &ignorecase
-   let expr = printf('!stridx(tolower(v:val.word), %s)
-          \ && v:val.word != a:cur_keyword_str',
+   let expr = printf('!stridx(tolower(v:val.word), %s)',
           \ string(tolower(a:cur_keyword_str)))
   else
-    let expr = printf('!stridx(v:val.word, %s)
-          \ && v:val.word != a:cur_keyword_str',
+    let expr = printf('!stridx(v:val.word, %s)',
           \ string(a:cur_keyword_str))
   endif
 
-  return filter(a:list, expr)
+  return filter(a:list, expr . ' && v:val.word != a:cur_keyword_str')
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let ret = []
