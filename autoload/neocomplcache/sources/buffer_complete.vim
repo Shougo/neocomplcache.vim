@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Oct 2011.
+" Last Modified: 14 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,10 +41,7 @@ function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
     autocmd InsertEnter * call s:check_source()
-    autocmd CursorHold * call s:rank_caching_current_cache_line(1)
     autocmd CursorHold * call s:check_deleted_buffer()
-    autocmd InsertEnter,CursorHoldI *
-          \ call s:rank_caching_current_cache_line(0)
     autocmd InsertLeave *
           \ call neocomplcache#sources#buffer_complete#caching_current_cache_line()
     autocmd VimLeavePre * call s:save_all_cache()
@@ -107,9 +104,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let keyword_cache = neocomplcache#dictionary_filter(
           \ s:buffer_sources[src].keyword_cache,
           \ a:cur_keyword_str, s:completion_length)
-
     if src == bufnr('%')
-      call s:calc_frequency(keyword_cache)
+      call s:calc_frequency()
     endif
 
     let keyword_list += keyword_cache
@@ -149,6 +145,7 @@ function! s:caching_current_buffer(start, end)"{{{
   let keyword_pattern = source.keyword_pattern
   let keyword_pattern2 = '^\%('.keyword_pattern.'\m\)'
   let keywords = source.keyword_cache
+  let frequencies = source.frequencies
 
   let line = join(getline(a:start, a:end))
   let match = match(line, keyword_pattern)
@@ -164,8 +161,14 @@ function! s:caching_current_buffer(start, end)"{{{
       endif
       if !has_key(keywords[key], match_str)
         " Append list.
-        let keywords[key][match_str] = { 'word' : match_str, 'menu' : menu }
+        let keywords[key][match_str] =
+              \ { 'word' : match_str, 'menu' : menu, 'rank' : 0 }
       endif
+      if !has_key(frequencies, match_str)
+        let frequencies[match_str] = 1
+      endif
+
+      let frequencies[match_str] += 1
     endif"}}}
 
     " Next match.
@@ -173,12 +176,24 @@ function! s:caching_current_buffer(start, end)"{{{
   endwhile"}}}
 endfunction"}}}
 
-function! s:calc_frequency(list)"{{{
+function! s:calc_frequency()"{{{
   if !s:exists_current_source()
     return
   endif
 
-  let list_len = len(a:list)
+  let filetype = neocomplcache#get_context_filetype()
+  if !has_key(s:filetype_frequencies, filetype)
+    let s:filetype_frequencies[filetype] = {}
+  endif
+
+  if s:rank_cache_count >= 0
+    let s:rank_cache_count -= 1
+    return
+  endif
+
+  let source = s:buffer_sources[bufnr('%')]
+
+  let list_len = len(source.frequencies)
 
   if list_len > g:neocomplcache_max_list * 5
     let calc_cnt = 15
@@ -196,65 +211,24 @@ function! s:calc_frequency(list)"{{{
     let calc_cnt = 3
   endif
 
-  let source = s:buffer_sources[bufnr('%')]
-  let frequencies = source.frequencies
-  let filetype = neocomplcache#get_context_filetype()
-  if !has_key(s:filetype_frequencies, filetype)
-    let s:filetype_frequencies[filetype] = {}
-  endif
-  let filetype_frequencies = s:filetype_frequencies[filetype]
-  
-  for keyword in a:list
-    if s:rank_cache_count <= 0
-      " Set rank.
-      
-      let word = keyword.word
-      let frequency = 0
-      for rank_lines in values(source.rank_lines)
-        if has_key(rank_lines, word)
-          let frequency += rank_lines[word]
-        endif
-      endfor
-      
-      if !has_key(filetype_frequencies, word)
-        let filetype_frequencies[word] = 0
-      endif
-      if has_key(frequencies, word)
-        let filetype_frequencies[word] -= frequencies[word]
-      endif
-      if frequency == 0
-        " Garbage collect
-        let ignorecase_save = &ignorecase
-        let &ignorecase = 0
-        let pos = searchpos(neocomplcache#escape_match(word), 'ncw', 0)
-        let &ignorecase = ignorecase_save
-        
-        if pos[0] == 0
-          " Delete.
-          let key = tolower(word[: s:completion_length-1])
-          if has_key(source.keyword_cache[key], word)
-            call remove(source.keyword_cache[key], word)
-          endif
-          if has_key(source.frequencies, word)
-            call remove(source.frequencies, word)
-          endif
-          if filetype_frequencies[word] == 0
-            call remove(filetype_frequencies, word)
-          endif
-        else
-          let frequencies[word] = 1
-          let filetype_frequencies[word] += 1
-        endif
-      else
-        let frequencies[word] = frequency
-        let filetype_frequencies[word] += frequency
-      endif
+  " Reset count.
+  let s:rank_cache_count = neocomplcache#rand(calc_cnt)
 
-      " Reset count.
-      let s:rank_cache_count = neocomplcache#rand(calc_cnt)
+  let prev_frequencies = source.prev_frequencies
+  let filetype_frequencies = s:filetype_frequencies[filetype]
+  for [word, rank] in items(source.frequencies)
+    " Set rank.
+    if !has_key(filetype_frequencies, word)
+      let filetype_frequencies[word] = 0
     endif
 
-    let s:rank_cache_count -= 1
+    " Reset rank.
+    if has_key(prev_frequencies, word)
+      let filetype_frequencies[word] -= prev_frequencies[word]
+    endif
+
+    let filetype_frequencies[word] += rank
+    let prev_frequencies[word] = rank
   endfor
 endfunction"}}}
 
@@ -278,60 +252,6 @@ function! s:get_sources_list()"{{{
   return sources_list
 endfunction"}}}
 
-function! s:rank_caching_current_cache_line(is_force)"{{{
-  if !s:exists_current_source() || neocomplcache#is_locked()
-    return
-  endif
-
-  let source = s:buffer_sources[bufnr('%')]
-  let filename = fnamemodify(source.name, ':t')
-
-  let start_line = (line('.')-1)/source.cache_line_cnt*source.cache_line_cnt+1
-  let end_line = start_line + source.cache_line_cnt-1
-  let cache_num = (start_line-1) / source.cache_line_cnt
-
-  " For debugging.
-  "echomsg printf("start=%d, end=%d", start_line, end_line)
-
-  if !a:is_force && has_key(source.rank_lines, cache_num)
-    return
-  endif
-
-  " Clear cache line.
-  let source.rank_lines[cache_num] = {}
-  let rank_lines = source.rank_lines[cache_num]
-
-  let buflines = getline(start_line, end_line)
-  let menu = '[B] ' . neocomplcache#util#strwidthpart(
-        \ filename, g:neocomplcache_max_menu_width)
-  let keyword_pattern = source.keyword_pattern
-  let keyword_pattern2 = '^\%('.keyword_pattern.'\m\)'
-
-  let [line_num, max_lines] = [0, len(buflines)]
-  while line_num < max_lines
-    let line = buflines[line_num]
-    let match = match(line, keyword_pattern)
-
-    while match >= 0"{{{
-      let match_str = matchstr(line, keyword_pattern2, match)
-
-      " Ignore too short keyword.
-      if len(match_str) >= g:neocomplcache_min_keyword_length"{{{
-        if !has_key(rank_lines, match_str)
-          let rank_lines[match_str] = 1
-        else
-          let rank_lines[match_str] += 1
-        endif
-      endif"}}}
-
-      " Next match.
-      let match = match(line, keyword_pattern, match + len(match_str))
-    endwhile"}}}
-
-    let line_num += 1
-  endwhile
-endfunction"}}}
-
 function! s:initialize_source(srcname)"{{{
   let path = fnamemodify(bufname(a:srcname), ':p')
   let filename = fnamemodify(path, ':t')
@@ -340,51 +260,19 @@ function! s:initialize_source(srcname)"{{{
     let path .= '/[No Name]'
   endif
 
-  " Set cache line count.
-  let buflines = getbufline(a:srcname, 1, '$')
-  let end_line = len(buflines)
-
-  if end_line > 150
-    let cnt = 0
-    for line in buflines[50:150] 
-      let cnt += len(line)
-    endfor
-
-    if cnt <= 3000
-      let cache_line_cnt = s:cache_line_count
-    elseif cnt <= 4000
-      let cache_line_cnt = s:cache_line_count*7 / 10
-    elseif cnt <= 5000
-      let cache_line_cnt = s:cache_line_count / 2
-    elseif cnt <= 7500
-      let cache_line_cnt = s:cache_line_count / 3
-    elseif cnt <= 10000
-      let cache_line_cnt = s:cache_line_count / 5
-    elseif cnt <= 12000
-      let cache_line_cnt = s:cache_line_count / 7
-    elseif cnt <= 14000
-      let cache_line_cnt = s:cache_line_count / 10
-    else
-      let cache_line_cnt = s:cache_line_count / 13
-    endif
-  elseif end_line > 100
-    let cache_line_cnt = s:cache_line_count / 3
-  else
-    let cache_line_cnt = s:cache_line_count / 5
-  endif
-
   let ft = getbufvar(a:srcname, '&filetype')
   if ft == ''
     let ft = 'nothing'
   endif
 
+  let buflines = getbufline(a:srcname, 1, '$')
   let keyword_pattern = neocomplcache#get_keyword_pattern(ft)
 
   let s:buffer_sources[a:srcname] = {
-        \ 'keyword_cache' : {}, 'rank_lines' : {},
+        \ 'keyword_cache' : {}, 'frequencies' : {}, 'prev_frequencies' : {},
         \ 'name' : filename, 'filetype' : ft, 'keyword_pattern' : keyword_pattern,
-        \ 'end_line' : end_line , 'cache_line_cnt' : cache_line_cnt,
-        \ 'frequencies' : {}, 'check_sum' : len(join(buflines[:4], '\n')),
+        \ 'end_line' : len(buflines),
+        \ 'check_sum' : len(join(buflines[:4], '\n')),
         \ 'path' : path, 'loaded_cache' : 0,
         \ 'cache_name' : neocomplcache#cache#encode_name('buffer_cache', path),
         \}
