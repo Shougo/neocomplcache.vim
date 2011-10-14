@@ -762,7 +762,7 @@ function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
 
   let snippets = copy(s:snippets['_'])
   for source in neocomplcache#get_sources_list(s:snippets, filetype)
-      call extend(snippets, source)
+      call extend(snippets, source, 'keep')
   endfor
 
   return snippets

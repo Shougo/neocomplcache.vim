@@ -1141,18 +1141,17 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
     let filetypes += split(filetype, '\.')
   endif
 
-  for ft in filetypes
-    let filetype_dict[ft] = 1
-
-    " Set same filetype.
-    if has_key(g:neocomplcache_same_filetype_lists, ft)
-      for same_ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
-        let filetype_dict[same_ft] = 1
-      endfor
-    endif
+  for ft in filter(copy(filetypes),
+        \ 'has_key(g:neocomplcache_same_filetype_lists, v:val)')
+    for same_ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
+      if index(filetypes, same_ft) < 0
+        " Add same filetype.
+        call add(filetypes, same_ft)
+      endif
+    endfor
   endfor
 
-  return keys(filetype_dict)
+  return filetypes
 endfunction"}}}
 function! neocomplcache#get_sources_list(dictionary, filetype)"{{{
   let list = []
