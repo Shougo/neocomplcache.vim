@@ -1045,6 +1045,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-14
+- Fixed filter.
+
 2011-10-13
 - Fixed for IM Problem.
 - Fixed for g:neocomplcache_enable_auto_select.
