@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Oct 2011.
+" Last Modified: 15 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,38 +37,52 @@ function! s:source.initialize()"{{{
   if !exists('g:neocomplcache_omni_patterns')
     let g:neocomplcache_omni_patterns = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'html,xhtml,xml,markdown',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'html,xhtml,xml,markdown',
         \'<[^>]*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'css',
-        \'^\s\+\w+\|\w+[):;]?\s\+\|[@!]')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'javascript',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'css',
+        \'^\s\+\w\+\|\w\+[):;]\?\s\+\|[@!]')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'javascript',
         \'[^. \t]\.\%(\h\w*\)\?')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'actionscript',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'actionscript',
         \'[^. \t][.:]\h\w*')
-  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'php',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        "\'php',
         "\'[^. \t]->\h\w*\|\h\w*::')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'java',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'java',
         \'\%(\h\w*\|)\)\.')
-  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'perl',
-  "\'\h\w*->\h\w*\|\h\w*::')
-  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'c',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        "\'perl',
+        "\'\h\w*->\h\w*\|\h\w*::')
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        "\'c',
         "\'\%(\.\|->\)\h\w*')
-  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'cpp',
+  "call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        "\'cpp',
         "\'\h\w*\%(\.\|->\)\h\w*\|\h\w*::')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'vimshell',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'vimshell',
         \'\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\{2,}')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'objc',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'objc',
         \'\h\w\+\|\h\w*\%(\.\|->\)\h\w*')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'objj',
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+        \'objj',
         \'[\[ \.]\w\+$\|:\w*$')
 
   " External language interface check.
   if has('ruby')
-    " call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'ruby',
-    "       \'[^. *\t]\.\h\w*\|\h\w*::')
+    " call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+          "\'ruby',
+          "\'[^. *\t]\.\h\w*\|\h\w*::')
   endif
   if has('python')
-    call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns, 'python',
+    call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+          \'python',
           \'[^. \t]\.\w*')
   endif
   "}}}

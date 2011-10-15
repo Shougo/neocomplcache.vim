@@ -1048,6 +1048,9 @@ ChangeLog neocomplcache 6.2:
 2011-10-16
 - Improved filename_complete.
 
+2011-10-15
+- Fixed css omni completion pattern.
+
 2011-10-14
 - Fixed filter.
 - Improved calc frequencies.
