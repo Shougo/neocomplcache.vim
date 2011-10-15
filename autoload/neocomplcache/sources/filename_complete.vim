@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2011.
+" Last Modified: 15 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -92,12 +92,13 @@ endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let filetype = neocomplcache#get_context_filetype()
+  if !exists('g:neocomplcache_include_patterns')
+    return s:get_glob_files(a:cur_keyword_str, '')
+  endif
 
   " Check include pattern.
-  let pattern = exists('g:neocomplcache_include_patterns') &&
-        \ has_key(g:neocomplcache_include_patterns, filetype) ?
-        \ g:neocomplcache_include_patterns[l:filetype] :
-        \ getbufvar(bufnr('%'), '&include')
+  let pattern = get(g:neocomplcache_include_patterns, filetype,
+        \ getbufvar(bufnr('%'), '&include'))
   let line = neocomplcache#get_cur_text()
   return (pattern == '' || line !~ pattern) ?
         \ s:get_glob_files(a:cur_keyword_str, '') :
@@ -107,15 +108,12 @@ endfunction"}}}
 function! s:get_include_files(cur_keyword_str)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let path = exists('g:neocomplcache_include_patterns') &&
-        \ has_key(g:neocomplcache_include_paths, filetype) ?
-        \ g:neocomplcache_include_paths[l:filetype] :
-        \ getbufvar(bufnr('%'), '&path')
-
-  let pattern = exists('g:neocomplcache_include_patterns') &&
-        \ has_key(g:neocomplcache_include_patterns, filetype) ?
-        \ g:neocomplcache_include_patterns[l:filetype] :
-        \ getbufvar(bufnr('%'), '&include')
+  let path = get(g:neocomplcache_include_paths, filetype,
+        \ getbufvar(bufnr('%'), '&path'))
+  let pattern = get(g:neocomplcache_include_patterns, filetype,
+        \ getbufvar(bufnr('%'), '&include'))
+  let expr = get(g:neocomplcache_include_exprs, filetype,
+        \ getbufvar(bufnr('%'), '&includeexpr'))
   let line = neocomplcache#get_cur_text()
   let match_end = matchend(line, pattern)
   let cur_keyword_str = matchstr(line[match_end :], '\f\+')
