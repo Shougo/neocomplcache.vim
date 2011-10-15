@@ -42,7 +42,7 @@ function! s:source.initialize()"{{{
         \'<[^>]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
         \'css',
-        \'^\s\+\w+\|\w+[):;]\?\s\+\|[@!]')
+        \'^\s\+\w\+\|\w\+[):;]\?\s\+\|[@!]')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
         \'javascript',
         \'[^. \t]\.\%(\h\w*\)\?')
