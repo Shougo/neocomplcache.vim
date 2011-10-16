@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2011.
+" Last Modified: 16 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -133,7 +133,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
     lcd `=dir`
 
     for word in split(substitute(glob(glob), '\\', '/', 'g'), '\n')
-      let dict = { 'word' : word, 'menu' : '[F]' }
+      let dict = { 'word' : word, 'menu' : '[FI]' }
 
       let abbr = dict.word
       if isdirectory(word)

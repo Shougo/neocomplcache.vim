@@ -1047,6 +1047,8 @@ ChangeLog neocomplcache 6.2:
 
 2011-10-16
 - Improved filename_complete.
+- Improved default rank.
+- Improved filename_complete mark.
 
 2011-10-15
 - Fixed css omni completion pattern.
