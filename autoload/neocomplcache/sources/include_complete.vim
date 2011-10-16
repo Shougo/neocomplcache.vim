@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Oct 2011.
+" Last Modified: 16 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -295,16 +295,20 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
     if line =~ a:pattern
       let match_end = matchend(line, a:pattern)
       if a:expr != ''
-        let eval = substitute(a:expr, 'v:fname', string(matchstr(line[match_end :], '\f\+')), 'g')
+        let eval = substitute(a:expr, 'v:fname',
+              \ string(matchstr(line[match_end :], '\f\+')), 'g')
         let filename = fnamemodify(findfile(eval(eval), a:path), ':p')
       else
-        let filename = fnamemodify(findfile(matchstr(line[match_end :], '\f\+'), a:path), ':p')
+        let filename = fnamemodify(findfile(
+              \ matchstr(line[match_end :], '\f\+'), a:path), ':p')
       endif
-      if filereadable(filename) && getfsize(filename) < g:neocomplcache_caching_limit_file_size
+      if filereadable(filename) &&
+            \ getfsize(filename) < g:neocomplcache_caching_limit_file_size
         call add(include_files, filename)
 
         if (a:filetype == 'c' || a:filetype == 'cpp') && a:nestlevel < 1
-          let include_files += s:get_include_files(a:nestlevel + 1, readfile(filename)[:100],
+          let include_files += s:get_include_files(
+                \ a:nestlevel + 1, readfile(filename)[:100],
                 \ a:filetype, a:pattern, a:path, a:expr)
         endif
       endif

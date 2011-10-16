@@ -1049,6 +1049,9 @@ ChangeLog neocomplcache 6.2:
 - Improved filename_complete.
 - Improved default rank.
 - Improved filename_complete mark.
+- Improved filename_complete parse include.
+- Added g:neocomplcache_filename_include_exts option.
+- Added g:neocomplcache_filename_include_exprs option.
 
 2011-10-15
 - Fixed css omni completion pattern.

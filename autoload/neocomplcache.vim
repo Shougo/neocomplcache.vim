@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2011.
+" Last Modified: 16 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1351,12 +1351,12 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
       endwhile
 
       for keyword in complete_words
-        let split_list = split(keyword.word, delimiter)
+        let split_list = split(keyword.word, delimiter, 1)
         if len(split_list) > 1
           let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
           let keyword.word = join(split_list[ : delim_cnt], delimiter_sub)
           let keyword.abbr = join(
-                \ split(keyword.abbr, delimiter)[ : delim_cnt],
+                \ split(keyword.abbr, delimiter, 1)[ : delim_cnt],
                 \ delimiter_sub)
 
           if g:neocomplcache_max_keyword_width >= 0
