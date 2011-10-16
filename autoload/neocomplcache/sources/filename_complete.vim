@@ -91,11 +91,16 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   " Not Filename pattern.
+  if exists('g:neocomplcache_include_patterns')
+    let pattern = get(g:neocomplcache_include_patterns, filetype,
+        \      getbufvar(bufnr('%'), '&include'))
+  else
+    let pattern = ''
+  endif
   if neocomplcache#is_auto_complete()
-        \ && (exists('g:neocomplcache_include_patterns') &&
-        \      a:cur_text !~ get(g:neocomplcache_include_patterns, filetype,
-        \      getbufvar(bufnr('%'), '&include')))
-        \ && '\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+        \ && (pattern != '' && a:cur_text !~ pattern)
+        \ && a:cur_text =~
+        \   '\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
     " Skip filename completion.
     return -1
   endif
