@@ -505,6 +505,34 @@ g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
 
 		初期値は20である。
 
+g:neocomplcache_filename_include_exprs			*g:neocomplcache_filename_include_exprs*
+		インクルードファイル名を置換するために行う行解析の式である。
+		存在しない場合無視される。 記述形式は'includeexpr'を参照せよ。
+		ファイルタイプをキーとした文字列の辞書である。
+		
+		例： Perl
+>
+		let g:neocomplcache_filename_include_exprs.perl =
+		\ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")'
+<
+		初期値は複雑なので、
+		autoload/neocomplcache/sources/filename_complete.vimの
+		s:source.initialize()を参照せよ。
+
+g:neocomplcache_filename_include_exts			*g:neocomplcache_filename_include_exts*
+		インクルードファイルの拡張子のリストである。存在しない場合、
+		拡張子によるフィルタリングはされない。ファイルタイプをキーと
+		したリストの辞書である。
+		
+		例： C++
+>
+		let g:neocomplcache_filename_include_exts.cpp =
+		\ ['', 'h', 'hpp', 'hxx']
+<
+		初期値は複雑なので、
+		autoload/neocomplcache/sources/filename_complete.vimの
+		s:source.initialize()を参照せよ。
+
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		buffer_completeがメンバを認識するためのプレフィクスパターン
 		を記録する。これはファイルタイプ毎に正規表現で指定されている。

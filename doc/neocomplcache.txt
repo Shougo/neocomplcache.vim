@@ -526,6 +526,37 @@ g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
 		
 		Default value is 20.
 
+g:neocomplcache_filename_include_exprs			*g:neocomplcache_filename_include_exprs*
+		It is the expression string of the line analysis to perform
+		to substitute an include file name.  When there is not it,
+		ignored.  Refer to 'includeexpr' for the
+		description form. It is the dictionary of the character
+		string that assumed file type a key.
+		
+		Example: Perl
+>
+		let g:neocomplcache_filename_include_exprs.perl =
+		\ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")'
+<
+		
+		Because it is complicated, refer to s:source.initialize() in
+		autoload/neocomplcache/sources/filename_complete.vim for the
+		initial value.
+
+g:neocomplcache_filename_include_exts			*g:neocomplcache_filename_include_exts*
+		It is the list of include file name extensions. When there
+		is not it, all file name is used. It is the dictionary of
+		the list that assumed file type a key.
+		
+		Example: C++
+>
+		let g:neocomplcache_filename_include_exts.cpp =
+		\ ['', 'h', 'hpp', 'hxx']
+<
+		Because it is complicated, refer to s:source.initialize() in
+		autoload/neocomplcache/sources/filename_complete.vim for the
+		initial value.
+
 g:neocomplcache_member_prefix_patterns			*g:neocomplcache_member_prefix_patterns*
 		This variable appoints a prefix pattern to complete a member
 		in buffer_complete.
@@ -1052,6 +1083,7 @@ ChangeLog neocomplcache 6.2:
 - Improved filename_complete parse include.
 - Added g:neocomplcache_filename_include_exts option.
 - Added g:neocomplcache_filename_include_exprs option.
+- Added documentation.
 
 2011-10-15
 - Fixed css omni completion pattern.

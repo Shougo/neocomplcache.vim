@@ -44,6 +44,9 @@ function! s:source.initialize()"{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
         \ 'perl',
         \ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
+        \ 'ruby,python,java,d',
+        \ 'fnamemodify(substitute(v:fname, "/", ".", "g"), ":r")')
   "}}}
 
   " Initialize filename include extensions."{{{
