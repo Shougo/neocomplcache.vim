@@ -449,9 +449,10 @@ g:neocomplcache_filetype_include_lists			*g:neocomplcache_filetype_include_lists
 		if !exists('g:neocomplcache_filetype_include_lists')
 		let g:neocomplcache_filetype_include_lists= {}
 		endif
-		let g:neocomplcache_filetype_include_lists.perl6 = [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
-		let g:neocomplcache_filetype_include_lists.vim = 
-		\[{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
+		let g:neocomplcache_filetype_include_lists.perl6 =
+		\ [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
+		let g:neocomplcache_filetype_include_lists.vim =
+		\ [{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
 		
 		Because it is complicated, refer to neocomplcache#enable() in
@@ -515,6 +516,20 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		When there is not it, 'include' is used.  Refer to 'include'
 		for the description form. It is the dictionary of the
 		character string that assumed file type a key.
+		
+		Because it is complicated, refer to s:source.initialize() in
+		autoload/neocomplcache/sources/include_complete.vim for the
+		initial value.
+
+g:neocomplcache_include_functions			*g:neocomplcache_include_functions*
+		This variable appoints the function name of the include command.
+		When there is not it, ignored. It is the dictionary of the
+		function name string that assumed file type a key.
+		
+		The function args are {lines} and {path}.
+		{lines} is the list of buffer lines.
+		{path} is the include path.
+		The return value is the list of include files.
 		
 		Because it is complicated, refer to s:source.initialize() in
 		autoload/neocomplcache/sources/include_complete.vim for the
@@ -1084,6 +1099,7 @@ ChangeLog neocomplcache 6.2:
 - Added g:neocomplcache_filename_include_exts option.
 - Added g:neocomplcache_filename_include_exprs option.
 - Added documentation.
+- Added g:neocomplcache_include_functions option.
 
 2011-10-15
 - Fixed css omni completion pattern.

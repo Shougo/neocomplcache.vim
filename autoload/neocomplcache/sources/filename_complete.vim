@@ -27,6 +27,21 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+" Global options definition."{{{
+if !exists('g:neocomplcache_include_patterns')
+  let g:neocomplcache_include_patterns = {}
+endif
+if !exists('g:neocomplcache_include_exprs')
+  let g:neocomplcache_include_exprs = {}
+endif
+if !exists('g:neocomplcache_include_paths')
+  let g:neocomplcache_include_paths = {}
+endif
+if !exists('g:neocomplcache_include_suffixes')
+  let g:neocomplcache_include_suffixes = {}
+endif
+"}}}
+
 let s:source = {
       \ 'name' : 'filename_complete',
       \ 'kind' : 'complfunc',
@@ -38,9 +53,8 @@ function! s:source.initialize()"{{{
         \ 'filename_complete', g:neocomplcache_auto_completion_start_length)
 
   " Initialize filename include expr."{{{
-  if !exists('g:neocomplcache_filename_include_exprs')
-    let g:neocomplcache_filename_include_exprs = {}
-  endif
+  let g:neocomplcache_filename_include_exprs =
+        \ get(g:, 'neocomplcache_filename_include_exprs', {})
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
         \ 'perl',
         \ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")')
@@ -50,9 +64,8 @@ function! s:source.initialize()"{{{
   "}}}
 
   " Initialize filename include extensions."{{{
-  if !exists('g:neocomplcache_filename_include_exts')
-    let g:neocomplcache_filename_include_exts = {}
-  endif
+  let g:neocomplcache_filename_include_exts =
+        \ get(g:, 'neocomplcache_filename_include_exts', {})
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
         \ 'c', ['h'])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,

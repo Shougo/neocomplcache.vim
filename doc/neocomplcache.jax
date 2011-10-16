@@ -499,6 +499,17 @@ g:neocomplcache_include_patterns			*g:neocomplcache_include_patterns*
 		初期値は複雑なので、autoload/neocomplcache/sources/include_complete.vimの
 		s:source.initialize()を参照せよ。
 
+g:neocomplcache_include_functions			*g:neocomplcache_include_functions*
+		インクルード命令を解析する関数名を指定する。存在しない場合、
+		無視される。ファイルタイプをキーとした関数名の辞書である。
+		
+		関数は、{lines}, {path}を引数に取る。
+		{lines}にはバッファの行リスト、{path}にはインクルードパスが渡される。
+		戻り値はインクルードしているファイル名のリストとなる。
+		
+		初期値は複雑なので、autoload/neocomplcache/sources/include_complete.vimの
+		s:source.initialize()を参照せよ。
+
 g:neocomplcache_include_max_processes			*g:neocomplcache_include_max_processes*
 		インクルード補完が非同期に生成するプロセス数の上限を設定する。
 		この値を0にすると非同期にプロセスを生成することはない。
