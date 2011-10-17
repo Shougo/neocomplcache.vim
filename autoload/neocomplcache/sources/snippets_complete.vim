@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -258,6 +258,7 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_
         let alias_pattern.abbr = abbr
         let alias_pattern.action__path = a:snippets_file
         let alias_pattern.action__pattern = action_pattern
+        let alias_pattern.real_name = a:snippet_pattern.name
 
         let a:snippet_dict[alias] = alias_pattern
         let a:dup_check[alias] = 1
@@ -267,6 +268,7 @@ function! s:set_snippet_dict(snippet_pattern, snippet_dict, dup_check, snippets_
     let snippet = a:snippet_dict[a:snippet_pattern.name]
     let snippet.action__path = a:snippets_file
     let snippet.action__pattern = action_pattern
+    let snippet.real_name = a:snippet_pattern.name
   endif
 endfunction"}}}
 function! s:set_snippet_pattern(dict)"{{{
@@ -358,12 +360,13 @@ function! s:load_snippets(snippet, snippets_file)"{{{
     elseif line =~ '^delete\s'
       let name = matchstr(line, '^delete\s\+\zs.*$')
       if name != '' && has_key(a:snippet, name)
-        call remove(a:snippet, name)
+        call filter(a:snippet, 'v:val.real_name !=# name')
       endif
     elseif line =~ '^snippet\s'
       if has_key(snippet_pattern, 'name')
         " Set previous snippet.
-        call s:set_snippet_dict(snippet_pattern, a:snippet, dup_check, a:snippets_file)
+        call s:set_snippet_dict(snippet_pattern,
+              \ a:snippet, dup_check, a:snippets_file)
         let snippet_pattern = { 'word' : '' }
       endif
 
@@ -372,7 +375,9 @@ function! s:load_snippets(snippet, snippets_file)"{{{
 
       " Check for duplicated names.
       if has_key(dup_check, snippet_pattern.name)
-        call neocomplcache#print_error('Warning: ' . a:snippets_file . ':' . linenr . ': duplicated snippet name `' . snippet_pattern.name . '`')
+        call neocomplcache#print_error('Warning: ' . a:snippets_file . ':'
+              \ . linenr . ': duplicated snippet name `'
+              \ . snippet_pattern.name . '`')
         call neocomplcache#print_error('Please delete this snippet name before.')
       endif
     elseif has_key(snippet_pattern, 'name')
@@ -380,16 +385,19 @@ function! s:load_snippets(snippet, snippets_file)"{{{
       if line =~ '^abbr\s'
         let snippet_pattern.abbr = matchstr(line, '^abbr\s\+\zs.*$')
       elseif line =~ '^alias\s'
-        let snippet_pattern.alias = split(matchstr(line, '^alias\s\+\zs.*$'), '[,[:space:]]\+')
+        let snippet_pattern.alias = split(matchstr(line,
+              \ '^alias\s\+\zs.*$'), '[,[:space:]]\+')
       elseif line =~ '^prev_word\s'
-        let snippet_pattern.prev_word = matchstr(line, '^prev_word\s\+[''"]\zs.*\ze[''"]$')
+        let snippet_pattern.prev_word = matchstr(line,
+              \ '^prev_word\s\+[''"]\zs.*\ze[''"]$')
       elseif line =~ '^\s'
         if snippet_pattern.word == ''
           let snippet_pattern.word = matchstr(line, '^\s\+\zs.*$')
         elseif line =~ '^\t'
           let line = substitute(line, '^\s', '', '')
           let snippet_pattern.word .= '<\n>' .
-                \substitute(line, '^\t\+', repeat('<\\t>', matchend(line, '^\t\+')), '')
+                \ substitute(line, '^\t\+', repeat('<\\t>',
+                \ matchend(line, '^\t\+')), '')
         else
           let snippet_pattern.word .= '<\n>' . matchstr(line, '^\s\+\zs.*$')
         endif
@@ -403,7 +411,8 @@ function! s:load_snippets(snippet, snippets_file)"{{{
   endfor
 
   " Set previous snippet.
-  call s:set_snippet_dict(snippet_pattern, a:snippet, dup_check, a:snippets_file)
+  call s:set_snippet_dict(snippet_pattern,
+        \ a:snippet, dup_check, a:snippets_file)
 
   return a:snippet
 endfunction"}}}

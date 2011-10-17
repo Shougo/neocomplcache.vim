@@ -1093,6 +1093,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-10-17
 - Fixed d snippets.
+- Improved snippets delete behavior.
 
 2011-10-16
 - Improved filename_complete.
