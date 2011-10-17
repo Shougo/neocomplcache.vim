@@ -1091,6 +1091,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-17
+- Fixed d snippets.
+
 2011-10-16
 - Improved filename_complete.
 - Improved default rank.
