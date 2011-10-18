@@ -1091,6 +1091,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-18
+- Fixed Japanese documentation.
+
 2011-10-17
 - Fixed d snippets.
 - Improved snippets delete behavior.
