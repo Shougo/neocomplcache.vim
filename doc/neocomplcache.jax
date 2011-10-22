@@ -334,6 +334,9 @@ g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_patt
 
 g:neocomplcache_compare_function			*g:neocomplcache_compare_function*
 		neocomplcacheがsortに使用する比較関数名を指定する。
+		比較関数の仕様については、|sort()|の比較関数を参照せよ。
+		neocomplcacheの比較関数を変更する場合、比較関数は各自で用意
+		しなければならない。
 		
 		初期値は"neocomplcache#compare_rank"である。
 

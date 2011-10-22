@@ -332,6 +332,9 @@ g:neocomplcache_lock_buffer_name_pattern		*g:neocomplcache_lock_buffer_name_patt
 
 g:neocomplcache_compare_function			*g:neocomplcache_compare_function*
 		This variable set compare candidates function.
+		The compare function specification is same to |sort()|
+		compare function. If you change compare function, you must
+		create compare function.
 		
 		Default value is 'neocomplcache#compare_rank'.
 
@@ -1090,6 +1093,9 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
+2011-10-22
+- Improved documentation.
 
 2011-10-18
 - Fixed Japanese documentation.
