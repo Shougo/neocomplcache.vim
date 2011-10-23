@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Oct 2011.
+" Last Modified: 23 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -98,9 +98,10 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     let pattern = ''
   endif
   if neocomplcache#is_auto_complete()
-        \ && (pattern != '' && a:cur_text !~ pattern)
+        \ && (pattern == '' || a:cur_text !~ pattern)
         \ && a:cur_text =~
-        \   '\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+        \'\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\$\|' .
+        \'\a:[^/]*$\|\\[[:alnum:].-]'
     " Skip filename completion.
     return -1
   endif
@@ -111,11 +112,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
         \ neocomplcache#match_word(a:cur_text, pattern)
   if neocomplcache#is_sources_complete() && cur_keyword_pos < 0
     let cur_keyword_pos = len(a:cur_text)
-  endif
-
-  " Not Filename pattern.
-  if neocomplcache#is_win() && filetype == 'tex' && cur_keyword_str =~ '\\'
-    return -1
   endif
 
   return cur_keyword_pos

@@ -1109,6 +1109,7 @@ ChangeLog neocomplcache 6.2:
 2011-10-23
 - Added g:neocomplcache_enable_fuzzy_completion option.
 - Fixed file_include source.
+- Improved filename_complete.
 
 2011-10-22
 - Improved documentation.
