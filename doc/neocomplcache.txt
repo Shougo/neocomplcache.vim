@@ -1094,6 +1094,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-23
+- Fixed file_include source.
+
 2011-10-22
 - Improved documentation.
 
