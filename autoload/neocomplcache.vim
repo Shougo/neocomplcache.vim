@@ -264,6 +264,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'tcl',
         \'[.-]\h\w*\|\h\w*')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'nyaos,int-nyaos',
+        \'\h\w*')
   "}}}
 
   " Initialize next keyword patterns."{{{
@@ -348,6 +351,8 @@ function! neocomplcache#enable() "{{{
         \ 'int-gdb', 'gdb')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
         \ 'int-scala', 'scala')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-nyaos', 'nyaos')
   "}}}
 
   " Initialize include filetype lists."{{{
@@ -396,6 +401,10 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
         \ 'help', [
         \ {'filetype' : 'vim', 'start' : '^>', 'end' : '^<'},
+        \])
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+        \ 'nyaos,int-nyaos', [
+        \ {'filetype' : 'lua', 'start' : '\<lua_e\s\+\(["'']\)', 'end' : '^\1'},
         \])
   "}}}
 
