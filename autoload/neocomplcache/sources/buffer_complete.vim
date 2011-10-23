@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2011.
+" Last Modified: 23 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,9 +51,6 @@ function! s:source.initialize()"{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank,
         \ 'buffer_complete', 4)
 
-  " Set completion length.
-  call neocomplcache#set_completion_length('buffer_complete', 2)
-
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
     call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
@@ -65,8 +62,12 @@ function! s:source.initialize()"{{{
   let s:cache_line_count = 70
   let s:rank_cache_count = 1
   let s:disable_caching_list = {}
-  let s:completion_length = g:neocomplcache_auto_completion_start_length
+  let s:completion_length =
+        \ neocomplcache#get_auto_completion_length('buffer_complete')
   "}}}
+
+  call neocomplcache#set_completion_length('buffer_complete',
+        \ g:neocomplcache_auto_completion_start_length)
 
   " Add commands."{{{
   command! -nargs=? -complete=buffer NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)

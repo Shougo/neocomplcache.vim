@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Oct 2011.
+" Last Modified: 23 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -758,20 +758,30 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     let keyword_escape = escape(a:cur_keyword_str, '*')
   endif"}}}
 
-  " Underbar completion."{{{
-  if g:neocomplcache_enable_underbar_completion && keyword_escape =~ '_'
-    let keyword_escape_orig = keyword_escape
-    let keyword_escape = substitute(keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
+  " Fuzzy completion.
+  if len(keyword_escape) < 8 && g:neocomplcache_enable_fuzzy_completion
+    let keyword_escape = substitute(keyword_escape, '.',
+          \ '\\%(\0\\|\U\0\E\\l*\\|\0[^_]*_\\)', 'g')
+  else
+    " Underbar completion."{{{
+    if g:neocomplcache_enable_underbar_completion
+          \ && keyword_escape =~ '_'
+      let keyword_escape_orig = keyword_escape
+      let keyword_escape = substitute(keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
+    endif
+    if g:neocomplcache_enable_underbar_completion
+          \ && '-' =~ '\k' && keyword_escape =~ '-'
+      let keyword_escape = substitute(keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
+    endif
+    "}}}
+    " Camel case completion."{{{
+    if g:neocomplcache_enable_camel_case_completion
+          \ && keyword_escape =~ '\u'
+      let keyword_escape = substitute(keyword_escape, '\u\?\zs\U*',
+            \ '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
+    endif
+    "}}}
   endif
-  if g:neocomplcache_enable_underbar_completion && '-' =~ '\k' && keyword_escape =~ '-'
-    let keyword_escape = substitute(keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
-  endif
-  "}}}
-  " Camel case completion."{{{
-  if g:neocomplcache_enable_camel_case_completion && keyword_escape =~ '\u'
-    let keyword_escape = substitute(keyword_escape, '\u\?\zs\U*', '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
-  endif
-  "}}}
 
   " echomsg keyword_escape
   return keyword_escape
@@ -783,7 +793,8 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   let filetype = neocomplcache#get_context_filetype()
   if has_key(g:neocomplcache_delimiter_patterns, filetype)"{{{
     for delimiter in g:neocomplcache_delimiter_patterns[filetype]
-      let cur_keyword_str = substitute(cur_keyword_str, delimiter, '*' . delimiter, 'g')
+      let cur_keyword_str = substitute(cur_keyword_str,
+            \ delimiter, '*' . delimiter, 'g')
     endfor
   endif"}}}
 
@@ -877,9 +888,11 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
   endif
 
   if len(a:cur_keyword_str) < a:completion_length ||
-        \ neocomplcache#check_completion_length_match(
-        \   a:cur_keyword_str, a:completion_length)
-    return neocomplcache#keyword_filter(neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
+        \ (!g:neocomplcache_enable_fuzzy_completion
+        \   && neocomplcache#check_completion_length_match(
+        \   a:cur_keyword_str, a:completion_length))
+    return neocomplcache#keyword_filter(
+          \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   else
     let key = tolower(a:cur_keyword_str[: a:completion_length-1])
 
@@ -994,7 +1007,8 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
     return s:auto_completion_length[bufnr('%')]
   elseif has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
     return g:neocomplcache_plugin_completion_length[a:plugin_name]
-  elseif has_key(s:ftplugin_sources, a:plugin_name) || has_key(s:complfunc_sources, a:plugin_name)
+  elseif has_key(s:ftplugin_sources, a:plugin_name)
+        \ || has_key(s:complfunc_sources, a:plugin_name)
     return 0
   elseif neocomplcache#is_auto_complete()
     return g:neocomplcache_auto_completion_start_length
@@ -1010,6 +1024,8 @@ endfunction"}}}
 function! neocomplcache#get_auto_completion_length(plugin_name)"{{{
   if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
     return g:neocomplcache_plugin_completion_length[a:plugin_name]
+  elseif g:neocomplcache_enable_fuzzy_completion
+    return 1
   else
     return g:neocomplcache_auto_completion_start_length
   endif

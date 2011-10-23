@@ -308,6 +308,17 @@ g:neocomplcache_enable_underbar_completion		*g:neocomplcache_enable_underbar_com
 		
 		副作用があるので、初期値は0となっている。
 
+g:neocomplcache_enable_fuzzy_completion			*g:neocomplcache_enable_fuzzy_completion*
+		一文字入力ごとにあいまい検索を行うかどうか制御する。例えば
+		"ph" と入力したとき、"p*_h"と解釈され"public_html"や
+		"PublicHtml"とマッチするようになる。1ならば有効になる。
+		これが有効になると、
+		|g:neocomplcache_enable_camel_case_completion|や
+		|g:neocomplcache_enable_underbar_completion|は無効化される。
+		Note: このマッチは重いため、入力する文字数が少ないときにしか効果がない。
+		
+		副作用があるので、初期値は0となっている。
+
 g:neocomplcache_enable_caching_message			*g:neocomplcache_enable_caching_message*
 		キャッシュ中に、メッセージをCommand-lineに表示するかを制御
 		する。
