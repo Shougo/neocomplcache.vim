@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 25 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,7 +97,7 @@ function! neocomplcache#enable() "{{{
         " Clear loaded flag.
         let s:ftplugin_sources[source_name].loaded = 0
       elseif source.kind ==# 'plugin'
-            \ && neocomplcache#is_keyword_complete_enabled()
+            \ && neocomplcache#is_source_enabled('keyword_complete')
         let s:plugin_sources[source_name] = source
       endif
     endif
@@ -693,9 +693,14 @@ function! neocomplcache#do_auto_complete()"{{{
   endif
 
   if cur_text =~ '\s\+$'
-        \ && neocomplcache#is_buffer_complete_enabled()
-    " Caching current cache line.
-    call neocomplcache#sources#buffer_complete#caching_current_cache_line()
+    if neocomplcache#is_source_enabled('buffer_complete')
+      " Caching current cache line.
+      call neocomplcache#sources#buffer_complete#caching_current_line()
+    endif
+    if neocomplcache#is_source_enabled('member_complete')
+      " Caching current cache line.
+      call neocomplcache#sources#member_complete#caching_current_line()
+    endif
   endif
 
   let s:old_cur_text = cur_text
@@ -1123,13 +1128,8 @@ endfunction"}}}
 function! neocomplcache#is_win()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
-function! neocomplcache#is_buffer_complete_enabled()"{{{
-  return    !(has_key(g:neocomplcache_plugin_disable, 'buffer_complete')
-        \     && g:neocomplcache_plugin_disable['buffer_complete'])
-endfunction"}}}
-function! neocomplcache#is_keyword_complete_enabled()"{{{
-  return !(has_key(g:neocomplcache_plugin_disable, 'keyword_complete')
-        \     && g:neocomplcache_plugin_disable['keyword_complete'])
+function! neocomplcache#is_source_enabled(plugin_name)"{{{
+  return !get(g:neocomplcache_plugin_disable, a:plugin_name, 0)
 endfunction"}}}
 function! neocomplcache#exists_echodoc()"{{{
   return exists('g:loaded_echodoc') && g:loaded_echodoc
@@ -1296,7 +1296,7 @@ function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
 endfunction"}}}
 function! neocomplcache#get_complete_words(complete_results, is_sort,
       \ cur_keyword_pos, cur_keyword_str) "{{{
-  let frequencies = neocomplcache#is_buffer_complete_enabled() ?
+  let frequencies = neocomplcache#is_source_enabled('buffer_complete') ?
         \ neocomplcache#sources#buffer_complete#get_frequencies() : {}
 
   " Append prefix.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: member_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 25 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,8 +41,8 @@ function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
     autocmd CursorHold * call s:caching_current_buffer(line('.')-10, line('.')+10)
-    autocmd InsertEnter,InsertLeave,CursorHoldI *
-          \ call neocomplcache#sources#member_complete#caching_current_cache_line()
+    autocmd InsertEnter,InsertLeave *
+          \ call neocomplcache#sources#member_complete#caching_current_line()
   augroup END"}}}
 
   " Set rank.
@@ -113,7 +113,7 @@ function! neocomplcache#sources#member_complete#define()"{{{
   return s:source
 endfunction"}}}
 
-function! neocomplcache#sources#member_complete#caching_current_cache_line()"{{{
+function! neocomplcache#sources#member_complete#caching_current_line()"{{{
   " Current line caching.
   return s:caching_current_buffer(line('.')-1, line('.')+1)
 endfunction"}}}
