@@ -769,12 +769,12 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
       let keyword_escape = substitute(keyword_escape, '.\zs-', '.\\+', 'g')
     endif
   else
-    let keyword_escape = escape(a:cur_keyword_str, '*')
+    let keyword_escape = escape(keyword_escape, '*')
   endif"}}}
 
   " Fuzzy completion.
   if len(keyword_escape) < 8 && g:neocomplcache_enable_fuzzy_completion
-    let keyword_escape = substitute(keyword_escape, '.',
+    let keyword_escape = substitute(keyword_escape, '\w',
           \ '\\%(\0\\|\U\0\E\\l*\\|\0[^_]*_\\)', 'g')
   else
     " Underbar completion."{{{

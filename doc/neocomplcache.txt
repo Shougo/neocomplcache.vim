@@ -1108,6 +1108,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-10-25
 - Fixed member_complete.
+- Fixed fuzzy completion error.
 
 2011-10-23
 - Added g:neocomplcache_enable_fuzzy_completion option.
