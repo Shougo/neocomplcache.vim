@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Oct 2011.
+" Last Modified: 27 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -974,36 +974,13 @@ function! neocomplcache#rand(max)"{{{
   let time = reltime()[1]
   return (time < 0 ? -time : time)% (a:max + 1)
 endfunction"}}}
-function! neocomplcache#system(str, ...)"{{{
-  let command = a:str
-  let input = a:0 >= 1 ? a:1 : ''
-  if has('iconv') && &termencoding != '' && &termencoding != &encoding
-    let command = iconv(command, &encoding, &termencoding)
-    let input = iconv(input, &encoding, &termencoding)
-  endif
-
-  if !neocomplcache#has_vimproc()
-    if a:0 == 0
-      let output = system(command)
-    else
-      let output = system(command, input)
-    endif
-  elseif a:0 == 0
-    let output = vimproc#system(command)
-  elseif a:0 == 1
-    let output = vimproc#system(command, input)
-  else
-    let output = vimproc#system(command, input, a:2)
-  endif
-
-  if has('iconv') && &termencoding != '' && &termencoding != &encoding
-    let output = iconv(output, &termencoding, &encoding)
-  endif
-
-  return output
+function! neocomplcache#system(...)"{{{
+  let V = vital#of('neocomplcache')
+  return call(V.system, a:000)
 endfunction"}}}
-function! neocomplcache#has_vimproc()"{{{
-  return s:exists_vimproc
+function! neocomplcache#has_vimproc(...)"{{{
+  let V = vital#of('neocomplcache')
+  return call(V.has_vimproc, a:000)
 endfunction"}}}
 
 function! neocomplcache#get_cur_text(...)"{{{

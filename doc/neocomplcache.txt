@@ -1106,6 +1106,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-27
+- Added neocomplcache#util#get_last_status() function.
+
 2011-10-25
 - Fixed member_complete.
 - Fixed fuzzy completion error.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 27 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -63,6 +63,15 @@ function! neocomplcache#util#uniq(list)"{{{
   endfor
 
   return values(dict)
+endfunction"}}}
+function! neocomplcache#util#system(...)"{{{
+  return call(s:V.system, a:000)
+endfunction"}}}
+function! neocomplcache#util#has_vimproc(...)"{{{
+  return call(s:V.has_vimproc, a:000)
+endfunction"}}}
+function! neocomplcache#util#get_last_status(...)"{{{
+  return call(s:V.get_last_status, a:000)
 endfunction"}}}
 
 let &cpo = s:save_cpo
