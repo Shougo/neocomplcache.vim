@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2011.
+" Last Modified: 28 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1866,8 +1866,10 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
     let pattern = '^\%(' . neocomplcache#get_next_keyword_pattern() . '\m\)'
   endif
 
-  let next_keyword_str = matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], pattern)[1:]
+  let next_keyword_str = matchstr('a'.
+        \ getline('.')[len(neocomplcache#get_cur_text(1)) :], pattern)[1:]
   if next_keyword_str != ''
+    echomsg next_keyword_str
     let next_keyword_str = substitute(escape(next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
     " No ignorecase.
