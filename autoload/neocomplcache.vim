@@ -170,7 +170,7 @@ function! neocomplcache#enable() "{{{
         \'\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'python,int-python,int-ipython',
-        \'\h\w*')
+        \'[@]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'cs',
         \'\h\w*')
@@ -182,7 +182,7 @@ function! neocomplcache#enable() "{{{
         \'\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'coffee,int-coffee',
-        \'@\h\w*\|\h\w*')
+        \'[@]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'awk',
         \'\h\w*')
@@ -279,6 +279,8 @@ function! neocomplcache#enable() "{{{
         \'\h\w*>')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'vim,help',
         \'\w*()\?\|\w*:\]\|[[:alnum:]_-]*[)>=]')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'python',
+        \'\w*()\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'tex',
         \'\h\w*\*\?[*[{}]')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'html,xhtml,xml,mkd',
