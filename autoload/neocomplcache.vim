@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2011.
+" Last Modified: 31 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1701,7 +1701,8 @@ endfunction"}}}
 
 " Key mapping functions."{{{
 function! neocomplcache#smart_close_popup()"{{{
-  return g:neocomplcache_enable_auto_select ? neocomplcache#cancel_popup() : neocomplcache#close_popup()
+  return g:neocomplcache_enable_auto_select ?
+        \ neocomplcache#cancel_popup() : neocomplcache#close_popup()
 endfunction
 "}}}
 function! neocomplcache#close_popup()"{{{

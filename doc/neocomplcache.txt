@@ -823,7 +823,7 @@ EXAMPLES						*neocomplcache-examples*
 	
 	" Recommended key-mappings.
 	" <CR>: close popup and save indent.
-	inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
+	inoremap <expr><CR>  neocomplcache#close_popup() . "\<CR>"
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 	" <C-h>, <BS>: close popup and delete backword char.
@@ -1105,6 +1105,9 @@ CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
+
+2011-10-31
+- Fixed examples.
 
 2011-10-27
 - Added neocomplcache#util#get_last_status() function.
