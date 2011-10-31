@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2011.
+" Last Modified: 31 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -819,7 +819,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   elseif neocomplcache#check_match_filter(cur_keyword_str)
     " Match filter.
     return filter(a:list, printf(
-          \ 'v:val.word =~ %s && v:val.word !=# cur_keyword_str',
+          \ 'v:val.word =~ %s && v:val.word !=? cur_keyword_str',
           \ string('^' . neocomplcache#keyword_escape(cur_keyword_str))))
   else
     " Use fast filter.
@@ -853,7 +853,7 @@ function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
           \ string(a:cur_keyword_str))
   endif
 
-  return filter(a:list, expr . ' && v:val.word != a:cur_keyword_str')
+  return filter(a:list, expr . ' && v:val.word !=? a:cur_keyword_str')
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let ret = []

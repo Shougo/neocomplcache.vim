@@ -1106,6 +1106,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-10-31
+- Fixed filter.
+
 2011-10-28
 - Fixed remove_next_keyword.
 - Improved python keyword pattern.
