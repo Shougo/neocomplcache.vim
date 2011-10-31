@@ -91,6 +91,7 @@ alias   #inc2, #include2
     #include "${1:}.h"${0}
 
 snippet ifndef
+alias   #ifndef
 abbr #ifndef ... #define ... #endif
     #ifndef $1
     #define ${1:SYMBOL} ${2:value}

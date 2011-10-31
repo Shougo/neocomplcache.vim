@@ -170,7 +170,7 @@ function! neocomplcache#enable() "{{{
         \'\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'python,int-python,int-ipython',
-        \'\h\w*')
+        \'[@]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'cs',
         \'\h\w*')
@@ -182,7 +182,7 @@ function! neocomplcache#enable() "{{{
         \'\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'coffee,int-coffee',
-        \'@\h\w*\|\h\w*')
+        \'[@]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'awk',
         \'\h\w*')
@@ -279,6 +279,8 @@ function! neocomplcache#enable() "{{{
         \'\h\w*>')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'vim,help',
         \'\w*()\?\|\w*:\]\|[[:alnum:]_-]*[)>=]')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'python',
+        \'\w*()\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'tex',
         \'\h\w*\*\?[*[{}]')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_next_keyword_patterns, 'html,xhtml,xml,mkd',
@@ -817,7 +819,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   elseif neocomplcache#check_match_filter(cur_keyword_str)
     " Match filter.
     return filter(a:list, printf(
-          \ 'v:val.word =~ %s && v:val.word !=# cur_keyword_str',
+          \ 'v:val.word =~ %s && v:val.word !=? cur_keyword_str',
           \ string('^' . neocomplcache#keyword_escape(cur_keyword_str))))
   else
     " Use fast filter.
@@ -851,7 +853,7 @@ function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
           \ string(a:cur_keyword_str))
   endif
 
-  return filter(a:list, expr . ' && v:val.word != a:cur_keyword_str')
+  return filter(a:list, expr . ' && v:val.word !=? a:cur_keyword_str')
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let ret = []
@@ -1867,8 +1869,10 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
     let pattern = '^\%(' . neocomplcache#get_next_keyword_pattern() . '\m\)'
   endif
 
-  let next_keyword_str = matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], pattern)[1:]
+  let next_keyword_str = matchstr('a'.
+        \ getline('.')[len(neocomplcache#get_cur_text(1)) :], pattern)[1:]
   if next_keyword_str != ''
+    echomsg next_keyword_str
     let next_keyword_str = substitute(escape(next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
     " No ignorecase.

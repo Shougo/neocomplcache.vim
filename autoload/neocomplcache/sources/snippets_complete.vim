@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Oct 2011.
+" Last Modified: 28 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -199,7 +199,7 @@ function! s:keyword_filter(list, cur_keyword_str)"{{{
   " Substitute abbr.
   let abbr_pattern = printf('%%.%ds..%%s', g:neocomplcache_max_keyword_width-10)
   for snippet in list
-    if snippet.snip =~ '\\\@<!`.*\\\@<!`'
+    if snippet.snip =~ '\\\@<!`=.*\\\@<!`'
       let snippet.menu = s:eval_snippet(snippet.snip)
 
       if g:neocomplcache_max_keyword_width >= 0 &&
