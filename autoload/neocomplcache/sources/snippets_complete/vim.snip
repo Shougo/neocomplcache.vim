@@ -54,3 +54,7 @@ snippet     log
 prev_word   '^'
     echomsg string(${1})
 
+snippet     command
+abbr        command call function
+prev_word   '^'
+    command! ${1:command_name} call ${2:func_name}

@@ -52,10 +52,10 @@ caddb[uffer]    [bufnr]
 caddf[ile]      [errorfile]
 cal[l]          {name}([arguments])
 cat[ch]         /{pattern}/
-cb[uffer]     [bufnr]
+cb[uffer]       [bufnr]
 cc              [nr]
 ccl[ose]
-cd            {path}
+cd              {path}
 ce[nter]        [width]
 cex[pr]         {expr}
 cf[ile]         [errorfile]
@@ -82,7 +82,7 @@ cnoreme[nu]     {menu}
 co[py]          {address}
 col[der]        [count]
 colo[rscheme]   {name}
-com[mand]       [{attr}...] {cmd} {rep}
+com[mand]       [-bang -complete= -nargs=...] {cmdname} {call function(<args>)} | {rep}
 comc[lear]
 comp[iler]      {name}
 con[tinue]
