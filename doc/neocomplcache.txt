@@ -1106,6 +1106,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-04
+- Fixed php snippet.
+
 2011-11-03
 - Improved a bit.
 
