@@ -778,9 +778,13 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 >
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
-
 <Plug>(neocomplcache_start_unite_complete)		*<Plug>(neocomplcache_start_unite_complete)*
-		Start completion with |unite|. This completion interface is experimental.
+		Start completion with |unite|.
+		Note: Required unite.vim Latest ver.3.0 or above.
+
+<Plug>(neocomplcache_start_unite_quick_match)		*<Plug>(neocomplcache_start_quick_match)*
+		Start completion with |unite| and start quick match mode.
+		Note: Required unite.vim Latest ver.3.0 or above.
 
 ==============================================================================
 EXAMPLES						*neocomplcache-examples*
@@ -1071,6 +1075,7 @@ UNITE SOURCES						*neocomplcache-unite-sources*
 neocomplcache
 >
 		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
+		imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
 <
 							*neocomplcache-unite-source-snippet*
 snippet
@@ -1102,6 +1107,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed snippet description.
 - Improved unite#sources#neocomplcache#start_complete() behavior.
 - Added <Plug>(neocomplcache_start_unite_quick_match) mapping.
+- Improved documentation.
 
 2011-11-03
 - Improved a bit.

@@ -748,9 +748,11 @@ neocomplcache#sources#snippets_complete#expandable()	*neocomplcache#sources#snip
 		imap <expr><C-l>    neocomplcache#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<C-n>"
 <
 <Plug>(neocomplcache_start_unite_complete)		*<Plug>(neocomplcache_start_unite_complete)*
-		|unite|による補完インタフェースを使用する。この機能はまだ実
-		験段階である。手動補完を置き換えることができると思われるが、
-		デフォルトではマッピングされていない。
+		|unite|による補完インタフェースを使用する。手動補完を置き換える
+		ことができると思われるが、デフォルトではマッピングされていない。
+
+<Plug>(neocomplcache_start_quick_match)			*<Plug>(neocomplcache_start_quick_match)*
+		クイックマッチモードで|unite|による補完インタフェースを使用する。
 
 <Plug>(neocomplcache_start_unite_snippet)		*<Plug>(neocomplcache_start_unite_snippet)*
 		|unite|による補完インタフェースを使用して、スニペットのリス
@@ -1123,6 +1125,7 @@ neocomplcache
 		例：
 >
 		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
+		imap <C-q>  <Plug>(neocomplcache_start_quick_match)
 <
 							*neocomplcache-unite-source-snippet*
 snippet
