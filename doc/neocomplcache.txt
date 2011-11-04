@@ -1100,6 +1100,7 @@ ChangeLog neocomplcache 6.2:
 2011-11-04
 - Fixed php snippet.
 - Fixed snippet description.
+- Improved unite#sources#neocomplcache#start_complete() behavior.
 
 2011-11-03
 - Improved a bit.
