@@ -528,7 +528,7 @@ function! s:expand_newline()"{{{
   while match >= 0
     let end = getline('.')[matchend(getline('.'), '<\\n>') :]
     " Substitute CR.
-    silent! s/<\\n>//
+    silent! execute 's/<\\n>//' . (&gdefault ? 'g' : '')
 
     " Return.
     let pos = getpos('.')
@@ -722,9 +722,9 @@ function! s:substitute_marker(start, end)"{{{
     while line <= a:end
       if getline(line) =~ marker
         let sub = escape(matchstr(getline(line), '\$<'.cnt.':\zs.\{-}\ze\\\@<!>'), '/\')
-        silent! execute printf('%d,%ds/$%d\d\@!/%s/g', 
+        silent! execute printf('%d,%ds/$%d\d\@!/%s/' . (&gdefault ? '' : 'g'),
               \a:start, a:end, cnt, sub)
-        silent! execute line.'s/'.marker.'/'.sub.'/'
+        silent! execute line.'s/'.marker.'/'.sub.'/' . (&gdefault ? 'g' : '')
         break
       endif
 
@@ -733,8 +733,9 @@ function! s:substitute_marker(start, end)"{{{
   elseif search('\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'wb') > 0
     let sub = escape(matchstr(getline('.'), '\$<\d\+:\zs.\{-}\ze\\\@<!>'), '/\')
     let cnt = matchstr(getline('.'), '\$<\zs\d\+\ze\%(:.\{-}\)\?\\\@<!>')
-    silent! execute printf('%%s/$%d\d\@!/%s/g', cnt, sub)
+    silent! execute printf('%%s/$%d\d\@!/%s/' . (&gdefault ? 'g' : ''), cnt, sub)
     silent! execute '%s/'.'\$<'.cnt.'\%(:.\{-}\)\?\\\@<!>'.'/'.sub.'/'
+          \ . (&gdefault ? 'g' : '')
   endif
 endfunction"}}}
 function! s:trigger(function)"{{{
