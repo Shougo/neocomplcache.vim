@@ -1101,6 +1101,7 @@ ChangeLog neocomplcache 6.2:
 - Fixed php snippet.
 - Fixed snippet description.
 - Improved unite#sources#neocomplcache#start_complete() behavior.
+- Added <Plug>(neocomplcache_start_unite_quick_match) mapping.
 
 2011-11-03
 - Improved a bit.

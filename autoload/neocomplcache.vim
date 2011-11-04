@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Oct 2011.
+" Last Modified: 04 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -498,11 +498,16 @@ function! neocomplcache#enable() "{{{
   set completeopt+=menuone
 
   " For auto complete keymappings.
-  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)          <C-x><C-u><C-p>
+  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
+        \ <C-x><C-u><C-p>
   inoremap <silent> <Plug>(neocomplcache_start_auto_select_complete)
         \ <C-x><C-u><C-p><C-r>=neocomplcache#popup_post()<CR>
-  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)   unite#sources#neocomplcache#start_complete()
-  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)   unite#sources#snippet#start_complete()
+  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)
+        \ unite#sources#neocomplcache#start_complete()
+  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_quick_match)
+        \ unite#sources#neocomplcache#start_quick_match()
+  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)
+        \ unite#sources#snippet#start_complete()
 
   " Disable bell.
   set vb t_vb=

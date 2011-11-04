@@ -121,6 +121,26 @@ function! unite#sources#neocomplcache#start_complete() "{{{
         \ })
 endfunction "}}}
 
+function! unite#sources#neocomplcache#start_quick_match() "{{{
+  if !neocomplcache#is_enabled()
+    return ''
+  endif
+  if !exists(':Unite')
+    echoerr 'unite.vim is not installed.'
+    echoerr 'Please install unite.vim Ver.1.5 or above.'
+    return ''
+  elseif unite#version() < 300
+    echoerr 'Your unite.vim is too old.'
+    echoerr 'Please install unite.vim Ver.3.0 or above.'
+    return ''
+  endif
+
+  return unite#start_complete(['neocomplcache'], {
+        \ 'auto_preview' : 1, 'winheight' : &pumheight,
+        \ 'auto_resize' : 1, 'quick_match' : 1,
+        \ })
+endfunction "}}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
