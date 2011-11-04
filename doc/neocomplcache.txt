@@ -984,7 +984,6 @@ Example:
 	        ${2}
 	    endif
 <
-
 By the way, it is warned that the snippet name is already defined by same snippet file.
 When you want to overwrite explicitly, as follows:
 >
@@ -994,21 +993,18 @@ And redefine snippet by snippet statement.
 When include external files or other snippet file's snippets are overwrited,
 will not be warned.
 
-Unlike snipMate, Snippet include feature is available.
+Snippet include feature is available.
 >
 	include c.snip
 <
-
 Eval snippet feature is available.
 >
 	snippet     hoge
 	prev_word   '^'
 	    `expand("%")`
 <
-
 If you use |:NeoComplCacheEditSnippets| command, edit snippet easily.
 When you saved a snippet file, the snippet file is loaded automatically.
-
 
 Neocomplcache don't mapping expand snippet key automatically. If you use
 neocomplcache snippet feature, define below mappings in your .vimrc.
@@ -1029,7 +1025,6 @@ Placeholder feature is available.
 '_' snippet feature is supported. '_' snippet is loaded in all filetypes.
 And neocomplcache can load snipMate snippets.
 
-
 Alias feature is supported. Separator is ' ' or ','.
 >
 	alias hoge hogera hogehoge
@@ -1037,14 +1032,12 @@ Alias feature is supported. Separator is ' ' or ','.
 Synchronized placeholder feature is supported.  $1 is synchronized to ${1}.
 When you jump next, it is synchlonized. $0 is last jump placeholder.
 
-
 The placeholder value can't be contained new line. Below snippet is illegal.
 >
 	snippet test
 		${1:constructor: (${2:args\}) ->
 			${3:# do smth}}
 <
-
 Multi snippet feature is supported in snipMate.
 neocomplcache substitutes trigger and descriptions spaces to '_'.
 >
@@ -1062,7 +1055,6 @@ But must escape inner '}'. '\' is eacape sequence.
 	snippet div
 	<div ${1:id="${2:someid\}"}>${3}</div>${4}
 <
-
 If you indented by hard tab, neocomplcache don't use indent plugin.  This
 feature is useful when you use the language whose indent plugin is
 powerless(example: PHP).
@@ -1072,7 +1064,6 @@ powerless(example: PHP).
 			${2:// code...}
 		}
 <
-
 ==============================================================================
 UNITE SOURCES						*neocomplcache-unite-sources*
 
@@ -1108,6 +1099,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-11-04
 - Fixed php snippet.
+- Fixed snippet description.
 
 2011-11-03
 - Improved a bit.
