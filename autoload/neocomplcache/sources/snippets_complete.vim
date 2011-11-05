@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2011.
+" Last Modified: 04 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -528,7 +528,7 @@ function! s:expand_newline()"{{{
   while match >= 0
     let end = getline('.')[matchend(getline('.'), '<\\n>') :]
     " Substitute CR.
-    silent! s/<\\n>//
+    silent! execute 's/<\\n>//' . (&gdefault ? 'g' : '')
 
     " Return.
     let pos = getpos('.')
@@ -722,9 +722,9 @@ function! s:substitute_marker(start, end)"{{{
     while line <= a:end
       if getline(line) =~ marker
         let sub = escape(matchstr(getline(line), '\$<'.cnt.':\zs.\{-}\ze\\\@<!>'), '/\')
-        silent! execute printf('%d,%ds/$%d\d\@!/%s/g', 
+        silent! execute printf('%d,%ds/$%d\d\@!/%s/' . (&gdefault ? '' : 'g'),
               \a:start, a:end, cnt, sub)
-        silent! execute line.'s/'.marker.'/'.sub.'/'
+        silent! execute line.'s/'.marker.'/'.sub.'/' . (&gdefault ? 'g' : '')
         break
       endif
 
@@ -733,8 +733,9 @@ function! s:substitute_marker(start, end)"{{{
   elseif search('\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'wb') > 0
     let sub = escape(matchstr(getline('.'), '\$<\d\+:\zs.\{-}\ze\\\@<!>'), '/\')
     let cnt = matchstr(getline('.'), '\$<\zs\d\+\ze\%(:.\{-}\)\?\\\@<!>')
-    silent! execute printf('%%s/$%d\d\@!/%s/g', cnt, sub)
+    silent! execute printf('%%s/$%d\d\@!/%s/' . (&gdefault ? 'g' : ''), cnt, sub)
     silent! execute '%s/'.'\$<'.cnt.'\%(:.\{-}\)\?\\\@<!>'.'/'.sub.'/'
+          \ . (&gdefault ? 'g' : '')
   endif
 endfunction"}}}
 function! s:trigger(function)"{{{
@@ -752,7 +753,7 @@ function! s:eval_snippet(snippet_text)"{{{
         let snip_word .= a:snippet_text[prev_match : match - 1]
       endif
       let prev_match = matchend(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', match)
-      let snip_word .= eval(a:snippet_text[match+1 : prev_match - 2])
+      sandbox let snip_word .= eval(a:snippet_text[match+1 : prev_match - 2])
 
       let match = match(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', prev_match)
     endwhile

@@ -1111,6 +1111,8 @@ ChangeLog neocomplcache 6.2:
 - Improved unite#sources#neocomplcache#start_complete() behavior.
 - Added <Plug>(neocomplcache_start_unite_quick_match) mapping.
 - Improved documentation.
+- Use sandbox in eval snippet.
+- Fixed for gdefault option.
 
 2011-11-03
 - Improved a bit.
