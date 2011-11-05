@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Nov 2011.
+" Last Modified: 05 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1322,6 +1322,7 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
   let words = []
   let icase = g:neocomplcache_enable_ignore_case &&
         \!(g:neocomplcache_enable_smart_case && a:cur_keyword_str =~ '\u')
+        \ && !neocomplcache#is_text_mode()
   for keyword in complete_words
     if has_key(keyword, 'kind') && keyword.kind == ''
       " Remove kind key.
