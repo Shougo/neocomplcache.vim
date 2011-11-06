@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Nov 2011.
+" Last Modified: 06 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -102,26 +102,14 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
 endfunction "}}}
 
 function! unite#sources#neocomplcache#start_complete() "{{{
-  if !neocomplcache#is_enabled()
-    return ''
-  endif
-  if !exists(':Unite')
-    echoerr 'unite.vim is not installed.'
-    echoerr 'Please install unite.vim Ver.1.5 or above.'
-    return ''
-  elseif unite#version() < 300
-    echoerr 'Your unite.vim is too old.'
-    echoerr 'Please install unite.vim Ver.3.0 or above.'
-    return ''
-  endif
-
-  return unite#start_complete(['neocomplcache'], {
-        \ 'auto_preview' : 1, 'winheight' : &pumheight,
-        \ 'auto_resize' : 1,
-        \ })
+  return s:start_complete(0)
 endfunction "}}}
 
 function! unite#sources#neocomplcache#start_quick_match() "{{{
+  return s:start_complete(1)
+endfunction "}}}
+
+function! s:start_complete(is_quick_match)
   if !neocomplcache#is_enabled()
     return ''
   endif
@@ -135,11 +123,14 @@ function! unite#sources#neocomplcache#start_quick_match() "{{{
     return ''
   endif
 
+  let winheight =
+        \ (&pumheight != 0) ? &pumheight : (winheight(0) - winline())
+
   return unite#start_complete(['neocomplcache'], {
-        \ 'auto_preview' : 1, 'winheight' : &pumheight,
-        \ 'auto_resize' : 1, 'quick_match' : 1,
+        \ 'auto_preview' : 1, 'winheight' : winheight,
+        \ 'auto_resize' : 1, 'quick_match' : a:is_quick_match,
         \ })
-endfunction "}}}
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

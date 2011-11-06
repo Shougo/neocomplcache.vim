@@ -1102,6 +1102,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-06
+- Fixed unite source.
+
 2011-11-05
 - Fixed icase in text mode.
 
