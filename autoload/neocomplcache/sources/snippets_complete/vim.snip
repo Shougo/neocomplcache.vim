@@ -58,3 +58,10 @@ snippet     command
 abbr        command call function
 prev_word   '^'
     command! ${1:command_name} call ${2:func_name}
+
+snippet     customlist
+abbr        customlist complete function
+prev_word   '^'
+    function! ${1:func_name}(arglead, cmdline, cursorpos)
+        return filter(${2:list}, 'stridx(v:val, a:arglead) == 0')
+    endfunction
