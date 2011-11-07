@@ -1102,6 +1102,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-08
+- Fixed g:neocomplcache_text_mode_filetypes default value.
+
 2011-11-07
 - Added vim snippet.
 
