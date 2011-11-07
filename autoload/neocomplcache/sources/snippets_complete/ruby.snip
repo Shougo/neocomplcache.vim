@@ -38,3 +38,7 @@ snippet     edn
 abbr        => end?
     end
 
+snippet     urlencode
+    # coding: utf-8
+    require 'erb'
+    puts ERB::Util.url_encode '${1}'
