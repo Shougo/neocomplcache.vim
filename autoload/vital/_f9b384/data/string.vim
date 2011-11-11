@@ -2,10 +2,10 @@
 
 let s:save_cpo = &cpo
 set cpo&vim
+let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
 
 " Substitute a:from => a:to by string.
 " To substitute by pattern, use substitute() instead.
-" Test: https://gist.github.com/984296
 function! s:replace(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
@@ -23,7 +23,6 @@ endfunction
 
 " Substitute a:from => a:to only once.
 " cf. s:replace()
-" Test: https://gist.github.com/984296
 function! s:replace_once(str, from, to)
     if a:str ==# '' || a:from ==# ''
         return a:str
@@ -38,9 +37,21 @@ function! s:replace_once(str, from, to)
     endif
 endfunction
 
+function! s:scan(str, pattern)
+  let list = []
+  let pos = 0
+  while 0 <= pos
+    let matched = matchstr(a:str, a:pattern, pos)
+    let pos = matchend(a:str, a:pattern, pos)
+    if !empty(matched)
+      call add(list, matched)
+    endif
+  endwhile
+  return list
+endfunction
+
 " Split to two elements of List. ([left, right])
 " e.g.: s:split_leftright("neocomplcache", "compl") returns ["neo", "cache"]
-" Test: https://gist.github.com/984356
 function! s:split_leftright(haystack, needle)
     let ERROR = ['', '']
     if a:haystack ==# '' || a:needle ==# ''
@@ -77,6 +88,37 @@ endif "}}}
 function! s:chop(str) "{{{
     return substitute(a:str, '.$', '', '')
 endfunction "}}}
+
+" wrap() and its internal functions
+" * _split_by_wcswitdh_once()
+" * _split_by_wcswitdh()
+" * _concat()
+" * wrap()
+"
+" NOTE _concat() is just a copy of Data.List.concat().
+" FIXME don't repeat yourself
+function! s:_split_by_wcswitdh_once(body, x)
+  return [
+        \ s:V.strwidthpart(a:body, a:x),
+        \ s:V.strwidthpart_reverse(a:body, s:V.wcswidth(a:body) - a:x)]
+endfunction
+
+function! s:_split_by_wcswitdh(body, x)
+  let memo = []
+  let body = a:body
+  while s:V.wcswidth(body) > a:x
+    let [tmp, body] = s:_split_by_wcswitdh_once(body, a:x)
+    call add(memo, tmp)
+  endwhile
+  call add(memo, body)
+  return memo
+endfunction
+
+function! s:wrap(str)
+  let L = s:V.import('Data.List')
+  return L.concat(
+        \ map(split(a:str, '\r\?\n'), 's:_split_by_wcswitdh(v:val, &columns - 1)'))
+endfunction
 
 
 let &cpo = s:save_cpo

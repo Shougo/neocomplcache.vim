@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Oct 2011.
+" Last Modified: 11 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +27,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:Cache = vital#of('neocomplcache').import('System.Cache')
+
 " Cache loader.
 function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary,
       \ keyword_list_dictionary, completion_length) "{{{
@@ -42,7 +44,8 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
 
       let keyword_list = []
       for cache in a:async_cache_dictionary[a:key]
-        let keyword_list += neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
+        let keyword_list +=
+              \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
       endfor
 
       call neocomplcache#cache#list2index(
@@ -58,17 +61,13 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
   endfor
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  if !filereadable(cache_name)
-    return []
-  endif
-
   try
-    return map(map(readfile(cache_name), 'split(v:val, "|||", 1)'), '{
-          \ "word" : v:val[0],
-          \ "abbr" : v:val[1],
-          \ "menu" : v:val[2],
-          \ "kind" : v:val[3],
+    return map(map(neocomplcache#cache#readfile(a:cache_dir, a:filename),
+          \ 'split(v:val, "|||", 1)'), '{
+          \   "word" : v:val[0],
+          \   "abbr" : v:val[1],
+          \   "menu" : v:val[2],
+          \   "kind" : v:val[3],
           \}')
   catch /^Vim\%((\a\+)\)\=:E684:/
     return []
@@ -100,9 +99,6 @@ function! neocomplcache#cache#list2index(list, dictionary, completion_length)"{{
 endfunction"}}}
 
 function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
-  " Create cache directory.
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-
   " Create dictionary key.
   for keyword in a:keyword_list
     if !has_key(keyword, 'abbr')
@@ -123,74 +119,34 @@ function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
           \keyword.word, keyword.abbr, keyword.menu, keyword.kind))
   endfor
 
-  call writefile(word_list, cache_name)
+  call neocomplcache#cache#writefile(a:cache_dir, a:filename, word_list)
 endfunction"}}}
 
 " Cache helper.
 function! neocomplcache#cache#getfilename(cache_dir, filename)"{{{
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  return cache_name
+  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  return s:Cache.getfilename(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#filereadable(cache_dir, filename)"{{{
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  return filereadable(cache_name)
+  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  return s:Cache.filereadable(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#readfile(cache_dir, filename)"{{{
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  return filereadable(cache_name) ? readfile(cache_name) : []
+  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  return s:Cache.readfile(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-
-  call writefile(a:list, cache_name)
+  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  return s:Cache.writefile(cache_dir, a:filename, a:list)
 endfunction"}}}
 function! neocomplcache#cache#encode_name(cache_dir, filename)
   " Check cache directory.
   let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
-  if !isdirectory(cache_dir)
-    call mkdir(cache_dir, 'p')
-  endif
-
-  let dir = printf('%s/%s/', g:neocomplcache_temporary_dir, a:cache_dir)
-  return dir . s:create_hash(dir, a:filename)
+  return s:Cache.getfilename(cache_dir, a:filename)
 endfunction
 function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
-  " Check old cache file.
-  let cache_name = neocomplcache#cache#encode_name(a:cache_dir, a:filename)
-  let ret = getftime(cache_name) == -1 || getftime(cache_name) <= getftime(a:filename)
-  if ret && filereadable(cache_name)
-    " Delete old cache.
-    call delete(cache_name)
-  endif
-
-  return ret
-endfunction"}}}
-
-" Check md5.
-try
-  call md5#md5()
-  let s:exists_md5 = 1
-catch
-  let s:exists_md5 = 0
-endtry
-
-function! s:create_hash(dir, str)"{{{
-  if len(a:dir) + len(a:str) < 150
-    let hash = substitute(substitute(a:str, ':', '=-', 'g'), '[/\\]', '=+', 'g')
-  elseif s:exists_md5
-    " Use md5.vim.
-    let hash = md5#md5(a:str)
-  else
-    " Use simple hash.
-    let sum = 0
-    for i in range(len(a:str))
-      let sum += char2nr(a:str[i]) * (i + 1)
-    endfor
-
-    let hash = printf('%x', sum)
-  endif
-
-  return hash
+  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  return  s:Cache.check_old_cache(cache_dir, a:filename)
 endfunction"}}}
 
 let s:sdir = fnamemodify(expand('<sfile>'), ':p:h')

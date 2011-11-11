@@ -1102,6 +1102,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-11
+- Use vital.vim cache module.
+
 2011-11-08
 - Fixed g:neocomplcache_text_mode_filetypes default value.
 

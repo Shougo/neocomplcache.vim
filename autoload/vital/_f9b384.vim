@@ -92,7 +92,7 @@ function! s:_build_module(sid)
     try
       call module._vital_loaded(vital#{s:self_version}#new())
     catch
-      " FIXME: Show the error message for debug.
+      " FIXME: Show an error message for debug.
     endtry
   endif
   call filter(module, 'v:key =~# "^\\a"')

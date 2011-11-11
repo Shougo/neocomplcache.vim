@@ -3,6 +3,42 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:is_windows = has('win16') || has('win32') || has('win64')
+let s:is_cygwin = has('win32unix')
+let s:is_mac = !s:is_windows && (has('mac') || has('macunix') || has('gui_macvim') || system('uname') =~? '^darwin')
+
+" Open a file.
+function! s:open(filename) "{{{
+  let filename = iconv(fnamemodify(a:filename, ':p'),
+        \ &encoding, &termencoding)
+
+  " Detect desktop environment.
+  if s:is_windows
+    " For URI only.
+    silent execute '!start rundll32 url.dll,FileProtocolHandler' filename
+  elseif s:is_cygwin
+    " Cygwin.
+    call system(printf('%s ''%s''', 'cygstart', filename))
+  elseif executable('xdg-open')
+    " Linux.
+    call system(printf('%s ''%s'' &', 'xdg-open', filename))
+  elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
+    " KDE.
+    call system(printf('%s ''%s'' &', 'kioclien exec', filename))
+  elseif exists('$GNOME_DESKTOP_SESSION_ID')
+    " GNOME.
+    call system(printf('%s ''%s'' &', 'gnome-open', filename))
+  elseif executable('exo-open')
+    " Xfce.
+    call system(printf('%s ''%s'' &', 'exo-open', filename))
+  elseif s:is_mac && executable('open')
+    " Mac OS.
+    call system(printf('%s ''%s'' &', 'open', filename))
+  else
+    " Give up.
+    throw 'Not supported.'
+  endif
+endfunction "}}}
 
 
 " Move a file.
@@ -30,13 +66,7 @@ endfunction
 " Move a file.
 " Implemented by pure vimscript.
 function! s:move_file_pure(src, dest) "{{{
-    let copy_success = s:copy_file(a:src, a:dest)
-    let remove_success = delete(a:src) == 0
-    if copy_success && remove_success
-        return 1
-    else
-        return 0
-    endif
+    return !rename(a:src, a:dest)
 endfunction "}}}
 
 " Copy a file.
