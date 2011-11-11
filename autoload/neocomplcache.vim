@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Nov 2011.
+" Last Modified: 08 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -460,7 +460,8 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_text_mode_filetypes')
     let g:neocomplcache_text_mode_filetypes = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_text_mode_filetypes, 'text,help,tex,gitcommit,nothing,vcs-commit', 1)
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_text_mode_filetypes,
+        \ 'text,help,tex,gitcommit,vcs-commit', 1)
   "}}}
 
   " Initialize tags filter patterns."{{{
