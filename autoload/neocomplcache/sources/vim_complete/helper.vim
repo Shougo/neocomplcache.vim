@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Sep 2011.
+" Last Modified: 13 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -152,6 +152,9 @@ endfunction"}}}
 
 function! neocomplcache#sources#vim_complete#helper#autocmd_args(cur_text, cur_keyword_str)"{{{
   let args = s:split_args(a:cur_text, a:cur_keyword_str)
+  if len(args) < 2
+    return []
+  endif
 
   " Caching.
   if !has_key(s:global_candidates_list, 'augroups')

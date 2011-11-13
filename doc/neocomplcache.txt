@@ -1102,6 +1102,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-13
+- Fixed autocmd args error.
+
 2011-11-11
 - Use vital.vim cache module.
 
