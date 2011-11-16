@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Nov 2011.
+" Last Modified: 14 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -99,7 +99,9 @@ function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilenam
 endfunction"}}}
 
 function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
-  let menu = '[' . a:mark . ']'
+  let menu = '[' . a:mark . '] ' . s:strwidthpart(
+        \ fnamemodify(a:filename, ':t'), a:maxfilename)
+
   let menu_pattern = menu . printf(' %%.%ds', a:maxfilename)
   let keyword_lists = []
   let dup_check = {}

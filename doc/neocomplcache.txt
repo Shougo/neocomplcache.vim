@@ -1105,6 +1105,9 @@ ChangeLog neocomplcache 6.2:
 2011-11-16
 - Improved unite#sources#snippet#start_complete()
 
+2011-11-14
+- Improved async from tags.
+
 2011-11-13
 - Fixed autocmd args error.
 
