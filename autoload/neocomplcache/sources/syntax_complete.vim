@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Oct 2011.
+" Last Modified: 21 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,16 +35,19 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Initialize.
   let s:syntax_list = {}
-  let s:completion_length = neocomplcache#get_auto_completion_length('syntax_complete')
+  let s:completion_length =
+        \ neocomplcache#get_auto_completion_length('syntax_complete')
 
   " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_plugin_rank, 'syntax_complete', 7)
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_plugin_rank, 'syntax_complete', 7)
 
   " Set caching event.
   autocmd neocomplcache Syntax * call s:caching()
 
   " Add command.
-  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheCachingSyntax call s:recaching(<q-args>)
+  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
+        \ NeoComplCacheCachingSyntax call s:recaching(<q-args>)
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/syntax_cache')
