@@ -1102,6 +1102,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-23
+- Fixed tex snippets.
+
 2011-11-21
 - Added neocomplcache#sources#include_complete#get_current_include_files().
 - Improved snippets_complete rank.
