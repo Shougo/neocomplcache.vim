@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Nov 2011.
+" Last Modified: 24 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -87,14 +87,28 @@ function! s:source.initialize()"{{{
           \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
   augroup END"}}}
 
+  if has('conceal')
+    " Supported conceal features.
+    augroup neocomplcache
+      autocmd BufNewFile,BufWinEnter,ColorScheme * setlocal conceallevel=2 concealcursor=i |
+            \ syn match   NeoComplCacheExpandSnippets
+            \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+' conceal cchar=$
+    augroup END
+  else
+    augroup neocomplcache
+      autocmd BufNewFile,BufWinEnter,ColorScheme * syn match   NeoComplCacheExpandSnippets
+            \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
+    augroup END
+  endif
+
+  hi def link NeoComplCacheExpandSnippets Special
+
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
         \ NeoComplCacheEditSnippets call s:edit_snippets(<q-args>, 0)
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
         \ NeoComplCacheEditRuntimeSnippets call s:edit_snippets(<q-args>, 1)
   command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
         \ NeoComplCacheCachingSnippets call s:caching_snippets(<q-args>)
-
-  hi def link NeoComplCacheExpandSnippets Special
 
   " Select mode mappings.
   if !exists('g:neocomplcache_disable_select_mode_mappings')
