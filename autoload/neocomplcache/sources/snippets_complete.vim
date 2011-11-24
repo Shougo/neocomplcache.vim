@@ -90,13 +90,14 @@ function! s:source.initialize()"{{{
   if has('conceal')
     " Supported conceal features.
     augroup neocomplcache
-      autocmd BufNewFile,BufWinEnter,ColorScheme * setlocal conceallevel=2 concealcursor=i |
+      autocmd BufNewFile,BufWinEnter,ColorScheme *
             \ syn match   NeoComplCacheExpandSnippets
             \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+' conceal cchar=$
     augroup END
   else
     augroup neocomplcache
-      autocmd BufNewFile,BufWinEnter,ColorScheme * syn match   NeoComplCacheExpandSnippets
+      autocmd BufNewFile,BufWinEnter,ColorScheme *
+            \ syn match   NeoComplCacheExpandSnippets
             \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
     augroup END
   endif
