@@ -1108,6 +1108,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-11-25
+- Fixed conceal syntax.
+
 2011-11-24
 - Supported conceal feature in snippet_complete(experimental).
 

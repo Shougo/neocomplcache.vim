@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2011.
+" Last Modified: 25 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,20 +83,18 @@ function! s:source.initialize()"{{{
     autocmd BufWritePost *.snip,*.snippets call s:caching_snippets(expand('<afile>:t:r'))
     " Detect syntax file.
     autocmd BufNewFile,BufRead *.snip,*.snippets set filetype=snippet
-    autocmd BufNewFile,BufWinEnter,ColorScheme * syn match   NeoComplCacheExpandSnippets
-          \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
   augroup END"}}}
 
   if has('conceal')
     " Supported conceal features.
     augroup neocomplcache
-      autocmd BufNewFile,BufWinEnter,ColorScheme *
+      autocmd BufNewFile,BufRead,ColorScheme *
             \ syn match   NeoComplCacheExpandSnippets
             \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+' conceal cchar=$
     augroup END
   else
     augroup neocomplcache
-      autocmd BufNewFile,BufWinEnter,ColorScheme *
+      autocmd BufNewFile,BufRead,ColorScheme *
             \ syn match   NeoComplCacheExpandSnippets
             \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
     augroup END
