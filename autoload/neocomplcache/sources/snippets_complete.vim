@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2011.
+" Last Modified: 27 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -457,7 +457,8 @@ function! s:snippets_force_expand(cur_text, col)"{{{
   call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, cur_word)
 endfunction"}}}
 function! s:snippets_expand_or_jump(cur_text, col)"{{{
-  let cur_word = s:get_cursor_keyword_snippet(neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
+  let cur_word = s:get_cursor_keyword_snippet(
+        \ neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
   if cur_word != ''
     " Found snippet trigger.
     call neocomplcache#sources#snippets_complete#expand(a:cur_text, a:col, cur_word)
@@ -466,7 +467,8 @@ function! s:snippets_expand_or_jump(cur_text, col)"{{{
   endif
 endfunction"}}}
 function! s:snippets_jump_or_expand(cur_text, col)"{{{
-  let cur_word = s:get_cursor_keyword_snippet(neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
+  let cur_word = s:get_cursor_keyword_snippet(
+        \ neocomplcache#sources#snippets_complete#get_snippets(), a:cur_text)
   if search('\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>', 'nw') > 0
     " Found snippet placeholder.
     call s:snippets_force_jump(a:cur_text, a:col)
@@ -552,7 +554,8 @@ function! s:expand_newline()"{{{
     let pos = getpos('.')
     let pos[2] = match+1
     call setpos('.', pos)
-    silent execute 'normal!' (match+1 >= col('$')? 'a' : 'i')."\<CR>"
+    silent execute 'normal!'
+          \ (match+1 >= col('$')? 'a' : 'i')."\<CR>"
 
     " Next match.
     let match = match(getline('.'), '<\\n>')
@@ -569,7 +572,8 @@ function! s:expand_tabline()"{{{
   call setline(line, tablines[0])
   for tabline in tablines[1:]
     if &expandtab
-      let tabline = substitute(tabline, '<\\t>', repeat(' ', &softtabstop ? &softtabstop : &shiftwidth), 'g')
+      let tabline = substitute(tabline, '<\\t>',
+            \ repeat(' ', &softtabstop ? &softtabstop : &shiftwidth), 'g')
     else
       let tabline = substitute(tabline, '<\\t>', '\t', 'g')
     endif
@@ -606,52 +610,17 @@ function! s:search_snippet_range(start, end)"{{{
   call s:substitute_marker(a:start, a:end)
 
   let pattern = '\${'.s:snippet_holder_cnt.'\%(:.\{-}\)\?\\\@<!}'
-  let pattern2 = '\${'.s:snippet_holder_cnt.':\zs.\{-}\ze\\\@<!}'
 
   let line = a:start
-  while line <= a:end
-    let current_line = getline(line)
-    let match = match(current_line, pattern)
-    if match >= 0
-      let default = substitute(matchstr(current_line, pattern2), '\\\ze.', '', 'g')
-      let match_len2 = len(default)
+  for line in filter(range(a:start, a:end),
+        \ 'getline(v:val) =~ pattern')
+    call s:expand_placeholder(a:start, a:end,
+          \ s:snippet_holder_cnt, line)
 
-      let pos = getpos('.')
-      let pos[1] = line
-      let pos[2] = match+1
-
-      if s:search_sync_placeholder(a:start, a:end, s:snippet_holder_cnt)
-        " Substitute holder.
-        call setline(line, substitute(current_line, pattern, '\$<'.s:snippet_holder_cnt.':'.escape(default, '\').'>', ''))
-        let pos[2] += len('$<'.s:snippet_holder_cnt.':')
-      else
-        " Substitute holder.
-        call setline(line, substitute(current_line, pattern, escape(default, '\'), ''))
-      endif
-      call setpos('.', pos)
-
-      if match_len2 > 0
-        " Select default value.
-        let len = match_len2-1
-        if &l:selection == "exclusive"
-          let len += 1
-        endif
-
-        execute 'normal! v'. repeat('l', len) . "\<C-g>"
-      elseif pos[2] < col('$')
-        startinsert
-      else
-        startinsert!
-      endif
-
-      " Next count.
-      let s:snippet_holder_cnt += 1
-      return 1
-    endif
-
-    " Next line.
-    let line += 1
-  endwhile
+    " Next count.
+    let s:snippet_holder_cnt += 1
+    return 1
+  endfor
 
   return 0
 endfunction"}}}
@@ -659,50 +628,13 @@ function! s:search_outof_range(col)"{{{
   call s:substitute_marker(1, 0)
 
   let pattern = '\${\d\+\%(:.\{-}\)\?\\\@<!}'
-  let pos = getpos('.')
   if search(pattern, 'w') > 0
-    let line = line('.')
-    let current_line = getline(line)
-    let match = match(current_line, pattern)
-    let pattern2 = '\${\d\+:\zs.\{-}\ze\\\@<!}'
-    let default = substitute(matchstr(current_line, pattern2), '\\\ze.', '', 'g')
-    let match_len2 = len(default)
-
-    let pos[2] = match+1
-
-    " Substitute holder.
-    let cnt = matchstr(current_line, '\${\zs\d\+\ze\%(:.\{-}\)\?\\\@<!}')
-    if search('\$'.cnt.'\d\@!', 'nw') > 0
-      let pattern = '\${' . cnt . '\%(:.\{-}\)\?\\\@<!}'
-      call setline(line, substitute(current_line, pattern, '\$<'.s:snippet_holder_cnt.':'.escape(default, '\').'>', ''))
-      let pos[2] += len('$<'.s:snippet_holder_cnt.':')
-    else
-      " Substitute holder.
-      call setline(line, substitute(current_line, pattern, escape(default, '\'), ''))
-    endif
-    let pos[1] = line('.')
-    call setpos('.', pos)
-
-    if match_len2 > 0
-      " Select default value.
-      let len = match_len2-1
-      if &l:selection == 'exclusive'
-        let len += 1
-      endif
-
-      execute 'normal! v'. repeat('l', len) . "\<C-g>"
-
-      return 1
-    endif
-
-    if pos[2] < col('$')
-      startinsert
-    else
-      startinsert!
-    endif
-
+    call s:expand_placeholder(line('.'), 0, '\d\+', line('.'))
     return 1
-  elseif a:col == 1
+  endif
+
+  let pos = getpos('.')
+  if a:col == 1
     let pos[2] = 1
     call setpos('.', pos)
     startinsert
@@ -717,18 +649,62 @@ function! s:search_outof_range(col)"{{{
   " Not found.
   return 0
 endfunction"}}}
-function! s:search_sync_placeholder(start, end, number)"{{{
-  let line = a:start
-  let pattern = '\$'.a:number.'\d\@!'
+function! s:expand_placeholder(start, end, holder_cnt, line)"{{{
+  let pattern = '\${'.a:holder_cnt.'\%(:.\{-}\)\?\\\@<!}'
+  let current_line = getline(a:line)
+  let match = match(current_line, pattern)
 
-  while line <= a:end
-    if getline(line) =~ pattern
-      return 1
+  let default_pattern = '\${'.a:holder_cnt.':\zs.\{-}\ze\\\@<!}'
+  let default = substitute(
+        \ matchstr(current_line, default_pattern), '\\\ze.', '', 'g')
+  let default_len = len(default)
+
+  let pos = getpos('.')
+  let pos[1] = a:line
+  let pos[2] = match+1
+
+  let cnt = s:search_sync_placeholder(a:start, a:end, a:holder_cnt)
+  if cnt > 0
+    let pattern = '\${' . cnt . '\%(:.\{-}\)\?\\\@<!}'
+    call setline(a:line, substitute(current_line, pattern,
+          \ '\$<'.cnt.':'.escape(default, '\').'>', ''))
+    let pos[2] += len('$<'.cnt.':')
+  else
+    " Substitute holder.
+    call setline(a:line,
+          \ substitute(current_line, pattern, escape(default, '\'), ''))
+  endif
+
+  call setpos('.', pos)
+
+  if default_len > 0
+    " Select default value.
+    let len = default_len-1
+    if &l:selection == "exclusive"
+      let len += 1
     endif
 
-    " Next line.
-    let line += 1
-  endwhile
+    stopinsert
+    execute "normal! v". repeat('l', len) . "\<C-g>"
+  elseif pos[2] < col('$')
+    startinsert
+  else
+    startinsert!
+  endif
+endfunction"}}}
+function! s:search_sync_placeholder(start, end, number)"{{{
+  if a:end == 0
+    " Search in current buffer.
+    let cnt = matchstr(getline(a:start),
+          \ '\${\zs\d\+\ze\%(:.\{-}\)\?\\\@<!}')
+    return search('\$'.cnt.'\d\@!', 'nw') > 0 ? cnt : 0
+  endif
+
+  let pattern = '\$'.a:number.'\d\@!'
+  for line in filter(range(a:start, a:end),
+        \ 'getline(v:val) =~ pattern')
+    return s:snippet_holder_cnt
+  endfor
 
   return 0
 endfunction"}}}
@@ -802,14 +778,22 @@ function! s:SID_PREFIX()
 endfunction
 
 " Plugin key-mappings.
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump_or_expand')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_jump_or_expand')
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand) <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
-inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
-snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump) <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_expand)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_expand)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_expand_or_jump')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_jump)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_jump_or_expand')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_jump)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_jump_or_expand')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_expand)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_force_expand')
+inoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
+snoremap <silent><expr> <Plug>(neocomplcache_snippets_force_jump)
+      \ <SID>trigger(<SID>SID_PREFIX().'snippets_force_jump')
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
