@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Oct 2011.
+" Last Modified: 29 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -131,6 +131,19 @@ endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_current_line()"{{{
   " Current line caching.
   return s:caching_current_buffer(line('.')-1, line('.')+1)
+endfunction"}}}
+function! neocomplcache#sources#buffer_complete#caching_word(keyword)"{{{
+  let source = s:buffer_sources[bufnr('%')]
+  let key = tolower(a:keyword[: s:completion_length-1])
+  if !has_key(source.keyword_cache, key)
+        \ || !has_key(source.keyword_cache[key], a:keyword)
+    return
+  endif
+  if !has_key(source.frequencies, a:keyword)
+    let source.frequencies[a:keyword] = 1
+  endif
+
+  let source.frequencies[a:keyword] += 1
 endfunction"}}}
 function! s:caching_current_buffer(start, end)"{{{
   " Current line caching.
