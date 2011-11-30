@@ -594,7 +594,8 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     let dict = { 'words' : s:complete_words }
 
     if !g:neocomplcache_enable_auto_select
-      let dict.refresh = 'always'
+      " Note: This feature breaks register-.
+      " let dict.refresh = 'always'
     endif
 
     return dict

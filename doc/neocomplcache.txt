@@ -1110,6 +1110,7 @@ ChangeLog neocomplcache 6.2:
 
 2011-11-30
 - Deleted obsolute learning.
+- Fixed for refresh always problem(experimental).
 
 2011-11-29
 - Improved for learning.
