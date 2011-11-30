@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Nov 2011.
+" Last Modified: 30 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1855,13 +1855,6 @@ function! s:on_insert_enter()"{{{
   endif
 endfunction"}}}
 function! s:on_insert_leave()"{{{
-  if s:cur_keyword_str != '' &&
-        \ stridx(getreg('.'), s:cur_keyword_str) == 0 &&
-        \ neocomplcache#is_source_enabled('buffer_complete')
-    " Check register-. value for learning.
-    call neocomplcache#sources#buffer_complete#caching_word(getreg('.'))
-  endif
-
   let s:cur_text = ''
   let s:cur_keyword_str = ''
   let s:complete_words = []
