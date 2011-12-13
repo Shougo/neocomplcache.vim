@@ -1108,6 +1108,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2011-12-14
+- Fixed Vim keyword pattern.
+
 2011-12-03
 - Improved tex keyword pattern.
 

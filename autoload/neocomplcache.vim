@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Dec 2011.
+" Last Modified: 14 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -137,7 +137,7 @@ function! neocomplcache#enable() "{{{
         \'[=]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'vim,help',
-        \'\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*\|-\h\w*=\?'
+        \'-\h[[:alnum:]-]*=\?\|\c\[:\%(\h\w*:\]\)\?\|\&\h[[:alnum:]_:]*\|\$\h\w*'
         \'\|<SID>\%(\h\w*\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'tex',
@@ -785,7 +785,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Fuzzy completion.
   if len(keyword_escape) < 8 && g:neocomplcache_enable_fuzzy_completion
     let keyword_escape = substitute(keyword_escape, '\w',
-          \ '\\%(\0\\|\U\0\E\\l*\\|\0[^_]*_\\)', 'g')
+          \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
   else
     " Underbar completion."{{{
     if g:neocomplcache_enable_underbar_completion
@@ -1881,7 +1881,6 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
   let next_keyword_str = matchstr('a'.
         \ getline('.')[len(neocomplcache#get_cur_text(1)) :], pattern)[1:]
   if next_keyword_str != ''
-    echomsg next_keyword_str
     let next_keyword_str = substitute(escape(next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
 
     " No ignorecase.
