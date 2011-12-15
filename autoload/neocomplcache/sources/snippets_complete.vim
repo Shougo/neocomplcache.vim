@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Nov 2011.
+" Last Modified: 15 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -741,22 +741,18 @@ function! s:eval_snippet(snippet_text)"{{{
   let prev_match = 0
   let match = match(a:snippet_text, '\\\@<!`.\{-}\\\@<!`')
 
-  try
-    while match >= 0
-      if match - prev_match > 0
-        let snip_word .= a:snippet_text[prev_match : match - 1]
-      endif
-      let prev_match = matchend(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', match)
-      sandbox let snip_word .= eval(a:snippet_text[match+1 : prev_match - 2])
-
-      let match = match(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', prev_match)
-    endwhile
-    if prev_match >= 0
-      let snip_word .= a:snippet_text[prev_match :]
+  while match >= 0
+    if match - prev_match > 0
+      let snip_word .= a:snippet_text[prev_match : match - 1]
     endif
-  catch
-    return ''
-  endtry
+    let prev_match = matchend(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', match)
+    let snip_word .= eval(a:snippet_text[match+1 : prev_match - 2])
+
+    let match = match(a:snippet_text, '\\\@<!`.\{-}\\\@<!`', prev_match)
+  endwhile
+  if prev_match >= 0
+    let snip_word .= a:snippet_text[prev_match :]
+  endif
 
   return snip_word
 endfunction"}}}
