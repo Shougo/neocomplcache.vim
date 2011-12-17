@@ -1111,6 +1111,9 @@ ChangeLog neocomplcache 6.2:
 2011-12-17
 - Improved expand home.
 
+2011-12-15
+- Improved snippet eval.
+
 2011-12-14
 - Fixed Vim keyword pattern.
 
