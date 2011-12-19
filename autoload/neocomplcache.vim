@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Dec 2011.
+" Last Modified: 19 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -137,7 +137,7 @@ function! neocomplcache#enable() "{{{
         \'[=]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'vim,help',
-        \'-\h[[:alnum:]-]*=\?\|\c\[:\%(\h\w*:\]\)\?\|\&\h[[:alnum:]_:]*\|\$\h\w*'
+        \'-\h[[:alnum:]-]*=\?\|\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|\$\h\w*'
         \'\|<SID>\%(\h\w*\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'tex',
