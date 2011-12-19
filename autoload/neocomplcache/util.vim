@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2011.
+" Last Modified: 19 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,7 +40,6 @@ endfunction"}}}
 function! neocomplcache#util#strchars(...)"{{{
   return call(s:V.strchars, a:000)
 endfunction"}}}
-
 function! neocomplcache#util#wcswidth(...)"{{{
   return call(s:V.wcswidth, a:000)
 endfunction"}}}
@@ -51,6 +50,9 @@ function! neocomplcache#util#strwidthpart_reverse(...)"{{{
   return call(s:V.strwidthpart_reverse, a:000)
 endfunction"}}}
 
+function! neocomplcache#util#substitute_path_separator(...)
+  return call(s:V.substitute_path_separator, a:000)
+endfunction
 function! neocomplcache#util#mb_strlen(...)"{{{
   return call(s:V.strchars, a:000)
 endfunction"}}}
