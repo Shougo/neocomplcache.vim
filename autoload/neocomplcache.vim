@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2011.
+" Last Modified: 18 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -510,6 +510,13 @@ function! neocomplcache#enable() "{{{
         \ unite#sources#neocomplcache#start_quick_match()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)
         \ unite#sources#snippet#start_complete()
+
+  " Check if "vim" command is executable.
+  if neocomplcache#has_vimproc() && !executable('vim')
+    echoerr '"vim" command is not executable. Asynchronous caching is disabled.'
+    echoerr 'Please install "vim" command. And add to $PATH.'
+    let s:exists_vimproc = 0
+  endif
 
   " Disable bell.
   set vb t_vb=

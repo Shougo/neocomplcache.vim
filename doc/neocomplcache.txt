@@ -1111,6 +1111,9 @@ ChangeLog neocomplcache 6.2:
 2011-12-19
 - Fixed path separator error.
 
+2011-12-18
+- Check if "vim" command is executable.
+
 2011-12-17
 - Improved expand home.
 
