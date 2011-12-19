@@ -1111,6 +1111,7 @@ ChangeLog neocomplcache 6.2:
 2011-12-19
 - Fixed path separator error.
 - Fixed vim keyword pattern.
+- Applied omni_complete patch(experimental).
 
 2011-12-18
 - Check if "vim" command is executable.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Oct 2011.
+" Last Modified: 19 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -141,7 +141,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     let cur_text = a:cur_text
   endif
 
-  if !neocomplcache#is_eskk_enabled()
+  if !neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete()
         \ && cur_text !~ '\%(' . pattern . '\m\)$'
     return -1
   endif
