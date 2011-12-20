@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Nov 2011.
+" Last Modified: 20 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,7 +109,9 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       call s:calc_frequency()
     endif
 
-    let keyword_list += keyword_cache
+    let keyword_list += filter(keyword_cache,
+          \ "!has_key(v:val, 'bufnr') ||
+          \ stridx(join(getbufline(v:val.bufnr, v:val.line_start, v:val.line_end)), v:val.word) >= 0")
   endfor
 
   return keyword_list
@@ -130,7 +132,7 @@ endfunction"}}}
 
 function! neocomplcache#sources#buffer_complete#caching_current_line()"{{{
   " Current line caching.
-  return s:caching_current_buffer(line('.')-1, line('.')+1)
+  return s:caching_current_buffer(line('.')-1, line('.')+1, 1)
 endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_word(keyword)"{{{
   let source = s:buffer_sources[bufnr('%')]
@@ -145,7 +147,7 @@ function! neocomplcache#sources#buffer_complete#caching_word(keyword)"{{{
 
   let source.frequencies[a:keyword] += 1
 endfunction"}}}
-function! s:caching_current_buffer(start, end)"{{{
+function! s:caching_current_buffer(start, end, is_auto)"{{{
   " Current line caching.
 
   if !s:exists_current_source() || has_key(s:disable_caching_list, bufnr('%'))
@@ -177,6 +179,12 @@ function! s:caching_current_buffer(start, end)"{{{
         " Append list.
         let keywords[key][match_str] =
               \ { 'word' : match_str, 'menu' : menu, 'rank' : 0 }
+        if a:is_auto
+          " Save line number.
+          let keywords[key][match_str].line_start = a:start
+          let keywords[key][match_str].line_end = a:end
+          let keywords[key][match_str].bufnr = bufnr('%')
+        endif
       endif
       if !has_key(frequencies, match_str)
         let frequencies[match_str] = 1
@@ -415,8 +423,13 @@ function! s:save_cache(srcname)"{{{
     return
   endif
 
+  let cache = filter(neocomplcache#unpack_dictionary(
+        \        s:buffer_sources[a:srcname].keyword_cache),
+        \ "!has_key(v:val, 'bufnr') ||
+        \ stridx(join(getbufline(v:val.bufnr, v:val.line_start, v:val.line_end)), v:val.word) >= 0")
+
   " Output buffer.
-  call neocomplcache#cache#save_cache('buffer_cache', srcname, neocomplcache#unpack_dictionary(s:buffer_sources[a:srcname].keyword_cache))
+  call neocomplcache#cache#save_cache('buffer_cache', srcname, cache)
 endfunction "}}}
 function! s:save_all_cache()"{{{
   try
@@ -446,7 +459,7 @@ function! s:caching_buffer(name)"{{{
 
   " Word recaching.
   call s:word_caching(number)
-  call s:caching_current_buffer(1, line('$'))
+  call s:caching_current_buffer(1, line('$'), 0)
 endfunction"}}}
 function! s:print_source(name)"{{{
   if a:name == ''
