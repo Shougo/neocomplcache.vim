@@ -83,7 +83,8 @@ function! neocomplcache#util#get_last_status(...)"{{{
 endfunction"}}}
 
 function! neocomplcache#util#glob(pattern, ...)"{{{
-  let is_force_glob = get(a:000, 0, 0)
+  " let is_force_glob = get(a:000, 0, 0)
+  let is_force_glob = get(a:000, 0, 1)
 
   if !is_force_glob && a:pattern =~ '^[^\\*]\+/\*'
         \ && neocomplcache#util#has_vimproc() && exists('*vimproc#readdir')

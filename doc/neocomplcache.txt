@@ -1109,7 +1109,7 @@ CHANGELOG						*neocomplcache-changelog*
 ChangeLog neocomplcache 6.2:
 
 2011-12-22
-- Use vimproc#readdir() in filename_complete.
+- Force use glob().
 
 2011-12-20
 - Fixed overwrite manual complete.
