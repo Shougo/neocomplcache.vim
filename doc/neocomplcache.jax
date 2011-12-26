@@ -286,13 +286,6 @@ g:neocomplcache_enable_auto_delimiter			*g:neocomplcache_enable_auto_delimiter*
 		
 		初期値は0である。
 
-g:neocomplcache_cursor_hold_i_time			*g:neocomplcache_cursor_hold_i_time*
-		|g:neocomplcache_enable_cursor_hold_i|が有効になっている場合、
-		自動補完を開始するための計算時間を定義する。このオプションは
-		'updatetime'の値を書き換える。
-		
-		初期値は300である。
-
 g:neocomplcache_enable_camel_case_completion		*g:neocomplcache_enable_camel_case_completion*
 		大文字を入力したときに、それを単語の区切りとしてあいまい検索
 		を行うかどうか制御する。 例えば "AE" と入力したとき、

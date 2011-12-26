@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Dec 2011.
+" Last Modified: 26 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,6 @@ function! neocomplcache#enable() "{{{
     " Auto complete events
     autocmd CursorMovedI * call s:on_moved_i()
     autocmd CursorHoldI * call s:on_hold_i()
-    autocmd InsertEnter * call s:on_insert_enter()
     autocmd InsertLeave * call s:on_insert_leave()
   augroup END "}}}
 
@@ -66,7 +65,6 @@ function! neocomplcache#enable() "{{{
   let s:complete_words = []
   let s:complete_results = {}
   let s:old_cur_keyword_pos = -1
-  let s:update_time_save = &updatetime
   let s:cur_text = ''
   let s:old_cur_text = ''
   let s:moved_cur_text = ''
@@ -1858,12 +1856,6 @@ function! s:on_moved_i()"{{{
     call neocomplcache#do_auto_complete()
   endif
 endfunction"}}}
-function! s:on_insert_enter()"{{{
-  if &updatetime > g:neocomplcache_cursor_hold_i_time
-    let s:update_time_save = &updatetime
-    let &updatetime = g:neocomplcache_cursor_hold_i_time
-  endif
-endfunction"}}}
 function! s:on_insert_leave()"{{{
   let s:cur_text = ''
   let s:cur_keyword_str = ''
@@ -1872,10 +1864,6 @@ function! s:on_insert_leave()"{{{
   let s:is_text_mode = 0
   let s:skip_next_complete = 0
   let s:is_prefetch = 0
-
-  if &updatetime < s:update_time_save
-    let &updatetime = s:update_time_save
-  endif
 endfunction"}}}
 function! s:remove_next_keyword(plugin_name, list)"{{{
   let list = a:list
