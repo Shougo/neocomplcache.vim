@@ -5,11 +5,9 @@ Description
 -----------
 
 Neocomplcache performs keyword completion by making a cache of keywords in
-a buffer. Because I implemented it by paying own expenses unlike the keyword
-completion including the Vim composing type, neocomplcache can be customized
-flexibly. Unfortunately neocomplcache may use more memory than other
-plugins.
-
+a buffer. I implemented it because unlike the Vim builtin keyword completion.
+Neocomplcache can be customized flexibly. Unfortunately neocomplcache may use
+more memory than other plugins.
 
 Installation
 ============
