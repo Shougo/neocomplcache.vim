@@ -1,40 +1,44 @@
-Description:
+Description
+===========
 neocomplcache performs keyword completion by making a cache of keyword in
 buffer. Because I implemented it by paying own expenses unlike the keyword
 completion including the Vim composing type, neocomplcache can be customized
 flexibly. Unfortunately neocomplcache may use more memory than other
 plugins.
 
-Installation:
-1: Extract the file and Put files in your Vim directory
+
+Installation
+============
+
+* Extract the file and Put files in your Vim directory
    (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows).
-2: Execute |:NeoComplCacheEnable| command or
-let g:neocomplcache_enable_at_startup = 1
+* Execute `|:NeoComplCacheEnable|` command or
+`let g:neocomplcache_enable_at_startup = 1`
 in your .vimrc.
 
-Caution:
+Caution
+-------
+
 Because all variable names are changed in neocomplcache Ver.5, there is not
 backward compatibility. In the case of the upgrade, you should use the next
 script which Mr.thinca made.
+
 http://gist.github.com/422503
 
-Screen shots:
-Quick match.
-http://3.bp.blogspot.com/_ci2yBnqzJgM/TD1PeahCmOI/AAAAAAAAADc/Rz_Pbpr92z4/s1600/quick_match.png
-Snippet completion like snipMate.
-http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/Screenshot2.PNG
-Original filename completion.
-http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1O5_bOQ2I/AAAAAAAAADE/vHf9Xg_mrTI/s1600/filename_complete.png
-Register completion.
-http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1Pel4fomI/AAAAAAAAADk/YsAxF8i6r3w/s1600/register_complete.png
-Omni completion.
-http://2.bp.blogspot.com/_ci2yBnqzJgM/TD1PTolkTBI/AAAAAAAAADU/knJ3eniuHWI/s1600/omni_complete.png
-Completion with vimshell(http://github.com/Shougo/vimshell).
-http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1PLfdQrwI/AAAAAAAAADM/2pSFRTHwYOY/s1600/neocomplcache_with_vimshell.png
-Vim completion.
-http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1PfKTlwnI/AAAAAAAAADs/nOGWTRLuae8/s1600/vim_complete.png
+Screen shots
+============
 
-Setting examples:
+![Quick match.](http://3.bp.blogspot.com/_ci2yBnqzJgM/TD1PeahCmOI/AAAAAAAAADc/Rz_Pbpr92z4/s1600/quick_match.png)
+![Snippet completion like snipMate.](http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/Screenshot2.PNG)
+![Original filename completion.](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1O5_bOQ2I/AAAAAAAAADE/vHf9Xg_mrTI/s1600/filename_complete.png)
+![Register completion.](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1Pel4fomI/AAAAAAAAADk/YsAxF8i6r3w/s1600/register_complete.png)
+![Omni completion.](http://2.bp.blogspot.com/_ci2yBnqzJgM/TD1PTolkTBI/AAAAAAAAADU/knJ3eniuHWI/s1600/omni_complete.png)
+![Completion with vimshell(http://github.com/Shougo/vimshell).](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1PLfdQrwI/AAAAAAAAADM/2pSFRTHwYOY/s1600/neocomplcache_with_vimshell.png)
+![Vim completion.](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1PfKTlwnI/AAAAAAAAADs/nOGWTRLuae8/s1600/vim_complete.png)
+
+Setting examples
+
+```vimscript
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
 " Use neocomplcache.
@@ -108,3 +112,4 @@ let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+```
