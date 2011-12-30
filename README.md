@@ -1,7 +1,11 @@
+**neocomplcache**
+=================
+
 Description
-===========
-neocomplcache performs keyword completion by making a cache of keyword in
-buffer. Because I implemented it by paying own expenses unlike the keyword
+-----------
+
+Neocomplcache performs keyword completion by making a cache of keywords in
+a buffer. Because I implemented it by paying own expenses unlike the keyword
 completion including the Vim composing type, neocomplcache can be customized
 flexibly. Unfortunately neocomplcache may use more memory than other
 plugins.
@@ -19,9 +23,9 @@ in your .vimrc.
 Caution
 -------
 
-Because all variable names are changed in neocomplcache Ver.5, there is not
-backward compatibility. In the case of the upgrade, you should use the next
-script which Mr.thinca made.
+Because all variable names are changed in neocomplcache Ver.5, it is not
+backwards compatible. If you want to upgrade, you should use the following
+script from Mr.thinca.
 
 http://gist.github.com/422503
 
