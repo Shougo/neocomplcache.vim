@@ -34,7 +34,7 @@ Quick match
 
 Snippet completion like snipMate.
 -----------
-![Snippet completion like snipMate.](http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/Screenshot2.png)
+![Snippet completion like snipMate.](http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/screenshot2.png)
 
 Original filename completion.
 -----------
