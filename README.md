@@ -33,7 +33,8 @@ Quick match
 ![Quick match.](http://3.bp.blogspot.com/_ci2yBnqzJgM/TD1PeahCmOI/AAAAAAAAADc/Rz_Pbpr92z4/s1600/quick_match.png)
 
 Snippet completion like snipMate.
------------
+---------------------------------
+http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/screenshot2.png
 ![Snippet completion like snipMate.](http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/screenshot2.png)
 
 Original filename completion.
