@@ -28,17 +28,37 @@ http://gist.github.com/422503
 Screen shots
 ============
 
+Quick match
+-----------
 ![Quick match.](http://3.bp.blogspot.com/_ci2yBnqzJgM/TD1PeahCmOI/AAAAAAAAADc/Rz_Pbpr92z4/s1600/quick_match.png)
+
+Snippet completion like snipMate.
+-----------
 ![Snippet completion like snipMate.](http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/Screenshot2.PNG)
+
+Original filename completion.
+-----------
 ![Original filename completion.](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1O5_bOQ2I/AAAAAAAAADE/vHf9Xg_mrTI/s1600/filename_complete.png)
+
+Register completion.
+-----------
 ![Register completion.](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1Pel4fomI/AAAAAAAAADk/YsAxF8i6r3w/s1600/register_complete.png)
+
+Omni completion.
+----------------
 ![Omni completion.](http://2.bp.blogspot.com/_ci2yBnqzJgM/TD1PTolkTBI/AAAAAAAAADU/knJ3eniuHWI/s1600/omni_complete.png)
+
+Completion with vimshell(http://github.com/Shougo/vimshell).
+------------------------------------------------------------
 ![Completion with vimshell(http://github.com/Shougo/vimshell).](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1PLfdQrwI/AAAAAAAAADM/2pSFRTHwYOY/s1600/neocomplcache_with_vimshell.png)
+
+Vim completion
+------------------------------------------------------------
 ![Vim completion.](http://1.bp.blogspot.com/_ci2yBnqzJgM/TD1PfKTlwnI/AAAAAAAAADs/nOGWTRLuae8/s1600/vim_complete.png)
 
 Setting examples
 
-```vimscript
+```vim
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
 " Use neocomplcache.
