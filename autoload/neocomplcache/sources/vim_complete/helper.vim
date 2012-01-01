@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Nov 2011.
+" Last Modified: 02 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -218,10 +218,12 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
     if !has_key(s:internal_candidates_list, 'commands')
       let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c')
 
-      let s:internal_candidates_list.command_prototypes = s:caching_prototype_from_dict('command_prototypes')
+      let s:internal_candidates_list.command_prototypes =
+            \ s:caching_prototype_from_dict('command_prototypes')
       for command in s:internal_candidates_list.commands
         if has_key(s:internal_candidates_list.command_prototypes, command.word)
-          let command.description = command.word . s:internal_candidates_list.command_prototypes[command.word]
+          let command.description = command.word .
+                \ s:internal_candidates_list.command_prototypes[command.word]
         endif
       endfor
     endif
@@ -241,12 +243,14 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
     let cur_text = completion_name ==# 'command' ?
           \ a:cur_text[len(command):] : a:cur_text
 
-    let list = neocomplcache#sources#vim_complete#helper#get_command_completion(command, cur_text, a:cur_keyword_str)
+    let list = neocomplcache#sources#vim_complete#helper#get_command_completion(
+          \ command, cur_text, a:cur_keyword_str)
 
     if a:cur_text =~
           \'[[(,{]\|`=[^`]*$'
       " Expression.
-      let list += neocomplcache#sources#vim_complete#helper#expression(a:cur_text, a:cur_keyword_str)
+      let list += neocomplcache#sources#vim_complete#helper#expression(
+            \ a:cur_text, a:cur_keyword_str)
     endif
   endif
 
@@ -255,8 +259,10 @@ endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#command_args(cur_text, cur_keyword_str)"{{{
   " Caching.
   if !has_key(s:internal_candidates_list, 'command_args')
-    let s:internal_candidates_list.command_args = s:caching_from_dict('command_args', '')
-    let s:internal_candidates_list.command_replaces = s:caching_from_dict('command_replaces', '')
+    let s:internal_candidates_list.command_args =
+          \ s:caching_from_dict('command_args', '')
+    let s:internal_candidates_list.command_replaces =
+          \ s:caching_from_dict('command_replaces', '')
   endif
 
   return s:internal_candidates_list.command_args + s:internal_candidates_list.command_replaces

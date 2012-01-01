@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Oct 2011.
+" Last Modified: 02 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,13 +47,15 @@ function! s:source.initialize()"{{{
         \ 'vim_complete', 300)
 
   " Call caching event.
-  autocmd neocomplcache FileType * call neocomplcache#sources#vim_complete#helper#on_filetype()
+  autocmd neocomplcache FileType *
+        \ call neocomplcache#sources#vim_complete#helper#on_filetype()
 
   " Initialize check.
   call neocomplcache#sources#vim_complete#helper#on_filetype()
 
   " Add command.
-  command! -nargs=? -complete=buffer NeoComplCacheCachingVim call neocomplcache#sources#vim_complete#helper#recaching(<q-args>)
+  command! -nargs=? -complete=buffer NeoComplCacheCachingVim
+        \ call neocomplcache#sources#vim_complete#helper#recaching(<q-args>)
 endfunction"}}}
 
 function! s:source.finalize()"{{{
@@ -83,6 +85,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 
   let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text, pattern)
   if a:cur_text !~ '\.\%(\h\w*\)\?$' && neocomplcache#is_auto_complete()
+        \ && bufname('%') !=# '[Command Line]'
         \ && neocomplcache#util#mb_strlen(cur_keyword_str)
         \      < g:neocomplcache_auto_completion_start_length
     return -1
@@ -93,8 +96,9 @@ endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let cur_text = neocomplcache#sources#vim_complete#get_cur_text()
-  if (neocomplcache#is_auto_complete() && cur_text !~ '\h\w*\.\%(\h\w*\)\?$'
-        \&& len(a:cur_keyword_str) < g:neocomplcache_auto_completion_start_length)
+  if neocomplcache#is_auto_complete() && cur_text !~ '\h\w*\.\%(\h\w*\)\?$'
+        \ && len(a:cur_keyword_str) < g:neocomplcache_auto_completion_start_length
+        \ && bufname('%') !=# '[Command Line]'
     return []
   endif
 
