@@ -1108,6 +1108,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2012-01-04
+- Improved cache check.
+
 2012-01-02
 - Improved vim_complete.
 

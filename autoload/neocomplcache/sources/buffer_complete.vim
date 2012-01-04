@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Dec 2011.
+" Last Modified: 04 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -111,7 +111,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
 
     let keyword_list += filter(keyword_cache,
           \ "!has_key(v:val, 'bufnr') ||
-          \ stridx(join(getbufline(v:val.bufnr, v:val.line_start, v:val.line_end)), v:val.word) >= 0")
+          \ stridx(get(getbufline(v:val.bufnr, v:val.line), 0, ''), v:val.word) >= 0")
   endfor
 
   return keyword_list
@@ -132,7 +132,7 @@ endfunction"}}}
 
 function! neocomplcache#sources#buffer_complete#caching_current_line()"{{{
   " Current line caching.
-  return s:caching_current_buffer(line('.')-1, line('.')+1, 1)
+  return s:caching_current_buffer(line('.'), line('.'), 1)
 endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_word(keyword)"{{{
   let source = s:buffer_sources[bufnr('%')]
@@ -181,8 +181,7 @@ function! s:caching_current_buffer(start, end, is_auto)"{{{
               \ { 'word' : match_str, 'menu' : menu, 'rank' : 0 }
         if a:is_auto
           " Save line number.
-          let keywords[key][match_str].line_start = a:start
-          let keywords[key][match_str].line_end = a:end
+          let keywords[key][match_str].line = a:start
           let keywords[key][match_str].bufnr = bufnr('%')
         endif
       endif
@@ -426,7 +425,7 @@ function! s:save_cache(srcname)"{{{
   let cache = filter(neocomplcache#unpack_dictionary(
         \        s:buffer_sources[a:srcname].keyword_cache),
         \ "!has_key(v:val, 'bufnr') ||
-        \ stridx(join(getbufline(v:val.bufnr, v:val.line_start, v:val.line_end)), v:val.word) >= 0")
+        \ stridx(get(getbufline(v:val.bufnr, v:val.line), 0, ''), v:val.word) >= 0")
 
   " Output buffer.
   call neocomplcache#cache#save_cache('buffer_cache', srcname, cache)
