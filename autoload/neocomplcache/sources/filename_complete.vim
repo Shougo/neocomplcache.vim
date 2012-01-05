@@ -289,8 +289,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     endif
 
     let abbr = dict.word
-    if isdirectory(expand(
-          \ escape(dict.word, '*?[]"={}')))
+    if isdirectory(neocomplcache#util#expand(dict.word))
       let abbr .= '/'
       if g:neocomplcache_enable_auto_delimiter
         let dict.word .= '/'

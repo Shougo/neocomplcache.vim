@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Dec 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -67,7 +67,7 @@ function! s:source.initialize()"{{{
 
   if exists('g:neocomplcache_snippets_dir')
     for dir in split(g:neocomplcache_snippets_dir, ',')
-      let dir = expand(dir)
+      let dir = neocomplcache#util#expand(dir)
       if !isdirectory(dir)
         call mkdir(dir, 'p')
       endif
