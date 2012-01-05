@@ -161,7 +161,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let bufdirectory = fnamemodify(expand('%'), ':p:h')
   let dir_list = []
   let file_list = []
-  for subpath in map(split(path, ','), 'substitute(v:val, "\\\\", "/", "g")')
+  for subpath in map(split(path, '[,;]'), 'substitute(v:val, "\\\\", "/", "g")')
     let dir = (subpath == '.') ? bufdirectory : subpath
     if !isdirectory(dir)
       continue

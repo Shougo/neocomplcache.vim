@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Nov 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -287,7 +287,8 @@ function! s:get_buffer_include_files(bufnumber)"{{{
   elseif filetype == 'cpp' && isdirectory('/usr/include/c++')
     " Add cpp path.
     call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'cpp',
-          \ getbufvar(a:bufnumber, '&path') . ',/usr/include/c++/*')
+          \ getbufvar(a:bufnumber, '&path') .
+          \ ','.join(split(glob('/usr/include/c++/*'), '\n'), ','))
   endif
 
   let pattern = get(g:neocomplcache_include_patterns, filetype,

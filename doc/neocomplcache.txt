@@ -1111,6 +1111,7 @@ ChangeLog neocomplcache 6.2:
 2012-01-05
 - Fixed filename complete escape.
 - Fixed expand() problem.
+- Fixed filename include complete.
 
 2012-01-04
 - Improved cache check.
