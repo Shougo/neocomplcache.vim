@@ -8,6 +8,7 @@
 <unique> ; the command will fail if the mapping or abbreviation already exists
 <silent> ; define a mapping which will not be echoed on the command line
 <Nul> ; zero
+<Nop> ; no operation
 <BS> ; backspace
 <Tab> ; tab
 <NL> ; linefeed

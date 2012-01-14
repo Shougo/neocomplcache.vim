@@ -1108,6 +1108,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 6.2:
 
+2012-01-14
+- Added <Nop> in vim_complete.
+
 2012-01-05
 - Fixed filename complete escape.
 - Fixed expand() problem.
