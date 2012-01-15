@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippets_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 15 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -89,13 +89,13 @@ function! s:source.initialize()"{{{
     " Supported conceal features.
     augroup neocomplcache
       autocmd BufNewFile,BufRead,ColorScheme *
-            \ syn match   NeoComplCacheExpandSnippets
+            \ syn match   neocomplcacheExpandSnippets
             \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+' conceal cchar=$
     augroup END
   else
     augroup neocomplcache
       autocmd BufNewFile,BufRead,ColorScheme *
-            \ syn match   NeoComplCacheExpandSnippets
+            \ syn match   neocomplcacheExpandSnippets
             \ '\${\d\+\%(:.\{-}\)\?\\\@<!}\|\$<\d\+\%(:.\{-}\)\?\\\@<!>\|\$\d\+'
     augroup END
   endif
