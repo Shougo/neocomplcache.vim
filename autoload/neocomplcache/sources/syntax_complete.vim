@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Nov 2011.
+" Last Modified: 15 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -144,17 +144,20 @@ function! s:caching_from_syn(filetype)"{{{
   let dup_check = {}
   let menu = '[S] '
 
+  let filetype_pattern = substitute(a:filetype, '\W', '\\A', 'g') . '\u'
+
   let keyword_lists = {}
   for line in split(syntax_list, '\n')
     if line =~ '^\h\w\+'
       " Change syntax group name.
-      let menu = printf('[S] %.'.
-            \ g:neocomplcache_max_menu_width.'s', matchstr(line, '^\h\w\+'))
-      let line = substitute(line, '^\h\w\+\s*xxx', '', '')
+      let group_name = matchstr(line, '^\S\+')
+      let menu = printf('[S] %.'.g:neocomplcache_max_menu_width.'s', group_name)
+      let line = substitute(line, '^\S\s*xxx', '', '')
     endif
 
     if line =~ 'Syntax items' || line =~ '^\s*links to' ||
-          \line =~ '^\s*nextgroup='
+          \ line =~ '^\s*nextgroup=' ||
+          \ group_name !~# filetype_pattern
       " Next line.
       continue
     endif

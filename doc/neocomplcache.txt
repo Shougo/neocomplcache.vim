@@ -1110,6 +1110,7 @@ ChangeLog neocomplcache 6.2:
 
 2012-01-15
 - Changed syntax highlight name.
+- Improved syntax_complete caching behavior.
 
 2012-01-14
 - Added <Nop> in vim_complete.
