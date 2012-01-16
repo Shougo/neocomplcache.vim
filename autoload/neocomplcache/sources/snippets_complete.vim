@@ -34,6 +34,10 @@ if !exists('s:snippets')
   let s:snippets = {}
 endif
 
+if !exists('s:snippets_extend')
+  let s:snippets_extend = {}
+endif
+
 let s:source = {
       \ 'name' : 'snippets_complete',
       \ 'kind' : 'plugin',
@@ -42,6 +46,7 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Initialize.
   let s:snippets = {}
+  let s:snippets_extend = {}
   let s:begin_snippet = 0
   let s:end_snippet = 0
   let s:snippet_holder_cnt = 1
@@ -766,7 +771,59 @@ function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
   endfor
   call extend(snippets, copy(s:snippets['_']), 'keep')
 
+  if has_key(s:snippets_extend, filetype)
+    call extend(snippets, copy(s:snippets_extend[filetype]), 'keep')
+  endif
+
   return snippets
+endfunction"}}}
+function! neocomplcache#sources#snippets_complete#set_snippet_from_python_omni_comp(dict)"{{{
+  " only processing the function or method.
+  if !has_key(a:dict, 'abbr') || match(a:dict.abbr, '^.\{-}(.\+)$') == -1
+    return
+  endif
+
+  let omni_abbr = substitute(a:dict.abbr, '\s*,\s*', ', ', 'g')
+  let [omni_abbr, name, args; dummy] = matchlist(omni_abbr, '\(^.\{-}\)(\(.\+\))$')
+
+  let f_args = []
+  let f_optargs = []
+  for arg in split(args, ', ')
+    call add(match(arg, '=') == -1 ? f_args : f_optargs, arg)
+  endfor
+
+  let f_holders = []
+  let f_optholders = []
+  let i = 0
+  for arg in f_args
+    let i += 1
+    call add(f_holders, printf('${%d:%s}', i, arg))
+  endfor
+  for arg in f_optargs
+    let i += 1
+    call add(f_optholders, printf('${%d:, ${%d:%s\}}', i, i, arg))
+  endfor
+  let snip = printf('%s(%s)', name, join(f_holders, ', ') . join(f_optholders, ''))
+
+  let word = {
+        \ 'word' : a:dict.word,
+        \ 'snip' : snip, 'dup' : 1,
+        \ 'menu' : a:dict.menu . '<Snip>',
+        \ 'abbr' : omni_abbr
+        \}
+  let snippet = {
+        \ word.word : word
+        \}
+  let filetype = neocomplcache#get_context_filetype(1)
+  call s:set_extend_snippet(snippet, filetype)
+  call extend(a:dict, word)
+endfunction"}}}
+function! s:set_extend_snippet(snippet, filetype)"{{{
+  if has_key(s:snippets_extend, a:filetype)
+    call extend(s:snippets_extend[a:filetype], a:snippet)
+  else
+    let s:snippets_extend[a:filetype] = a:snippet
+  endif
 endfunction"}}}
 
 function! s:SID_PREFIX()
