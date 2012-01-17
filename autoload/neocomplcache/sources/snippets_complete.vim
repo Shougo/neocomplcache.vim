@@ -772,58 +772,47 @@ function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
   call extend(snippets, copy(s:snippets['_']), 'keep')
 
   if has_key(s:snippets_extend, filetype)
-    call extend(snippets, copy(s:snippets_extend[filetype]), 'keep')
+    call extend(snippets, copy(s:snippets_extend[filetype]))
   endif
 
   return snippets
 endfunction"}}}
 function! neocomplcache#sources#snippets_complete#set_snippet_from_python_omni_comp(dict)"{{{
-  " only processing the function or method.
-  if !has_key(a:dict, 'abbr') || match(a:dict.abbr, '^.\{-}(.\+)$') == -1
+  if !has_key(a:dict, 'abbr')
     return
   endif
 
-  let omni_abbr = substitute(a:dict.abbr, '\s*,\s*', ', ', 'g')
-  let [omni_abbr, name, args; dummy] = matchlist(omni_abbr, '\(^.\{-}\)(\(.\+\))$')
+  " only processing the function or method.
+  let signature = matchlist(a:dict.abbr, '\(^.\{-}\)(\(.\+\))$')[:2]
+  if empty(signature)
+    return
+  endif
 
-  let f_args = []
-  let f_optargs = []
-  for arg in split(args, ', ')
-    call add(match(arg, '=') == -1 ? f_args : f_optargs, arg)
-  endfor
-
-  let f_holders = []
-  let f_optholders = []
-  let i = 0
-  for arg in f_args
-    let i += 1
-    call add(f_holders, printf('${%d:%s}', i, arg))
-  endfor
-  for arg in f_optargs
-    let i += 1
-    call add(f_optholders, printf('${%d:, ${%d:%s\}}', i, i, arg))
-  endfor
-  let snip = printf('%s(%s)', name, join(f_holders, ', ') . join(f_optholders, ''))
-
-  let word = {
-        \ 'word' : a:dict.word,
-        \ 'snip' : snip, 'dup' : 1,
-        \ 'menu' : a:dict.menu . '<Snip>',
-        \ 'abbr' : omni_abbr
+  let [sig, name, args] = signature
+  let holders = {
+        \ 'require': [],
+        \ 'option': [],
         \}
-  let snippet = {
-        \ word.word : word
+  let i = 1
+  for arg in split(args, '\s*,\s*')
+    if match(arg, '=') == -1
+      call add(holders.require, printf('${%d:%s}', i, arg))
+    else
+      call add(holders.option, printf('${%d:, ${%d:%s\}}', i, i, arg))
+    endif
+    let i += 1
+  endfor
+
+  let snip = printf('%s(%s)', name, join(holders.require, ', ') . join(holders.option, ''))
+  let word = {
+        \ 'snip' : snip, 'dup' : 1,
+        \ 'menu' : a:dict.menu . ' <Snip>',
+        \ 'abbr' : sig
         \}
   let filetype = neocomplcache#get_context_filetype(1)
-  call s:set_extend_snippet(snippet, filetype)
+  let s:snippets_extend[filetype] = extend(get(s:snippets_extend, filetype, {}),
+        \ { a:dict.word : word })
   call extend(a:dict, word)
-endfunction"}}}
-function! s:set_extend_snippet(snippet, filetype)"{{{
-  if has_key(s:snippets_extend, a:filetype)
-    call extend(s:snippets_extend[a:filetype], a:snippet)
-  else
-    let s:snippets_extend[a:filetype] = a:snippet
-  endif
 endfunction"}}}
 
 function! s:SID_PREFIX()

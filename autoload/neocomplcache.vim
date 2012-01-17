@@ -1473,14 +1473,6 @@ function! s:set_complete_results_words(complete_results)"{{{
 
     let result.complete_words = words
   endfor
-
-  if &l:omnifunc ==# 'pythoncomplete#Complete'
-    for [source_name, result] in filter(items(a:complete_results), 'v:key ==# "omni_complete"')
-      for word in result.complete_words
-        call neocomplcache#sources#snippets_complete#set_snippet_from_python_omni_comp(word)
-      endfor
-    endfor
-  endif
 endfunction"}}}
 
 " Set pattern helper.
