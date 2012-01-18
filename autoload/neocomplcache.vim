@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2011.
+" Last Modified: 18 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -499,9 +499,7 @@ function! neocomplcache#enable() "{{{
 
   " For auto complete keymappings.
   inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
-        \ <C-x><C-u><C-p>
-  inoremap <silent> <Plug>(neocomplcache_start_auto_select_complete)
-        \ <C-x><C-u><C-p><C-r>=neocomplcache#popup_post()<CR>
+        \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)
         \ unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_quick_match)
@@ -615,7 +613,7 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
     if !neocomplcache#is_enabled()
       let s:cur_keyword_str = ''
       let s:complete_words = []
-      return -1
+      return -2
     endif
 
     " Get cur_keyword_pos.
@@ -628,7 +626,7 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:complete_results = {}
 
-      return -1
+      return -2
     endif
 
     let s:complete_results = complete_results
@@ -750,11 +748,7 @@ function! neocomplcache#do_auto_complete()"{{{
   set completeopt+=menuone
 
   " Start auto complete.
-  if neocomplcache#is_auto_select()
-    call feedkeys("\<Plug>(neocomplcache_start_auto_select_complete)")
-  else
-    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-  endif
+  call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
 
   let s:changedtick = b:changedtick
 endfunction"}}}
@@ -1895,7 +1889,9 @@ function! s:remove_next_keyword(plugin_name, list)"{{{
   return list
 endfunction"}}}
 function! neocomplcache#popup_post()"{{{
-  return pumvisible() ? "\<Down>" : ""
+  return  !pumvisible() ? "" :
+        \ !g:neocomplcache_enable_auto_select ? "\<C-p>" :
+        \ "\<C-p>\<Down>"
 endfunction"}}}
 "}}}
 
