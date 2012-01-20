@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 20 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,7 +62,8 @@ function! s:source.initialize()"{{{
   autocmd neocomplcache FileType * call s:caching()
 
   " Add command.
-  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete NeoComplCacheCachingDictionary call s:recaching(<q-args>)
+  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
+        \ NeoComplCacheCachingDictionary call s:recaching(<q-args>)
 
   " Create cache directory.
   if !isdirectory(g:neocomplcache_temporary_dir . '/dictionary_cache')
@@ -105,7 +106,8 @@ function! s:caching()"{{{
     return
   endif
 
-  let key = neocomplcache#is_text_mode() ? 'text' : neocomplcache#get_context_filetype()
+  let key = neocomplcache#is_text_mode() ?
+        \ 'text' : neocomplcache#get_context_filetype()
   for filetype in neocomplcache#get_source_filetypes(key)
     if !has_key(s:dictionary_list, filetype)
           \ && !has_key(s:async_dictionary_list, filetype)
@@ -130,12 +132,18 @@ function! s:caching_dictionary(filetype)
 endfunction
 function! s:recaching(filetype)"{{{
   " Caching.
+  let dictionaries = ''
+
   if has_key(g:neocomplcache_dictionary_filetype_lists, a:filetype)
-    let dictionaries = g:neocomplcache_dictionary_filetype_lists[a:filetype]
-  elseif a:filetype != &filetype || &l:dictionary == ''
-    return
-  else
-    let dictionaries = &l:dictionary
+    let dictionaries =
+          \ g:neocomplcache_dictionary_filetype_lists[a:filetype]
+  endif
+
+  if dictionaries == ''
+    let dictionaries = &dictionary
+    if a:filetype != &filetype && &l:dictionary != ''
+      let dictionaries .= ',' . &l:dictionary
+    endif
   endif
 
   let s:async_dictionary_list[a:filetype] = []
