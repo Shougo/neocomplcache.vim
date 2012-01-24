@@ -119,7 +119,7 @@ function! neocomplcache#enable() "{{{
         \'ruby,int-irb',
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
-        \'php',
+        \'php,int-php',
         \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\h\w*\%(\%(\\\|::\)\w*\)*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'perl,int-perlsh',
@@ -354,6 +354,8 @@ function! neocomplcache#enable() "{{{
         \ 'int-scala', 'scala')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
         \ 'int-nyaos', 'nyaos')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'int-php', 'php')
   "}}}
 
   " Initialize include filetype lists."{{{

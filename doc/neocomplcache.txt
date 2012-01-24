@@ -1112,6 +1112,7 @@ ChangeLog neocomplcache 6.2:
 
 2012-01-24
 - Fixed feedkeys().
+- Supported php interpreter.
 
 2012-01-20
 - Fixed for eskk.
