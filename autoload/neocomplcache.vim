@@ -748,7 +748,7 @@ function! neocomplcache#do_auto_complete()"{{{
   set completeopt+=menuone
 
   " Start auto complete.
-  call feedkeys("\<C-x>\<C-u>\<C-r>=neocomplcache#popup_post()\<CR>", 'n')
+  call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
 
   let s:changedtick = b:changedtick
 endfunction"}}}
