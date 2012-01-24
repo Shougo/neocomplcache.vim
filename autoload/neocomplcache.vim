@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2012.
+" Last Modified: 24 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -748,7 +748,7 @@ function! neocomplcache#do_auto_complete()"{{{
   set completeopt+=menuone
 
   " Start auto complete.
-  call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
+  call feedkeys("\<C-x>\<C-u>\<C-r>=neocomplcache#popup_post()\<CR>", 'n')
 
   let s:changedtick = b:changedtick
 endfunction"}}}
