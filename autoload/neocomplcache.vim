@@ -705,6 +705,8 @@ function! neocomplcache#do_auto_complete()"{{{
         \            && exists('b:skk_on') && b:skk_on)
         \ || (!neocomplcache#is_eskk_enabled()
         \            && char2nr(split(cur_text, '\zs')[-1]) > 0x80)
+        \ || (neocomplcache#is_eskk_enabled()
+        \            && cur_text !~ '▽')
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
