@@ -1112,6 +1112,7 @@ ChangeLog neocomplcache 6.2:
 
 2012-01-27
 - Changed default plugins rank.
+- Improved g:neocomplcache_enable_prefetch behavior.
 
 2012-01-24
 - Fixed feedkeys().

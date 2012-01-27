@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 27 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -135,7 +135,8 @@ endif
 let g:neocomplcache_force_overwrite_completefunc =
       \ get(g:, 'neocomplcache_force_overwrite_completefunc', 0)
 let g:neocomplcache_enable_prefetch =
-      \ get(g:, 'neocomplcache_enable_prefetch', 1)
+      \ get(g:, 'neocomplcache_enable_prefetch',
+      \ !(v:version > 703 || v:version == 703 && has('patch418')))
 let g:neocomplcache_enable_debug =
       \ get(g:, 'neocomplcache_enable_debug', 0)
 if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
