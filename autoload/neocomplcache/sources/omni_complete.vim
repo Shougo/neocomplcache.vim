@@ -272,6 +272,12 @@ function! s:get_omni_list(list)"{{{
     call add(omni_list, dict)
   endfor
 
+  if &l:omnifunc ==# 'pythoncomplete#Complete'
+    for dict in omni_list
+      call neocomplcache#sources#snippets_complete#set_snippet_from_python_omni_comp(dict)
+    endfor
+  endif
+
   return omni_list
 endfunction"}}}
 

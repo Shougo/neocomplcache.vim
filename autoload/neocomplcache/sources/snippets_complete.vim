@@ -34,6 +34,10 @@ if !exists('s:snippets')
   let s:snippets = {}
 endif
 
+if !exists('s:snippets_extend')
+  let s:snippets_extend = {}
+endif
+
 let s:source = {
       \ 'name' : 'snippets_complete',
       \ 'kind' : 'plugin',
@@ -42,6 +46,7 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Initialize.
   let s:snippets = {}
+  let s:snippets_extend = {}
   let s:begin_snippet = 0
   let s:end_snippet = 0
   let s:snippet_holder_cnt = 1
@@ -766,7 +771,48 @@ function! neocomplcache#sources#snippets_complete#get_snippets()"{{{
   endfor
   call extend(snippets, copy(s:snippets['_']), 'keep')
 
+  if has_key(s:snippets_extend, filetype)
+    call extend(snippets, copy(s:snippets_extend[filetype]))
+  endif
+
   return snippets
+endfunction"}}}
+function! neocomplcache#sources#snippets_complete#set_snippet_from_python_omni_comp(dict)"{{{
+  if !has_key(a:dict, 'abbr')
+    return
+  endif
+
+  " only processing the function or method.
+  let signature = matchlist(a:dict.abbr, '\(^.\{-}\)(\(.\+\))$')[:2]
+  if empty(signature)
+    return
+  endif
+
+  let [sig, name, args] = signature
+  let holders = {
+        \ 'require': [],
+        \ 'option': [],
+        \}
+  let i = 1
+  for arg in split(args, '\s*,\s*')
+    if match(arg, '=') == -1
+      call add(holders.require, printf('${%d:%s}', i, arg))
+    else
+      call add(holders.option, printf('${%d:, ${%d:%s\}}', i, i, arg))
+    endif
+    let i += 1
+  endfor
+
+  let snip = printf('%s(%s)', name, join(holders.require, ', ') . join(holders.option, ''))
+  let word = {
+        \ 'snip' : snip, 'dup' : 1,
+        \ 'menu' : a:dict.menu . ' <Snip>',
+        \ 'abbr' : sig
+        \}
+  let filetype = neocomplcache#get_context_filetype(1)
+  let s:snippets_extend[filetype] = extend(get(s:snippets_extend, filetype, {}),
+        \ { a:dict.word : word })
+  call extend(a:dict, word)
 endfunction"}}}
 
 function! s:SID_PREFIX()
