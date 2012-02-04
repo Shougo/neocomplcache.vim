@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.2, for Vim 7.2
+" Version: 7.0, for Vim 7.2
 "=============================================================================
 
 let s:save_cpo = &cpo
@@ -517,7 +517,6 @@ function! neocomplcache#enable() "{{{
   " Check if "vim" command is executable.
   if neocomplcache#has_vimproc() && !executable('vim')
     echoerr '"vim" command is not executable. Asynchronous caching is disabled.'
-    echoerr 'Please install "vim" command. And add to $PATH.'
     let s:exists_vimproc = 0
   endif
 

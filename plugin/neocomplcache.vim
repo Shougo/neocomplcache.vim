@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jan 2012.
+" Last Modified: 02 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.2, for Vim 7.2
+" Version: 7.0, for Vim 7.2
 " GetLatestVimScripts: 2620 1 :AutoInstall: neocomplcache
 "=============================================================================
 
@@ -33,7 +33,6 @@ elseif exists('g:loaded_neocomplcache')
   finish
 elseif $SUDO_USER != ''
   echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
-  echoerr 'neocomplcache is disabled.'
   finish
 endif
 
@@ -47,32 +46,6 @@ command! -nargs=0 NeoComplCacheUnlock call neocomplcache#unlock()
 command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle_lock()
 command! -nargs=1 NeoComplCacheLockPlugin call neocomplcache#lock_plugin(<q-args>)
 command! -nargs=1 NeoComplCacheUnlockPlugin call neocomplcache#unlock_plugin(<q-args>)
-
-" Obsolute options check."{{{
-if exists('g:NeoComplCache_EnableAtStartup')
-  echoerr 'g:NeoComplCache_EnableAtStartup option does not work this version of neocomplcache.'
-endif
-if exists('g:NeoComplCache_KeywordPatterns')
-  echoerr 'g:NeoComplCache_KeywordPatterns option does not work this version of neocomplcache.'
-endif
-if exists('g:NeoComplCache_DictionaryFileTypeLists')
-  echoerr 'g:NeoComplCache_DictionaryFileTypeLists option does not work this version of neocomplcache.'
-endif
-if exists('g:NeoComplCache_KeywordCompletionStartLength')
-  echoerr 'g:NeoComplCache_KeywordCompletionStartLength option does not work this version of neocomplcache.'
-endif
-if exists('g:neocomplcache_disable_caching_buffer_name_pattern')
-  echoerr 'g:neocomplcache_disable_caching_buffer_name_pattern option does not work this version of neocomplcache.'
-  echoerr 'Please use g:neocomplcache_disable_caching_file_path_pattern option instead.'
-endif
-if exists('g:neocomplcache_enable_quick_match')
-  echoerr 'g:neocomplcache_enable_quick_match option does not work this version of neocomplcache.'
-endif
-if exists('g:neocomplcache_max_filename_width')
-  echoerr 'g:neocomplcache_max_filename_width option does not work this version of neocomplcache.'
-  echoerr 'Please use g:neocomplcache_max_menu_width option instead.'
-endif
-"}}}
 
 " Global options definition."{{{
 let g:neocomplcache_max_list =

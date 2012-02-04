@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: snippet.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Nov 2011.
+" Last Modified: 02 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,7 +30,6 @@ set cpo&vim
 function! unite#sources#snippet#define() "{{{
   if !exists('*unite#version') || unite#version() < 150
     echoerr 'Your unite.vim is too old.'
-    echoerr 'Please install unite.vim Ver.1.5 or above.'
     return []
   endif
 
