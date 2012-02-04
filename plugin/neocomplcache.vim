@@ -94,6 +94,13 @@ let g:neocomplcache_compare_function =
       \ get(g:, 'neocomplcache_compare_function', 'neocomplcache#compare_rank')
 let g:neocomplcache_ctags_program =
       \ get(g:, 'neocomplcache_ctags_program', 'ctags')
+let g:neocomplcache_force_overwrite_completefunc =
+      \ get(g:, 'neocomplcache_force_overwrite_completefunc', 0)
+let g:neocomplcache_enable_prefetch =
+      \ get(g:, 'neocomplcache_enable_prefetch',
+      \ !(v:version > 703 || v:version == 703 && has('patch418')))
+let g:neocomplcache_release_cache_time =
+      \ get(g:, 'neocomplcache_release_cache_time', 1800)
 
 if exists('g:neocomplcache_plugin_disable')
   let g:neocomplcache_source_disable =
@@ -118,11 +125,6 @@ let g:neocomplcache_temporary_dir =
 if !isdirectory(g:neocomplcache_temporary_dir)
   call mkdir(g:neocomplcache_temporary_dir, 'p')
 endif
-let g:neocomplcache_force_overwrite_completefunc =
-      \ get(g:, 'neocomplcache_force_overwrite_completefunc', 0)
-let g:neocomplcache_enable_prefetch =
-      \ get(g:, 'neocomplcache_enable_prefetch',
-      \ !(v:version > 703 || v:version == 703 && has('patch418')))
 let g:neocomplcache_enable_debug =
       \ get(g:, 'neocomplcache_enable_debug', 0)
 if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup

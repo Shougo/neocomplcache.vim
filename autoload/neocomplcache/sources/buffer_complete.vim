@@ -41,7 +41,7 @@ function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
     autocmd InsertEnter * call s:check_source()
-    autocmd CursorHold * call s:check_deleted_buffer()
+    autocmd CursorHold * call s:check_cache()
     autocmd InsertLeave *
           \ call neocomplcache#sources#buffer_complete#caching_current_line()
     autocmd VimLeavePre * call s:save_all_cache()
@@ -101,11 +101,11 @@ endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let keyword_list = []
-  for src in s:get_sources_list()
+  for [key, source] in s:get_sources_list()
     let keyword_cache = neocomplcache#dictionary_filter(
-          \ s:buffer_sources[src].keyword_cache,
-          \ a:cur_keyword_str, s:completion_length)
-    if src == bufnr('%')
+          \ source.keyword_cache, a:cur_keyword_str, s:completion_length)
+    if key == bufnr('%')
+      let source.accessed_time = localtime()
       call s:calc_frequency()
     endif
 
@@ -262,11 +262,11 @@ function! s:get_sources_list()"{{{
     let filetypes_dict[filetype] = 1
   endfor
 
-  for key in keys(s:buffer_sources)
-    if has_key(filetypes_dict, s:buffer_sources[key].filetype)
+  for [key, source] in items(s:buffer_sources)
+    if has_key(filetypes_dict, source.filetype)
           \ || bufnr('%') == key
           \ || (bufname('%') ==# '[Command Line]' && bufnr('#') == key)
-      call add(sources_list, key)
+      call add(sources_list, [key, source])
     endif
   endfor
 
@@ -294,6 +294,7 @@ function! s:initialize_source(srcname)"{{{
         \ 'name' : filename, 'filetype' : ft, 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : len(buflines),
         \ 'check_sum' : len(join(buflines[:4], '\n')),
+        \ 'accessed_time' : localtime(),
         \ 'path' : path, 'loaded_cache' : 0,
         \ 'cache_name' : neocomplcache#cache#encode_name('buffer_cache', path),
         \}
@@ -375,10 +376,13 @@ function! s:check_source()"{{{
     endif
   endif
 endfunction"}}}
-function! s:check_deleted_buffer()"{{{
-  " Check deleted buffer.
-  for key in keys(s:buffer_sources)
+function! s:check_cache()"{{{
+  let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
+  for [key, source] in items(s:buffer_sources)
+    " Check deleted buffer and access time.
     if !bufloaded(str2nr(key))
+          \ || source.accessed_time < release_accessd_time
+
       " Save cache.
       call s:save_cache(key)
 
