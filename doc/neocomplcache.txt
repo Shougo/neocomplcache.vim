@@ -97,12 +97,12 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCacheUnlock				*:NeoComplCacheUnlock*
 		Unlock neocomplcache.
 
-:NeoComplCacheLockPlugin {plugin-name}		*:NeoComplCacheLockPlugin*
-		Disable {plugin-name} plugin completion. Disable state is
+:NeoComplCacheLockSource {source-name}		*:NeoComplCacheLockSource*
+		Disable {source-name} source completion. Disable state is
 		buffer local.
 
-:NeoComplCacheUnlockPlugin {plugin-name}	*:NeoComplCacheUnlockPlugin*
-		Unlock {plugin-name} plugin completion.
+:NeoComplCacheUnlockSource {source-name}	*:NeoComplCacheUnlockSource*
+		Unlock {source-name} source completion.
 
 :NeoComplCacheAutoCompletionLength		*:NeoComplCacheAutoCompletionLength*
 		Change start length of automatic completion.
@@ -914,6 +914,7 @@ ChangeLog neocomplcache 7.0:
 - Renamed g:neocomplcache_plugin_rank as g:neocomplcache_source_rank.
 - Renamed g:neocomplcache_plugin_completion_length as g:neocomplcache_source_completion_length.
 - Revised documentation.
+- Added :NeoComplCacheLockSource and :NeoComplCacheUnLockSource commands.
 
 2012-02-02
 - Ver.7.0 development is started.

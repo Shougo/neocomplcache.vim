@@ -44,8 +44,8 @@ command! -nargs=0 NeoComplCacheDisable call neocomplcache#disable()
 command! -nargs=0 NeoComplCacheLock call neocomplcache#lock()
 command! -nargs=0 NeoComplCacheUnlock call neocomplcache#unlock()
 command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle_lock()
-command! -nargs=1 NeoComplCacheLockPlugin call neocomplcache#lock_plugin(<q-args>)
-command! -nargs=1 NeoComplCacheUnlockPlugin call neocomplcache#unlock_plugin(<q-args>)
+command! -nargs=1 NeoComplCacheLockSource call neocomplcache#lock_source(<q-args>)
+command! -nargs=1 NeoComplCacheUnlockSource call neocomplcache#unlock_source(<q-args>)
 
 " Global options definition."{{{
 let g:neocomplcache_max_list =

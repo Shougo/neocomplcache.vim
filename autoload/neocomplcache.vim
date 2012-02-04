@@ -64,7 +64,7 @@ function! neocomplcache#enable() "{{{
   let s:ftplugin_sources = {}
   let s:loaded_ftplugin_sources = {}
   let s:complete_lock = {}
-  let s:plugins_lock = {}
+  let s:sources_lock = {}
   let s:auto_completion_length = {}
   let s:cur_keyword_str = ''
   let s:complete_words = []
@@ -762,7 +762,7 @@ function! neocomplcache#do_auto_complete()"{{{
   let s:changedtick = b:changedtick
 endfunction"}}}
 
-" Plugin helper."{{{
+" Source helper."{{{
 function! neocomplcache#available_complfuncs()"{{{
   return s:complfunc_sources
 endfunction"}}}
@@ -1102,9 +1102,9 @@ function! neocomplcache#is_plugin_locked(plugin_name)"{{{
   endif
 
   let bufnr = bufnr('%')
-  return has_key(s:plugins_lock, bufnr)
-        \ && has_key(s:plugins_lock[bufnr], a:plugin_name)
-        \ && s:plugins_lock[bufnr][a:plugin_name]
+  return has_key(s:sources_lock, bufnr)
+        \ && has_key(s:sources_lock[bufnr], a:source_name)
+        \ && s:sources_lock[bufnr][a:source_name]
 endfunction"}}}
 function! neocomplcache#is_auto_select()"{{{
   return g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
@@ -1244,7 +1244,7 @@ function! neocomplcache#get_complete_results(cur_text, ...)"{{{
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
-      call neocomplcache#print_error('Plugin name is ' . source_name)
+      call neocomplcache#print_error('Source name is ' . source_name)
       return complete_results
     endtry
 
@@ -1466,7 +1466,7 @@ function! s:set_complete_results_words(complete_results)"{{{
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error('Error occured in complfunc''s get_complete_words()!')
-      call neocomplcache#print_error('Plugin name is ' . source_name)
+      call neocomplcache#print_error('Source name is ' . source_name)
       return
     endtry
 
@@ -1528,29 +1528,29 @@ function! neocomplcache#unlock(...)"{{{
 
   let s:complete_lock[bufnr('%')] = 0
 endfunction"}}}
-function! neocomplcache#lock_plugin(plugin_name)"{{{
+function! neocomplcache#lock_source(source_name)"{{{
   if !neocomplcache#is_enabled()
     call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
-  if !has_key(s:plugins_lock, bufnr('%'))
-    let s:plugins_lock[bufnr('%')] = {}
+  if !has_key(s:sources_lock, bufnr('%'))
+    let s:sources_lock[bufnr('%')] = {}
   endif
 
-  let s:plugins_lock[bufnr('%')][a:plugin_name] = 1
+  let s:sources_lock[bufnr('%')][a:source_name] = 1
 endfunction"}}}
-function! neocomplcache#unlock_plugin(plugin_name)"{{{
+function! neocomplcache#unlock_source(source_name)"{{{
   if !neocomplcache#is_enabled()
     call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
     return
   endif
 
-  if !has_key(s:plugins_lock, bufnr('%'))
-    let s:plugins_lock[bufnr('%')] = {}
+  if !has_key(s:sources_lock, bufnr('%'))
+    let s:sources_lock[bufnr('%')] = {}
   endif
 
-  let s:plugins_lock[bufnr('%')][a:plugin_name] = 0
+  let s:sources_lock[bufnr('%')][a:source_name] = 0
 endfunction"}}}
 function! s:display_neco(number)"{{{
   let cmdheight_save = &cmdheight
