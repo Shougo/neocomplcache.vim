@@ -607,25 +607,28 @@ g:neocomplcache_vim_completefuncs		*g:neocomplcache_vim_completefuncs*
 <
 		Default value is {}.
 
-g:neocomplcache_plugin_disable			*g:neocomplcache_plugin_disable*
+g:neocomplcache_source_disable			*g:neocomplcache_source_disable*
 		The dictionary which appoints whether you invalidate a
-		plugin. With a plugin name as a key, it becomes invalid by
+		source. With a source name as a key, it becomes invalid by
 		making a value 1.
+		Note: g:neocomplcache_plugin_disable is deprecated name.
 		
 		Default value is {}.
 
-g:neocomplcache_plugin_completion_length	*g:neocomplcache_plugin_completion_length*
-		It is a dictionary to control each plugin's completion
-		length.  For example, you can prolong heavy plugin's
+g:neocomplcache_source_completion_length	*g:neocomplcache_source_completion_length*
+		It is a dictionary to control each source's completion
+		length.  For example, you can prolong heavy source's
 		completion length.
+		Note: g:neocomplcache_plugin_completion_length is deprecated name.
 		
 		Default value is {}.
 
-g:neocomplcache_plugin_rank			*g:neocomplcache_plugin_rank*
-		It is a dictionary to control each plugin's completion
+g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
+		It is a dictionary to control each source's completion
 		priority.
+		Note: g:neocomplcache_plugin_rank is deprecated name.
 		
-		Default value is set by each plugins.
+		Default value is set by each sources.
 
 g:neocomplcache_force_overwrite_completefunc	*g:neocomplcache_force_overwrite_completefunc*
 		If this variable is 1, neocomplcache force overwrite
@@ -804,7 +807,7 @@ member_complete.vim					*member_complete*
 		This source collects use of member variables from buffer.
 
 tags_complete.vim					*tags_complete*
-		This plugin analyzes a tag file defined in 'tags' for
+		This source analyzes a tag file defined in 'tags' for
 		completion.  When a huge tag file is set, neocomplcache
 		don't make cache if you don't execute
 		|:NeoComplCacheCachingTags|command.  Because
@@ -813,13 +816,13 @@ tags_complete.vim					*tags_complete*
 		completion now.
 
 syntax_complete.vim					*syntax_complete*
-		This plugin analyzes a syntax file like
+		This source analyzes a syntax file like
 		autoload/syntaxcomplete.vim offered by default, and to
 		add to candidate completion.  The plugin can recognize
 		candidates a lot more than autoload/syntaxcomplete.vim.
 
 include_complete.vim					*include_complete*
-		This plugin will add the file which an opening buffer
+		This source will add the file which an opening buffer
 		refers to to candidate.  It is convenient, because you do
 		not need to prepare a tags file and a dictionary file.
 		But it is necessary for 'path' and 'include',
@@ -829,37 +832,37 @@ include_complete.vim					*include_complete*
 		|:NeoComplCacheCachingInclude| manually.
  
 vim_complete.vim					*vim_complete*
-		This plugin analyzes context and start Omni completion of
-		VimScript.  This plugin does not work other than editing
-		time of VimScript.  I created it because neocomplcache
+		This source analyzes context and start Omni completion of
+		Vim script.  This plugin does not work other than editing
+		time of Vim script.  I created it because neocomplcache
 		cannot call |i_CTRL-X_CTRL-V|.  Local variable and a
 		script variable, a function and the analysis of the
 		command are implemented now.
 
 dictionary_complete.vim					*dictionary_complete*
-		This plugin adds candidates from 'dictionary' or
+		This source adds candidates from 'dictionary' or
 		|g:neocomplcache_dictionary_filetype_lists|.
 
 filename_complete.vim					*filename_complete*
-		This plugin collects filename candidates. It is useful
+		This source collects filename candidates. It is useful
 		when you input header file name.  It recognizes include
 		pattern and include path like include_complete.
 
 omni_complete.vim					*omni_complete*
-		This plugin calls 'omnifunc' automatically when cursor
+		This source calls 'omnifunc' automatically when cursor
 		text is matched with |g:neocomplcache_omni_patterns|. If
 		|g:neocomplcache_omni_function_list|is defined,
 		neocomplcache will give priority it.
 
 completefunc_complete.vim				*completefunc_complete*
-		This plugin collects candidates from any 'completefunc'.
+		This source collects candidates from any 'completefunc'.
 		But it is incomplete.
 		neocomplcache#sources#completefunc_complete#call_completefunc(funcname)
 		is only available. This function calls any 'completefunc'
 		manually.
 
 abbrev_complete.vim					*abbrev_complete*
-		This plugin collects candidates from abbrev.
+		This source collects candidates from abbrev.
 
 ------------------------------------------------------------------------------
 USER SOURCES 						*neocomplcache-user-sources*
@@ -893,16 +896,24 @@ neocomplcache
 		imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
 <
 ==============================================================================
-CREATE PLUGIN						*neocomplcache-create-plugin*
+CREATE SOURCE						*neocomplcache-create-source*
 
-In this clause, I comment on a method to make plugin of neocomplcache.  The
-ability of neocomplcache will spread by creating plugin by yourself.
+In this clause, I comment on a method to make source of neocomplcache.  The
+ability of neocomplcache will spread by creating source by yourself.
+
+Todo
 
 ==============================================================================
 CHANGELOG						*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-02-04
+- Renamed g:neocomplcache_plugin_disable as g:neocomplcache_source_disable.
+- Renamed g:neocomplcache_plugin_rank as g:neocomplcache_source_rank.
+- Renamed g:neocomplcache_plugin_completion_length as g:neocomplcache_source_completion_length.
+- Revised documentation.
 
 2012-02-02
 - Ver.7.0 development is started.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Feb 2012.
+" Last Modified: 04 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -94,12 +94,25 @@ let g:neocomplcache_compare_function =
       \ get(g:, 'neocomplcache_compare_function', 'neocomplcache#compare_rank')
 let g:neocomplcache_ctags_program =
       \ get(g:, 'neocomplcache_ctags_program', 'ctags')
-let g:neocomplcache_plugin_disable =
-      \ get(g:, 'neocomplcache_plugin_disable', {})
-let g:neocomplcache_plugin_completion_length =
-      \ get(g:, 'neocomplcache_plugin_completion_length', {})
-let g:neocomplcache_plugin_rank =
-      \ get(g:, 'neocomplcache_plugin_rank', {})
+
+if exists('g:neocomplcache_plugin_disable')
+  let g:neocomplcache_source_disable =
+        \ g:neocomplcache_plugin_disable
+endif
+let g:neocomplcache_source_disable =
+      \ get(g:, 'neocomplcache_source_disable', {})
+if exists('g:neocomplcache_plugin_completion_length')
+  let g:neocomplcache_source_completion_length =
+        \ g:neocomplcache_plugin_completion_length
+endif
+let g:neocomplcache_source_completion_length =
+      \ get(g:, 'neocomplcache_source_completion_length', {})
+if exists('g:neocomplcache_plugin_rank')
+  let g:neocomplcache_source_rank = g:neocomplcache_plugin_rank
+endif
+let g:neocomplcache_source_rank =
+      \ get(g:, 'neocomplcache_source_rank', {})
+
 let g:neocomplcache_temporary_dir =
       \ get(g:, 'neocomplcache_temporary_dir', expand('~/.neocon'))
 if !isdirectory(g:neocomplcache_temporary_dir)

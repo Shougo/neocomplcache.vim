@@ -87,8 +87,7 @@ function! neocomplcache#enable() "{{{
   for file in split(globpath(&runtimepath, 'autoload/neocomplcache/sources/*.vim'), '\n')
     let source_name = fnamemodify(file, ':t:r')
     if !has_key(s:plugin_sources, source_name)
-          \ && (!has_key(g:neocomplcache_plugin_disable, source_name) || 
-          \ g:neocomplcache_plugin_disable[source_name] == 0)
+          \ && neocomplcache#is_source_enabled(source_name)
       let source = call('neocomplcache#sources#' . source_name . '#define', [])
       if empty(source)
         " Ignore.
@@ -1016,8 +1015,8 @@ endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
   if neocomplcache#is_auto_complete() && has_key(s:auto_completion_length, bufnr('%'))
     return s:auto_completion_length[bufnr('%')]
-  elseif has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
-    return g:neocomplcache_plugin_completion_length[a:plugin_name]
+  elseif has_key(g:neocomplcache_source_completion_length, a:plugin_name)
+    return g:neocomplcache_source_completion_length[a:plugin_name]
   elseif has_key(s:ftplugin_sources, a:plugin_name)
         \ || has_key(s:complfunc_sources, a:plugin_name)
     return 0
@@ -1028,13 +1027,13 @@ function! neocomplcache#get_completion_length(plugin_name)"{{{
   endif
 endfunction"}}}
 function! neocomplcache#set_completion_length(plugin_name, length)"{{{
-  if !has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
-    let g:neocomplcache_plugin_completion_length[a:plugin_name] = a:length
+  if !has_key(g:neocomplcache_source_completion_length, a:plugin_name)
+    let g:neocomplcache_source_completion_length[a:plugin_name] = a:length
   endif
 endfunction"}}}
 function! neocomplcache#get_auto_completion_length(plugin_name)"{{{
-  if has_key(g:neocomplcache_plugin_completion_length, a:plugin_name)
-    return g:neocomplcache_plugin_completion_length[a:plugin_name]
+  if has_key(g:neocomplcache_source_completion_length, a:plugin_name)
+    return g:neocomplcache_source_completion_length[a:plugin_name]
   elseif g:neocomplcache_enable_fuzzy_completion
     return 1
   else
@@ -1126,7 +1125,7 @@ function! neocomplcache#is_win()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! neocomplcache#is_source_enabled(plugin_name)"{{{
-  return !get(g:neocomplcache_plugin_disable, a:plugin_name, 0)
+  return !get(g:neocomplcache_source_disable, a:plugin_name, 0)
 endfunction"}}}
 function! neocomplcache#exists_echodoc()"{{{
   return exists('g:loaded_echodoc') && g:loaded_echodoc
@@ -1195,15 +1194,15 @@ function! neocomplcache#get_context_filetype(...)"{{{
 
   return s:context_filetype
 endfunction"}}}
-function! neocomplcache#get_plugin_rank(plugin_name)"{{{
-  if has_key(g:neocomplcache_plugin_rank, a:plugin_name)
-    return g:neocomplcache_plugin_rank[a:plugin_name]
+function! neocomplcache#get_source_rank(plugin_name)"{{{
+  if has_key(g:neocomplcache_source_rank, a:plugin_name)
+    return g:neocomplcache_source_rank[a:plugin_name]
   elseif has_key(s:complfunc_sources, a:plugin_name)
     return 10
   elseif has_key(s:ftplugin_sources, a:plugin_name)
     return 100
   elseif has_key(s:plugin_sources, a:plugin_name)
-    return neocomplcache#get_plugin_rank('keyword_complete')
+    return neocomplcache#get_source_rank('keyword_complete')
   else
     " unknown.
     return 1
@@ -1232,9 +1231,7 @@ function! neocomplcache#get_complete_results(cur_text, ...)"{{{
     let sources = filter(sources, 'v:key ==# "omni_complete"')
   endif
   if a:0 < 1
-    call filter(sources,
-          \ '!(has_key(g:neocomplcache_plugin_disable, v:key)
-          \     && g:neocomplcache_plugin_disable[v:key])
+    call filter(sources, 'neocomplcache#is_source_enabled(v:key)
           \  && !neocomplcache#is_plugin_locked(v:key)')
   endif
 
@@ -1309,7 +1306,7 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
       endfor
     endif
 
-    let base_rank = neocomplcache#get_plugin_rank(source_name)
+    let base_rank = neocomplcache#get_source_rank(source_name)
 
     for keyword in result.complete_words
       let word = keyword.word
