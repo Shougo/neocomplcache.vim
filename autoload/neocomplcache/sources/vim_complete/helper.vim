@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jan 2012.
+" Last Modified: 04 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -454,14 +454,15 @@ function! neocomplcache#sources#vim_complete#helper#tag_listfiles(cur_text, cur_
   return []
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#var_dictionary(cur_text, cur_keyword_str)"{{{
-  let var_name = matchstr(a:cur_text, '\%(\a:\)\?\h\w*\ze\.\%(\h\w*\%(()\?\)\?\)\?$')
+  let var_name = matchstr(a:cur_text,
+        \'\%(\a:\)\?\h\w*\ze\.\%(\h\w*\%(()\?\)\?\)\?$')
+  let list = []
   if a:cur_text =~ '[btwg]:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
     let list = has_key(s:global_candidates_list.dictionary_variables, var_name) ?
           \ values(s:global_candidates_list.dictionary_variables[var_name]) : []
   elseif a:cur_text =~ 's:\h\w*\.\%(\h\w*\%(()\?\)\?\)\?$'
-    let list = values(get(s:get_cached_script_candidates().dictionary_variables, var_name, {}))
-  else
-    let list = s:get_local_dictionary_variables(var_name)
+    let list = values(get(s:get_cached_script_candidates().dictionary_variables,
+          \ var_name, {}))
   endif
 
   return list
@@ -538,58 +539,6 @@ function! s:get_local_variables()"{{{
         let candidates_list = keyword_dict
       endif
       call s:analyze_variable_line(line, candidates_list)
-    endif
-
-    let line_num += 1
-  endwhile
-
-  return values(keyword_dict)
-endfunction"}}}
-function! s:get_local_dictionary_variables(var_name)"{{{
-  " Get local dictionary variable list.
-
-  " Search function.
-  let line_num = line('.') - 1
-  let end_line = (line('.') > 100) ? line('.') - 100 : 1
-  while line_num >= end_line
-    let line = getline(line_num)
-    if line =~ '\<fu\%[nction]\>'
-      break
-    endif
-
-    let line_num -= 1
-  endwhile
-  let line_num += 1
-
-  let end_line = line('.') - 1
-  let keyword_dict = {}
-  let var_pattern = a:var_name.'\.\h\w*\%(()\?\)\?'
-  while line_num <= end_line
-    let line = getline(line_num)
-
-    if line =~ var_pattern
-      while line =~ var_pattern
-        let var_name = matchstr(line, '\a:[[:alnum:]_:]*\ze\.\h\w*')
-        if var_name =~ '^[btwg]:'
-          let candidates = s:global_candidates_list.dictionary_variables
-          if !has_key(candidates, var_name)
-            let candidates[var_name] = {}
-          endif
-          let candidates_dict = candidates[var_name]
-        elseif var_name =~ '^s:' && has_key(s:script_candidates_list, bufnr('%'))
-          let candidates = s:script_candidates_list[bufnr('%')].dictionary_variables
-          if !has_key(candidates, var_name)
-            let candidates[var_name] = {}
-          endif
-          let candidates_dict = candidates[var_name]
-        else
-          let candidates_dict = keyword_dict
-        endif
-
-        call s:analyze_dictionary_variable_line(line, candidates_dict, var_name)
-
-        let line = line[matchend(line, var_pattern) :]
-      endwhile
     endif
 
     let line_num += 1

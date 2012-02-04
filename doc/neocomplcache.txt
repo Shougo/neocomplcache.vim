@@ -924,6 +924,7 @@ ChangeLog neocomplcache 7.0:
 - Renamed g:neocomplcache_filetype_include_lists as g:neocomplcache_context_filetype_lists.
 - Added g:neocomplcache_release_cache_time option.
 - Implemented release cache in include_complete.
+- Deleted local var_dictionary completion in vim_complete.
 
 2012-02-02
 - Ver.7.0 development is started.

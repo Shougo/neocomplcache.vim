@@ -106,7 +106,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   endif
 
   return neocomplcache#keyword_filter(
-        \ s:get_member_list(cur_text, var_name), a:cur_keyword_str)
+        \ copy(s:get_member_list(cur_text, var_name)), a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#member_complete#define()"{{{
@@ -173,10 +173,10 @@ endfunction"}}}
 
 function! s:get_member_list(cur_text, var_name)"{{{
   let keyword_list = []
-  for src in s:get_sources_list()
-    if has_key(s:member_sources[src].member_cache, a:var_name)
-      let keyword_list += values(s:member_sources[src].member_cache[a:var_name])
-    endif
+  for [key, source] in filter(s:get_sources_list(),
+        \ 'has_key(v:val[1].member_cache, a:var_name)')
+    let keyword_list +=
+          \ values(source.member_cache[a:var_name])
   endfor
 
   return keyword_list
@@ -191,11 +191,11 @@ function! s:get_sources_list()"{{{
     let filetypes_dict[filetype] = 1
   endfor
 
-  for key in keys(s:member_sources)
-    if has_key(filetypes_dict, s:member_sources[key].filetype)
+  for [key, source] in items(s:member_sources)
+    if has_key(filetypes_dict, source.filetype)
           \ || bufnr('%') == key
           \ || (bufname('%') ==# '[Command Line]' && bufnr('#') == key)
-      call add(sources_list, key)
+      call add(sources_list, [key, source])
     endif
   endfor
 

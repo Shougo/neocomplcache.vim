@@ -357,7 +357,7 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
   return include_files
 endfunction"}}}
 
-function! s:check_source()"{{{
+function! s:check_cache()"{{{
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
 
   for key in keys(s:include_cache)
