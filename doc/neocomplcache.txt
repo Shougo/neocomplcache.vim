@@ -267,6 +267,7 @@ g:neocomplcache_enable_cursor_hold_i			*g:neocomplcache_enable_cursor_hold_i*
 		Note: You should not use this option if less than Vim 7.3.319.
 		Note: Neocomplcache don't set 'updatetime'. So, you must set
 		'updatetime' manually.
+		Note: This option must be set before call |:NeoComplCacheEnable|.
 		
 		Default value is 0.
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 04 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,9 +47,12 @@ function! neocomplcache#enable() "{{{
     autocmd!
     " Auto complete events
     autocmd CursorMovedI * call s:on_moved_i()
-    autocmd CursorHoldI * call s:on_hold_i()
     autocmd InsertLeave * call s:on_insert_leave()
   augroup END "}}}
+
+  if g:neocomplcache_enable_cursor_hold_i
+    autocmd neocomplcache CursorHoldI * call neocomplcache#do_auto_complete()
+  endif
 
   " Disable beep.
   set vb t_vb=
@@ -1848,11 +1851,6 @@ endfunction"}}}
 "}}}
 
 " Event functions."{{{
-function! s:on_hold_i()"{{{
-  if g:neocomplcache_enable_cursor_hold_i
-    call neocomplcache#do_auto_complete()
-  endif
-endfunction"}}}
 function! s:on_moved_i()"{{{
   if !g:neocomplcache_enable_cursor_hold_i
     call neocomplcache#do_auto_complete()
