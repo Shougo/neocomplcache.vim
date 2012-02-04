@@ -424,21 +424,24 @@ g:neocomplcache_dictionary_patterns		*g:neocomplcache_dictionary_patterns*
 		
 		Default value is {}.
 
-g:neocomplcache_filetype_include_lists		*g:neocomplcache_filetype_include_lists*
-		It is a dictionary to define a filetype which includes another filetype.
-		The item is a list of dictionary. The keys and values are below.
-		"filetype" : includes filetype.
+g:neocomplcache_context_filetype_lists		*g:neocomplcache_context_filetype_lists*
+		It is a dictionary to define context filetypes.
+		The item is a list of dictionary.
+		Note: g:neocomplcache_filetype_include_lists is deprecated name.
+		
+		The keys and values are below.
+		"filetype" : includes filetype name.
 		"start" : filetype start pattern.
 		"end" : filetype end pattern. You can use \1 to refer start's
 			matched pattern.
 >
 		" Examples:
-		if !exists('g:neocomplcache_filetype_include_lists')
-		let g:neocomplcache_filetype_include_lists= {}
+		if !exists('g:neocomplcache_context_filetype_lists')
+		let g:neocomplcache_context_filetype_lists = {}
 		endif
-		let g:neocomplcache_filetype_include_lists.perl6 =
+		let g:neocomplcache_context_filetype_lists.perl6 =
 		\ [{'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'}]
-		let g:neocomplcache_filetype_include_lists.vim =
+		let g:neocomplcache_context_filetype_lists.vim =
 		\ [{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
 		Because it is complicated, refer to neocomplcache#enable() in
@@ -915,6 +918,7 @@ ChangeLog neocomplcache 7.0:
 - Renamed g:neocomplcache_plugin_completion_length as g:neocomplcache_source_completion_length.
 - Revised documentation.
 - Added :NeoComplCacheLockSource and :NeoComplCacheUnLockSource commands.
+- Renamed g:neocomplcache_filetype_include_lists as g:neocomplcache_context_filetype_lists.
 
 2012-02-02
 - Ver.7.0 development is started.

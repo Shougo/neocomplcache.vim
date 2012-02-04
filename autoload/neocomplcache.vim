@@ -363,53 +363,57 @@ function! neocomplcache#enable() "{{{
   "}}}
 
   " Initialize include filetype lists."{{{
-  if !exists('g:neocomplcache_filetype_include_lists')
-    let g:neocomplcache_filetype_include_lists = {}
+  if exists('g:neocomplcache_filetype_include_lists')
+    let g:neocomplcache_context_filetype_lists =
+          \ g:neocomplcache_filetype_include_lists
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  if !exists('g:neocomplcache_context_filetype_lists')
+    let g:neocomplcache_context_filetype_lists = {}
+  endif
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'c,cpp', [
         \ {'filetype' : 'masm', 'start' : '_*asm_*\s\+\h\w*', 'end' : '$'},
         \ {'filetype' : 'masm', 'start' : '_*asm_*\s*\%(\n\s*\)\?{', 'end' : '}'},
         \ {'filetype' : 'gas', 'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'd', [
         \ {'filetype' : 'masm', 'start' : 'asm\s*\%(\n\s*\)\?{', 'end' : '}'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'perl6', [
         \ {'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'vimshell', [
         \ {'filetype' : 'vim', 'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
         \ {'filetype' : 'vim', 'start' : ' :\w*', 'end' : '\n'},
         \ {'filetype' : 'vim', 'start' : ' vexe\s\+', 'end' : '\n'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'eruby', [
         \ {'filetype' : 'ruby', 'start' : '<%[=#]\?', 'end' : '%>'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'vim', [
         \ {'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'},
         \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'html,xhtml', [
         \ {'filetype' : 'javascript', 'start' : '<script type="text/javascript">', 'end' : '</script>'},
         \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'python', [
         \ {'filetype' : 'vim', 'start' : 'vim.command\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
         \ {'filetype' : 'vim', 'start' : 'vim.eval\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'help', [
         \ {'filetype' : 'vim', 'start' : '^>', 'end' : '^<'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filetype_include_lists,
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'nyaos,int-nyaos', [
         \ {'filetype' : 'lua', 'start' : '\<lua_e\s\+\(["'']\)', 'end' : '^\1'},
         \])
@@ -1962,11 +1966,11 @@ function! s:get_context_filetype(filetype)"{{{
   if neocomplcache#is_eskk_enabled()
     let context_filetype = 'eskk'
     let filetype = 'eskk'
-  elseif has_key(g:neocomplcache_filetype_include_lists, filetype)
-        \ && !empty(g:neocomplcache_filetype_include_lists[filetype])
+  elseif has_key(g:neocomplcache_context_filetype_lists, filetype)
+        \ && !empty(g:neocomplcache_context_filetype_lists[filetype])
 
     let pos = [line('.'), col('.')]
-    for include in g:neocomplcache_filetype_include_lists[filetype]
+    for include in g:neocomplcache_context_filetype_lists[filetype]
       let start_backward = searchpos(include.start, 'bnW')
 
       " Check start <= line <= end.
