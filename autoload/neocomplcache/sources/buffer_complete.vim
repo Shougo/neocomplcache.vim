@@ -378,6 +378,7 @@ function! s:check_source()"{{{
 endfunction"}}}
 function! s:check_cache()"{{{
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
+
   for [key, source] in items(s:buffer_sources)
     " Check deleted buffer and access time.
     if !bufloaded(str2nr(key))

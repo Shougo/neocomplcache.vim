@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Nov 2011.
+" Last Modified: 04 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,28 +36,25 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
     return
   endif
 
-  for cache in a:async_cache_dictionary[a:key]
-    " Check cache name.
-    if filereadable(cache.cachename)
-      " Caching.
-      let a:keyword_list_dictionary[a:key] = {}
+  for cache in filter(copy(a:async_cache_dictionary[a:key]),
+        \ 'filereadable(v:val.cachename)')
+    " Caching.
+    let a:keyword_list_dictionary[a:key] = {}
 
-      let keyword_list = []
-      for cache in a:async_cache_dictionary[a:key]
-        let keyword_list +=
-              \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
-      endfor
+    let keyword_list = []
+    for cache in a:async_cache_dictionary[a:key]
+      let keyword_list +=
+            \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
+    endfor
 
-      call neocomplcache#cache#list2index(
-            \ keyword_list,
-            \ a:keyword_list_dictionary[a:key],
-            \ a:completion_length)
+    call neocomplcache#cache#list2index(
+          \ keyword_list,
+          \ a:keyword_list_dictionary[a:key],
+          \ a:completion_length)
 
-      " Delete from dictionary.
-      call remove(a:async_cache_dictionary, a:key)
-
-      return
-    endif
+    " Delete from dictionary.
+    call remove(a:async_cache_dictionary, a:key)
+    break
   endfor
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{

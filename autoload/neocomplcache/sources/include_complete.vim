@@ -38,6 +38,7 @@ function! s:source.initialize()"{{{
   " Initialize
   let s:include_info = {}
   let s:include_cache = {}
+  let s:cache_accessed_time = {}
   let s:async_include_cache = {}
   let s:cached_pattern = {}
   let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
@@ -49,6 +50,7 @@ function! s:source.initialize()"{{{
     augroup neocomplcache
       " Caching events
       autocmd BufWritePost * call s:check_buffer('', 0)
+      autocmd CursorHold * call s:check_cache()
     augroup END
   endif
 
@@ -128,6 +130,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
           \ 'include_cache', include, s:async_include_cache,
           \ s:include_cache, s:completion_length)
     if has_key(s:include_cache, include)
+      let s:cache_accessed_time[include] = localtime()
       let keyword_list += neocomplcache#dictionary_filter(
             \ s:include_cache[include], a:cur_keyword_str, s:completion_length)
     endif
@@ -352,6 +355,17 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
   endfor"}}}
 
   return include_files
+endfunction"}}}
+
+function! s:check_source()"{{{
+  let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
+
+  for key in keys(s:include_cache)
+    if has_key(s:cache_accessed_time, key)
+          \ && s:cache_accessed_time[key] < release_accessd_time
+      call remove(s:include_cache, key)
+    endif
+  endfor
 endfunction"}}}
 
 function! s:initialize_include(filename, filetype)"{{{
