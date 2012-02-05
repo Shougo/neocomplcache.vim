@@ -719,7 +719,7 @@ neocomplcache#complete_common_string()		*neocomplcache#complete_common_string()*
 		Note: Required unite.vim Latest ver.3.0 or above.
 
 ==============================================================================
-EXAMPLES						*neocomplcache-examples*
+EXAMPLES					*neocomplcache-examples*
 >
 	" Disable AutoComplPop.
 	let g:acp_enableAtStartup = 0
@@ -797,24 +797,24 @@ EXAMPLES						*neocomplcache-examples*
 	let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 <
 ==============================================================================
-SOURCES							*neocomplcache-sources*
+SOURCES						*neocomplcache-sources*
 
 Neocomplcache reads automatically sources saved in an
 autoload/neocomplcache/sources directory.
 
-keyword_complete.vim					*keyword_complete*
+keyword_complete.vim				*keyword_complete*
 		This source collects keywords from dictionaries... etc, and to
 		use for completion.  Because the plugin offer the basic
 		function of neocomplcache, neocomplcache does not work normally
 		when you delete this plugin.
 
-buffer_complete.vim					*buffer_complete*
+buffer_complete.vim				*buffer_complete*
 		This source collects keywords from buffer.
 
-member_complete.vim					*member_complete*
+member_complete.vim				*member_complete*
 		This source collects use of member variables from buffer.
 
-tags_complete.vim					*tags_complete*
+tags_complete.vim				*tags_complete*
 		This source analyzes a tag file defined in 'tags' for
 		completion.  When a huge tag file is set, neocomplcache
 		don't make cache if you don't execute
@@ -823,13 +823,13 @@ tags_complete.vim					*tags_complete*
 		tags file.  You should use more convenient include
 		completion now.
 
-syntax_complete.vim					*syntax_complete*
+syntax_complete.vim				*syntax_complete*
 		This source analyzes a syntax file like
 		autoload/syntaxcomplete.vim offered by default, and to
 		add to candidate completion.  The plugin can recognize
 		candidates a lot more than autoload/syntaxcomplete.vim.
 
-include_complete.vim					*include_complete*
+include_complete.vim				*include_complete*
 		This source will add the file which an opening buffer
 		refers to to candidate.  It is convenient, because you do
 		not need to prepare a tags file and a dictionary file.
@@ -839,7 +839,7 @@ include_complete.vim					*include_complete*
 		feature is disabled. Please execute
 		|:NeoComplCacheCachingInclude| manually.
  
-vim_complete.vim					*vim_complete*
+vim_complete.vim				*vim_complete*
 		This source analyzes context and start Omni completion of
 		Vim script.  This plugin does not work other than editing
 		time of Vim script.  I created it because neocomplcache
@@ -847,64 +847,66 @@ vim_complete.vim					*vim_complete*
 		script variable, a function and the analysis of the
 		command are implemented now.
 
-dictionary_complete.vim					*dictionary_complete*
+dictionary_complete.vim				*dictionary_complete*
 		This source adds candidates from 'dictionary' or
 		|g:neocomplcache_dictionary_filetype_lists|.
 
-filename_complete.vim					*filename_complete*
+filename_complete.vim				*filename_complete*
 		This source collects filename candidates. It is useful
 		when you input header file name.  It recognizes include
 		pattern and include path like include_complete.
 
-omni_complete.vim					*omni_complete*
+omni_complete.vim				*omni_complete*
 		This source calls 'omnifunc' automatically when cursor
 		text is matched with |g:neocomplcache_omni_patterns|. If
 		|g:neocomplcache_omni_function_list|is defined,
 		neocomplcache will give priority it.
 
-completefunc_complete.vim				*completefunc_complete*
+completefunc_complete.vim			*completefunc_complete*
 		This source collects candidates from any 'completefunc'.
 		But it is incomplete.
 		neocomplcache#sources#completefunc_complete#call_completefunc(funcname)
 		is only available. This function calls any 'completefunc'
 		manually.
 
-abbrev_complete.vim					*abbrev_complete*
+abbrev_complete.vim				*abbrev_complete*
 		This source collects candidates from abbrev.
 
 ------------------------------------------------------------------------------
-USER SOURCES 						*neocomplcache-user-sources*
+USER SOURCES 					*neocomplcache-user-sources*
 
 This section, introduce non default neocomplcache sources.
 
-snippets_complete.vim					*neocomplcache-sources-snippets_complete*
+snippets_complete.vim				*neocomplcache-sources-snippets_complete*
 		This source is for snippets completion.
 		Note: This source is not in default sources after neocomplcache
 		ver.7.0.
 		https://github.com/Shougo/neocomplcache-snippets-complete
 
-neco-ghc						*neocomplcache-sources-neco-ghc*
+neco-ghc					*neocomplcache-sources-neco-ghc*
 		https://github.com/ujihisa/neco-ghc
 		eagletmt originally implemented and now ujihisa is maintaining
 		this source.  It completes a source file written in Haskell.
 		It requires ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
-neco-ruby						*neocomplcache-sources-neco-ruby*
+neco-ruby					*neocomplcache-sources-neco-ruby*
 		https://github.com/ujihisa/neco-ruby
 		This source is for ruby completion.  Only require_relative
 		completion is implemented so far.
 
 ==============================================================================
-UNITE SOURCES						*neocomplcache-unite-sources*
+UNITE SOURCES					*neocomplcache-unite-sources*
 
-							*neocomplcache-unite-source-neocomplcache*
+						*neocomplcache-unite-source-neocomplcache*
 neocomplcache
+		Nominates neocomplcache completion candidates. The kind is "completion".
+		This source is used in |<Plug>(neocomplcache_start_unite_complete)|.
 >
 		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
 		imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
 <
 ==============================================================================
-CREATE SOURCE						*neocomplcache-create-source*
+CREATE SOURCE					*neocomplcache-create-source*
 
 In this clause, I comment on a method to make source of neocomplcache.  The
 ability of neocomplcache will spread by creating source by yourself.
@@ -912,7 +914,7 @@ ability of neocomplcache will spread by creating source by yourself.
 Todo
 
 ==============================================================================
-CHANGELOG						*neocomplcache-changelog*
+CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
@@ -920,6 +922,7 @@ ChangeLog neocomplcache 7.0:
 2012-02-05
 - Improved include_complete.
 - Fixed buffer_complete cache problem.
+- Fixed documentaion.
 
 2012-02-04
 - Renamed g:neocomplcache_plugin_disable as g:neocomplcache_source_disable.
