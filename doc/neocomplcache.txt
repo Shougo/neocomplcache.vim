@@ -915,6 +915,9 @@ CHANGELOG						*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-02-05
+- Improved include_complete.
+
 2012-02-04
 - Renamed g:neocomplcache_plugin_disable as g:neocomplcache_source_disable.
 - Renamed g:neocomplcache_plugin_rank as g:neocomplcache_source_rank.
