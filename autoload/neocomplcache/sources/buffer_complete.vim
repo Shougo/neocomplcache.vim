@@ -102,12 +102,14 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let keyword_list = []
   for [key, source] in s:get_sources_list()
-    let keyword_cache = neocomplcache#dictionary_filter(
+    let keyword_list += neocomplcache#dictionary_filter(
           \ source.keyword_cache, a:cur_keyword_str, s:completion_length)
     if key == bufnr('%')
       let source.accessed_time = localtime()
       call s:calc_frequency()
     endif
+
+    echomsg string(values(source.keyword_cache))
   endfor
 
   return keyword_list
@@ -363,22 +365,20 @@ function! s:check_source()"{{{
 
   let source = s:buffer_sources[bufnumber]
   if !s:buffer_sources[bufnumber].loaded_cache
+        \&& filereadable(source.cache_name)
+    " Caching from cache.
+    call neocomplcache#cache#list2index(
+          \ neocomplcache#cache#load_from_cache('buffer_cache', source.path),
+          \ source.keyword_cache, s:completion_length)
 
-    if filereadable(source.cache_name)
-      " Caching from cache.
-      call neocomplcache#cache#list2index(
-            \ neocomplcache#cache#load_from_cache('buffer_cache', source.path),
-            \ source.keyword_cache,
-            \ s:completion_length)
-
-      let source.loaded_cache = 1
-    endif
+    let source.loaded_cache = 1
   endif
 
   " Check current line caching.
-  call filter(source.keyword_cache,
-        \ "!has_key(v:val, 'bufnr') ||
-        \ stridx(getline(v:val.bufnr, v:val.line), v:val.word) >= 0")
+  for cache in values(source.keyword_cache)
+    call filter(cache, "!has_key(v:val, 'line')
+          \ || stridx(getline(v:val.line), v:val.word) >= 0")
+  endfor
 endfunction"}}}
 function! s:check_cache()"{{{
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
