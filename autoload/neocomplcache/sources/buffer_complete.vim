@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 05 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -108,10 +108,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       let source.accessed_time = localtime()
       call s:calc_frequency()
     endif
-
-    let keyword_list += filter(keyword_cache,
-          \ "!has_key(v:val, 'bufnr') ||
-          \ stridx(get(getbufline(v:val.bufnr, v:val.line), 0, ''), v:val.word) >= 0")
   endfor
 
   return keyword_list
@@ -361,9 +357,12 @@ function! s:check_source()"{{{
     call s:word_caching(bufnumber)
   endif
 
-  if has_key(s:buffer_sources, bufnumber)
-        \ && !s:buffer_sources[bufnumber].loaded_cache
-    let source = s:buffer_sources[bufnumber]
+  if !has_key(s:buffer_sources, bufnumber)
+    return
+  endif
+
+  let source = s:buffer_sources[bufnumber]
+  if !s:buffer_sources[bufnumber].loaded_cache
 
     if filereadable(source.cache_name)
       " Caching from cache.
@@ -375,6 +374,11 @@ function! s:check_source()"{{{
       let source.loaded_cache = 1
     endif
   endif
+
+  " Check current line caching.
+  call filter(source.keyword_cache,
+        \ "!has_key(v:val, 'bufnr') ||
+        \ stridx(getline(v:val.bufnr, v:val.line), v:val.word) >= 0")
 endfunction"}}}
 function! s:check_cache()"{{{
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
