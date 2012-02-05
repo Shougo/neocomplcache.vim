@@ -923,6 +923,7 @@ ChangeLog neocomplcache 7.0:
 - Improved include_complete.
 - Fixed buffer_complete cache problem.
 - Fixed documentaion.
+- Fixed changed buffer problem.
 
 2012-02-04
 - Renamed g:neocomplcache_plugin_disable as g:neocomplcache_source_disable.

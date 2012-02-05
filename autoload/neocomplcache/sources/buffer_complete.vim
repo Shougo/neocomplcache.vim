@@ -108,8 +108,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
       let source.accessed_time = localtime()
       call s:calc_frequency()
     endif
-
-    echomsg string(values(source.keyword_cache))
   endfor
 
   return keyword_list
@@ -291,7 +289,6 @@ function! s:initialize_source(srcname)"{{{
         \ 'keyword_cache' : {}, 'frequencies' : {}, 'prev_frequencies' : {},
         \ 'name' : filename, 'filetype' : ft, 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : len(buflines),
-        \ 'check_sum' : len(join(buflines[:4], '\n')),
         \ 'accessed_time' : localtime(),
         \ 'path' : path, 'loaded_cache' : 0,
         \ 'cache_name' : neocomplcache#cache#encode_name('buffer_cache', path),
@@ -320,15 +317,6 @@ endfunction"}}}
 
 function! s:check_changed_buffer(bufnumber)"{{{
   let source = s:buffer_sources[a:bufnumber]
-
-  if getbufvar(a:bufnumber, '&buftype') =~ 'nofile'
-    " Check buffer changed.
-    let check_sum = len(join(getbufline(a:bufnumber, 1, 5), '\n'))
-    if check_sum != source.check_sum
-      " Recaching.
-      return 1
-    endif
-  endif
 
   let ft = getbufvar(a:bufnumber, '&filetype')
   if ft == ''
@@ -373,12 +361,6 @@ function! s:check_source()"{{{
 
     let source.loaded_cache = 1
   endif
-
-  " Check current line caching.
-  for cache in values(source.keyword_cache)
-    call filter(cache, "!has_key(v:val, 'line')
-          \ || stridx(getline(v:val.line), v:val.word) >= 0")
-  endfor
 endfunction"}}}
 function! s:check_cache()"{{{
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
@@ -394,6 +376,18 @@ function! s:check_cache()"{{{
       " Remove item.
       call remove(s:buffer_sources, key)
     endif
+  endfor
+
+  let bufnumber = bufnr('%')
+  if !has_key(s:buffer_sources, bufnumber)
+    return
+  endif
+  let source = s:buffer_sources[bufnumber]
+
+  " Check current line caching.
+  for cache in values(source.keyword_cache)
+    call filter(cache, "!has_key(v:val, 'line')
+          \ || stridx(getline(v:val.line), v:val.word) >= 0")
   endfor
 endfunction"}}}
 
@@ -507,7 +501,8 @@ function! s:output_keyword(name)"{{{
   endif
 
   " Output buffer.
-  for keyword in neocomplcache#unpack_dictionary(s:buffer_sources[number].keyword_cache)
+  for keyword in neocomplcache#unpack_dictionary(
+        \ s:buffer_sources[number].keyword_cache)
     silent put=string(keyword)
   endfor
 endfunction "}}}
