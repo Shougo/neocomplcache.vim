@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2012.
+" Last Modified: 06 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -178,7 +178,6 @@ function! s:caching_current_buffer(start, end, is_auto)"{{{
         if a:is_auto
           " Save line number.
           let keywords[key][match_str].line = a:start
-          let keywords[key][match_str].bufnr = bufnr('%')
         endif
       endif
       if !has_key(frequencies, match_str)
@@ -424,11 +423,6 @@ function! s:save_cache(srcname)"{{{
   if getftime(cache_name) >= getftime(srcname)
     return
   endif
-
-  let cache = filter(neocomplcache#unpack_dictionary(
-        \        s:buffer_sources[a:srcname].keyword_cache),
-        \ "!has_key(v:val, 'bufnr') ||
-        \ stridx(get(getbufline(v:val.bufnr, v:val.line), 0, ''), v:val.word) >= 0")
 
   " Output buffer.
   call neocomplcache#cache#save_cache('buffer_cache', srcname, cache)

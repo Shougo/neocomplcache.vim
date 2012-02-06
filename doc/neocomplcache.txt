@@ -919,6 +919,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-02-06
+- Improved buffer_complete.
+
 2012-02-05
 - Improved include_complete.
 - Fixed buffer_complete cache problem.
