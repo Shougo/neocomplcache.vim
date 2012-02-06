@@ -921,6 +921,7 @@ ChangeLog neocomplcache 7.0:
 
 2012-02-06
 - Improved buffer_complete.
+- Fixed save cache error.
 
 2012-02-05
 - Improved include_complete.

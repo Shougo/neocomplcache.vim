@@ -395,7 +395,8 @@ function! s:exists_current_source()"{{{
 endfunction"}}}
 
 function! s:save_cache(srcname)"{{{
-  if s:buffer_sources[a:srcname].end_line < 500
+  let source = s:buffer_sources[a:srcname]
+  if source.end_line < 500
     return
   endif
 
@@ -425,7 +426,8 @@ function! s:save_cache(srcname)"{{{
   endif
 
   " Output buffer.
-  call neocomplcache#cache#save_cache('buffer_cache', srcname, cache)
+  call neocomplcache#cache#save_cache('buffer_cache', srcname,
+        \ neocomplcache#unpack_dictionary(source.keyword_cache))
 endfunction "}}}
 function! s:save_all_cache()"{{{
   try
