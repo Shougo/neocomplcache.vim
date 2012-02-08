@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 08 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -796,9 +796,14 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   endif"}}}
 
   " Fuzzy completion.
-  if len(keyword_escape) < 8 && g:neocomplcache_enable_fuzzy_completion
-    let keyword_escape = substitute(keyword_escape, '\w',
-          \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
+  if g:neocomplcache_enable_fuzzy_completion
+    if len(keyword_escape) < 8
+      let keyword_escape = keyword_escape[: 1] . substitute(keyword_escape[2:], '\w',
+            \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
+    elseif len(keyword_escape) < 20
+      let keyword_escape = keyword_escape[: 3] . substitute(keyword_escape[4:12], '\w',
+            \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g') . keyword_escape[13:]
+    endif
   else
     " Underbar completion."{{{
     if g:neocomplcache_enable_underbar_completion
