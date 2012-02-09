@@ -919,6 +919,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-02-08
+- Improved fuzzy completion behavior.
+
 2012-02-06
 - Improved buffer_complete.
 - Fixed save cache error.
