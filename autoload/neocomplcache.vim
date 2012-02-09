@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 07 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1946,7 +1946,9 @@ function! s:set_context_filetype()"{{{
 
       if !source.loaded
         " Initialize.
-        call source.initialize()
+        if has_key(source, 'initialize')
+          call source.initialize()
+        endif
 
         let source.loaded = 1
       endif
