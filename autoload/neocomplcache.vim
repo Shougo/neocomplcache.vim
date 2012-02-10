@@ -52,6 +52,7 @@ function! neocomplcache#enable() "{{{
   if g:neocomplcache_enable_cursor_hold_i
     autocmd neocomplcache CursorHoldI * call neocomplcache#do_auto_complete()
   else
+    autocmd neocomplcache InsertEnter * call s:on_insert_enter()
     autocmd neocomplcache CursorMovedI * call neocomplcache#do_auto_complete()
   endif
 
