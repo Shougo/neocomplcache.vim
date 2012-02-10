@@ -43,18 +43,27 @@ if !exists('s:is_enabled')
 endif
 
 function! neocomplcache#enable() "{{{
-  augroup neocomplcache "{{{
+  " Auto commands."{{{
+  augroup neocomplcache
     autocmd!
     " Auto complete events
     autocmd InsertLeave * call s:on_insert_leave()
-  augroup END "}}}
+  augroup END
 
-  if g:neocomplcache_enable_cursor_hold_i
-    autocmd neocomplcache CursorHoldI * call neocomplcache#do_auto_complete()
+  if g:neocomplcache_enable_insert_char_pre
+        \ && (v:version > 703 || v:version == 703 && has('patch418'))
+    autocmd neocomplcache InsertCharPre *
+          \ call s:do_auto_complete('InsertCharPre')
+  elseif g:neocomplcache_enable_cursor_hold_i
+    autocmd neocomplcache CursorHoldI *
+          \ call s:do_auto_complete('CursorHoldI')
   else
-    autocmd neocomplcache InsertEnter * call s:on_insert_enter()
-    autocmd neocomplcache CursorMovedI * call neocomplcache#do_auto_complete()
+    autocmd neocomplcache InsertEnter *
+          \ call s:on_insert_enter()
+    autocmd neocomplcache CursorMovedI *
+          \ call s:do_auto_complete('CursorMovedI')
   endif
+  "}}}
 
   " Disable beep.
   set vb t_vb=
@@ -578,7 +587,8 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let &l:completefunc = 'neocomplcache#manual_complete'
-      return g:neocomplcache_enable_prefetch ?
+      return (g:neocomplcache_enable_prefetch
+            \ || g:neocomplcache_enable_insert_char_pre) ?
             \ -1 : -2
     endif
 
@@ -586,16 +596,19 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if s:is_prefetch && !empty(s:complete_results)
       " Use prefetch results.
     else
-      let s:complete_results = neocomplcache#get_complete_results(s:get_cur_text())
+      let s:complete_results =
+            \ neocomplcache#get_complete_results(s:get_cur_text())
     endif
-    let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
+    let cur_keyword_pos =
+          \ neocomplcache#get_cur_keyword_pos(s:complete_results)
 
     if cur_keyword_pos < 0
       let s:cur_keyword_str = ''
       let s:complete_words = []
       let s:is_prefetch = 0
       let s:complete_results = {}
-      return g:neocomplcache_enable_prefetch ?
+      return (g:neocomplcache_enable_prefetch
+            \ || g:neocomplcache_enable_insert_char_pre) ?
             \ -1 : -2
     endif
 
@@ -653,7 +666,7 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
   return neocomplcache#manual_complete(a:findstart, a:base)
 endfunction"}}}
 
-function! neocomplcache#do_auto_complete()"{{{
+function! s:do_auto_complete(event)"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
@@ -674,7 +687,8 @@ function! neocomplcache#do_auto_complete()"{{{
       99verbose setl completefunc
       redir END
       call neocomplcache#print_error(output)
-      call neocomplcache#print_error('Another plugin set completefunc! Disabled neocomplcache.')
+      call neocomplcache#print_error(
+            \ 'Another plugin set completefunc! Disabled neocomplcache.')
       NeoComplCacheLock
       return
     endif
@@ -682,7 +696,8 @@ function! neocomplcache#do_auto_complete()"{{{
 
   " Detect AutoComplPop.
   if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
-    call neocomplcache#print_error('Detected enabled AutoComplPop! Disabled neocomplcache.')
+    call neocomplcache#print_error(
+          \ 'Detected enabled AutoComplPop! Disabled neocomplcache.')
     NeoComplCacheLock
     return
   endif
@@ -693,24 +708,34 @@ function! neocomplcache#do_auto_complete()"{{{
       99verbose set paste
     redir END
     call neocomplcache#print_error(output)
-    call neocomplcache#print_error('Detected set paste! Disabled neocomplcache.')
+    call neocomplcache#print_error(
+          \ 'Detected set paste! Disabled neocomplcache.')
     return
   endif
 
   " Get cursor word.
   let cur_text = s:get_cur_text()
+  if a:event ==# 'InsertCharPre'
+    let cur_text .= v:char
+  endif
+
   " Prevent infinity loop.
   if cur_text == ''
         \ || cur_text == s:old_cur_text
-        \ || (!neocomplcache#is_eskk_enabled()
-        \            && exists('b:skk_on') && b:skk_on)
-        \ || (!neocomplcache#is_eskk_enabled()
-        \            && char2nr(split(cur_text, '\zs')[-1]) > 0x80)
         \ || (neocomplcache#is_eskk_enabled()
         \            && cur_text !~ '▽')
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
+  endif
+  if !neocomplcache#is_eskk_enabled()
+    if (exists('b:skk_on') && b:skk_on)
+          \ || char2nr(split(cur_text, '\zs')[-1]) > 0x80
+          \ || cur_text =~ '[[:cntrl:]]$'
+      let s:cur_keyword_str = ''
+      let s:complete_words = []
+      return
+    endif
   endif
 
   if cur_text =~ '\s\+$'
@@ -733,6 +758,7 @@ function! neocomplcache#do_auto_complete()"{{{
   let &l:completefunc = 'neocomplcache#auto_complete'
 
   if g:neocomplcache_enable_prefetch
+        \ && !g:neocomplcache_enable_insert_char_pre
     " Do prefetch.
     let s:complete_results =
           \ neocomplcache#get_complete_results(s:get_cur_text())
@@ -1911,7 +1937,8 @@ endfunction"}}}
 " Internal helper functions."{{{
 function! s:get_cur_text()"{{{
   "let s:cur_text = col('.') < pos ? '' : matchstr(getline('.'), '.*')[: col('.') - pos]
-  let s:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let s:cur_text = matchstr(getline('.'),
+        \ '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
 
   " Save cur_text.
   return s:cur_text

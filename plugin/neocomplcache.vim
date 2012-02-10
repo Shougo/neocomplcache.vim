@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2012.
+" Last Modified: 10 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,6 +76,8 @@ let g:neocomplcache_enable_fuzzy_completion =
       \ get(g:, 'neocomplcache_enable_fuzzy_completion', 0)
 let g:neocomplcache_enable_caching_message =
       \ get(g:, 'neocomplcache_enable_caching_message', 1)
+let g:neocomplcache_enable_insert_char_pre =
+      \ get(g:, 'neocomplcache_enable_insert_char_pre', 0)
 let g:neocomplcache_enable_cursor_hold_i =
       \ get(g:, 'neocomplcache_enable_cursor_hold_i', 0)
 let g:neocomplcache_cursor_hold_i_time =
