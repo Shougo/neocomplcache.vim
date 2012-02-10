@@ -621,9 +621,15 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   let s:cur_keyword_str = a:base
   let s:is_prefetch = 0
 
-  return (v:version > 703 || v:version == 703 && has('patch418')) ?
-        \ { 'words' : s:complete_words, 'refresh' : 'always' } :
-        \ s:complete_words
+  if v:version > 703 || v:version == 703 && has('patch418')
+    let dict = { 'words' : s:complete_words }
+
+    " Note: Vim Still have broken register-. problem.
+    " let dict.refresh = 'always'
+    return dict
+  else
+    return s:complete_results
+  endif
 endfunction"}}}
 
 function! neocomplcache#sources_manual_complete(findstart, base)"{{{
