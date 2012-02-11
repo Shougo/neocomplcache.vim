@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -158,6 +158,9 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   try
     let cur_keyword_pos = call(omnifunc, [1, ''])
   catch
+    call neocomplcache#print_error(
+          \ 'Error occured calling omnifunction: ' . omnifunc)
+    call neocomplcache#print_error(v:throwpoint)
     call neocomplcache#print_error(v:exception)
     let cur_keyword_pos = -1
   endtry
@@ -214,6 +217,9 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
           \ [0, omnifunc ==# 'rubycomplete#Complete' ?
           \ '' : cur_keyword_str])
   catch
+    call neocomplcache#print_error(
+          \ 'Error occured calling omnifunction: ' . omnifunc)
+    call neocomplcache#print_error(v:throwpoint)
     call neocomplcache#print_error(v:exception)
     let list = []
   endtry
