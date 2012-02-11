@@ -931,6 +931,7 @@ ChangeLog neocomplcache 7.0:
 2012-02-11
 - Fixed on_insert_enter().
 - Fixed cur_text check.
+- Fixed completion bug.
 
 2012-02-10
 - Improved g:neocomplcache_cursor_hold_i_time behavior.

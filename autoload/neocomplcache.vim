@@ -628,7 +628,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     " let dict.refresh = 'always'
     return dict
   else
-    return s:complete_results
+    return s:complete_words
   endif
 endfunction"}}}
 
