@@ -730,18 +730,11 @@ function! s:do_auto_complete(event)"{{{
         \ || cur_text == s:old_cur_text
         \ || (neocomplcache#is_eskk_enabled()
         \            && cur_text !~ '▽')
+        \ || (!neocomplcache#is_eskk_enabled() && (exists('b:skk_on') && b:skk_on)
+        \     || char2nr(split(cur_text, '\zs')[-1]) > 0x80)
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
-  endif
-  if !neocomplcache#is_eskk_enabled()
-    if (exists('b:skk_on') && b:skk_on)
-          \ || char2nr(split(cur_text, '\zs')[-1]) > 0x80
-          \ || cur_text =~ '[[:cntrl:]]$'
-      let s:cur_keyword_str = ''
-      let s:complete_words = []
-      return
-    endif
   endif
 
   if cur_text =~ '\s\+$'
