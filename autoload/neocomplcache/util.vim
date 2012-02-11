@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -72,7 +72,7 @@ endfunction"}}}
 function! neocomplcache#util#has_vimproc(...)"{{{
   return call(s:V.has_vimproc, a:000)
 endfunction"}}}
-function! neocomplcache#util#is_win(...)"{{{
+function! neocomplcache#util#is_windows(...)"{{{
   return call(s:V.is_windows, a:000)
 endfunction"}}}
 function! neocomplcache#util#is_mac(...)"{{{
@@ -91,7 +91,7 @@ function! neocomplcache#util#glob(pattern, ...)"{{{
     return filter(vimproc#readdir(a:pattern[: -2]), 'v:val !~ "/\\.\\.\\?$"')
   else
     " Escape [.
-    if neocomplcache#util#is_win()
+    if neocomplcache#util#is_windows()
       let glob = substitute(a:pattern, '\[', '\\[[]', 'g')
     else
       let glob = escape(a:pattern, '[')

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -264,7 +264,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
   if a:cur_keyword_str =~ '^\$\h\w*'
     let env = matchstr(a:cur_keyword_str, '^\$\h\w*')
     let env_ev = eval(env)
-    if neocomplcache#is_win()
+    if neocomplcache#is_windows()
       let env_ev = substitute(env_ev, '\\', '/', 'g')
     endif
     let len_env = len(env_ev)
@@ -294,7 +294,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
       if g:neocomplcache_enable_auto_delimiter
         let dict.word .= '/'
       endif
-    elseif neocomplcache#is_win()
+    elseif neocomplcache#is_windows()
       if '.'.fnamemodify(dict.word, ':e') =~ exts
         let abbr .= '*'
       endif

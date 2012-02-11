@@ -933,6 +933,7 @@ ChangeLog neocomplcache 7.0:
 - Fixed cur_text check.
 - Fixed completion bug.
 - Improved omnifunc error detection.
+- Refactored is_windows.
 
 2012-02-10
 - Improved g:neocomplcache_cursor_hold_i_time behavior.
