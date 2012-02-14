@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 14 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1507,13 +1507,9 @@ function! s:set_complete_results_words(complete_results)"{{{
   endfor
 endfunction"}}}
 
-" Set pattern helper.
-function! neocomplcache#set_dictionary_helper(variable, keys, pattern)"{{{
-  for key in split(a:keys, ',')
-    if !has_key(a:variable, key)
-      let a:variable[key] = a:pattern
-    endif
-  endfor
+" Set default pattern helper.
+function! neocomplcache#set_dictionary_helper(variable, keys, value)"{{{
+  return neocomplcache#util#set_default_dictionary_helper(a:variable, a:keys, a:value)
 endfunction"}}}
 
 " Complete filetype helper.

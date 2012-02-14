@@ -928,6 +928,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-02-14
+- Improved helper function.
+
 2012-02-12
 - Deleted vimshell omni fuction pattern.
 
