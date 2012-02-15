@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Feb 2012.
+" Last Modified: 15 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,6 +46,29 @@ command! -nargs=0 NeoComplCacheUnlock call neocomplcache#unlock()
 command! -nargs=0 NeoComplCacheToggle call neocomplcache#toggle_lock()
 command! -nargs=1 NeoComplCacheLockSource call neocomplcache#lock_source(<q-args>)
 command! -nargs=1 NeoComplCacheUnlockSource call neocomplcache#unlock_source(<q-args>)
+
+" Warning if using obsolute mappings."{{{
+inoremap <unique> <Plug>(neocomplcache_snippets_expand)
+      \ :<C-o>:echoerr s:print_snippets_complete_error()
+snoremap <unique> <Plug>(neocomplcache_snippets_expand)
+      \ :<C-u>:echoerr s:print_snippets_complete_error()
+inoremap <unique> <Plug>(neocomplcache_snippets_jump)
+      \ :<C-o>:echoerr s:print_snippets_complete_error()
+snoremap <unique> <Plug>(neocomplcache_snippets_jump)
+      \ :<C-u>:echoerr s:print_snippets_complete_error()
+inoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
+      \ :<C-o>:echoerr s:print_snippets_complete_error()
+snoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
+      \ :<C-u>:echoerr s:print_snippets_complete_error()
+inoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
+      \ :<C-o>:echoerr s:print_snippets_complete_error()
+snoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
+      \ :<C-u>:echoerr s:print_snippets_complete_error()
+function! s:print_snippets_complete_error()
+  return 'neocomplcache snippets source was splitted!'
+      \ .'You should install snippets_complete source from'
+      \ .'"https://github.com/Shougo/neocomplcache-snippets-complete"'
+endfunction"}}}
 
 " Global options definition."{{{
 let g:neocomplcache_max_list =

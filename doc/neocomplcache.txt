@@ -935,6 +935,7 @@ ChangeLog neocomplcache 7.0:
 
 2012-02-15
 - Improved snippets_complete changes description.
+- Warning if using obsolute mappings.
 
 2012-02-14
 - Improved helper function.
