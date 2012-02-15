@@ -68,6 +68,11 @@ vimproc is distributed at: http://github.com/Shougo/vimshell/tree/master
 
 To use vimproc, you must compile it. Refer to the vimproc documentation.
 
+Note: Snippets feature(snippets_complete source) was splitted from Ver.7.
+      If you used it, please install snippets_complete source manually.
+
+https://github.com/Shougo/neocomplcache-snippets-complete
+
 ==============================================================================
 INTERFACE					*neocomplcache-interface*
 
@@ -927,6 +932,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-02-15
+- Improved snippets_complete changes description.
 
 2012-02-14
 - Improved helper function.
