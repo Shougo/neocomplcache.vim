@@ -66,7 +66,7 @@ snoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
       \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 function! s:print_snippets_complete_error()
   return 'Warning: neocomplcache snippets source was splitted!'
-      \ .'You should install snippets_complete source from'
+      \ .' You should install snippets_complete source from'
       \ .' "https://github.com/Shougo/neocomplcache-snippets-complete"'
 endfunction"}}}
 
