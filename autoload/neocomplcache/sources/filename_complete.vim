@@ -221,12 +221,14 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
     let files = copy(s:cached_files[getcwd()])
   else
+    let ftype = getftype(glob)
+    if ftype != '' && ftype !=# 'dir'
+      " Note: If glob() device files, Vim may freeze!
+      return []
+    endif
+
     if a:path == ''
-      if getftype(glob) !=# 'dir'
-        let files = []
-      else
-        let files = neocomplcache#util#glob(glob)
-      endif
+      let files = neocomplcache#util#glob(glob)
     else
       try
         let globs = globpath(path, glob)
