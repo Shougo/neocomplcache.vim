@@ -49,25 +49,25 @@ command! -nargs=1 NeoComplCacheUnlockSource call neocomplcache#unlock_source(<q-
 
 " Warning if using obsolute mappings."{{{
 inoremap <unique> <Plug>(neocomplcache_snippets_expand)
-      \ <C-o>:echoerr <SID>print_snippets_complete_error()
+      \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
 snoremap <unique> <Plug>(neocomplcache_snippets_expand)
-      \ :<C-u>:echoerr <SID>print_snippets_complete_error()
+      \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 inoremap <unique> <Plug>(neocomplcache_snippets_jump)
-      \ <C-o>:echoerr <SID>print_snippets_complete_error()
+      \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
 snoremap <unique> <Plug>(neocomplcache_snippets_jump)
-      \ :<C-u>:echoerr <SID>print_snippets_complete_error()
+      \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 inoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
-      \ <C-o>:echoerr <SID>print_snippets_complete_error()
+      \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
 snoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
-      \ :<C-u>:echoerr <SID>print_snippets_complete_error()
+      \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 inoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
-      \ <C-o>:echoerr <SID>print_snippets_complete_error()
+      \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
 snoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
-      \ :<C-u>:echoerr <SID>print_snippets_complete_error()
+      \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 function! s:print_snippets_complete_error()
-  return 'neocomplcache snippets source was splitted!'
+  return 'Warning: neocomplcache snippets source was splitted!'
       \ .'You should install snippets_complete source from'
-      \ .'"https://github.com/Shougo/neocomplcache-snippets-complete"'
+      \ .' "https://github.com/Shougo/neocomplcache-snippets-complete"'
 endfunction"}}}
 
 " Global options definition."{{{
