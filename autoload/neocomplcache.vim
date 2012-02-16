@@ -863,9 +863,14 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     return a:list
   elseif neocomplcache#check_match_filter(cur_keyword_str)
     " Match filter.
-    return filter(a:list, printf(
-          \ 'v:val.word =~ %s && v:val.word !=? cur_keyword_str',
-          \ string('^' . neocomplcache#keyword_escape(cur_keyword_str))))
+    let expr = printf('v:val.word =~ %s',
+          \ string('^' . neocomplcache#keyword_escape(cur_keyword_str)))
+    if neocomplcache#is_auto_complete()
+      " Don't complete cursor word.
+      let expr .= ' && v:val.word !=? a:cur_keyword_str'
+    endif
+
+    return filter(a:list, expr)
   else
     " Use fast filter.
     return neocomplcache#head_filter(a:list, cur_keyword_str)
@@ -898,7 +903,12 @@ function! neocomplcache#head_filter(list, cur_keyword_str)"{{{
           \ string(a:cur_keyword_str))
   endif
 
-  return filter(a:list, expr . ' && v:val.word !=? a:cur_keyword_str')
+  if neocomplcache#is_auto_complete()
+    " Don't complete cursor word.
+    let expr .= ' && v:val.word !=? a:cur_keyword_str'
+  endif
+
+  return filter(a:list, expr)
 endfunction"}}}
 function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
   let ret = []
@@ -929,7 +939,8 @@ function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
     while i < max
       let j = 1
       while j < max
-        let m[i][j] = min([m[i-1][j]+1, m[i][j-1]+1, m[i-1][j-1]+(str1[i-1] != cur_keyword_str[j-1])])
+        let m[i][j] = min([m[i-1][j]+1, m[i][j-1]+1,
+              \ m[i-1][j-1]+(str1[i-1] != cur_keyword_str[j-1])])
 
         let j += 1
       endwhile
