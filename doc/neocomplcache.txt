@@ -202,7 +202,7 @@ g:neocomplcache_manual_completion_start_length	*g:neocomplcache_manual_completio
 		reduce this value, but may get heavy when you deleted a
 		letter in <C-h> or <BS> at popup indication time.
 		
-		Default value is 2.
+		Default value is 0.
 
 g:neocomplcache_min_keyword_length		*g:neocomplcache_min_keyword_length*
 		In a buffer or dictionary files, this variable controls
@@ -932,6 +932,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-02-16
+- Changed g:neocomplcache_manual_completion_start_length default value.
 
 2012-02-15
 - Improved snippets_complete changes description.

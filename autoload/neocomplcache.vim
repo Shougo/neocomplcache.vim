@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Feb 2012.
+" Last Modified: 16 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1863,7 +1863,8 @@ function! neocomplcache#start_manual_complete(...)"{{{
   return "\<C-x>\<C-u>\<C-p>"
 endfunction"}}}
 function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words)"{{{
-  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] = [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
+  let [s:cur_keyword_pos, s:cur_keyword_str, s:complete_words] =
+        \ [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
 
   " Set function.
   let &l:completefunc = 'neocomplcache#auto_complete'

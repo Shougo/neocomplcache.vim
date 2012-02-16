@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2012.
+" Last Modified: 16 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,7 +80,7 @@ let g:neocomplcache_max_menu_width =
 let g:neocomplcache_auto_completion_start_length =
       \ get(g:, 'neocomplcache_auto_completion_start_length', 2)
 let g:neocomplcache_manual_completion_start_length =
-      \ get(g:, 'neocomplcache_manual_completion_start_length', 2)
+      \ get(g:, 'neocomplcache_manual_completion_start_length', 0)
 let g:neocomplcache_min_keyword_length =
       \ get(g:, 'neocomplcache_min_keyword_length', 4)
 let g:neocomplcache_enable_ignore_case =
