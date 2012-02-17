@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Feb 2012.
+" Last Modified: 17 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -408,7 +408,7 @@ function! neocomplcache#enable() "{{{
         \])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'vim', [
-        \ {'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \ {'filetype' : 'python', 'start' : '^\s*python3\? <<\s*\(\h\w*\)', 'end' : '^\1'},
         \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
         \])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
