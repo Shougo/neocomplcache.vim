@@ -124,8 +124,9 @@ let g:neocomplcache_force_overwrite_completefunc =
 " Note: ^X mode has problem in xim.
 let g:neocomplcache_enable_prefetch =
       \ get(g:, 'neocomplcache_enable_prefetch',
-      \ !(v:version > 703 || v:version == 703 && has('patch418'))
-      \ && (!has('xim') || !has('gui_running')))
+      \  !(v:version > 703 || v:version == 703 && has('patch418')
+      \  && (!has('xim') || !has('gui_running'))
+      \ ))
 let g:neocomplcache_release_cache_time =
       \ get(g:, 'neocomplcache_release_cache_time', 900)
 
