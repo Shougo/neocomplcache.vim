@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Feb 2012.
+" Last Modified: 20 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -121,9 +121,11 @@ let g:neocomplcache_ctags_program =
       \ get(g:, 'neocomplcache_ctags_program', 'ctags')
 let g:neocomplcache_force_overwrite_completefunc =
       \ get(g:, 'neocomplcache_force_overwrite_completefunc', 0)
+" Note: ^X mode has problem in xim.
 let g:neocomplcache_enable_prefetch =
       \ get(g:, 'neocomplcache_enable_prefetch',
-      \ !(v:version > 703 || v:version == 703 && has('patch418')))
+      \ !(v:version > 703 || v:version == 703 && has('patch418'))
+      \ && (!has('xim') || !has('gui_running')))
 let g:neocomplcache_release_cache_time =
       \ get(g:, 'neocomplcache_release_cache_time', 900)
 
