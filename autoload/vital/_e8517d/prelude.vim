@@ -24,8 +24,11 @@ let [
 \   type(function('tr')),
 \   type([]),
 \   type({}),
-\   type(3.14159)
+\   has('float') ? type(0.0) : -1
 \]
+" __TYPE_FLOAT = -1 when -float
+" This doesn't match to anything.
+
 " Number or Float
 function! s:is_numeric(Value)
     let _ = type(a:Value)
@@ -101,6 +104,9 @@ function! s:strchars(str)"{{{
 endfunction"}}}
 
 function! s:strwidthpart(str, width)"{{{
+  if a:width <= 0
+    return ''
+  endif
   let ret = a:str
   let width = s:wcswidth(a:str)
   while width > a:width
@@ -112,6 +118,9 @@ function! s:strwidthpart(str, width)"{{{
   return ret
 endfunction"}}}
 function! s:strwidthpart_reverse(str, width)"{{{
+  if a:width <= 0
+    return ''
+  endif
   let ret = a:str
   let width = s:wcswidth(a:str)
   while width > a:width

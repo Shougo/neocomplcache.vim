@@ -1,7 +1,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:utils = V.import('Web.Utils')
+let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
+
+function! s:_vital_depends()
+  return ['Data.String']
+endfunction
+
+let s:string = s:V.import('Data.String')
 
 let s:__template = { 'name': '', 'attr': {}, 'child': [] }
 
@@ -13,8 +19,8 @@ function! s:decodeEntityReference(str)
   "let str = substitute(str, '&apos;', "'", 'g')
   "let str = substitute(str, '&nbsp;', ' ', 'g')
   "let str = substitute(str, '&yen;', '\&#65509;', 'g')
-  let str = substitute(str, '&#x\([0-9a-fA-F]\+\);', '\=s:utils.nr2enc_char("0x".submatch(1))', 'g')
-  let str = substitute(str, '&#\(\d\+\);', '\=s:utils.nr2enc_char(submatch(1))', 'g')
+  let str = substitute(str, '&#x\([0-9a-fA-F]\+\);', '\=s:string.nr2enc_char("0x".submatch(1))', 'g')
+  let str = substitute(str, '&#\(\d\+\);', '\=s:string.nr2enc_char(submatch(1))', 'g')
   let str = substitute(str, '&amp;', '\&', 'g')
   return str
 endfunction

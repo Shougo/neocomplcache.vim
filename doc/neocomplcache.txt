@@ -933,6 +933,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-02-22
+- Updated vital.
+
 2012-02-20
 - Fixed for g:neocomplcache_enable_prefetch default value.
 

@@ -1,9 +1,15 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:utils = V.import('Web.Utils')
-let s:xml = V.import('Web.Xml')
-let s:http = V.import('Web.Http')
+let s:V = vital#{expand('<sfile>:h:h:t:r')}#new()
+
+function! s:_vital_depends()
+  return ['Data.String', 'Web.Xml', 'Web.Http']
+endfunction
+
+let s:string = s:V.import('Data.String')
+let s:xml = s:V.import('Web.Xml')
+let s:http = s:V.import('Web.Http')
 
 function! s:decodeEntityReference(str)
   let str = a:str
@@ -13,7 +19,7 @@ function! s:decodeEntityReference(str)
   let str = substitute(str, '&apos;', "'", 'g')
   let str = substitute(str, '&nbsp;', ' ', 'g')
   let str = substitute(str, '&yen;', '\&#65509;', 'g')
-  let str = substitute(str, '&#\(\d\+\);', '\=s:utils.nr2enc_char(submatch(1))', 'g')
+  let str = substitute(str, '&#\(\d\+\);', '\=s:string.nr2enc_char(submatch(1))', 'g')
   let str = substitute(str, '&amp;', '\&', 'g')
   let str = substitute(str, '&raquo;', '>', 'g')
   let str = substitute(str, '&laquo;', '<', 'g')
