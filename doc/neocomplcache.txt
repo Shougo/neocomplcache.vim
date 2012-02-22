@@ -90,6 +90,8 @@ COMMANDS 					*neocomplcache-commands*
 		Change a lock state of neocomplcache.
 		While locking neocomplcache, automatic completion is not
 		possible.
+		Note: This command enables neocomplcache when neocomplcache is
+		disabled.
 
 :Neco [{anim-number}] 				*:Neco*
 		Secret.
@@ -98,9 +100,11 @@ COMMANDS 					*neocomplcache-commands*
 		Lock neocomplcache.
 		While locking neocomplcache, manual completion is possible.
 		The lock status is buffer local.
+		Note: This command is disabled when neocomplcache is disabled.
 
 :NeoComplCacheUnlock				*:NeoComplCacheUnlock*
 		Unlock neocomplcache.
+		Note: This command is disabled when neocomplcache is disabled.
 
 :NeoComplCacheLockSource {source-name}		*:NeoComplCacheLockSource*
 		Disable {source-name} source completion. Disable state is
@@ -932,6 +936,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-02-23
+- Improved :NeoComplCacheToggle behavior.
 
 2012-02-22
 - Updated vital.
