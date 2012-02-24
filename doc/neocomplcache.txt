@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-02-24
+- Improved auto caching.
+
 2012-02-23
 - Improved :NeoComplCacheToggle behavior.
 - Updated vital.

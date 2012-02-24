@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Feb 2012.
+" Last Modified: 25 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,7 +43,7 @@ function! s:source.initialize()"{{{
     autocmd InsertEnter * call s:check_source()
     autocmd CursorHold * call s:check_cache()
     autocmd InsertLeave *
-          \ call neocomplcache#sources#buffer_complete#caching_current_line()
+          \ call s:caching_current_buffer(line('.') - 1, line('.') + 1, 1)
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
