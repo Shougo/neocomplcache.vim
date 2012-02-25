@@ -939,6 +939,7 @@ ChangeLog neocomplcache 7.0:
 
 2012-02-24
 - Improved auto caching.
+- Fixed filetype error in dictionary_complete source.
 
 2012-02-23
 - Improved :NeoComplCacheToggle behavior.
