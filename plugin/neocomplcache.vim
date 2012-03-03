@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Feb 2012.
+" Last Modified: 03 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -150,6 +150,8 @@ let g:neocomplcache_source_rank =
 
 let g:neocomplcache_temporary_dir =
       \ get(g:, 'neocomplcache_temporary_dir', expand('~/.neocon'))
+let g:neocomplcache_temporary_dir =
+      \ substitute(expand(g:neocomplcache_temporary_dir), '\\', '/', 'g')
 if !isdirectory(g:neocomplcache_temporary_dir)
   call mkdir(g:neocomplcache_temporary_dir, 'p')
 endif

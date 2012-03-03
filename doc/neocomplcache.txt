@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-03
+- Fixed temporary directory initialization.
+
 2012-02-24
 - Improved auto caching.
 - Fixed filetype error in dictionary_complete source.
