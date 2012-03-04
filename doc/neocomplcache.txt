@@ -939,6 +939,7 @@ ChangeLog neocomplcache 7.0:
 
 2012-03-04
 - Improved filename escape.
+- Improved asyncronous caching behavior.
 
 2012-03-03
 - Fixed temporary directory initialization.
