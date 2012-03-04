@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-04
+- Improved filename escape.
+
 2012-03-03
 - Fixed temporary directory initialization.
 
