@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Feb 2012.
+" Last Modified: 05 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,7 +101,7 @@ function! neocomplcache#util#glob(pattern, ...)"{{{
   endif
 endfunction"}}}
 function! neocomplcache#util#expand(path)"{{{
-  return expand(escape(a:path, '*?[]"={}'))
+  return expand(escape(a:path, '*?[]"={}'), 1)
 endfunction"}}}
 function! neocomplcache#util#set_default_dictionary_helper(variable, keys, value)"{{{
   for key in split(a:keys, '\s*,\s*')
