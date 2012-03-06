@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-06
+- Fixed Vim search.
+
 2012-03-05
 - Fixed asynchronous load.
 - Fixed expand().
