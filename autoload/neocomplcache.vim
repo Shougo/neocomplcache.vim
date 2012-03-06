@@ -1037,7 +1037,8 @@ endfunction"}}}
 
 function! neocomplcache#get_cur_text(...)"{{{
   " Return cached text.
-  return (a:0 == 0 && mode() ==# 'i' && exists('s:cur_text')) ? s:cur_text : s:get_cur_text()
+  return (a:0 == 0 && mode() ==# 'i' && exists('s:cur_text')) ?
+        \ s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_next_keyword()"{{{
   " Get next keyword.
@@ -1953,9 +1954,12 @@ endfunction"}}}
 
 " Internal helper functions."{{{
 function! s:get_cur_text()"{{{
-  "let s:cur_text = col('.') < pos ? '' : matchstr(getline('.'), '.*')[: col('.') - pos]
-  let s:cur_text = matchstr(getline('.'),
-        \ '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  if col('.') >= len(getline('.'))
+    return getline('.')
+  else
+    let s:cur_text = matchstr(getline('.'),
+          \ '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  endif
 
   " Save cur_text.
   return s:cur_text

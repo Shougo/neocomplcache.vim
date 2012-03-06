@@ -940,6 +940,7 @@ ChangeLog neocomplcache 7.0:
 2012-03-07
 - Fixed bell problem.
 - Deleted snippet source.
+- Fixed get_cur_text().
 
 2012-03-06
 - Fixed Vim search.
