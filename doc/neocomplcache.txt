@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-07
+- Fixed bell problem.
+
 2012-03-06
 - Fixed Vim search.
 - Improved temporary directory behavior.
