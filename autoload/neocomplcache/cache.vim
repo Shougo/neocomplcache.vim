@@ -247,13 +247,12 @@ function! s:async_load(argv, cache_dir, filename)"{{{
 
   " if 0
   if neocomplcache#has_vimproc()
-    let vim_path = neocomplcache#util#substitute_path_separator(
-          \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h')) .
-          \ (neocomplcache#util#is_windows() ? '/vim.exe' : '/vim')
+    let base_path = neocomplcache#util#substitute_path_separator(
+          \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h'))
+    let vim_path = base_path . (neocomplcache#util#is_windows() ? '/vim.exe' : '/vim')
     if !executable(vim_path) && neocomplcache#util#is_mac()
       " Note: Search "Vim" instead of vim.
-      let vim_path = neocomplcache#util#substitute_path_separator(
-            \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h')) . '/Vim'
+      let vim_path = base_path. '/Vim'
     endif
 
     if !executable(vim_path)
