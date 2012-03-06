@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Feb 2012.
+" Last Modified: 06 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -52,8 +52,8 @@ function! s:source.initialize()"{{{
         \ 'buffer_complete', 5)
 
   " Create cache directory.
-  if !isdirectory(g:neocomplcache_temporary_dir . '/buffer_cache')
-    call mkdir(g:neocomplcache_temporary_dir . '/buffer_cache', 'p')
+  if !isdirectory(neocomplcache#get_temporary_directory() . '/buffer_cache')
+    call mkdir(neocomplcache#get_temporary_directory() . '/buffer_cache', 'p')
   endif
 
   " Initialize script variables."{{{
@@ -436,7 +436,7 @@ function! s:save_all_cache()"{{{
     endfor
   catch
     call neocomplcache#print_error('Error occured while saving cache!')
-    let error_file = g:neocomplcache_temporary_dir . strftime('/error-%Y-%m-%d.log')
+    let error_file = neocomplcache#get_temporary_directory() . strftime('/error-%Y-%m-%d.log')
     call writefile([v:exception . ' ' . v:throwpoint], error_file)
     call neocomplcache#print_error('Please check error file: ' . error_file)
   endtry

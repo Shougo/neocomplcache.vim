@@ -121,28 +121,28 @@ endfunction"}}}
 
 " Cache helper.
 function! neocomplcache#cache#getfilename(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.getfilename(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#filereadable(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.filereadable(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#readfile(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.readfile(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.writefile(cache_dir, a:filename, a:list)
 endfunction"}}}
 function! neocomplcache#cache#encode_name(cache_dir, filename)
   " Check cache directory.
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.getfilename(cache_dir, a:filename)
 endfunction
 function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return  s:Cache.check_old_cache(cache_dir, a:filename)
 endfunction"}}}
 
