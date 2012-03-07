@@ -85,9 +85,17 @@ function! s:_scripts()
   return scripts
 endfunction
 
-function! s:_unify_path(path)
-  return resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?'))
-endfunction
+if has('win16') || has('win32') || has('win64') ||
+\  has('mac') || has('macunix') || has('gui_macvim') ||
+\  system('uname') =~? '^darwin'
+  function! s:_unify_path(path)
+    return tolower(resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?')))
+  endfunction
+else
+  function! s:_unify_path(path)
+    return resolve(fnamemodify(a:path, ':p:gs?[\\/]\+?/?'))
+  endfunction
+endif
 
 function! s:_build_module(sid, debug)
   if has_key(s:loaded, a:sid)
