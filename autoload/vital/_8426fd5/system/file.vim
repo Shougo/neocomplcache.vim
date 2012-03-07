@@ -14,7 +14,7 @@ function! s:open(filename) "{{{
   " Detect desktop environment.
   if s:is_windows
     " For URI only.
-    let filename = iconv(filename, &encoding, &termencoding)
+    let filename = iconv(filename, &encoding, 'char')
     silent execute '!start rundll32 url.dll,FileProtocolHandler' filename
   elseif s:is_cygwin
     " Cygwin.
@@ -137,7 +137,7 @@ function! s:rmdir(path, ...)
     endif
   endif
   if v:shell_error
-    throw substitute(ret, '\n', '', 'g')
+    throw substitute(iconv(ret, 'char', &encoding), '\n', '', 'g')
   endif
 endfunction
 

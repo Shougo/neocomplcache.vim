@@ -59,7 +59,13 @@ function! s:_import(name, scripts, debug)
   let target = substitute(target, '\l\zs\ze\u', '_', 'g') " OrderedSet -> Ordered_Set
   let target = substitute(target, '[/_]\zs\u', '\l\0', 'g') " Ordered_Set -> ordered_set
   let tailpath = printf('autoload/vital/%s%s.vim', s:self_version, target)
-  let paths = split(globpath(&runtimepath, tailpath, 1), "\n")
+
+  " Note: the extra argument to globpath() was added in Patch 7.2.051.
+  if v:version > 702 || v:version == 702 && has('patch51')
+    let paths = split(globpath(&runtimepath, tailpath, 1), "\n")
+  else
+    let paths = split(globpath(&runtimepath, tailpath), "\n")
+  endif
   let path = s:_unify_path(get(paths, 0, ''))
   let sid = get(a:scripts, path, 0)
   if !sid
