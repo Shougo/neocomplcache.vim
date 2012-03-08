@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 06 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,8 +39,8 @@ function! s:source.initialize()"{{{
   let s:completion_length = neocomplcache#get_auto_completion_length('tags_complete')
 
   " Create cache directory.
-  if !isdirectory(g:neocomplcache_temporary_dir . '/tags_cache')
-    call mkdir(g:neocomplcache_temporary_dir . '/tags_cache', 'p')
+  if !isdirectory(neocomplcache#get_temporary_directory() . '/tags_cache')
+    call mkdir(neocomplcache#get_temporary_directory() . '/tags_cache', 'p')
   endif
 
   command! -nargs=? -complete=buffer NeoComplCacheCachingTags call s:caching_tags(<q-args>, 1)

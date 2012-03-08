@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Mar 2012.
+" Last Modified: 07 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -532,9 +532,6 @@ function! neocomplcache#enable() "{{{
     let s:exists_vimproc = 0
   endif
 
-  " Disable bell.
-  set vb t_vb=
-
   " Initialize.
   for source in values(neocomplcache#available_complfuncs())
     if has_key(source, 'initialize')
@@ -1030,7 +1027,8 @@ endfunction"}}}
 
 function! neocomplcache#get_cur_text(...)"{{{
   " Return cached text.
-  return (a:0 == 0 && mode() ==# 'i' && exists('s:cur_text')) ? s:cur_text : s:get_cur_text()
+  return (a:0 == 0 && mode() ==# 'i' && exists('s:cur_text')) ?
+        \ s:cur_text : s:get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_next_keyword()"{{{
   " Get next keyword.
@@ -1246,6 +1244,15 @@ function! neocomplcache#print_debug(expr)"{{{
   if g:neocomplcache_enable_debug
     echomsg string(a:expr)
   endif
+endfunction"}}}
+function! neocomplcache#get_temporary_directory()"{{{
+  let directory = neocomplcache#util#substitute_path_separator(
+        \ neocomplcache#util#expand(g:neocomplcache_temporary_dir))
+  if !isdirectory(directory)
+    call mkdir(directory, 'p')
+  endif
+
+  return directory
 endfunction"}}}
 
 " For unite source.
@@ -1953,9 +1960,12 @@ endfunction"}}}
 
 " Internal helper functions."{{{
 function! s:get_cur_text()"{{{
-  "let s:cur_text = col('.') < pos ? '' : matchstr(getline('.'), '.*')[: col('.') - pos]
-  let s:cur_text = matchstr(getline('.'),
-        \ '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  if col('.') >= len(getline('.'))
+    return getline('.')
+  else
+    let s:cur_text = matchstr(getline('.'),
+          \ '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  endif
 
   " Save cur_text.
   return s:cur_text

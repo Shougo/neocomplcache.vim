@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Feb 2012.
+" Last Modified: 07 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,12 +120,8 @@ function! s:start_complete(is_quick_match)
     return ''
   endif
 
-  let winheight =
-        \ (&pumheight != 0) ? &pumheight : (winheight(0) - winline())
-
   return unite#start_complete(['neocomplcache'], {
-        \ 'auto_preview' : 1, 'winheight' : winheight,
-        \ 'auto_resize' : 1, 'quick_match' : a:is_quick_match,
+        \ 'auto_preview' : 1, 'quick_match' : a:is_quick_match,
         \ })
 endfunction
 

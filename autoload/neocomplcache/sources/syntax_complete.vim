@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 06 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,8 +50,8 @@ function! s:source.initialize()"{{{
         \ NeoComplCacheCachingSyntax call s:recaching(<q-args>)
 
   " Create cache directory.
-  if !isdirectory(g:neocomplcache_temporary_dir . '/syntax_cache')
-    call mkdir(g:neocomplcache_temporary_dir . '/syntax_cache')
+  if !isdirectory(neocomplcache#get_temporary_directory() . '/syntax_cache')
+    call mkdir(neocomplcache#get_temporary_directory() . '/syntax_cache')
   endif
 
   " Initialize check.

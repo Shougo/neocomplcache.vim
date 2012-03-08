@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Mar 2012.
+" Last Modified: 06 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -121,28 +121,28 @@ endfunction"}}}
 
 " Cache helper.
 function! neocomplcache#cache#getfilename(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.getfilename(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#filereadable(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.filereadable(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#readfile(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.readfile(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.writefile(cache_dir, a:filename, a:list)
 endfunction"}}}
 function! neocomplcache#cache#encode_name(cache_dir, filename)
   " Check cache directory.
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.getfilename(cache_dir, a:filename)
 endfunction
 function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
-  let cache_dir = g:neocomplcache_temporary_dir . '/' . a:cache_dir
+  let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return  s:Cache.check_old_cache(cache_dir, a:filename)
 endfunction"}}}
 
@@ -247,17 +247,18 @@ function! s:async_load(argv, cache_dir, filename)"{{{
 
   " if 0
   if neocomplcache#has_vimproc()
-    let vim_path = neocomplcache#util#substitute_path_separator(
-          \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h')) . '/vim'
-    if !executable(vim_path)
+    let base_path = neocomplcache#util#substitute_path_separator(
+          \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h'))
+    let vim_path = base_path . (neocomplcache#util#is_windows() ? '/vim.exe' : '/vim')
+    if !executable(vim_path) && neocomplcache#util#is_mac()
       " Note: Search "Vim" instead of vim.
-      let vim_path = neocomplcache#util#substitute_path_separator(
-            \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h')) . '/Vim'
-      if !executable(vim_path)
-        call neocomplcache#print_error(
-              \ printf('Vim path : "%s" is not found.', vim_path))
-        return
-      endif
+      let vim_path = base_path. '/Vim'
+    endif
+
+    if !executable(vim_path)
+      call neocomplcache#print_error(
+            \ printf('Vim path : "%s" is not found.', vim_path))
+      return
     endif
 
     let args = [vim_path, '-u', 'NONE', '-i', 'NONE', '-n',

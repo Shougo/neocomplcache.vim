@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2012.
+" Last Modified: 06 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -91,8 +91,8 @@ function! s:source.initialize()"{{{
   endif
 
   " Create cache directory.
-  if !isdirectory(g:neocomplcache_temporary_dir . '/include_cache')
-    call mkdir(g:neocomplcache_temporary_dir . '/include_cache', 'p')
+  if !isdirectory(neocomplcache#get_temporary_directory() . '/include_cache')
+    call mkdir(neocomplcache#get_temporary_directory() . '/include_cache', 'p')
   endif
 
   " Add command.

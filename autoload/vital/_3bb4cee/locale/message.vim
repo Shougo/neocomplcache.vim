@@ -27,7 +27,7 @@ function! s:Message.get(text)
 endfunction
 function! s:Message.load(lang)
   let pattern = printf(self.path, a:lang)
-  let file = get(split(globpath(&runtimepath, pattern), "\n"), 0, '')
+  let file = get(split(globpath(&runtimepath, pattern), "\n"), 0)
   let self.lang = a:lang
   sandbox let self.data = filereadable(file) ?
   \ eval(iconv(join(readfile(file), ''), 'utf-8', &encoding))
