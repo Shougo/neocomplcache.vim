@@ -46,8 +46,8 @@ function! neocomplcache#enable() "{{{
   " Auto commands."{{{
   augroup neocomplcache
     autocmd!
-    " Auto complete events
     autocmd InsertLeave * call s:on_insert_leave()
+    autocmd CursorMovedI * call s:on_moved_i()
   augroup END
 
   if g:neocomplcache_enable_insert_char_pre
@@ -727,22 +727,12 @@ function! s:do_auto_complete(event)"{{{
         \ || cur_text == s:old_cur_text
         \ || (neocomplcache#is_eskk_enabled()
         \            && cur_text !~ '▽')
-        \ || (!neocomplcache#is_eskk_enabled() && (exists('b:skk_on') && b:skk_on)
+        \ || (!neocomplcache#is_eskk_enabled() &&
+        \      (exists('b:skk_on') && b:skk_on)
         \     || char2nr(split(cur_text, '\zs')[-1]) > 0x80)
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
-  endif
-
-  if cur_text =~ '\s\+$'
-    if neocomplcache#is_source_enabled('buffer_complete')
-      " Caching current cache line.
-      call neocomplcache#sources#buffer_complete#caching_current_line()
-    endif
-    if neocomplcache#is_source_enabled('member_complete')
-      " Caching current cache line.
-      call neocomplcache#sources#member_complete#caching_current_line()
-    endif
   endif
 
   let s:old_cur_text = cur_text
@@ -1885,6 +1875,22 @@ endfunction"}}}
 "}}}
 
 " Event functions."{{{
+function! s:on_moved_i()"{{{
+  " Get cursor word.
+  let cur_text = s:get_cur_text()
+
+  " Make cache.
+  if cur_text =~ '\s\+$'
+    if neocomplcache#is_source_enabled('buffer_complete')
+      " Caching current cache line.
+      call neocomplcache#sources#buffer_complete#caching_current_line()
+    endif
+    if neocomplcache#is_source_enabled('member_complete')
+      " Caching current cache line.
+      call neocomplcache#sources#member_complete#caching_current_line()
+    endif
+  endif
+endfunction"}}}
 function! s:on_insert_enter()"{{{
   if g:neocomplcache_enable_cursor_hold_i &&
         \ &updatetime > g:neocomplcache_cursor_hold_i_time

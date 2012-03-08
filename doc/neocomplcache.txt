@@ -942,6 +942,7 @@ ChangeLog neocomplcache 7.0:
 - Fixed expand().
 - Improved version check.
 - Enabled beep.
+- Improved cache behavior.
 
 2012-03-04
 - Improved filename escape.
