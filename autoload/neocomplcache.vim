@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2012.
+" Last Modified: 10 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1960,12 +1960,10 @@ endfunction"}}}
 
 " Internal helper functions."{{{
 function! s:get_cur_text()"{{{
-  if col('.') >= len(getline('.'))
-    return getline('.')
-  else
-    let s:cur_text = matchstr(getline('.'),
-          \ '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
-  endif
+  let s:cur_text = (col('.') >= len(getline('.'))) ?
+        \ getline('.') :
+        \ matchstr(getline('.'),
+        \    '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
 
   " Save cur_text.
   return s:cur_text

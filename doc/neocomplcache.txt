@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-10
+- Fixed cur_text bug.
+
 2012-03-07
 - Fixed bell problem.
 - Deleted snippet source.
