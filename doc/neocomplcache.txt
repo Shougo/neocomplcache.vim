@@ -937,6 +937,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-15
+- Fixed get_cur_text().
+
 2012-03-13
 - Fixed vb keyword pattern.
 
