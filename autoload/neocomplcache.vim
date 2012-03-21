@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Mar 2012.
+" Last Modified: 21 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -124,7 +124,9 @@ function! neocomplcache#enable() "{{{
         \'\k\+')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'filename',
-        \'\%(\\[^[:alnum:].-]\|\f\)\+')
+        \ neocomplcache#util#is_windows() ?
+        \'\%(\a\+:[/\\]\)\?[\\/[:alnum:]()$+_\~.-]\+' :
+        \'[/\[\][:alnum:]()$+_\~.-]\+')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'lisp,scheme,clojure,int-gosh,int-clisp,int-clj',
         \'[[:alpha:]+*/@$_=.!?-][[:alnum:]+*/@$_:=.!?-]*')

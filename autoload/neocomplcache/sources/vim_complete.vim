@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Mar 2012.
+" Last Modified: 21 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,16 +74,20 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  let pattern = '\.\%(\h\w*\)\?$\|' . neocomplcache#get_keyword_pattern_end('vim')
-  if cur_text != '' && cur_text !~ '^[[:digit:],[:space:][:tab:]$''<>]*\h\w*$'
-    let command_completion = neocomplcache#sources#vim_complete#helper#get_completion_name(
-          \ neocomplcache#sources#vim_complete#get_command(cur_text))
+  let pattern = '\.\%(\h\w*\)\?$\|' .
+        \ neocomplcache#get_keyword_pattern_end('vim')
+  if cur_text != '' && cur_text !~
+        \ '^[[:digit:],[:space:][:tab:]$''<>]*\h\w*$'
+    let command_completion =
+          \ neocomplcache#sources#vim_complete#helper#get_completion_name(
+          \   neocomplcache#sources#vim_complete#get_command(cur_text))
     if command_completion =~ '\%(dir\|file\|shellcmd\)'
       let pattern = neocomplcache#get_keyword_pattern_end('filename')
     endif
   endif
 
-  let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text, pattern)
+  let [cur_keyword_pos, cur_keyword_str] =
+        \ neocomplcache#match_word(a:cur_text, pattern)
   if a:cur_text !~ '\.\%(\h\w*\)\?$' && neocomplcache#is_auto_complete()
         \ && bufname('%') !=# '[Command Line]'
         \ && neocomplcache#util#mb_strlen(cur_keyword_str)

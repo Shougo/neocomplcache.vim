@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Mar 2012.
+" Last Modified: 21 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -135,8 +135,9 @@ endfunction"}}}
 function! s:get_include_files(cur_keyword_str)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let path = get(g:neocomplcache_include_paths, filetype,
-        \ getbufvar(bufnr('%'), '&path'))
+  let path = neocomplcache#util#substitute_path_separator(
+        \ get(g:neocomplcache_include_paths, filetype,
+        \   getbufvar(bufnr('%'), '&path')))
   let pattern = get(g:neocomplcache_include_patterns, filetype,
         \ getbufvar(bufnr('%'), '&include'))
   let expr = get(g:neocomplcache_include_exprs, filetype,
@@ -158,10 +159,11 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let glob = (cur_keyword_str !~ '\*$')?
         \ cur_keyword_str . '*' : cur_keyword_str
   let cwd = getcwd()
-  let bufdirectory = fnamemodify(expand('%'), ':p:h')
+  let bufdirectory = neocomplcache#util#substitute_path_separator(
+        \ fnamemodify(expand('%'), ':p:h'))
   let dir_list = []
   let file_list = []
-  for subpath in map(split(path, '[,;]'), 'substitute(v:val, "\\\\", "/", "g")')
+  for subpath in split(path, '[,;]')
     let dir = (subpath == '.') ? bufdirectory : subpath
     if !isdirectory(dir)
       continue
@@ -178,7 +180,8 @@ function! s:get_include_files(cur_keyword_str)"{{{
         if g:neocomplcache_enable_auto_delimiter
           let dict.word .= '/'
         endif
-      elseif !empty(exts) && index(exts, fnamemodify(dict.word, ':e')) < 0
+      elseif !empty(exts) &&
+            \ index(exts, fnamemodify(dict.word, ':e')) < 0
         " Skip.
         continue
       endif
