@@ -5,14 +5,14 @@ Description
 -----------
 
 Neocomplcache performs keyword completion by making a cache of keywords in
-a buffer. I implemented it because unlike the Vim builtin keyword completion.
-Neocomplcache can be customized flexibly. Unfortunately neocomplcache may use
+a buffer. I implemented it because unlike the Vim builtin keyword completion,
+neocomplcache can be customized flexibly. Unfortunately, neocomplcache may use
 more memory than other plugins.
 
 Installation
 ============
 
-* Extract the file and Put files in your Vim directory
+* Extract the file and put files in your Vim directory
    (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows).
 * Execute `|:NeoComplCacheEnable|` command or
 `let g:neocomplcache_enable_at_startup = 1`
@@ -21,7 +21,7 @@ in your .vimrc.
 Caution
 -------
 
-Because all variable names are changed in neocomplcache Ver.5, it is not
+Because all variable names were changed in neocomplcache Ver.5, it is not
 backwards compatible. If you want to upgrade, you should use the following
 script from Mr.thinca.
 
