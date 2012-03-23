@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Mar 2012.
+" Last Modified: 23 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,8 +55,14 @@ function! neocomplcache#enable() "{{{
     autocmd neocomplcache InsertCharPre *
           \ call s:do_auto_complete('InsertCharPre')
   elseif g:neocomplcache_enable_cursor_hold_i
-    autocmd neocomplcache CursorHoldI *
-          \ call s:do_auto_complete('CursorHoldI')
+    augroup neocomplcache
+      autocmd CursorHoldI *
+            \ call s:do_auto_complete('CursorHoldI')
+      autocmd InsertEnter *
+            \ call s:change_update_time()
+      autocmd InsertLeave *
+            \ call s:restore_update_time()
+    augroup END
   else
     autocmd neocomplcache InsertEnter *
           \ call s:on_insert_enter()
@@ -1900,14 +1906,6 @@ function! s:on_moved_i()"{{{
     endif
   endif
 endfunction"}}}
-function! s:on_insert_enter()"{{{
-  if g:neocomplcache_enable_cursor_hold_i &&
-        \ &updatetime > g:neocomplcache_cursor_hold_i_time
-    " Change updatetime.
-    let s:update_time_save = &updatetime
-    let &updatetime = g:neocomplcache_cursor_hold_i_time
-  endif
-endfunction"}}}
 function! s:on_insert_leave()"{{{
   let s:cur_text = ''
   let s:cur_keyword_str = ''
@@ -1916,9 +1914,16 @@ function! s:on_insert_leave()"{{{
   let s:is_text_mode = 0
   let s:skip_next_complete = 0
   let s:is_prefetch = 0
-
-  if g:neocomplcache_enable_cursor_hold_i &&
-        \ &updatetime < s:update_time_save
+endfunction"}}}
+function! s:change_update_time()"{{{
+  if &updatetime > g:neocomplcache_cursor_hold_i_time
+    " Change updatetime.
+    let s:update_time_save = &updatetime
+    let &updatetime = g:neocomplcache_cursor_hold_i_time
+  endif
+endfunction"}}}
+function! s:restore_update_time()"{{{
+  if &updatetime < s:update_time_save
     " Restore updatetime.
     let &updatetime = s:update_time_save
   endif

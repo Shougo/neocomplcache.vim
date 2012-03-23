@@ -252,8 +252,15 @@ g:neocomplcache_enable_cursor_hold_i		*g:neocomplcache_enable_cursor_hold_i*
 		when complete candidates.
 		Note: You should not use this option if less than Vim 7.3.418.
 		Note: This option must be set before call |:NeoComplCacheEnable|.
+		not change 'updatetime'.
 		
 		Default value is 0.
+
+g:neocomplcache_cursor_hold_i_time		*g:neocomplcache_cursor_hold_i_time*
+		If g:neocomplcache_enable_cursor_hold_i is non zero and in
+		insert mode, this value changes 'updatetime' option.
+
+		Default value is 300.
 
 g:neocomplcache_enable_insert_char_pre		*g:neocomplcache_enable_insert_char_pre*
 		This variable controls whether neocomplcache use
@@ -936,6 +943,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-03-23
+- Fixed g:neocomplcache_enable_cursor_hold_i behavior.
 
 2012-03-21
 - Improved filename pattern.
