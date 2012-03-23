@@ -626,8 +626,10 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
   if v:version > 703 || v:version == 703 && has('patch418')
     let dict = { 'words' : s:complete_words }
 
-    " Note: Vim Still have broken register-. problem.
-    " let dict.refresh = 'always'
+    if g:neocomplcache_enable_cursor_hold_i
+      " Note: Vim Still have broken register-. problem.
+      let dict.refresh = 'always'
+    endif
     return dict
   else
     return s:complete_words
