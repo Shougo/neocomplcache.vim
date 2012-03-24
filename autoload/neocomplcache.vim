@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2012.
+" Last Modified: 24 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -64,8 +64,6 @@ function! neocomplcache#enable() "{{{
             \ call s:restore_update_time()
     augroup END
   else
-    autocmd neocomplcache InsertEnter *
-          \ call s:on_insert_enter()
     autocmd neocomplcache CursorMovedI *
           \ call s:do_auto_complete('CursorMovedI')
   endif
