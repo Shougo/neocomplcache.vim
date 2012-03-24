@@ -285,11 +285,6 @@ g:neocomplcache_enable_auto_delimiter		*g:neocomplcache_enable_auto_delimiter*
 		
 		Default value is 0.
 
-g:neocomplcache_cursor_hold_i_time		*g:neocomplcache_cursor_hold_i_time*
-		This variable defines time of automatic completion by a milli second unit.
-		
-		Default value is 300.
-
 g:neocomplcache_enable_camel_case_completion	*g:neocomplcache_enable_camel_case_completion*
 		When you input a capital letter, this variable controls
 		whether neocomplcache takes an ambiguous searching as an end
