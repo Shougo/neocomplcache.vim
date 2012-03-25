@@ -41,8 +41,7 @@ Quick match
 
 Snippet completion like snipMate.
 ---------------------------------
-http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/screenshot2.png
-![Snippet completion like snipMate.](http://3.bp.blogspot.com/_ci2yBnqzJgM/SfkgaHXLS0I/AAAAAAAAAA4/TmaylpFl_Uw/s1600-h/screenshot2.png)
+![Snippet completion like snipMate.](http://s14.postimage.org/6m073xpwh/Screenshot2.png)
 
 Original filename completion.
 -----------
