@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Mar 2012.
+" Last Modified: 25 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -170,8 +170,8 @@ function! s:get_include_files(cur_keyword_str)"{{{
     endif
     lcd `=dir`
 
-    " for word in split(substitute(glob(glob), '\\', '/', 'g'), '\n')
-    for word in neocomplcache#util#glob(glob)
+    for word in split(
+          \ neocomplcache#util#substitute_path_separator(glob(glob)), '\n')
       let dict = { 'word' : word, 'menu' : '[FI]' }
 
       let abbr = dict.word

@@ -944,6 +944,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-25
+- Fixed filename_complete behavior.
+
 2012-03-23
 - Fixed g:neocomplcache_enable_cursor_hold_i behavior.
 
