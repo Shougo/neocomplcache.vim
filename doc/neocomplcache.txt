@@ -939,6 +939,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-03-26
+- Fixed filename escape.
+
 2012-03-25
 - Fixed filename_complete behavior.
 
