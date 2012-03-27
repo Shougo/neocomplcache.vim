@@ -306,6 +306,8 @@ g:neocomplcache_enable_fuzzy_completion		*g:neocomplcache_enable_fuzzy_completio
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it
 		with "public_html" or "PublicHtml" when you input it with "puh".
+		Note: If |g:neocomplcache_fuzzy_completion_start_length| is 3,
+		"ph" does not complete "public_html".
 		Note: This match is too heavy. So, it is enabled when your
 		input length is longer than or equal to
 		|g:neocomplcache_fuzzy_completion_start_length| and less than
