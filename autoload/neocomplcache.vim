@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Mar 2012.
+" Last Modified: 27 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -807,11 +807,13 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   endif"}}}
 
   " Fuzzy completion.
+  let keyword_len = len(keyword_escape)
   if g:neocomplcache_enable_fuzzy_completion
-    if len(keyword_escape) < 8
+        \ && (3 <= keyword_len && keyword_len < 20)
+    if keyword_len < 8
       let keyword_escape = keyword_escape[: 1] . substitute(keyword_escape[2:], '\w',
             \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
-    elseif len(keyword_escape) < 20
+    elseif keyword_len < 20
       let keyword_escape = keyword_escape[: 3] . substitute(keyword_escape[4:12], '\w',
             \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g') . keyword_escape[13:]
     endif
@@ -820,11 +822,13 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     if g:neocomplcache_enable_underbar_completion
           \ && keyword_escape =~ '_'
       let keyword_escape_orig = keyword_escape
-      let keyword_escape = substitute(keyword_escape, '[^_]\zs_', '[^_]*_', 'g')
+      let keyword_escape = substitute(keyword_escape,
+            \ '[^_]\zs_', '[^_]*_', 'g')
     endif
     if g:neocomplcache_enable_underbar_completion
           \ && '-' =~ '\k' && keyword_escape =~ '-'
-      let keyword_escape = substitute(keyword_escape, '[^-]\zs-', '[^-]*-', 'g')
+      let keyword_escape = substitute(keyword_escape,
+            \ '[^-]\zs-', '[^-]*-', 'g')
     endif
     "}}}
     " Camel case completion."{{{
