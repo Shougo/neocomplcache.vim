@@ -305,14 +305,22 @@ g:neocomplcache_enable_fuzzy_completion		*g:neocomplcache_enable_fuzzy_completio
 		When you input one character, this variable controls whether
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it
-		with "public_html" or "PublicHtml" when you input it with "ph".
-		This variable disables
-		|g:neocomplcache_enable_camel_case_completion| and
-		|g:neocomplcache_enable_underbar_completion|.
+		with "public_html" or "PublicHtml" when you input it with "puh".
 		Note: This match is too heavy. So, it is enabled when your
-		input is longer than 2 and less than 20 characters.
+		input length is longer than or equal to
+		|g:neocomplcache_fuzzy_completion_start_length| and less than
+		20 characters.
 		
 		Default value is 0.
+
+g:neocomplcache_fuzzy_completion_start_length	*g:neocomplcache_fuzzy_completion_start_length*
+		This variable controls length of fuzzy completion start length.
+		For example, If this variable is "3", third and after input characters are
+		fuzzy matched.  But first and second input characters are not
+		fuzzy matched.
+		Note: If this variable changed, completion speed may be too slow.
+
+		Default value is 3.
 
 g:neocomplcache_enable_caching_message		*g:neocomplcache_enable_caching_message*
 		When make cache, this variable controls whether neocomplcache
@@ -941,6 +949,7 @@ ChangeLog neocomplcache 7.0:
 
 2012-03-27
 - Fixed g:neocomplcache_enable_fuzzy_completion documentaion.
+- Added g:neocomplcache_fuzzy_completion_start_length option.
 
 2012-03-26
 - Fixed filename escape.

@@ -809,13 +809,21 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Fuzzy completion.
   let keyword_len = len(keyword_escape)
   if g:neocomplcache_enable_fuzzy_completion
-        \ && (3 <= keyword_len && keyword_len < 20)
-    if keyword_len < 8
-      let keyword_escape = keyword_escape[: 1] . substitute(keyword_escape[2:], '\w',
-            \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
-    elseif keyword_len < 20
-      let keyword_escape = keyword_escape[: 3] . substitute(keyword_escape[4:12], '\w',
-            \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g') . keyword_escape[13:]
+        \ && (g:neocomplcache_fuzzy_completion_start_length
+        \          <= keyword_len && keyword_len < 20)
+    let fuzzy_start = g:neocomplcache_fuzzy_completion_start_length
+    if fuzzy_start <= 1
+      let keyword_escape =
+            \ substitute(keyword_escape, '\w',
+            \   '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
+    elseif keyword_len < 8
+      let keyword_escape = keyword_escape[: fuzzy_start - 2]
+            \ . substitute(keyword_escape[fuzzy_start-1 :], '\w',
+            \     '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
+    else
+      let keyword_escape = keyword_escape[: 3] .
+            \ substitute(keyword_escape[4:12], '\w',
+            \     '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g') . keyword_escape[13:]
     endif
   else
     " Underbar completion."{{{
@@ -956,9 +964,8 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
   endif
 
   if len(a:cur_keyword_str) < a:completion_length ||
-        \ (!g:neocomplcache_enable_fuzzy_completion
-        \   && neocomplcache#check_completion_length_match(
-        \   a:cur_keyword_str, a:completion_length))
+        \ neocomplcache#check_completion_length_match(
+        \   a:cur_keyword_str, a:completion_length)
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   else
