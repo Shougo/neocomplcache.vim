@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2012.
+" Last Modified: 31 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,6 +62,7 @@ function! s:source.initialize()"{{{
   let s:cache_line_count = 70
   let s:rank_cache_count = 1
   let s:disable_caching_list = {}
+  let s:async_dictionary_list = {}
   let s:completion_length =
         \ neocomplcache#get_auto_completion_length('buffer_complete')
   "}}}
@@ -94,7 +95,7 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
-  let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+  let [cur_keyword_pos, _] = neocomplcache#match_word(a:cur_text)
 
   return cur_keyword_pos
 endfunction"}}}
@@ -102,6 +103,10 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let keyword_list = []
   for [key, source] in s:get_sources_list()
+    call neocomplcache#cache#check_cache('buffer_cache', source.path,
+          \ s:async_dictionary_list,
+          \ source.keyword_cache, s:completion_length)
+
     let keyword_list += neocomplcache#dictionary_filter(
           \ source.keyword_cache, a:cur_keyword_str, s:completion_length)
     if key == bufnr('%')
@@ -310,7 +315,12 @@ function! s:word_caching(srcname)"{{{
 
     let source.cache_name =
           \ neocomplcache#cache#async_load_from_file(
-          \     'buffer_cache', source.path, source.keyword_pattern, 'B')
+          \     'buffer_cache', source.path,
+          \     source.keyword_pattern, 'B')
+    let s:async_dictionary_list[source.path] = [{
+          \ 'filename' : source.path,
+          \ 'cachename' : source.cache_name,
+          \ }]
   endif
 endfunction"}}}
 
@@ -351,15 +361,9 @@ function! s:check_source()"{{{
   endif
 
   let source = s:buffer_sources[bufnumber]
-  if !s:buffer_sources[bufnumber].loaded_cache
-        \&& filereadable(source.cache_name)
-    " Caching from cache.
-    call neocomplcache#cache#list2index(
-          \ neocomplcache#cache#load_from_cache('buffer_cache', source.path),
-          \ source.keyword_cache, s:completion_length)
-
-    let source.loaded_cache = 1
-  endif
+  call neocomplcache#cache#check_cache('buffer_cache', source.path,
+        \ s:async_dictionary_list,
+        \ source.keyword_cache, s:completion_length)
 endfunction"}}}
 function! s:check_cache()"{{{
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2012.
+" Last Modified: 31 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,10 +41,12 @@ function! s:source.initialize()"{{{
   let s:cache_accessed_time = {}
   let s:async_include_cache = {}
   let s:cached_pattern = {}
-  let s:completion_length = neocomplcache#get_auto_completion_length('include_complete')
+  let s:completion_length =
+        \ neocomplcache#get_auto_completion_length('include_complete')
 
   " Set rank.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_source_rank, 'include_complete', 8)
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_source_rank, 'include_complete', 8)
 
   if neocomplcache#has_vimproc()
     augroup neocomplcache
