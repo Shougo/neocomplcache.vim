@@ -367,7 +367,7 @@ g:neocomplcache_enable_prefetch			*g:neocomplcache_enable_prefetch*
 		Partial function (ex: |complete_check()|) is disabled in
 		completefunc.
 		
-		Default value is 1.
+		Default value is 0.
 
 g:neocomplcache_temporary_dir			*g:neocomplcache_temporary_dir*
 		This variable appoints the directory that neocomplcache
@@ -948,6 +948,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-03-31
+- Changed g:neocomplcache_enable_prefetch default value.
 
 2012-03-27
 - Fixed g:neocomplcache_enable_fuzzy_completion documentaion.
