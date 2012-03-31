@@ -388,7 +388,7 @@ function! s:check_cache()"{{{
   let source = s:buffer_sources[bufnumber]
 
   " Check current line caching.
-  for cache in values(source.keyword_cache)
+  for cache in neocomplcache#unpack_dictionary(source.keyword_cache)
     call filter(cache, "!has_key(v:val, 'line')
           \ || stridx(getline(v:val.line), v:val.word) >= 0")
   endfor
