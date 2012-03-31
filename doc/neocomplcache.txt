@@ -953,6 +953,7 @@ ChangeLog neocomplcache 7.0:
 - Changed g:neocomplcache_enable_prefetch default value.
 - Improved asyncronous caching check timing.
 - Fixed caching.
+- Supported Ctrl-x mode fix.
 
 2012-03-27
 - Fixed g:neocomplcache_enable_fuzzy_completion documentaion.
