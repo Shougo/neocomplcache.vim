@@ -30,32 +30,33 @@ set cpo&vim
 let s:Cache = vital#of('neocomplcache').import('System.Cache')
 
 " Cache loader.
-function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary,
-      \ keyword_list_dictionary, completion_length) "{{{
+function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dictionary, index_keyword_list, completion_length) "{{{
   if !has_key(a:async_cache_dictionary, a:key)
     return
   endif
 
   for cache in filter(copy(a:async_cache_dictionary[a:key]),
         \ 'filereadable(v:val.cachename)')
-    " Caching.
-    let a:keyword_list_dictionary[a:key] = {}
-
     let keyword_list = []
     for cache in a:async_cache_dictionary[a:key]
       let keyword_list +=
             \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
     endfor
 
-    call neocomplcache#cache#list2index(
-          \ keyword_list,
-          \ a:keyword_list_dictionary[a:key],
-          \ a:completion_length)
+    call neocomplcache#cache#list2index(keyword_list,
+          \ a:index_keyword_list, a:completion_length)
 
     " Delete from dictionary.
     call remove(a:async_cache_dictionary, a:key)
     break
   endfor
+endfunction"}}}
+function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary, completion_length) "{{{
+  " Caching.
+  let a:keyword_list_dictionary[a:key] = {}
+  return neocomplcache#cache#check_cache_list(
+        \ a:cache_dir, a:key, a:async_cache_dictionary,
+        \ a:keyword_list_dictionary[a:key], a:completion_length)
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   try

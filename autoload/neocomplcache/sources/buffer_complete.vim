@@ -103,7 +103,7 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let keyword_list = []
   for [key, source] in s:get_sources_list()
-    call neocomplcache#cache#check_cache('buffer_cache', source.path,
+    call neocomplcache#cache#check_cache_list('buffer_cache', source.path,
           \ s:async_dictionary_list,
           \ source.keyword_cache, s:completion_length)
 
@@ -361,7 +361,7 @@ function! s:check_source()"{{{
   endif
 
   let source = s:buffer_sources[bufnumber]
-  call neocomplcache#cache#check_cache('buffer_cache', source.path,
+  call neocomplcache#cache#check_cache_list('buffer_cache', source.path,
         \ s:async_dictionary_list,
         \ source.keyword_cache, s:completion_length)
 endfunction"}}}
@@ -388,11 +388,10 @@ function! s:check_cache()"{{{
   let source = s:buffer_sources[bufnumber]
 
   " Check current line caching.
-  " for cache in values(source.keyword_cache)
-  "   echomsg string(cache)
-  "   call filter(cache, "!has_key(v:val, 'line')
-  "         \ || stridx(getline(v:val.line), v:val.word) >= 0")
-  " endfor
+  for cache in values(source.keyword_cache)
+    call filter(cache, "!has_key(v:val, 'line')
+          \ || stridx(getline(v:val.line), v:val.word) >= 0")
+  endfor
 endfunction"}}}
 
 function! s:exists_current_source()"{{{
