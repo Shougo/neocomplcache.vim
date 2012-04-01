@@ -252,7 +252,6 @@ g:neocomplcache_enable_cursor_hold_i		*g:neocomplcache_enable_cursor_hold_i*
 		when complete candidates.
 		Note: You should not use this option if less than Vim 7.3.418.
 		Note: This option must be set before call |:NeoComplCacheEnable|.
-		not change 'updatetime'.
 		
 		Default value is 0.
 
@@ -265,7 +264,7 @@ g:neocomplcache_cursor_hold_i_time		*g:neocomplcache_cursor_hold_i_time*
 g:neocomplcache_enable_insert_char_pre		*g:neocomplcache_enable_insert_char_pre*
 		This variable controls whether neocomplcache use
 		|InsertCharPre| event when complete candidates.
-		Note: You should not use this option if less than Vim 7.3.418.
+		Note: You should not use this option if less than Vim 7.3.461.
 		Note: This option must be set before call |:NeoComplCacheEnable|.
 		Note: This option is experimental.
 		
@@ -798,6 +797,8 @@ EXAMPLES					*neocomplcache-examples*
 	"inoremap <expr><Down>  neocomplcache#close_popup() . "\<Down>"
 	" Or set this.
 	"let g:neocomplcache_enable_cursor_hold_i = 1
+	" Or set this.
+	"let g:neocomplcache_enable_insert_char_pre = 1
 	
 	" AutoComplPop like behavior.
 	"let g:neocomplcache_enable_auto_select = 1
@@ -948,6 +949,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-04-02
+- Improved documentation.
 
 2012-03-31
 - Changed g:neocomplcache_enable_prefetch default value.
