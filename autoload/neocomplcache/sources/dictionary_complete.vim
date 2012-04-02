@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2012.
+" Last Modified: 02 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -95,8 +95,8 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
           \ s:async_dictionary_list,
           \ s:dictionary_list, s:completion_length)
 
-    for source in neocomplcache#get_sources_list(s:dictionary_list, ft)
-      let list += neocomplcache#dictionary_filter(source,
+    for dict in neocomplcache#get_sources_list(s:dictionary_list, ft)
+      let list += neocomplcache#dictionary_filter(dict,
             \ a:cur_keyword_str, s:completion_length)
     endfor
   endfor

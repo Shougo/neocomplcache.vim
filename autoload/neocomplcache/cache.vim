@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 02 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,7 +53,9 @@ function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dicti
 endfunction"}}}
 function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary, completion_length) "{{{
   " Caching.
-  let a:keyword_list_dictionary[a:key] = {}
+  if !has_key(a:keyword_list_dictionary, a:key)
+    let a:keyword_list_dictionary[a:key] = {}
+  endif
   return neocomplcache#cache#check_cache_list(
         \ a:cache_dir, a:key, a:async_cache_dictionary,
         \ a:keyword_list_dictionary[a:key], a:completion_length)
