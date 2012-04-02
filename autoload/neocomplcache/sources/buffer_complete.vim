@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 02 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,10 +40,12 @@ let s:source = {
 function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
-    autocmd InsertEnter * call s:check_source()
+    autocmd InsertEnter,FileType *
+          \ call s:check_source()
     autocmd CursorHold * call s:check_cache()
     autocmd InsertLeave *
-          \ call s:caching_current_buffer(line('.') - 1, line('.') + 1, 1)
+          \ call s:caching_current_buffer(line('.') - 1,
+          \          line('.') + 1, 1)
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
@@ -103,7 +105,8 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   let keyword_list = []
   for [key, source] in s:get_sources_list()
-    call neocomplcache#cache#check_cache_list('buffer_cache', source.path,
+    call neocomplcache#cache#check_cache_list('buffer_cache',
+          \ source.path,
           \ s:async_dictionary_list,
           \ source.keyword_cache, s:completion_length)
 
@@ -290,12 +293,15 @@ function! s:initialize_source(srcname)"{{{
   let keyword_pattern = neocomplcache#get_keyword_pattern(ft)
 
   let s:buffer_sources[a:srcname] = {
-        \ 'keyword_cache' : {}, 'frequencies' : {}, 'prev_frequencies' : {},
-        \ 'name' : filename, 'filetype' : ft, 'keyword_pattern' : keyword_pattern,
+        \ 'keyword_cache' : {}, 'frequencies' : {},
+        \ 'prev_frequencies' : {},
+        \ 'name' : filename, 'filetype' : ft,
+        \ 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : len(buflines),
         \ 'accessed_time' : localtime(),
         \ 'path' : path, 'loaded_cache' : 0,
-        \ 'cache_name' : neocomplcache#cache#encode_name('buffer_cache', path),
+        \ 'cache_name' : neocomplcache#cache#encode_name(
+        \   'buffer_cache', path),
         \}
 endfunction"}}}
 
@@ -315,7 +321,7 @@ function! s:word_caching(srcname)"{{{
 
     let source.cache_name =
           \ neocomplcache#cache#async_load_from_file(
-          \     'buffer_cache', source.path,
+          \     'buffer_cache', srcname,
           \     source.keyword_pattern, 'B')
     let s:async_dictionary_list[source.path] = [{
           \ 'filename' : source.path,
@@ -361,7 +367,8 @@ function! s:check_source()"{{{
   endif
 
   let source = s:buffer_sources[bufnumber]
-  call neocomplcache#cache#check_cache_list('buffer_cache', source.path,
+  call neocomplcache#cache#check_cache_list('buffer_cache',
+        \ source.path,
         \ s:async_dictionary_list,
         \ source.keyword_cache, s:completion_length)
 endfunction"}}}
