@@ -952,6 +952,7 @@ ChangeLog neocomplcache 7.0:
 
 2012-04-10
 - Improved escape filename.
+- Improved sudo check(experimental).
 
 2012-04-05
 - Improved cache event.

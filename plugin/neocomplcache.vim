@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 10 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,8 +31,10 @@ if exists('g:loaded_neocomplcache')
 elseif v:version < 702
   echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
   finish
-elseif $SUDO_USER != ''
-  echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
+elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
+      \ && $USER ==# 'root' && $HOME !=# '/root'
+  echoerr '"sudo vim" and $HOME is not same to /root are detected.'
+        \.'Please use sudo.vim plugin instead of sudo command or set always_set_home in sudoers.'
   finish
 endif
 
