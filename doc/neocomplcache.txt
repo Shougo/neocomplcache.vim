@@ -950,6 +950,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-04-10
+- Improved escape filename.
+
 2012-04-05
 - Improved cache event.
 
