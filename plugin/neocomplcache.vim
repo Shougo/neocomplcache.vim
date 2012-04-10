@@ -32,7 +32,7 @@ elseif v:version < 702
   echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
   finish
 elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
-      \ && $USER ==# 'root' && $HOME !=# '/root'
+      \ && $HOME !=# expand('~'.$SUDO_USER)
   echoerr '"sudo vim" and $HOME is not same to /root are detected.'
         \.'Please use sudo.vim plugin instead of sudo command or set always_set_home in sudoers.'
   finish
