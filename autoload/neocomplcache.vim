@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 20 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -523,8 +523,6 @@ function! neocomplcache#enable() "{{{
   set completeopt+=menuone
 
   " For auto complete keymappings.
-  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
-        \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)
         \ unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_quick_match)
@@ -772,7 +770,14 @@ function! s:do_auto_complete(event)"{{{
   set completeopt+=menuone
 
   " Start auto complete.
-  call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
+  if g:neocomplcache_enable_prefetch || &l:formatoptions =~# 'a'
+    call feedkeys((g:neocomplcache_enable_auto_select ?
+          \ "\<C-x>\<C-u>\<C-p>\<Down>" :
+          \ "\<C-x>\<C-u>\<C-p>"), "n")
+  else
+    call feedkeys("\<C-x>\<C-u>"
+          \."\<C-r>=neocomplcache#popup_post()\<CR>", "n")
+  endif
 
   let s:changedtick = b:changedtick
 endfunction"}}}
