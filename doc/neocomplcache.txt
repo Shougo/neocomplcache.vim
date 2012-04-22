@@ -950,6 +950,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-04-22
+- Improved member_complete behavior.
+
 2012-04-20
 - Fixed feedkeys() problem.
 

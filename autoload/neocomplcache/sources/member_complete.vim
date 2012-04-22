@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: member_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 22 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,7 +71,7 @@ function! s:source.initialize()"{{{
     let g:neocomplcache_member_patterns = {}
   endif
   call neocomplcache#set_dictionary_helper(g:neocomplcache_member_patterns,
-        \'default', '\h\w*\%(()\?\)\?')
+        \'default', '\h\w*\%(()\|\[\h\w*\]\)\?')
   "}}}
 
   " Initialize script variables."{{{
