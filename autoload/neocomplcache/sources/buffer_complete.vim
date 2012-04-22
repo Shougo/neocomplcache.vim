@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Apr 2012.
+" Last Modified: 22 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,9 +40,10 @@ let s:source = {
 function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
-    autocmd FileType *
+    autocmd BufRead,FileType,BufNewFile *
           \ call s:check_source()
-    autocmd CursorHold * call s:check_cache()
+    autocmd InsertLeave,CursorHold *
+          \ call s:check_cache()
     autocmd InsertLeave *
           \ call s:caching_current_buffer(line('.') - 1,
           \          line('.') + 1, 1)
@@ -80,6 +81,8 @@ function! s:source.initialize()"{{{
   command! -nargs=? -complete=buffer NeoComplCacheDisableCaching call s:disable_caching(<q-args>)
   command! -nargs=? -complete=buffer NeoComplCacheEnableCaching call s:enable_caching(<q-args>)
   "}}}
+
+  call s:check_source()
 endfunction
 "}}}
 
@@ -373,7 +376,8 @@ function! s:check_source()"{{{
         \ source.keyword_cache, s:completion_length)
 endfunction"}}}
 function! s:check_cache()"{{{
-  let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
+  let release_accessd_time =
+        \ localtime() - g:neocomplcache_release_cache_time
 
   for [key, source] in items(s:buffer_sources)
     " Check deleted buffer and access time.
@@ -397,7 +401,9 @@ function! s:check_cache()"{{{
   " Check current line caching.
   for cache in values(source.keyword_cache)
     call filter(cache, "!has_key(v:val, 'line')
-          \ || stridx(getline(v:val.line), v:val.word) >= 0")
+          \ || stridx(getline(v:val.line), v:val.word) >= 0
+          \ || search('\\<'.neocomplcache#util#escape_pattern(v:val.word).'\\>',
+          \       'wn', 0, 300) > 0")
   endfor
 endfunction"}}}
 
