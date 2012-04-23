@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2012.
+" Last Modified: 24 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -162,9 +162,8 @@ function! s:caching_current_buffer(start, end, is_auto)"{{{
   endif
 
   let source = s:buffer_sources[bufnr('%')]
-  let filename = fnamemodify(source.name, ':t')
   let menu = '[B] ' . neocomplcache#util#strwidthpart(
-        \ filename, g:neocomplcache_max_menu_width)
+        \ source.name, g:neocomplcache_max_menu_width)
   let keyword_pattern = source.keyword_pattern
   let keyword_pattern2 = '^\%('.keyword_pattern.'\m\)'
   let keywords = source.keyword_cache
@@ -271,7 +270,7 @@ function! s:get_sources_list()"{{{
   for [key, source] in items(s:buffer_sources)
     if has_key(filetypes_dict, source.filetype)
           \ || bufnr('%') == key
-          \ || (bufname('%') ==# '[Command Line]' && bufnr('#') == key)
+          \ || (source.name ==# '[Command Line]' && bufnr('#') == key)
       call add(sources_list, [key, source])
     endif
   endfor
@@ -313,18 +312,17 @@ function! s:word_caching(srcname)"{{{
   call s:initialize_source(a:srcname)
 
   let source = s:buffer_sources[a:srcname]
-  let srcname = fnamemodify(source.name, ':p')
 
-  if neocomplcache#cache#check_old_cache('buffer_cache', srcname)
-    if source.name ==# '[Command Line]'
-          \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
-      " Ignore caching.
-      return
-    endif
+  if !filereadable(source.path)
+        \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
+    " Ignore caching.
+    return
+  endif
 
+  if neocomplcache#cache#check_old_cache('buffer_cache', source.path)
     let source.cache_name =
           \ neocomplcache#cache#async_load_from_file(
-          \     'buffer_cache', srcname,
+          \     'buffer_cache', source.path,
           \     source.keyword_pattern, 'B')
     let s:async_dictionary_list[source.path] = [{
           \ 'filename' : source.path,
