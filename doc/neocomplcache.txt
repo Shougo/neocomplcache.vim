@@ -950,6 +950,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-04-28
+- Updated vital.
+
 2012-04-24
 - Fixed make cache bug.
 
