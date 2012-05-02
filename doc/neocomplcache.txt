@@ -826,6 +826,10 @@ EXAMPLES					*neocomplcache-examples*
 	let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 	let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 	let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+	
+	" For perlomni.vim setting.
+	" https://github.com/c9s/perlomni.vim
+	let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
 <
 ==============================================================================
 SOURCES						*neocomplcache-sources*
@@ -949,6 +953,9 @@ CHANGELOG					*neocomplcache-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
+
+2012-05-02
+- Updated examples.
 
 2012-04-28
 - Updated vital.
