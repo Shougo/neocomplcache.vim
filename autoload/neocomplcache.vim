@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2012.
+" Last Modified: 02 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -733,6 +733,7 @@ function! s:do_auto_complete(event)"{{{
         \ || (!neocomplcache#is_eskk_enabled() &&
         \      (exists('b:skk_on') && b:skk_on)
         \     || char2nr(split(cur_text, '\zs')[-1]) > 0x80)
+        \ || g:neocomplcache_lock_iminsert && &l:iminsert
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
