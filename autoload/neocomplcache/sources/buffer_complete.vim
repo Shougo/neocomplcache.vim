@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2012.
+" Last Modified: 03 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -157,8 +157,12 @@ endfunction"}}}
 function! s:caching_current_buffer(start, end, is_auto)"{{{
   " Current line caching.
 
-  if !s:exists_current_source() || has_key(s:disable_caching_list, bufnr('%'))
-    return
+  if !s:exists_current_source()
+    call s:check_source()
+
+    if !s:exists_current_source()
+      return
+    endif
   endif
 
   let source = s:buffer_sources[bufnr('%')]
@@ -390,10 +394,11 @@ function! s:check_cache()"{{{
     endif
   endfor
 
-  let bufnumber = bufnr('%')
-  if !has_key(s:buffer_sources, bufnumber)
+  if !s:exists_current_source()
     return
   endif
+
+  let bufnumber = bufnr('%')
   let source = s:buffer_sources[bufnumber]
 
   " Check current line caching.
