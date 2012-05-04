@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 May 2012.
+" Last Modified: 04 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -498,7 +498,8 @@ function! neocomplcache#enable() "{{{
 
   " Add commands."{{{
   command! -nargs=? Neco call s:display_neco(<q-args>)
-  command! -nargs=1 NeoComplCacheAutoCompletionLength call s:set_auto_completion_length(<args>)
+  command! -nargs=1 NeoComplCacheAutoCompletionLength
+        \ call s:set_auto_completion_length(<args>)
   "}}}
 
   " Must g:neocomplcache_auto_completion_start_length > 1.

@@ -960,6 +960,9 @@ CHANGELOG					*neocomplcache-changelog*
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:
 
+2012-05-04
+- Fixed command definition.
+
 2012-05-03
 - Improved make cache behavior.
 
