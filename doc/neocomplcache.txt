@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 7.0
+Version: 7.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -956,6 +956,10 @@ Todo
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-05-08
+- Fixed cd problem.
+- Ver.7.1 development is started.
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.0:

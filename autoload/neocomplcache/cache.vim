@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2012.
+" Last Modified: 08 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -261,6 +261,7 @@ function! s:async_load(argv, cache_dir, filename)"{{{
     if !executable(vim_path)
       call neocomplcache#print_error(
             \ printf('Vim path : "%s" is not found.', vim_path))
+      lcd `=current`
       return
     endif
 
