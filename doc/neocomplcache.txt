@@ -957,6 +957,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-05-09
 - Refactored cache.vim.
 - Fixed tags_complete problem.
+- Improved asynchronous cache.
 
 2012-05-08
 - Fixed cd problem.

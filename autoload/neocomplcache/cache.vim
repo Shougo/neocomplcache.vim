@@ -150,7 +150,8 @@ function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
   return  s:Cache.check_old_cache(cache_dir, a:filename)
 endfunction"}}}
 
-let s:sdir = fnamemodify(expand('<sfile>'), ':p:h')
+let s:sdir = neocomplcache#util#substitute_path_separator(
+      \ fnamemodify(expand('<sfile>'), ':p:h'))
 
 " Async test.
 function! neocomplcache#cache#test_async()"{{{
@@ -267,9 +268,6 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
   return s:async_load(argv, a:cache_dir, a:filename)
 endfunction"}}}
 function! s:async_load(argv, cache_dir, filename)"{{{
-  let current = getcwd()
-  lcd `=s:sdir`
-
   " if 0
   if neocomplcache#has_vimproc()
     let base_path = neocomplcache#util#substitute_path_separator(
@@ -284,12 +282,11 @@ function! s:async_load(argv, cache_dir, filename)"{{{
     if !executable(vim_path)
       call neocomplcache#print_error(
             \ printf('Vim path : "%s" is not found.', vim_path))
-      lcd `=current`
       return
     endif
 
     let args = [vim_path, '-u', 'NONE', '-i', 'NONE', '-n',
-          \       '-N', '-S', 'async_cache.vim']
+          \       '-N', '-S', s:sdir.'/async_cache.vim']
           \ + a:argv
     call vimproc#system_bg(args)
     " call vimproc#system(args)
@@ -297,8 +294,6 @@ function! s:async_load(argv, cache_dir, filename)"{{{
   else
     call neocomplcache#async_cache#main(a:argv)
   endif
-
-  lcd `=current`
 
   return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
 endfunction"}}}
