@@ -139,7 +139,7 @@ endfunction"}}}
 
 function! neocomplcache#sources#buffer_complete#caching_current_line()"{{{
   " Current line caching.
-  return s:caching_current_buffer(line('.'), line('.'), 1)
+  return s:caching_current_buffer(line('.') - 1, line('.') + 1, 1)
 endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_word(keyword)"{{{
   let source = s:buffer_sources[bufnr('%')]
