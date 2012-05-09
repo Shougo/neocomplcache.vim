@@ -44,9 +44,9 @@ function! s:source.initialize()"{{{
     call mkdir(neocomplcache#get_temporary_directory() . '/tags_cache', 'p')
   endif
 
-  command! -nargs=? -complete=buffer -bar
+  command! -nargs=0 -bar
         \ NeoComplCacheCachingTags
-        \ call s:caching_tags(<q-args>, 1)
+        \ call s:caching_tags(1)
 endfunction"}}}
 
 function! s:source.finalize()"{{{
@@ -60,7 +60,7 @@ endfunction"}}}
 function! s:source.get_keyword_list(cur_keyword_str)"{{{
   if !has_key(s:async_tags_list, bufnr('%'))
         \ && !has_key(s:tags_list, bufnr('%'))
-    call s:caching_tags(bufnr('%'), 0)
+    call s:caching_tags(0)
   endif
 
   if neocomplcache#within_comment()
@@ -93,17 +93,17 @@ function! s:initialize_tags(filename)"{{{
         \              'tags_cache', a:filename, ft, 'T', 0)
         \ }
 endfunction"}}}
-function! s:caching_tags(bufname, force)"{{{
-  let bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
+function! s:caching_tags(force)"{{{
+  let bufnumber = bufnr('%')
 
   let s:async_tags_list[bufnumber] = []
-  for tags in split(getbufvar(bufnumber, '&tags'), ',')
-    let filename = fnamemodify(tags, ':p')
-    if filereadable(filename)
-          \ && (a:force || getfsize(filename)
-          \               < g:neocomplcache_caching_limit_file_size)
+  for tags in map(tagfiles(),
+        \ "neocomplcache#util#substitute_path_separator(
+        \    fnamemodify(v:val, ':p'))")
+    if a:force || getfsize(tags)
+          \         < g:neocomplcache_caching_limit_file_size
       call add(s:async_tags_list[bufnumber],
-            \ s:initialize_tags(filename))
+            \ s:initialize_tags(tags))
     endif
   endfor
 endfunction"}}}

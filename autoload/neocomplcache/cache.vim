@@ -270,8 +270,8 @@ function! s:async_load(argv, cache_dir, filename)"{{{
   let current = getcwd()
   lcd `=s:sdir`
 
-  if 0
-  " if neocomplcache#has_vimproc()
+  " if 0
+  if neocomplcache#has_vimproc()
     let base_path = neocomplcache#util#substitute_path_separator(
           \ fnamemodify(vimproc#get_command_name(v:progname), ':p:h'))
     let vim_path = base_path .

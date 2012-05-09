@@ -131,9 +131,8 @@ COMMANDS 					*neocomplcache-commands*
 		Caching [filetype] dictionary file.
 		Select current buffer filetype when [filetype] omitted.
 
-:NeoComplCacheCachingTags [bufname]		*:NeoComplCacheCachingTags*
-		Caching [bufname] tags file.
-		Select current buffer filetype when [bufname] omitted.
+:NeoComplCacheCachingTags		*:NeoComplCacheCachingTags*
+		Caching tags file in current buffer.
 
 :NeoComplCacheCachingInclude [bufname]		*:NeoComplCacheCachingInclude*
 		Caching [bufname] include file.
@@ -856,13 +855,11 @@ member_complete.vim				*member_complete*
 		This source collects use of member variables from buffer.
 
 tags_complete.vim				*tags_complete*
-		This source analyzes a tag file defined in 'tags' for
-		completion.  When a huge tag file is set, neocomplcache
-		don't make cache if you don't execute
-		|:NeoComplCacheCachingTags|command.  Because
-		tags_complete is too slow if tags_complete read a big
-		tags file.  You should use more convenient include
-		completion now.
+		This source analyzes a tag file from tagfiles() for completion.
+		When a huge tag file is set, neocomplcache don't make cache if
+		you don't execute |:NeoComplCacheCachingTags|command.  Because
+		tags_complete is too slow if tags_complete read a big tags
+		file.  You should use more convenient include completion now.
 
 syntax_complete.vim				*syntax_complete*
 		This source analyzes a syntax file like
@@ -959,6 +956,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-05-09
 - Refactored cache.vim.
+- Fixed tags_complete problem.
 
 2012-05-08
 - Fixed cd problem.
