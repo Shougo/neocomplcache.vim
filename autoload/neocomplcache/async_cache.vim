@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Nov 2011.
+" Last Modified: 09 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,9 +33,11 @@ function! s:main(argv)"{{{
         \ = a:argv
 
   if funcname ==# 'load_from_file'
-    let keyword_list = s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
+    let keyword_list = s:load_from_file(
+          \ filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
   else
-    let keyword_list = s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
+    let keyword_list = s:load_from_tags(
+          \ filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
   endif
 
   " Create dictionary key.
@@ -63,7 +65,8 @@ endfunction"}}}
 
 function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
   if filereadable(a:filename)
-    let lines = map(readfile(a:filename), 'iconv(v:val, a:fileencoding, &encoding)')
+    let lines = map(readfile(a:filename),
+          \ 'iconv(v:val, a:fileencoding, &encoding)')
   else
     " File not found.
     return []
@@ -105,7 +108,6 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   let menu_pattern = menu . printf(' %%.%ds', a:maxfilename)
   let keyword_lists = []
   let dup_check = {}
-  let line_num = 1
 
   let [pattern, tags_file_name, filter_pattern, filetype] =
         \ readfile(a:pattern_file_name)[: 4]
@@ -139,66 +141,71 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
 
   for line in tags_list"{{{
     let tag = split(substitute(line, "\<CR>", '', 'g'), '\t', 1)
+
+    " Add keywords.
+    if line =~ '^!' || len(tag) < 3 || len(tag[0]) < a:minlen
+          \ || has_key(dup_check, tag[0])
+      continue
+    endif
+
     let opt = join(tag[2:], "\<TAB>")
     let cmd = matchstr(opt, '.*/;"')
 
-    " Add keywords.
-    if line !~ '^!' && len(tag) >= 3 && len(tag[0]) >= a:minlen
-          \&& !has_key(dup_check, tag[0])
-      let option = {
-            \ 'cmd' : substitute(substitute(substitute(cmd,
-            \'^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'),
-            \ '\\\\', '\\', 'g'), '\\/', '/', 'g'),
-            \ 'kind' : ''
-            \}
-      if option.cmd =~ '\d\+'
-        let option.cmd = tag[0]
-      endif
-
-      for opt in split(opt[len(cmd):], '\t', 1)
-        let key = matchstr(opt, '^\h\w*\ze:')
-        if key == ''
-          let option['kind'] = opt
-        else
-          let option[key] = matchstr(opt, '^\h\w*:\zs.*')
-        endif
-      endfor
-
-      if has_key(option, 'file') || (has_key(option, 'access') && option.access != 'public')
-        let line_num += 1
-        continue
-      endif
-
-      let abbr = has_key(option, 'signature')? tag[0] . option.signature :
-            \ (option['kind'] == 'd' || option['cmd'] == '') ?
-            \ tag[0] : option['cmd']
-      let abbr = substitute(abbr, '\s\+', ' ', 'g')
-      " Substitute "namespace foobar" to "foobar <namespace>".
-      let abbr = substitute(abbr,
-            \'^\(namespace\|class\|struct\|enum\|union\)\s\+\(.*\)$', '\2 <\1>', '')
-      " Substitute typedef.
-      let abbr = substitute(abbr, '^typedef\s\+\(.*\)\s\+\(\h\w*\%(::\w*\)*\);\?$', '\2 <typedef \1>', 'g')
-
-      let keyword = {
-            \ 'word' : tag[0], 'abbr' : abbr, 'kind' : option['kind'], 'dup' : 1,
-            \ }
-      if has_key(option, 'struct')
-        let keyword.menu = printf(menu_pattern, option.struct)
-      elseif has_key(option, 'class')
-        let keyword.menu = printf(menu_pattern, option.class)
-      elseif has_key(option, 'enum')
-        let keyword.menu = printf(menu_pattern, option.enum)
-      elseif has_key(option, 'union')
-        let keyword.menu = printf(menu_pattern, option.union)
-      else
-        let keyword.menu = menu
-      endif
-
-      call add(keyword_lists, keyword)
-      let dup_check[tag[0]] = 1
+    let option = {
+          \ 'cmd' : substitute(substitute(substitute(cmd,
+          \'^\%([/?]\^\?\)\?\s*\|\%(\$\?[/?]\)\?;"$', '', 'g'),
+          \ '\\\\', '\\', 'g'), '\\/', '/', 'g'),
+          \ 'kind' : ''
+          \}
+    if option.cmd =~ '\d\+'
+      let option.cmd = tag[0]
     endif
 
-    let line_num += 1
+    for opt in split(opt[len(cmd):], '\t', 1)
+      let key = matchstr(opt, '^\h\w*\ze:')
+      if key == ''
+        let option['kind'] = opt
+      else
+        let option[key] = matchstr(opt, '^\h\w*:\zs.*')
+      endif
+    endfor
+
+    if has_key(option, 'file')
+          \ || (has_key(option, 'access') && option.access != 'public')
+      continue
+    endif
+
+    let abbr = has_key(option, 'signature')? tag[0] . option.signature :
+          \ (option['kind'] == 'd' || option['cmd'] == '') ?
+          \ tag[0] : option['cmd']
+    let abbr = substitute(abbr, '\s\+', ' ', 'g')
+    " Substitute "namespace foobar" to "foobar <namespace>".
+    let abbr = substitute(abbr,
+          \'^\(namespace\|class\|struct\|enum\|union\)\s\+\(.*\)$',
+          \'\2 <\1>', '')
+    " Substitute typedef.
+    let abbr = substitute(abbr,
+          \'^typedef\s\+\(.*\)\s\+\(\h\w*\%(::\w*\)*\);\?$',
+          \'\2 <typedef \1>', 'g')
+
+    let keyword = {
+          \ 'word' : tag[0], 'abbr' : abbr,
+          \ 'kind' : option['kind'], 'dup' : 1,
+          \ }
+    if has_key(option, 'struct')
+      let keyword.menu = printf(menu_pattern, option.struct)
+    elseif has_key(option, 'class')
+      let keyword.menu = printf(menu_pattern, option.class)
+    elseif has_key(option, 'enum')
+      let keyword.menu = printf(menu_pattern, option.enum)
+    elseif has_key(option, 'union')
+      let keyword.menu = printf(menu_pattern, option.union)
+    else
+      let keyword.menu = menu
+    endif
+
+    call add(keyword_lists, keyword)
+    let dup_check[tag[0]] = 1
   endfor"}}}
 
   if filter_pattern != ''
@@ -231,27 +238,12 @@ function! s:truncate(str, width)"{{{
   return ret
 endfunction"}}}
 
-function! s:strchars(str)"{{{
-  return len(substitute(a:str, '.', 'x', 'g'))
-endfunction"}}}
-
 function! s:strwidthpart(str, width)"{{{
   let ret = a:str
   let width = s:wcswidth(a:str)
   while width > a:width
     let char = matchstr(ret, '.$')
     let ret = ret[: -1 - len(char)]
-    let width -= s:wcwidth(char)
-  endwhile
-
-  return ret
-endfunction"}}}
-function! s:strwidthpart_reverse(str, width)"{{{
-  let ret = a:str
-  let width = s:wcswidth(a:str)
-  while width > a:width
-    let char = matchstr(ret, '^.')
-    let ret = ret[len(char) :]
     let width -= s:wcwidth(char)
   endwhile
 
