@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 May 2012.
+" Last Modified: 09 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1913,7 +1913,7 @@ function! s:on_moved_i()"{{{
   let cur_text = s:get_cur_text()
 
   " Make cache.
-  if cur_text =~ '\s\+$'
+  if cur_text =~ '^\s*$\|\s\+$'
     if neocomplcache#is_source_enabled('buffer_complete')
       " Caching current cache line.
       call neocomplcache#sources#buffer_complete#caching_current_line()
