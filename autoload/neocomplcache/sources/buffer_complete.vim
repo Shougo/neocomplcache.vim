@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2012.
+" Last Modified: 11 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,12 +74,18 @@ function! s:source.initialize()"{{{
         \ g:neocomplcache_auto_completion_start_length)
 
   " Add commands."{{{
-  command! -nargs=? -complete=buffer NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
-  command! -nargs=? -complete=buffer NeoComplCachePrintSource call s:print_source(<q-args>)
-  command! -nargs=? -complete=buffer NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
-  command! -nargs=? -complete=buffer NeoComplCacheSaveCache call s:save_all_cache()
-  command! -nargs=? -complete=buffer NeoComplCacheDisableCaching call s:disable_caching(<q-args>)
-  command! -nargs=? -complete=buffer NeoComplCacheEnableCaching call s:enable_caching(<q-args>)
+  command! -nargs=? -complete=buffer -bar
+        \ NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
+  command! -nargs=? -complete=buffer -bar
+        \ NeoComplCachePrintSource call s:print_source(<q-args>)
+  command! -nargs=? -complete=buffer -bar
+        \ NeoComplCacheOutputKeyword call s:output_keyword(<q-args>)
+  command! -nargs=? -complete=buffer -bar
+        \ NeoComplCacheSaveCache call s:save_all_cache()
+  command! -nargs=? -complete=buffer -bar
+        \ NeoComplCacheDisableCaching call s:disable_caching(<q-args>)
+  command! -nargs=? -complete=buffer -bar
+        \ NeoComplCacheEnableCaching call s:enable_caching(<q-args>)
   "}}}
 
   call s:check_source()
@@ -319,7 +325,11 @@ function! s:word_caching(srcname)"{{{
 
   if !filereadable(source.path)
         \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
-    " Ignore caching.
+    if a:srcname == bufnr('%')
+      " Make buffer cache.
+      call s:caching_current_buffer(1, line('$'), 0)
+    endif
+
     return
   endif
 

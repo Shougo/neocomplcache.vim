@@ -954,6 +954,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-05-11
+- Improved buffer cache behavior.
+
 2012-05-09
 - Refactored cache.vim.
 - Fixed tags_complete problem.
