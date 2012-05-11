@@ -956,6 +956,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-05-11
 - Improved buffer cache behavior.
+- Fixed include filename completion.
 
 2012-05-09
 - Refactored cache.vim.
