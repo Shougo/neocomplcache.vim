@@ -954,6 +954,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-05-14
+- Deleted debug message.
+
 2012-05-11
 - Improved buffer cache behavior.
 - Fixed include filename completion.
