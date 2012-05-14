@@ -956,6 +956,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-05-14
 - Deleted debug message.
+- Fixed error in Vim 7.2.
 
 2012-05-11
 - Improved buffer cache behavior.
