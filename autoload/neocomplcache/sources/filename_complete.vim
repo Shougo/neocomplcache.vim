@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 May 2012.
+" Last Modified: 16 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -264,8 +264,10 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
     if empty(files)
       " Add '*' to a delimiter.
-      let cur_keyword_str = substitute(cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-      let glob = (cur_keyword_str !~ '\*$')?  cur_keyword_str . '*' : cur_keyword_str
+      let cur_keyword_str =
+            \ substitute(cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
+      let glob = (cur_keyword_str !~ '\*$') ?
+            \ cur_keyword_str . '*' : cur_keyword_str
 
       try
         let globs = globpath(path, glob)
@@ -283,7 +285,8 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
         \ }'),
         \ fnamemodify(a:cur_keyword_str, ':t'))
 
-  if (neocomplcache#is_auto_complete() && len(files) > g:neocomplcache_max_list)
+  if neocomplcache#is_auto_complete()
+        \ && len(files) > g:neocomplcache_max_list
     let files = files[: g:neocomplcache_max_list - 1]
   endif
 
@@ -303,7 +306,8 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
   endif
 
   let home_pattern = '^'.
-        \ neocomplcache#util#substitute_path_separator(expand('~')).'/'
+        \ neocomplcache#util#substitute_path_separator(
+        \ expand('~')).'/'
   let exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
 
   let dir_list = []
@@ -336,8 +340,11 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     " Escape word.
     let dict.word = escape(dict.word, ' *?[]"={}''')
 
-    call add(isdirectory(dict.word) ? dir_list : file_list, dict)
+    call add(isdirectory(dict.word) ?
+          \ dir_list : file_list, dict)
   endfor
+
+  echomsg string(dir_list)
 
   return dir_list + file_list
 endfunction"}}}
