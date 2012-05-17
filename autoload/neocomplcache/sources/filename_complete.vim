@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 May 2012.
+" Last Modified: 17 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -343,8 +343,6 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     call add(isdirectory(dict.word) ?
           \ dir_list : file_list, dict)
   endfor
-
-  echomsg string(dir_list)
 
   return dir_list + file_list
 endfunction"}}}
