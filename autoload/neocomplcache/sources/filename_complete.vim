@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 May 2012.
+" Last Modified: 18 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,6 +51,13 @@ function! s:source.initialize()"{{{
   " Initialize.
   call neocomplcache#set_completion_length(
         \ 'filename_complete', g:neocomplcache_auto_completion_start_length)
+
+  " Set filename pattern.
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+        \'filename',
+        \ neocomplcache#util#is_windows() ?
+        \'\%(\a\+:[/\\]\)\?[\\/[:alnum:]()$+_\~.-]\+' :
+        \'\%(\\.\|[/\[\][:alnum:]()$+_\~.-]\)\+')
 
   " Initialize filename include expr."{{{
   let g:neocomplcache_filename_include_exprs =
@@ -187,12 +194,15 @@ function! s:get_include_files(cur_keyword_str)"{{{
     if !isdirectory(dir)
       continue
     endif
+
     lcd `=dir`
 
     for word in split(
           \ neocomplcache#util#substitute_path_separator(
           \   glob(glob)), '\n')
       let dict = { 'word' : word, 'menu' : '[FI]' }
+
+      call add(isdirectory(word) ? dir_list : file_list, dict)
 
       let abbr = dict.word
       if isdirectory(word)
@@ -217,8 +227,6 @@ function! s:get_include_files(cur_keyword_str)"{{{
         " Escape word.
         let dict.word = escape(dict.word, ' *?[]"={}''')
       endif
-
-      call add(isdirectory(word) ? dir_list : file_list, dict)
     endfor
   endfor
   lcd `=cwd`
@@ -232,8 +240,8 @@ let s:cached_files = {}
 function! s:get_glob_files(cur_keyword_str, path)"{{{
   let path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
 
-  let cur_keyword_str = a:cur_keyword_str
-  let cur_keyword_str = substitute(cur_keyword_str, '\\ ', ' ', 'g')
+  let cur_keyword_str = substitute(a:cur_keyword_str,
+        \ '\\\zs.', '\0', 'g')
 
   let glob = (cur_keyword_str !~ '\*$')?
         \ cur_keyword_str . '*' : cur_keyword_str
@@ -313,17 +321,18 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
   let dir_list = []
   let file_list = []
   for dict in files
+    call add(isdirectory(dict.word) ?
+          \ dir_list : file_list, dict)
+
     let dict.menu = '[F]'
     let dict.orig = dict.word
 
     if len_env != 0 && dict.word[: len_env-1] == env_ev
       let dict.word = env . dict.word[len_env :]
-    elseif a:cur_keyword_str =~ '^\~/'
-      let dict.word = substitute(dict.word, home_pattern, '\~/', '')
     endif
 
     let abbr = dict.word
-    if isdirectory(neocomplcache#util#expand(dict.word))
+    if isdirectory(dict.word) && dict.word !~ '/$'
       let abbr .= '/'
       if g:neocomplcache_enable_auto_delimiter
         let dict.word .= '/'
@@ -337,11 +346,13 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     endif
     let dict.abbr = abbr
 
+    if a:cur_keyword_str =~ '^\~/'
+      let dict.word = substitute(dict.word, home_pattern, '\~/', '')
+      let dict.abbr = substitute(dict.abbr, home_pattern, '\~/', '')
+    endif
+
     " Escape word.
     let dict.word = escape(dict.word, ' *?[]"={}''')
-
-    call add(isdirectory(dict.word) ?
-          \ dir_list : file_list, dict)
   endfor
 
   return dir_list + file_list

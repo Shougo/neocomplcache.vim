@@ -954,6 +954,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-05-18
+- Fixed filename completion.
+
 2012-05-14
 - Deleted debug message.
 - Fixed error in Vim 7.2.
