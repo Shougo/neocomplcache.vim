@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2012.
+" Last Modified: 19 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,6 +86,21 @@ function! neocomplcache#util#escape_pattern(...)"{{{
 endfunction"}}}
 
 function! neocomplcache#util#glob(pattern, ...)"{{{
+  if a:pattern =~ "'"
+    " Use glob('*').
+    let cwd = getcwd()
+    let base = neocomplcache#util#substitute_path_separator(
+          \ fnamemodify(a:pattern, ':h'))
+    lcd `=base`
+
+    let files = map(split(neocomplcache#util#substitute_path_separator(
+          \ glob('*')), '\n'), "base . '/' . v:val")
+
+    lcd `=cwd`
+
+    return files
+  endif
+
   " let is_force_glob = get(a:000, 0, 0)
   let is_force_glob = get(a:000, 0, 1)
 

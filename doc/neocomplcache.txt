@@ -960,6 +960,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved error catch behavior.
 - Deleted fileencoding.
 - Supported wildcard import in include_complete.
+- Fixed filename_complete.
 
 2012-05-18
 - Fixed filename completion.
