@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 May 2012.
+" Last Modified: 19 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -725,8 +725,8 @@ function! s:do_auto_complete(event)"{{{
   " Prevent infinity loop.
   if cur_text == ''
         \ || cur_text == s:old_cur_text
-        \ || (neocomplcache#is_eskk_enabled()
-        \            && cur_text !~ '▽')
+        \ || (neocomplcache#is_eskk_enabled() &&
+        \      !neocomplcache#is_eskk_convertion(cur_text))
         \ || (!neocomplcache#is_eskk_enabled() &&
         \      (exists('b:skk_on') && b:skk_on)
         \     || char2nr(split(cur_text, '\zs')[-1]) > 0x80)
@@ -1163,6 +1163,9 @@ function! neocomplcache#is_sources_complete()"{{{
 endfunction"}}}
 function! neocomplcache#is_eskk_enabled()"{{{
   return exists('*eskk#is_enabled') && eskk#is_enabled()
+endfunction"}}}
+function! neocomplcache#is_eskk_convertion(cur_text)"{{{
+  return a:cur_text =~ '▽'
 endfunction"}}}
 function! neocomplcache#is_text_mode()"{{{
   return s:is_text_mode
@@ -2131,4 +2134,4 @@ endfunction"}}}
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: foldmethod=marker
+" vim: foldmethod=marker:fileencoding=utf-8
