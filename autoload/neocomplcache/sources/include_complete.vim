@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 19 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -349,6 +349,7 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
         let filename = fnamemodify(findfile(
               \ matchstr(line[match_end :], '\f\+'), a:path), ':p')
       endif
+
       if filereadable(filename)
         call add(include_files, filename)
 
@@ -357,6 +358,11 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
                 \ a:nestlevel + 1, readfile(filename)[:100],
                 \ a:filetype, a:pattern, a:path, a:expr)
         endif
+      elseif isdirectory(filename) && a:filetype ==# 'java'
+        " For Java import with *.
+        " Ex: import lejos.nxt.*
+        let include_files +=
+              \ neocomplcache#util#glob(filename . '/*.java')
       endif
     endif
   endfor"}}}
