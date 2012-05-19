@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 May 2012.
+" Last Modified: 19 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -133,14 +133,11 @@ let g:neocomplcache_ctags_program =
 let g:neocomplcache_force_overwrite_completefunc =
       \ get(g:, 'neocomplcache_force_overwrite_completefunc', 0)
 let g:neocomplcache_enable_prefetch =
-      \ get(g:, 'neocomplcache_enable_prefetch',
-      \ 1)
+      \ get(g:, 'neocomplcache_force_overwrite_completefunc',
+      \  !(v:version > 703 || v:version == 703 && has('patch519')
+      \ ))
 let g:neocomplcache_lock_iminsert =
       \ get(g:, 'neocomplcache_lock_iminsert', 0)
-" Note: This feature is temporary disabled.
-      " \  !(v:version > 703 || v:version == 703 && has('patch418')
-      " \  && (!has('xim') || !has('gui_running'))
-      " \ ))
 let g:neocomplcache_release_cache_time =
       \ get(g:, 'neocomplcache_release_cache_time', 900)
 

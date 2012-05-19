@@ -365,7 +365,7 @@ g:neocomplcache_enable_prefetch			*g:neocomplcache_enable_prefetch*
 		Partial function (ex: |complete_check()|) is disabled in
 		completefunc.
 		
-		Default value is 0.
+		Default value is 0(less than 7.3.519).
 
 g:neocomplcache_lock_iminsert			*g:neocomplcache_lock_iminsert*
 		This variable is non 0, neocomplcache lock when 'iminsert' is
@@ -956,6 +956,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-05-19
 - Fixed for eskk error.
+- Supported Vim 7.3.519 feature.
 
 2012-05-18
 - Fixed filename completion.
