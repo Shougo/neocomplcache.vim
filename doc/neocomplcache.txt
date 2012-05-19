@@ -958,6 +958,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed for eskk error.
 - Supported Vim 7.3.519 feature.
 - Improved error catch behavior.
+- Deleted fileencoding.
 
 2012-05-18
 - Fixed filename completion.

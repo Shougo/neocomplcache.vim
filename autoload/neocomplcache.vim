@@ -1165,7 +1165,7 @@ function! neocomplcache#is_eskk_enabled()"{{{
   return exists('*eskk#is_enabled') && eskk#is_enabled()
 endfunction"}}}
 function! neocomplcache#is_eskk_convertion(cur_text)"{{{
-  return a:cur_text =~ '▽'
+  return a:cur_text =~ '笆ｽ'
 endfunction"}}}
 function! neocomplcache#is_text_mode()"{{{
   return s:is_text_mode
@@ -2150,4 +2150,4 @@ endfunction"}}}
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-" vim: foldmethod=marker:fileencoding=utf-8
+" vim: foldmethod=marker
