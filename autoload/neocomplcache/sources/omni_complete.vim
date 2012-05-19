@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2012.
+" Last Modified: 19 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -160,15 +160,15 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     call neocomplcache#print_error(v:throwpoint)
     call neocomplcache#print_error(v:exception)
     let cur_keyword_pos = -1
-  endtry
+  finally
+    if is_wildcard && &l:modifiable
+      call setline('.', line)
+    endif
 
-  " Restore pos.
-  if is_wildcard && &l:modifiable
-    call setline('.', line)
-  endif
-  if getpos('.') != pos
-    call setpos('.', pos)
-  endif
+    if getpos('.') != pos
+      call setpos('.', pos)
+    endif
+  endtry
 
   return cur_keyword_pos
 endfunction"}}}
@@ -227,15 +227,16 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     call neocomplcache#print_error(v:throwpoint)
     call neocomplcache#print_error(v:exception)
     let list = []
-  endtry
+  finally
+    if omnifunc ==# 'rubycomplete#Complete'
+          \ && is_wildcard && &l:modifiable
+      call setline('.', line)
+    endif
 
-  if omnifunc ==# 'rubycomplete#Complete'
-        \ && is_wildcard && &l:modifiable
-    call setline('.', line)
-  endif
-  if getpos('.') != pos
-    call setpos('.', pos)
-  endif
+    if getpos('.') != pos
+      call setpos('.', pos)
+    endif
+  endtry
 
   if empty(list)
     return []

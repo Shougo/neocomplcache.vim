@@ -1299,14 +1299,22 @@ function! neocomplcache#get_complete_results(cur_text, ...)"{{{
   " Try source completion."{{{
   let complete_results = {}
   for [source_name, source] in items(sources)
+    let pos = getpos('.')
+
     try
       let cur_keyword_pos = source.get_keyword_pos(a:cur_text)
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error('Error occured in complfunc''s get_keyword_pos()!')
-      call neocomplcache#print_error('Source name is ' . source_name)
+      call neocomplcache#print_error(
+            \ 'Error occured in complfunc''s get_keyword_pos()!')
+      call neocomplcache#print_error(
+            \ 'Source name is ' . source_name)
       return complete_results
+    finally
+      if getpos('.') != pos
+        call setpos('.', pos)
+      endif
     endtry
 
     if cur_keyword_pos < 0
@@ -1520,15 +1528,23 @@ function! s:set_complete_results_words(complete_results)"{{{
       let &ignorecase = g:neocomplcache_enable_ignore_case
     endif
 
+    let pos = getpos('.')
+
     try
       let words = result.source.get_complete_words(
             \ result.cur_keyword_pos, result.cur_keyword_str)
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error('Error occured in complfunc''s get_complete_words()!')
-      call neocomplcache#print_error('Source name is ' . source_name)
+      call neocomplcache#print_error(
+            \ 'Error occured in complfunc''s get_complete_words()!')
+      call neocomplcache#print_error(
+            \ 'Source name is ' . source_name)
       return
+    finally
+      if getpos('.') != pos
+        call setpos('.', pos)
+      endif
     endtry
 
     let &ignorecase = ignorecase_save
