@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: keyword_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 20 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,6 +62,10 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   " Get keyword list.
   let cache_keyword_list = []
   for [name, plugin] in items(neocomplcache#available_plugins())
+    if neocomplcache#complete_check()
+      return []
+    endif
+
     if !neocomplcache#is_source_enabled(name)
         \ || len(a:cur_keyword_str) < neocomplcache#get_completion_length(name)
         \ || neocomplcache#is_plugin_locked(name)
@@ -74,7 +78,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error('Error occured in plugin''s get_keyword_list()!')
+      call neocomplcache#print_error(
+            \ 'Error occured in plugin''s get_keyword_list()!')
       call neocomplcache#print_error('Plugin name is ' . name)
       return []
     endtry

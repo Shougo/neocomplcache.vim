@@ -1279,6 +1279,9 @@ function! neocomplcache#get_temporary_directory()"{{{
 
   return directory
 endfunction"}}}
+function! neocomplcache#complete_check()"{{{
+  return !g:neocomplcache_enable_prefetch && complete_check()
+endfunction"}}}
 
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...)"{{{
@@ -1391,6 +1394,10 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
           \ source_name, result.complete_words)
   endfor
 
+  if neocomplcache#complete_check()
+    return []
+  endif
+
   " Sort.
   if !neocomplcache#is_eskk_enabled() && a:is_sort
     call sort(complete_words, g:neocomplcache_compare_function)
@@ -1422,6 +1429,10 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
     endif
   endfor
   let complete_words = words
+
+  if neocomplcache#complete_check()
+    return []
+  endif
 
   if g:neocomplcache_max_list >= 0
     let complete_words = complete_words[: g:neocomplcache_max_list]
@@ -1465,6 +1476,10 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
       endfor
     endfor
   endif"}}}
+
+  if neocomplcache#complete_check()
+    return []
+  endif
 
   " Convert words.
   if neocomplcache#is_text_mode() "{{{
@@ -1513,7 +1528,7 @@ endfunction"}}}
 function! s:set_complete_results_words(complete_results)"{{{
   " Try source completion.
   for [source_name, result] in items(a:complete_results)
-    if !g:neocomplcache_enable_prefetch && complete_check()
+    if neocomplcache#complete_check()
       return
     endif
 
@@ -1522,7 +1537,8 @@ function! s:set_complete_results_words(complete_results)"{{{
 
     if neocomplcache#is_text_mode()
       let &ignorecase = 1
-    elseif g:neocomplcache_enable_smart_case && result.cur_keyword_str =~ '\u'
+    elseif g:neocomplcache_enable_smart_case
+          \ && result.cur_keyword_str =~ '\u'
       let &ignorecase = 0
     else
       let &ignorecase = g:neocomplcache_enable_ignore_case
