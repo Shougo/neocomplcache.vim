@@ -857,6 +857,10 @@ endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   let cur_keyword_str = a:cur_keyword_str
 
+  if neocomplcache#complete_check()
+    return []
+  endif
+
   " Delimiter check.
   let filetype = neocomplcache#get_context_filetype()
   if has_key(g:neocomplcache_delimiter_patterns, filetype)"{{{
@@ -971,23 +975,23 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
         \   a:cur_keyword_str, a:completion_length)
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
-  else
-    let key = tolower(a:cur_keyword_str[: a:completion_length-1])
-
-    if !has_key(a:dictionary, key)
-      return []
-    endif
-
-    let list = a:dictionary[key]
-    if type(list) == type({})
-      " Convert dictionary dictionary.
-      unlet list
-      let list = values(a:dictionary[key])
-    endif
-
-    return (len(a:cur_keyword_str) == a:completion_length && &ignorecase)?
-          \ list : neocomplcache#keyword_filter(copy(list), a:cur_keyword_str)
   endif
+
+  let key = tolower(a:cur_keyword_str[: a:completion_length-1])
+
+  if !has_key(a:dictionary, key)
+    return []
+  endif
+
+  let list = a:dictionary[key]
+  if type(list) == type({})
+    " Convert dictionary dictionary.
+    unlet list
+    let list = values(a:dictionary[key])
+  endif
+
+  return (len(a:cur_keyword_str) == a:completion_length && &ignorecase)?
+        \ list : neocomplcache#keyword_filter(copy(list), a:cur_keyword_str)
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
   let ret = []
