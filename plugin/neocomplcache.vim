@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 May 2012.
+" Last Modified: 21 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,21 +57,21 @@ command! -nargs=1 -bar NeoComplCacheUnlockSource
       \ call neocomplcache#unlock_source(<q-args>)
 
 " Warning if using obsolute mappings."{{{
-inoremap <unique> <Plug>(neocomplcache_snippets_expand)
+silent! inoremap <unique> <Plug>(neocomplcache_snippets_expand)
       \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
-snoremap <unique> <Plug>(neocomplcache_snippets_expand)
+silent! snoremap <unique> <Plug>(neocomplcache_snippets_expand)
       \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
-inoremap <unique> <Plug>(neocomplcache_snippets_jump)
+silent! inoremap <unique> <Plug>(neocomplcache_snippets_jump)
       \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
-snoremap <unique> <Plug>(neocomplcache_snippets_jump)
+silent! snoremap <unique> <Plug>(neocomplcache_snippets_jump)
       \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
-inoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
+silent! inoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
       \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
-snoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
+silent! snoremap <unique> <Plug>(neocomplcache_snippets_force_expand)
       \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
-inoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
+silent! inoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
       \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
-snoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
+silent! snoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
       \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 function! s:print_snippets_complete_error()
   return 'Warning: neocomplcache snippets source was splitted!'

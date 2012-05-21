@@ -954,6 +954,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-05-21
+- Fixed warning mappings.
+
 2012-05-20
 - Fixed g:neocomplcache_enable_prefetch initialization.
 - Added neocomplcache#complete_check().
