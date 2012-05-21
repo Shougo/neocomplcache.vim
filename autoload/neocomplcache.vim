@@ -527,8 +527,8 @@ function! neocomplcache#enable() "{{{
         \ unite#sources#neocomplcache#start_quick_match()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)
         \ unite#sources#snippet#start_complete()
-  inoremap <expr><silent> <Plug>(neocomplcache_start_auto_complete)
-        \ neocomplcache#popup_post()
+  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
+        \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
 
   " Check if "vim" command is executable.
   if neocomplcache#has_vimproc() && !executable('vim')
@@ -776,11 +776,7 @@ function! s:do_auto_complete(event)"{{{
           \ "\<C-x>\<C-u>\<C-p>\<Down>" :
           \ "\<C-x>\<C-u>\<C-p>"), 'n')
   else
-    call feedkeys("\<C-x>\<C-u>"
-          \."\<C-r>=neocomplcache#popup_post()\<CR>", 'n')
-    " call feedkeys("\<C-x>\<C-u>", 'n')
-    " call feedkeys(
-    "       \ "\<Plug>(neocomplcache_start_auto_complete)", '')
+    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
   endif
 
   let s:changedtick = b:changedtick

@@ -956,6 +956,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-05-21
 - Fixed warning mappings.
+- Silent mapping.
 
 2012-05-20
 - Fixed g:neocomplcache_enable_prefetch initialization.
