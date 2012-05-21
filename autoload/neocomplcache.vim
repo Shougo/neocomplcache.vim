@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 May 2012.
+" Last Modified: 21 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -480,7 +480,8 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_text_mode_filetypes')
     let g:neocomplcache_text_mode_filetypes = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_text_mode_filetypes,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_text_mode_filetypes,
         \ 'text,help,tex,gitcommit,vcs-commit', 1)
   "}}}
 
@@ -526,6 +527,8 @@ function! neocomplcache#enable() "{{{
         \ unite#sources#neocomplcache#start_quick_match()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)
         \ unite#sources#snippet#start_complete()
+  inoremap <expr><silent> <Plug>(neocomplcache_start_auto_complete)
+        \ neocomplcache#popup_post()
 
   " Check if "vim" command is executable.
   if neocomplcache#has_vimproc() && !executable('vim')
@@ -771,10 +774,13 @@ function! s:do_auto_complete(event)"{{{
   if g:neocomplcache_enable_prefetch || &l:formatoptions =~# 'a'
     call feedkeys((g:neocomplcache_enable_auto_select ?
           \ "\<C-x>\<C-u>\<C-p>\<Down>" :
-          \ "\<C-x>\<C-u>\<C-p>"), "n")
+          \ "\<C-x>\<C-u>\<C-p>"), 'n')
   else
     call feedkeys("\<C-x>\<C-u>"
-          \."\<C-r>=neocomplcache#popup_post()\<CR>", "n")
+          \."\<C-r>=neocomplcache#popup_post()\<CR>", 'n')
+    " call feedkeys("\<C-x>\<C-u>", 'n')
+    " call feedkeys(
+    "       \ "\<Plug>(neocomplcache_start_auto_complete)", '')
   endif
 
   let s:changedtick = b:changedtick
