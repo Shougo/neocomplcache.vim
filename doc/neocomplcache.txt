@@ -661,8 +661,28 @@ g:neocomplcache_source_completion_length	*g:neocomplcache_source_completion_leng
 g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
 		It is a dictionary to control each source's completion
 		priority.
+		The key is source name and the value is source priority number.
 		Note: g:neocomplcache_plugin_rank is deprecated name.
 		
+		The default rank of each sources:
+		dictionary_complete : 4
+		buffer_complete : 5
+		syntax_complete : 7
+		include_complete : 8
+		snippets_complete : 8
+		vim_complete : 300
+		omni_complete : 300
+		other plugin sources : 5
+		other completefunc sources : 10
+		other ftplugin sources : 100
+		
+		Ex:
+>
+		let g:neocomplcache_source_rank = {
+			\ 'snippets_complete' : 100,
+			\ 'abbrev_complete' : 50,
+			\ }
+<
 		Default value is set by each sources.
 
 g:neocomplcache_force_overwrite_completefunc	*g:neocomplcache_force_overwrite_completefunc*
@@ -957,6 +977,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-05-21
 - Fixed warning mappings.
 - Silent mapping.
+- Improved g:neocomplcache_source_rank documentaion.
 
 2012-05-20
 - Fixed g:neocomplcache_enable_prefetch initialization.
