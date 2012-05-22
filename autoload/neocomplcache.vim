@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 May 2012.
+" Last Modified: 22 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1033,6 +1033,10 @@ endfunction"}}}
 " PosOrder."{{{
 function! s:compare_pos(i1, i2)
   return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
+endfunction"}}}
+" WordOrder."{{{
+function! neocomplcache#compare_word(i1, i2)
+  return (a:i1.word ># a:i2.word) ? 1 : -1
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
