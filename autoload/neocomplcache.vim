@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 May 2012.
+" Last Modified: 23 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -615,7 +615,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
 
   let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
   let s:complete_words = neocomplcache#get_complete_words(
-          \ s:complete_results, 1, cur_keyword_pos, a:base)
+          \ s:complete_results, cur_keyword_pos, a:base)
   let s:cur_keyword_str = a:base
   let s:is_prefetch = 0
 
@@ -660,7 +660,7 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
 
   let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
   let complete_words = neocomplcache#get_complete_words(
-        \ s:complete_results, 1, cur_keyword_pos, a:base)
+        \ s:complete_results, cur_keyword_pos, a:base)
 
   let s:complete_words = complete_words
   let s:cur_keyword_str = a:base
@@ -1022,21 +1022,26 @@ function! neocomplcache#add_dictionaries(dictionaries)"{{{
   return ret
 endfunction"}}}
 
-" RankOrder."{{{
+" Rank order."{{{
 function! neocomplcache#compare_rank(i1, i2)
-  let diff = a:i2.rank - a:i1.rank
+  let diff = get(a:i2, 'rank', 0) - get(a:i1, 'rank', 0)
   if !diff
     let diff = (a:i1.word ># a:i2.word) ? 1 : -1
   endif
   return diff
 endfunction"}}}
-" PosOrder."{{{
+" Pos order."{{{
 function! s:compare_pos(i1, i2)
   return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
 endfunction"}}}
-" WordOrder."{{{
+" Word order."{{{
 function! neocomplcache#compare_word(i1, i2)
   return (a:i1.word ># a:i2.word) ? 1 : -1
+endfunction"}}}
+" Source rank order."{{{
+function! s:compare_source_rank(i1, i2)
+  return neocomplcache#get_source_rank(a:i2[0]) -
+        \ neocomplcache#get_source_rank(a:i1[0])
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
@@ -1370,14 +1375,16 @@ function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
 
   return cur_keyword_pos
 endfunction"}}}
-function! neocomplcache#get_complete_words(complete_results, is_sort,
+function! neocomplcache#get_complete_words(complete_results,
       \ cur_keyword_pos, cur_keyword_str) "{{{
   let frequencies = neocomplcache#is_source_enabled('buffer_complete') ?
         \ neocomplcache#sources#buffer_complete#get_frequencies() : {}
 
   " Append prefix.
   let complete_words = []
-  for [source_name, result] in items(a:complete_results)
+  let len_words = 0
+  for [source_name, result] in sort(items(a:complete_results),
+        \ 's:compare_source_rank')
     let result.complete_words = deepcopy(result.complete_words)
     if result.cur_keyword_pos > a:cur_keyword_pos
       let prefix = a:cur_keyword_str[: result.cur_keyword_pos
@@ -1388,29 +1395,31 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
       endfor
     endif
 
-    let base_rank = neocomplcache#get_source_rank(source_name)
-
-    for keyword in result.complete_words
-      let word = keyword.word
-      if !has_key(keyword, 'rank')
-        let keyword.rank = base_rank
-      endif
-      if has_key(frequencies, word)
-        let keyword.rank = keyword.rank * frequencies[word]
-      endif
+    for keyword in filter(copy(result.complete_words),
+          \ 'has_key(frequencies, v:val.word)')
+      let keyword.rank = frequencies[keyword.word]
     endfor
+
+    if !neocomplcache#is_eskk_enabled()
+      call sort(result.complete_words, g:neocomplcache_compare_function)
+    endif
 
     let complete_words += s:remove_next_keyword(
           \ source_name, result.complete_words)
+    let len_words += len(result.complete_words)
+
+    if g:neocomplcache_max_list > 0
+          \ && len_words > g:neocomplcache_max_list
+      break
+    endif
   endfor
 
   if neocomplcache#complete_check()
     return []
   endif
 
-  " Sort.
-  if !neocomplcache#is_eskk_enabled() && a:is_sort
-    call sort(complete_words, g:neocomplcache_compare_function)
+  if g:neocomplcache_max_list >= 0
+    let complete_words = complete_words[: g:neocomplcache_max_list]
   endif
 
   " Check dup and set icase.
@@ -1439,14 +1448,6 @@ function! neocomplcache#get_complete_words(complete_results, is_sort,
     endif
   endfor
   let complete_words = words
-
-  if neocomplcache#complete_check()
-    return []
-  endif
-
-  if g:neocomplcache_max_list >= 0
-    let complete_words = complete_words[: g:neocomplcache_max_list]
-  endif
 
   " Delimiter check.
   let filetype = neocomplcache#get_context_filetype()
