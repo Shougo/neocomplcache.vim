@@ -797,7 +797,8 @@ function! neocomplcache#available_plugins()"{{{
 endfunction"}}}
 function! neocomplcache#available_sources()"{{{
   call s:set_context_filetype()
-  return extend(extend(copy(s:complfunc_sources), s:plugin_sources), s:loaded_ftplugin_sources)
+  return extend(extend(copy(s:complfunc_sources), s:plugin_sources),
+        \ s:loaded_ftplugin_sources)
 endfunction"}}}
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Escape."{{{
@@ -1042,6 +1043,10 @@ endfunction"}}}
 function! s:compare_source_rank(i1, i2)
   return neocomplcache#get_source_rank(a:i2[0]) -
         \ neocomplcache#get_source_rank(a:i1[0])
+endfunction"}}}
+" Nothing order."{{{
+function! neocomplcache#compare_nothing(i1, i2)
+  return 0
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{
@@ -1380,6 +1385,8 @@ function! neocomplcache#get_complete_words(complete_results,
   let frequencies = neocomplcache#is_source_enabled('buffer_complete') ?
         \ neocomplcache#sources#buffer_complete#get_frequencies() : {}
 
+  let sources = neocomplcache#available_sources()
+
   " Append prefix.
   let complete_words = []
   let len_words = 0
@@ -1400,8 +1407,10 @@ function! neocomplcache#get_complete_words(complete_results,
       let keyword.rank = frequencies[keyword.word]
     endfor
 
-    if !neocomplcache#is_eskk_enabled()
-      call sort(result.complete_words, g:neocomplcache_compare_function)
+    let compare_func = get(sources[source_name], 'compare_func',
+          \ g:neocomplcache_compare_function)
+    if compare_func !=# 'neocomplcache#compare_nothing'
+      call sort(result.complete_words, compare_func)
     endif
 
     let complete_words += s:remove_next_keyword(
@@ -1418,7 +1427,7 @@ function! neocomplcache#get_complete_words(complete_results,
     return []
   endif
 
-  if g:neocomplcache_max_list >= 0
+  if g:neocomplcache_max_list > 0
     let complete_words = complete_words[: g:neocomplcache_max_list]
   endif
 

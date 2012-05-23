@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 May 2012.
+" Last Modified: 23 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,7 @@ set cpo&vim
 let s:source = {
       \ 'name' : 'omni_complete',
       \ 'kind' : 'complfunc',
+      \ 'compare_func' : 'neocomplcache#compare_nothing',
       \}
 
 function! s:source.initialize()"{{{
