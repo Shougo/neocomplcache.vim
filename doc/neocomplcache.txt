@@ -977,6 +977,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-05-24
 - Changed filename_complete default rank.
+- Improved auto complete behavior.
 
 2012-05-23
 - Improved sort behavior.
