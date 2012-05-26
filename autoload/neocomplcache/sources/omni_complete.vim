@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2012.
+" Last Modified: 26 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -207,17 +207,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     let cur_keyword_str = a:cur_keyword_str
   endif
 
-  if omnifunc ==# 'rubycomplete#Complete'
-        \ && is_wildcard && &l:modifiable
-    let line = getline('.')
-
-    let cur_text =
-          \ cur_text[: match(neocomplcache#get_cur_text(),
-          \   '\%(\*\w\+\)\+$') - 1]
-
-    call setline('.', cur_text)
-  endif
-
   try
     let list = call(omnifunc,
           \ [0, omnifunc ==# 'rubycomplete#Complete' ?
@@ -229,11 +218,6 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     call neocomplcache#print_error(v:exception)
     let list = []
   finally
-    if omnifunc ==# 'rubycomplete#Complete'
-          \ && is_wildcard && &l:modifiable
-      call setline('.', line)
-    endif
-
     if getpos('.') != pos
       call setpos('.', pos)
     endif
