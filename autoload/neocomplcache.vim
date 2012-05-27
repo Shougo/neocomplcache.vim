@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 May 2012.
+" Last Modified: 27 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -732,8 +732,7 @@ function! s:do_auto_complete(event)"{{{
         \ || (neocomplcache#is_eskk_enabled() &&
         \      !neocomplcache#is_eskk_convertion(cur_text))
         \ || (!neocomplcache#is_eskk_enabled() &&
-        \      (exists('b:skk_on') && b:skk_on)
-        \     || char2nr(split(cur_text, '\zs')[-1]) > 0x80)
+        \      neocomplcache#is_multibyte_input(cur_text))
         \ || g:neocomplcache_lock_iminsert && &l:iminsert
     let s:cur_keyword_str = ''
     let s:complete_words = []
@@ -1186,7 +1185,13 @@ function! neocomplcache#is_eskk_enabled()"{{{
   return exists('*eskk#is_enabled') && eskk#is_enabled()
 endfunction"}}}
 function! neocomplcache#is_eskk_convertion(cur_text)"{{{
-  return a:cur_text =~ '笆ｽ'
+  return neocomplcache#is_eskk_enabled()
+        \   && eskk#get_buftable().get_henkan_phase() !=#
+        \             g:eskk#buftable#PHASE_NORMAL
+endfunction"}}}
+function! neocomplcache#is_multibyte_input(cur_text)"{{{
+  return (exists('b:skk_on') && b:skk_on)
+        \     || char2nr(split(a:cur_text, '\zs')[-1]) > 0x80
 endfunction"}}}
 function! neocomplcache#is_text_mode()"{{{
   return s:is_text_mode
