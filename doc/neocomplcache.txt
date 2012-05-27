@@ -979,6 +979,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed omni_complete for rubycomplete.
 - Fixed for eskk convertion check.
 - Improved check lock.
+- Improved for omni_complete.
 
 2012-05-24
 - Changed filename_complete default rank.
