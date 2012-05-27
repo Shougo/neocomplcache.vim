@@ -674,7 +674,6 @@ endfunction"}}}
 
 function! s:do_auto_complete(event)"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
-        \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#is_locked()
     return
   endif
@@ -1159,8 +1158,10 @@ endfunction"}}}
 function! neocomplcache#is_locked(...)"{{{
   let bufnr = a:0 > 0 ? a:1 : bufnr('%')
   return !s:is_enabled
-        \ || (has_key(s:complete_lock, bufnr) && s:complete_lock[bufnr])
-        \ || (g:neocomplcache_lock_buffer_name_pattern != '' && bufname(bufnr) =~ g:neocomplcache_lock_buffer_name_pattern)
+        \ || g:neocomplcache_disable_auto_complete
+        \ || get(s:complete_lock, bufnr, 0)
+        \ || (g:neocomplcache_lock_buffer_name_pattern != '' &&
+        \   bufname(bufnr) =~ g:neocomplcache_lock_buffer_name_pattern)
 endfunction"}}}
 function! neocomplcache#is_plugin_locked(plugin_name)"{{{
   if !s:is_enabled
@@ -1621,7 +1622,7 @@ function! neocomplcache#toggle_lock()"{{{
     return
   endif
 
-  if !has_key(s:complete_lock, bufnr('%')) || !s:complete_lock[bufnr('%')]
+  if !get(s:complete_lock, bufnr('%'), 0)
     echo 'neocomplcache is locked!'
     call neocomplcache#lock()
   else
@@ -1631,7 +1632,8 @@ function! neocomplcache#toggle_lock()"{{{
 endfunction"}}}
 function! neocomplcache#lock(...)"{{{
   if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
+    call neocomplcache#print_warning(
+          \ 'neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -1639,7 +1641,8 @@ function! neocomplcache#lock(...)"{{{
 endfunction"}}}
 function! neocomplcache#unlock(...)"{{{
   if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
+    call neocomplcache#print_warning(
+          \ 'neocomplcache is disabled! This command is ignored.')
     return
   endif
 
