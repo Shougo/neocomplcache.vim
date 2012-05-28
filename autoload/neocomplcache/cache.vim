@@ -278,8 +278,9 @@ function! s:async_load(argv, cache_dir, filename)"{{{
       if has('gui_macvim')
         " MacVim check.
         if !executable('/Applications/MacVim.app/Contents/MacOS/Vim')
-          echoerr 'You installed MacVim in not default directory!'.
-                \ ' You must add MacVim install path in $PATH.'
+          call neocomplcache#print_error(
+                \ 'You installed MacVim in not default directory!'.
+                \ ' You must add MacVim install path in $PATH.')
           return
         endif
 
