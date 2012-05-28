@@ -279,7 +279,7 @@ function! s:async_load(argv, cache_dir, filename)"{{{
         " MacVim check.
         if !executable('/Applications/MacVim.app/Contents/MacOS/Vim')
           echoerr 'You installed MacVim in not default directory!'.
-                \ ' You must set g:vimshell_editor_command manually.'
+                \ ' You must add MacVim install path in $PATH.'
           return
         endif
 
