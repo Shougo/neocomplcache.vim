@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2012.
+" Last Modified: 28 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -275,8 +275,19 @@ function! s:async_load(argv, cache_dir, filename)"{{{
     let vim_path = base_path .
           \ (neocomplcache#util#is_windows() ? '/vim.exe' : '/vim')
     if !executable(vim_path) && neocomplcache#util#is_mac()
-      " Note: Search "Vim" instead of vim.
-      let vim_path = base_path. '/Vim'
+      if has('gui_macvim')
+        " MacVim check.
+        if !executable('/Applications/MacVim.app/Contents/MacOS/Vim')
+          echoerr 'You installed MacVim in not default directory!'.
+                \ ' You must set g:vimshell_editor_command manually.'
+          return
+        endif
+
+        let vim_path = '/Applications/MacVim.app/Contents/MacOS/Vim'
+      else
+        " Note: Search "Vim" instead of vim.
+        let vim_path = base_path. '/Vim'
+      endif
     endif
 
     if !executable(vim_path)
