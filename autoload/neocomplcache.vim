@@ -734,7 +734,7 @@ function! s:do_auto_complete(event)"{{{
   " Prevent infinity loop.
   if cur_text == ''
         \ || cur_text == s:old_cur_text
-        \ || cur_text =~ '\s\+$'
+        \ || cur_text =~ '^\s*$'
         \ || (neocomplcache#is_eskk_enabled() &&
         \      !neocomplcache#is_eskk_convertion(cur_text))
         \ || (!neocomplcache#is_eskk_enabled() &&
