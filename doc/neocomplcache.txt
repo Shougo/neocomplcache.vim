@@ -975,6 +975,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-05-31
+- Improved MacOS check.
+
 2012-05-30
 - Fixed for MacVim check.
 
