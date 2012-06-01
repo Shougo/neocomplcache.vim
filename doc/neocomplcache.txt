@@ -975,6 +975,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-06-01
+- Improved asynchronous cache behavior.
+
 2012-05-31
 - Improved MacOS check.
 - Fixed for css omni_complete.

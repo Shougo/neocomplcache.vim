@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2012.
+" Last Modified: 01 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,6 +40,10 @@ function! s:main(argv)"{{{
           \ filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
   endif
 
+  if empty(keyword_list)
+    return
+  endif
+
   " Create dictionary key.
   for keyword in keyword_list
     if !has_key(keyword, 'abbr')
@@ -54,23 +58,20 @@ function! s:main(argv)"{{{
   endfor
 
   " Output cache.
-  let word_list = []
-  for keyword in keyword_list
-    call add(word_list, printf('%s|||%s|||%s|||%s',
-          \keyword.word, keyword.abbr, keyword.menu, keyword.kind))
-  endfor
-
-  call writefile(word_list, outputname)
+  call writefile(map(keyword_list,
+        \ "printf('%s|||%s|||%s|||%s',
+        \ v:val.word, v:val.abbr, v:val.menu, v:val.kind)"),
+        \ outputname)
 endfunction"}}}
 
 function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
-  if filereadable(a:filename)
-    let lines = map(readfile(a:filename),
-          \ 'iconv(v:val, a:fileencoding, &encoding)')
-  else
+  if !filereadable(a:filename)
     " File not found.
     return []
   endif
+
+  let lines = map(readfile(a:filename),
+        \ 'iconv(v:val, a:fileencoding, &encoding)')
 
   let pattern = get(readfile(a:pattern_file_name), 0, '\h\w*')
 
@@ -128,6 +129,10 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
       let i += 1
     endwhile
   else
+    if !filereadable(a:filename)
+      return []
+    endif
+
     " Use filename.
     let tags_list = map(readfile(a:filename),
           \ 'iconv(v:val, a:fileencoding, &encoding)')
