@@ -1198,8 +1198,8 @@ function! neocomplcache#is_eskk_enabled()"{{{
 endfunction"}}}
 function! neocomplcache#is_eskk_convertion(cur_text)"{{{
   return neocomplcache#is_eskk_enabled()
-        \   && eskk#get_buftable().get_henkan_phase() !=#
-        \             g:eskk#buftable#PHASE_NORMAL
+        \   && eskk#get_preedit().get_henkan_phase() !=#
+        \             g:eskk#preedit#PHASE_NORMAL
 endfunction"}}}
 function! neocomplcache#is_multibyte_input(cur_text)"{{{
   return (exists('b:skk_on') && b:skk_on)
