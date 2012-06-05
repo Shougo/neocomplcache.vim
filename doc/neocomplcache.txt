@@ -699,6 +699,13 @@ g:neocomplcache_release_cache_time		*g:neocomplcache_release_cache_time*
 		
 		Default value is 900.
 
+g:neocomplcache_use_vimproc			*g:neocomplcache_use_vimproc*
+		This variable is non 0, neocomplcache use |vimproc|.
+		Note: If this variable is non 0, neocomplcache will make cache
+		asynchronously.
+		
+		Default value is vimproc auto detection result.
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
@@ -974,6 +981,9 @@ Todo
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-06-05
+- Added g:neocomplcache_use_vimproc option.
 
 2012-06-01
 - Improved asynchronous cache behavior.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2012.
+" Last Modified: 05 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -278,6 +278,7 @@ function! s:async_load(argv, cache_dir, filename)"{{{
           call neocomplcache#print_error(
                 \ 'You installed MacVim in not default directory!'.
                 \ ' You must add MacVim install path in $PATH.')
+          let g:neocomplcache_use_vimproc = 0
           return
         endif
 
@@ -285,6 +286,7 @@ function! s:async_load(argv, cache_dir, filename)"{{{
       else
         call neocomplcache#print_error(
               \ printf('Vim path : "%s" is not found.', v:progname))
+        let g:neocomplcache_use_vimproc = 0
         return
       endif
     else
@@ -303,6 +305,7 @@ function! s:async_load(argv, cache_dir, filename)"{{{
     if !executable(vim_path)
       call neocomplcache#print_error(
             \ printf('Vim path : "%s" is not found.', vim_path))
+      let g:neocomplcache_use_vimproc = 0
       return
     endif
 
