@@ -982,6 +982,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-06-06
+- Fixed for fuzzyfinder.
+
 2012-06-05
 - Added g:neocomplcache_use_vimproc option.
 
