@@ -982,6 +982,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-06-07
+- Fixed for tags_complete.
+
 2012-06-06
 - Fixed for fuzzyfinder.
 
