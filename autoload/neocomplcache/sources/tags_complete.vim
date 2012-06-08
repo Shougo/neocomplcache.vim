@@ -97,12 +97,11 @@ function! s:caching_tags(force)"{{{
   let bufnumber = bufnr('%')
 
   let s:async_tags_list[bufnumber] = []
-  for tags in map(tagfiles(),
+  for tags in map(filter(tagfiles(), 'getfsize(v:val) > 0'),
         \ "neocomplcache#util#substitute_path_separator(
         \    fnamemodify(v:val, ':p'))")
-    if getfsize(tags) > 0 &&
-          \ (a:force || getfsize(tags)
-          \         < g:neocomplcache_caching_limit_file_size)
+    if a:force || getfsize(tags)
+          \         < g:neocomplcache_caching_limit_file_size
       call add(s:async_tags_list[bufnumber],
             \ s:initialize_tags(tags))
     endif
