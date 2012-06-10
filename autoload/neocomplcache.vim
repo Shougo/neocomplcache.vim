@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jun 2012.
+" Last Modified: 10 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -314,7 +314,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
         \ 'help', 'vim')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'tex', 'bib')
+        \ 'tex', 'bib,plaintex')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'plaintex', 'bib,tex')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
         \ 'lingr-say', 'lingr-messages,lingr-members')
 
