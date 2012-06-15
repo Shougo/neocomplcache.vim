@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2012.
+" Last Modified: 15 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -490,6 +490,12 @@ function! neocomplcache#enable() "{{{
   endif
   call neocomplcache#set_dictionary_helper(g:neocomplcache_tags_filter_patterns, 'c,cpp', 
         \'v:val.word !~ ''^[~_]''')
+  "}}}
+
+  " Initialize ignore composite filetypes
+  if !exists('g:neocomplcache_ignore_composite_filetype_lists')
+    let g:neocomplcache_ignore_composite_filetype_lists = {}
+  endif
   "}}}
 
   " Add commands."{{{
@@ -1279,8 +1285,12 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
 
   let filetypes = [filetype]
   if filetype =~ '\.'
-    " Set compound filetype.
-    let filetypes += split(filetype, '\.')
+    if has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
+      let filetypes = [g:neocomplcache_ignore_composite_filetype_lists[filetype]]
+    else
+      " Set compound filetype.
+      let filetypes += split(filetype, '\.')
+    endif
   endif
 
   for ft in filter(copy(filetypes),
