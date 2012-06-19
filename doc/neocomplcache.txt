@@ -706,6 +706,23 @@ g:neocomplcache_use_vimproc			*g:neocomplcache_use_vimproc*
 		
 		Default value is vimproc auto detection result.
 
+g:neocomplcache_ignore_composite_filetype_lists	*g:neocomplcache_ignore_composite_filetype_lists*
+		It is a dictionary to ignore composite file type.
+		The dictionary's key is composite filetype and value is
+		filetype.
+		Ex:
+>
+		let g:neocomplcache_ignore_composite_filetype_lists = {
+			\ 'ruby.spec' : 'ruby'
+			\ }
+<
+		If you open filetype like |ruby.spec|, completion is
+		intended for |ruby| and |spec|.
+		But if you only want to complete |ruby| filetype,
+		you can set this variable to ignore |spec|.
+		
+		Default value is {}.
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
