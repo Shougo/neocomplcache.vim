@@ -999,6 +999,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-06-21
+- Improved check_cache_list().
+
 2012-06-10
 - Improved same filetype for plaintex.
 
