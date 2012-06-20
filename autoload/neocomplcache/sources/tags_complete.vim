@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jun 2012.
+" Last Modified: 21 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,6 +38,9 @@ function! s:source.initialize()"{{{
   let s:tags_list = {}
   let s:completion_length =
         \ neocomplcache#get_auto_completion_length('tags_complete')
+
+  let g:neocomplcache_tags_caching_limit_file_size =
+        \ get(g:, 'neocomplcache_tags_caching_limit_file_size', 500000)
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/tags_cache')

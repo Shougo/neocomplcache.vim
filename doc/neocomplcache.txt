@@ -431,6 +431,13 @@ g:neocomplcache_tags_filter_patterns		*g:neocomplcache_tags_filter_patterns*
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
+g:neocomplcache_tags_caching_limit_file_size	*g:neocomplcache_tags_caching_limit_file_size*
+		This variable set file size to make a cache of a file in
+		tags_complete source. If open file is bigger than this size,
+		neocomplcache do not make a tags cache.
+		
+		Default value is 500000.
+
 g:neocomplcache_same_filetype_lists		*g:neocomplcache_same_filetype_lists*
 		It is a dictionary to connect file type mutually.  It is
 		effective at time to let you refer to c and cpp mutually.
@@ -901,10 +908,12 @@ member_complete.vim				*member_complete*
 
 tags_complete.vim				*tags_complete*
 		This source analyzes a tag file from tagfiles() for completion.
-		When a huge tag file is set, neocomplcache don't make cache if
-		you don't execute |:NeoComplCacheCachingTags|command.  Because
-		tags_complete is too slow if tags_complete read a big tags
-		file.  You should use more convenient include completion now.
+		When a huge tag file (above
+		|g:neocomplcache_tags_caching_limit_file_size|) is set,
+		neocomplcache don't make cache if you don't execute
+		|:NeoComplCacheCachingTags|command.  Because tags_complete is
+		too slow if tags_complete read a big tags file.  You should use
+		more convenient include completion now.
 
 syntax_complete.vim				*syntax_complete*
 		This source analyzes a syntax file like
@@ -1001,6 +1010,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-06-21
 - Improved check_cache_list().
+- Added g:neocomplcache_tags_caching_limit_file_size variable.
 
 2012-06-10
 - Improved same filetype for plaintex.
