@@ -1008,6 +1008,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-06-23
+- Improved error message.
+
 2012-06-21
 - Improved check_cache_list().
 - Added g:neocomplcache_tags_caching_limit_file_size variable.

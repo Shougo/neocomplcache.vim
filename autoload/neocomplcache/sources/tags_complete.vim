@@ -105,7 +105,7 @@ function! s:caching_tags(force)"{{{
         \    fnamemodify(v:val, ':p'))")
     if getfsize(tags) > 0 &&
           \ (a:force || getfsize(tags)
-          \         < g:neocomplcache_caching_limit_file_size)
+          \         < g:neocomplcache_tags_caching_limit_file_size)
       call add(s:async_tags_list[bufnumber],
             \ s:initialize_tags(tags))
     endif
