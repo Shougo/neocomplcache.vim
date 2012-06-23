@@ -60,7 +60,6 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
         \ a:keyword_list_dictionary[a:key], a:completion_length)
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
-  echomsg a:cache_dir
   try
     return eval(get(neocomplcache#cache#readfile(
           \ a:cache_dir, a:filename), 0, '[]'))
