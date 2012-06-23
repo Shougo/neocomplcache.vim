@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2012.
+" Last Modified: 23 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,10 +58,11 @@ function! s:main(argv)"{{{
   endfor
 
   " Output cache.
-  call writefile(map(keyword_list,
-        \ "printf('%s|||%s|||%s|||%s',
-        \ v:val.word, v:val.abbr, v:val.menu, v:val.kind)"),
-        \ outputname)
+  " call writefile(map(keyword_list,
+  "       \ "printf('%s|||%s|||%s|||%s',
+  "       \ v:val.word, v:val.abbr, v:val.menu, v:val.kind)"),
+  "       \ outputname)
+  call writefile([string(keyword_list)], outputname)
 endfunction"}}}
 
 function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{

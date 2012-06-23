@@ -61,6 +61,20 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   try
+    return eval(get(neocomplcache#cache#readfile(
+          \ a:cache_dir, a:filename), 0, '[]'))
+  catch
+    let cache_name =
+          \ neocomplcache#cache#encode_name(a:cache_dir, a:filename)
+    if filereadable(cache_name)
+      call delete(cache_name)
+    endif
+
+    return []
+  endtry
+endfunction"}}}
+function! neocomplcache#cache#load_from_cache_old(cache_dir, filename)"{{{
+  try
     return map(map(neocomplcache#cache#readfile(a:cache_dir, a:filename),
           \ 'split(v:val, "|||", 1)'), '{
           \   "word" : v:val[0],
@@ -98,6 +112,10 @@ function! neocomplcache#cache#list2index(list, dictionary, completion_length)"{{
 endfunction"}}}
 
 function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
+  call neocomplcache#cache#writefile(
+        \ a:cache_dir, a:filename, [string(a:keyword_list)])
+endfunction"}}}
+function! neocomplcache#cache#save_cache_old(cache_dir, filename, keyword_list)"{{{
   " Create dictionary key.
   for keyword in a:keyword_list
     if !has_key(keyword, 'abbr')
