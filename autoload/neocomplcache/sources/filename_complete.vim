@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 May 2012.
+" Last Modified: 23 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -225,7 +225,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
               \ 'v:fname', string(dict.abbr), 'g'))
       else
         " Escape word.
-        let dict.word = escape(dict.word, ' *?[]"={}''')
+        let dict.word = escape(dict.word, ' ;*?[]"={}''')
       endif
     endfor
   endfor
@@ -352,7 +352,7 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
     endif
 
     " Escape word.
-    let dict.word = escape(dict.word, ' *?[]"={}''')
+    let dict.word = escape(dict.word, ' ;*?[]"={}''')
   endfor
 
   return dir_list + file_list
