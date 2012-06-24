@@ -103,7 +103,7 @@ function! s:caching_tags(force)"{{{
   for tags in map(tagfiles(),
         \ "neocomplcache#util#substitute_path_separator(
         \    fnamemodify(v:val, ':p'))")
-    if getfsize(tags) > 0 && tags !~? '/doc/tags\%(-\w\+\)\?$'
+    if getfsize(tags) > 0 && tags !~? '/doc/tags\%(-\w\+\)\?$' &&
           \ (a:force || getfsize(tags)
           \         < g:neocomplcache_tags_caching_limit_file_size)
       call add(s:async_tags_list[bufnumber],
