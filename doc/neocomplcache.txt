@@ -1008,6 +1008,14 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-06-25
+- Ignore document tags in tags_complete.
+
+2012-06-23
+- Improved error message.
+- Improved filename escape.
+- Fixed cache behavior.
+
 2012-06-21
 - Improved check_cache_list().
 - Added g:neocomplcache_tags_caching_limit_file_size variable.

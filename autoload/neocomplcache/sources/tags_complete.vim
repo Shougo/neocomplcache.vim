@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2012.
+" Last Modified: 25 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,8 +103,9 @@ function! s:caching_tags(force)"{{{
   for tags in map(filter(tagfiles(), 'getfsize(v:val) > 0'),
         \ "neocomplcache#util#substitute_path_separator(
         \    fnamemodify(v:val, ':p'))")
-    if a:force || getfsize(tags)
-          \         < g:neocomplcache_caching_limit_file_size
+    if tags !~? '/doc/tags\%(-\w\+\)\?$' &&
+          \ (a:force || getfsize(tags)
+          \         < g:neocomplcache_tags_caching_limit_file_size)
       call add(s:async_tags_list[bufnumber],
             \ s:initialize_tags(tags))
     endif
