@@ -1008,6 +1008,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-07-02
+- Improved word caching behavior.
+
 2012-06-28
 - Fixed neocomplcache#is_plugin_locked() error.
 

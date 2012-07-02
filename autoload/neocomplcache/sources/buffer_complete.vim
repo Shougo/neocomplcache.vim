@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jun 2012.
+" Last Modified: 02 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,8 +45,8 @@ function! s:source.initialize()"{{{
     autocmd CursorHold *
           \ call s:check_cache()
     autocmd InsertEnter,InsertLeave *
-          \ call s:caching_current_buffer(line('.') - 1,
-          \          line('.') + 1, 1)
+          \ call s:caching_current_buffer(
+          \          line('.') - 1, line('.') + 1, 1)
     autocmd VimLeavePre * call s:save_all_cache()
   augroup END"}}}
 
@@ -327,7 +327,7 @@ function! s:word_caching(srcname)"{{{
         \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
     if a:srcname == bufnr('%')
       " Make buffer cache.
-      call s:caching_current_buffer(1, line('$'), 0)
+      call s:caching_current_buffer(1, min([100, line('$')]), 0)
     endif
 
     return
