@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jul 2012.
+" Last Modified: 06 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -112,6 +112,10 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+  if !s:exists_current_source()
+    call s:check_source()
+  endif
+
   let keyword_list = []
   for [key, source] in s:get_sources_list()
     call neocomplcache#cache#check_cache_list('buffer_cache',
@@ -120,7 +124,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
           \ source.keyword_cache, s:completion_length)
 
     let keyword_list += neocomplcache#dictionary_filter(
-          \ source.keyword_cache, a:cur_keyword_str, s:completion_length)
+          \ source.keyword_cache, a:cur_keyword_str,
+          \ s:completion_length)
     if key == bufnr('%')
       let source.accessed_time = localtime()
       call s:calc_frequency()
@@ -365,11 +370,13 @@ function! s:check_source()"{{{
 
   " Check new buffer.
   let bufname = fnamemodify(bufname(bufnumber), ':p')
-  if (!has_key(s:buffer_sources, bufnumber) || s:check_changed_buffer(bufnumber))
+  if (!has_key(s:buffer_sources, bufnumber)
+        \ || s:check_changed_buffer(bufnumber))
         \ && !has_key(s:disable_caching_list, bufnumber)
         \ && !neocomplcache#is_locked(bufnumber)
         \ && !getwinvar(bufwinnr(bufnumber), '&previewwindow')
-        \ && getfsize(bufname) < g:neocomplcache_caching_limit_file_size
+        \ && getfsize(bufname) <
+        \      g:neocomplcache_caching_limit_file_size
 
     " Caching.
     call s:word_caching(bufnumber)
@@ -413,8 +420,8 @@ function! s:check_cache()"{{{
   for cache in values(source.keyword_cache)
     call filter(cache, "!has_key(v:val, 'line')
           \ || stridx(getline(v:val.line), v:val.word) >= 0
-          \ || search('\\<'.neocomplcache#util#escape_pattern(v:val.word).'\\>',
-          \       'wn', 0, 300) > 0")
+          \ || search('\\<'.neocomplcache#util#escape_pattern(
+          \     v:val.word).'\\>', 'wn', 0, 300) > 0")
   endfor
 endfunction"}}}
 

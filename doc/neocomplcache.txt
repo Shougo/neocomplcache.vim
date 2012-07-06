@@ -1008,6 +1008,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-07-06
+- Improved buffer source.
+
 2012-07-02
 - Improved word caching behavior.
 
