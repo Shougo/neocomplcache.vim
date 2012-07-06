@@ -1010,6 +1010,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-07-06
 - Improved buffer source.
+- Supported python3.
 
 2012-07-02
 - Improved word caching behavior.
