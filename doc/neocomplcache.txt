@@ -1008,6 +1008,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-07-08
+- Improved omni_complete.
+
 2012-07-06
 - Improved buffer source.
 - Supported python3.

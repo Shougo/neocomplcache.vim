@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jul 2012.
+" Last Modified: 08 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -240,31 +240,18 @@ function! s:get_omni_list(list)"{{{
   let omni_list = []
 
   " Convert string list.
-  for str in filter(copy(a:list), 'type(v:val) == '.type(''))
-    let dict = { 'word' : str, 'menu' : '[O]' }
-
-    call add(omni_list, dict)
-  endfor
-
-  for omni in filter(a:list, 'type(v:val) != '.type(''))
-    let dict = {
-          \'word' : omni.word, 'menu' : '[O]',
-          \'abbr' : has_key(omni, 'abbr')? omni.abbr : omni.word,
-          \}
-
-    if has_key(omni, 'kind')
-      let dict.kind = omni.kind
-    endif
-
-    if has_key(omni, 'menu')
-      let dict.menu .= ' ' . omni.menu
-    endif
-
-    if has_key(omni, 'info')
-      let dict.info = omni.info
+  for val in a:list
+    if type(val) == type('')
+      let dict = { 'word' : str, 'menu' : '[O]' }
+    else
+      let dict = val
+      let dict.menu = has_key(dict, 'menu') ?
+            \ '[O] ' . dict.menu : '[O]'
     endif
 
     call add(omni_list, dict)
+
+    unlet val
   endfor
 
   return omni_list
