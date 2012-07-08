@@ -264,6 +264,10 @@ function! s:get_omni_list(list)"{{{
       let dict.info = omni.info
     endif
 
+    if has_key(omni, 'dup')
+      let dict.dup = omni.dup
+    endif
+
     call add(omni_list, dict)
   endfor
 
