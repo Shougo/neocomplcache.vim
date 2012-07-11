@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jul 2012.
+" Last Modified: 11 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -242,7 +242,7 @@ function! s:get_omni_list(list)"{{{
   " Convert string list.
   for val in a:list
     if type(val) == type('')
-      let dict = { 'word' : str, 'menu' : '[O]' }
+      let dict = { 'word' : val, 'menu' : '[O]' }
     else
       let dict = val
       let dict.menu = has_key(dict, 'menu') ?
