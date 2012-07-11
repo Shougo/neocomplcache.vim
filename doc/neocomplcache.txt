@@ -1011,6 +1011,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-07-11
 - Check complete position.
 - Fixed omni_complete error.
+- Improved learning for Vim 7.3.598.
 
 2012-07-08
 - Improved omni_complete.
