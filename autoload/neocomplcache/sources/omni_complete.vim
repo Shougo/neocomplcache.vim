@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jul 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -240,7 +240,7 @@ function! s:get_omni_list(list)"{{{
   let omni_list = []
 
   " Convert string list.
-  for val in a:list
+  for val in deepcopy(a:list)
     if type(val) == type('')
       let dict = { 'word' : val, 'menu' : '[O]' }
     else

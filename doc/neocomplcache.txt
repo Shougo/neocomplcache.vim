@@ -1008,6 +1008,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-07-15
+- Fixed omni_complete.
+
 2012-07-11
 - Check complete position.
 - Fixed omni_complete error.
