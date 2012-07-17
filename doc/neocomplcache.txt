@@ -1008,6 +1008,9 @@ Todo
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-07-17
+- Improved python interface check.
+
 2012-07-11
 - Check complete position.
 - Fixed omni_complete error.
