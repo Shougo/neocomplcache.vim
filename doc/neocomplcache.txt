@@ -34,6 +34,7 @@ Examples		|neocomplcache-examples|
 Sources			|neocomplcache-sources|
   User sources		  |neocomplcache-user-sources|
 Create source		|neocomplcache-create-source|
+FAQ			|neocomplcache-faq|
 Changelog		|neocomplcache-changelog|
 
 ==============================================================================
@@ -1006,7 +1007,40 @@ ability of neocomplcache will spread by creating source by yourself.
 Todo
 
 ==============================================================================
+FAQ						*neocomplcache-faq*
+
+Q: Is there a way to control the colors used for popup menu using highlight
+groups?:
+
+A: Like this:
+>
+	highlight Pmenu ctermbg=8
+	highlight PmenuSel ctermbg=1
+	highlight PmenuSbar ctermbg=0
+<
+Q: Python(or Ruby) interface crashes Vim using neocomplcache:
+>
+	autocmd VimEnter * if !argc() | VimFiler | endif
+<
+A: This is not neocomplcache issues. Please report to omnicomplete(rubycomplete
+or pythoncomplete) and Vim interface maintainer.
+
+Q: I like to move cursor by cursor keys. But neocomplcache popups menus...
+
+A: Please set this in your .vimrc. But this feature requires Vim 7.3.418 or
+above.
+>
+	let g:neocomplcache_enable_insert_char_pre = 1
+<
+Q: Where is snippets for neocomplcache?
+
+A: https://github.com/Shougo/neocomplcache-snippets-complete
+
+==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-07-19
+- Added FAQ section(I tired...).
 
 2012-07-17
 - Improved python interface check.
