@@ -1018,12 +1018,12 @@ A: Like this:
 	highlight PmenuSel ctermbg=1
 	highlight PmenuSbar ctermbg=0
 <
+
 Q: Python(or Ruby) interface crashes Vim using neocomplcache:
->
-	autocmd VimEnter * if !argc() | VimFiler | endif
-<
-A: This is not neocomplcache issues. Please report to omnicomplete(rubycomplete
+
+A: This is not neocomplcache issue. Please report to omnicomplete(rubycomplete
 or pythoncomplete) and Vim interface maintainer.
+
 
 Q: I like to move cursor by cursor keys. But neocomplcache popups menus...
 
@@ -1032,6 +1032,7 @@ above.
 >
 	let g:neocomplcache_enable_insert_char_pre = 1
 <
+
 Q: Where is snippets for neocomplcache?
 
 A: https://github.com/Shougo/neocomplcache-snippets-complete
