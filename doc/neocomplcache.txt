@@ -839,7 +839,10 @@ EXAMPLES					*neocomplcache-examples*
 	
 	" Recommended key-mappings.
 	" <CR>: close popup and save indent.
-	inoremap <expr><CR>  neocomplcache#close_popup() . "\<CR>"
+	inoremap <expr><silent> <CR> <SID>my_cr_function()
+	function! s:my_cr_function()
+	  return pumvisible() ? neocomplcache#close_popup() . "\<CR>" : "\<CR>"
+	endfunction
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 	" <C-h>, <BS>: close popup and delete backword char.
@@ -1039,6 +1042,9 @@ A: https://github.com/Shougo/neocomplcache-snippets-complete
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-07-22
+- Updated examples.
 
 2012-07-19
 - Added FAQ section(I tired...).
