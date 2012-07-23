@@ -1040,8 +1040,18 @@ Q: Where is snippets for neocomplcache?
 
 A: https://github.com/Shougo/neocomplcache-snippets-complete
 
+Q: To disable python omni complete in neocomplcache?:
+
+A:
+>
+	let g:neocomplcache_omni_patterns['python'] = ''
+<
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-07-23
+- Added FAQ.
 
 2012-07-22
 - Updated examples.
