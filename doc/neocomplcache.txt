@@ -1050,6 +1050,9 @@ A:
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-07-24
+- Fixed complete done error.
+
 2012-07-23
 - Added FAQ.
 
