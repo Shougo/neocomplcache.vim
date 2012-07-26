@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2012.
+" Last Modified: 26 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -118,7 +118,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 
   if has_key(g:neocomplcache_omni_patterns, omnifunc)
     let pattern = g:neocomplcache_omni_patterns[omnifunc]
-  elseif filetype != '' && has_key(g:neocomplcache_omni_patterns, filetype)
+  elseif has_key(g:neocomplcache_omni_patterns, filetype)
     let pattern = g:neocomplcache_omni_patterns[filetype]
   else
     let pattern = ''
@@ -128,30 +128,14 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
-  let is_wildcard = g:neocomplcache_enable_wildcard && a:cur_text =~ '\*\w\+$'
-        \&& neocomplcache#is_auto_complete()
-
-  " Check wildcard.
-  if is_wildcard
-    " Check wildcard.
-    let cur_text = a:cur_text[: match(a:cur_text, '\%(\*\w\+\)\+$') - 1]
-  else
-    let cur_text = a:cur_text
-  endif
-
-  if !neocomplcache#is_eskk_enabled() && neocomplcache#is_auto_complete()
-        \ && cur_text !~ '\%(' . pattern . '\m\)$'
+  if !neocomplcache#is_eskk_enabled()
+        \ && neocomplcache#is_auto_complete()
+        \ && a:cur_text !~ '\%(' . pattern . '\m\)$'
     return -1
   endif
 
   " Save pos.
   let pos = getpos('.')
-
-  if is_wildcard && &l:modifiable
-    let line = getline('.')
-
-    call setline('.', cur_text)
-  endif
 
   try
     let cur_keyword_pos = call(omnifunc, [1, ''])
@@ -162,10 +146,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     call neocomplcache#print_error(v:exception)
     let cur_keyword_pos = -1
   finally
-    if is_wildcard && &l:modifiable
-      call setline('.', line)
-    endif
-
     if getpos('.') != pos
       call setpos('.', pos)
     endif

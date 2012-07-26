@@ -1052,6 +1052,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-07-26
 - Fixed for g:neocomplcache_enable_insert_char_pre.
+- Improved omni_complete source.
 
 2012-07-24
 - Fixed complete done error.
