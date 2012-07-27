@@ -1046,9 +1046,20 @@ A:
 >
 	let g:neocomplcache_omni_patterns['python'] = ''
 <
+Q: Can I enable quick match? :
 
+A: Quick match feature is removed in latest neocomplcache.
+Because quick match is hard to implement.
+But you can use |unite.vim| to quick match.
+>
+	imap <expr> -  pumvisible() ?
+	    \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
+<
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-07-27
+- Added FAQ section.
 
 2012-07-26
 - Fixed for g:neocomplcache_enable_insert_char_pre.
