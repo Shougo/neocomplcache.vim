@@ -1060,6 +1060,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-07-27
 - Added FAQ section.
+- Fixed skip filename patterns.
 
 2012-07-26
 - Fixed for g:neocomplcache_enable_insert_char_pre.
