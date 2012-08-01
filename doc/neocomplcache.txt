@@ -1058,6 +1058,9 @@ But you can use |unite.vim| to quick match.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-08-01
+- Fixed filename_complete.
+
 2012-07-27
 - Added FAQ section.
 - Fixed skip filename patterns.
