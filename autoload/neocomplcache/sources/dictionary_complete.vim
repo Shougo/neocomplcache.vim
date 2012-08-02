@@ -87,8 +87,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
 
   let filetype = neocomplcache#is_text_mode() ?
         \ 'text' : neocomplcache#get_context_filetype()
-  if neocomplcache#is_text_mode()
-        \ && !has_key(s:dictionary_list, 'text')
+  if !has_key(s:dictionary_list, filetype)
     " Caching.
     call s:caching()
   endif

@@ -1061,6 +1061,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-08-02
 - Fixed for g:neocomplcache_enable_insert_char_pre.
 - Fixed omni_complete for compound filetype.
+- Fixed dictionary_complete caching timing.
 
 2012-08-01
 - Fixed filename_complete.
