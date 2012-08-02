@@ -218,6 +218,10 @@ function! s:get_omni_func(filetype)
     else
       let pattern = ''
     endif
+
+    if pattern != ''
+      break
+    endif
   endfor
 
   return [omnifunc, pattern]
