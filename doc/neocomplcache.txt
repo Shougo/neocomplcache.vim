@@ -1058,6 +1058,9 @@ But you can use |unite.vim| to quick match.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-08-02
+- Fixed for g:neocomplcache_enable_insert_char_pre.
+
 2012-08-01
 - Fixed filename_complete.
 

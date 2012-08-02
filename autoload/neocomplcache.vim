@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jul 2012.
+" Last Modified: 02 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -611,9 +611,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let s:complete_results = {}
-      return (g:neocomplcache_enable_prefetch
-            \ || g:neocomplcache_enable_insert_char_pre) ?
-            \ -1 : -3
+      return g:neocomplcache_enable_prefetch ? -1 : -3
     endif
 
     return cur_keyword_pos
