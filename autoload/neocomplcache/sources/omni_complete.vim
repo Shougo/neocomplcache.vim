@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jul 2012.
+" Last Modified: 02 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -100,37 +100,13 @@ endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
   let filetype = neocomplcache#get_context_filetype()
+  let [omnifunc, pattern] = s:get_omni_func(filetype)
 
-  if neocomplcache#is_eskk_enabled()
-    let omnifunc = &l:omnifunc
-  elseif has_key(g:neocomplcache_omni_functions, filetype)
-    let omnifunc = g:neocomplcache_omni_functions[filetype]
-  elseif &filetype == filetype
-    let omnifunc = &l:omnifunc
-  else
-    " &omnifunc is irregal.
-    return -1
-  endif
-
-  if omnifunc == ''
-    return -1
-  endif
-
-  if has_key(g:neocomplcache_omni_patterns, omnifunc)
-    let pattern = g:neocomplcache_omni_patterns[omnifunc]
-  elseif has_key(g:neocomplcache_omni_patterns, filetype)
-    let pattern = g:neocomplcache_omni_patterns[filetype]
-  else
-    let pattern = ''
-  endif
-
-  if !neocomplcache#is_eskk_enabled() && pattern == ''
-    return -1
-  endif
-
-  if !neocomplcache#is_eskk_enabled()
-        \ && neocomplcache#is_auto_complete()
-        \ && a:cur_text !~ '\%(' . pattern . '\m\)$'
+  if omnifunc == '' ||
+        \ !neocomplcache#is_eskk_enabled()
+        \ && (pattern == '' ||
+        \     neocomplcache#is_auto_complete()
+        \     && a:cur_text !~ '\%(' . pattern . '\m\)$')
     return -1
   endif
 
@@ -219,6 +195,33 @@ function! neocomplcache#sources#omni_complete#define()"{{{
   return s:source
 endfunction"}}}
 
+function! s:get_omni_func(filetype)
+  let [omnifunc, pattern] = ['', '']
+
+  for ft in split(a:filetype, '\.')
+    if has_key(g:neocomplcache_omni_functions, ft)
+          \ && !neocomplcache#is_eskk_enabled()
+      let omnifunc = g:neocomplcache_omni_functions[ft]
+    else
+      let omnifunc = &l:omnifunc
+    endif
+
+    if omnifunc == ''
+      " &omnifunc is irregal.
+      continue
+    endif
+
+    if has_key(g:neocomplcache_omni_patterns, omnifunc)
+      let pattern = g:neocomplcache_omni_patterns[omnifunc]
+    elseif has_key(g:neocomplcache_omni_patterns, ft)
+      let pattern = g:neocomplcache_omni_patterns[ft]
+    else
+      let pattern = ''
+    endif
+  endfor
+
+  return [omnifunc, pattern]
+endfunction
 function! s:get_omni_list(list)"{{{
   let omni_list = []
 
