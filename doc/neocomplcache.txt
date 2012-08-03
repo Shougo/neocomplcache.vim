@@ -1057,6 +1057,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved omni_complete.
 - Added _ omnifunc.
 - Deleted completefunc_complete source.
+- Updated vital.
 
 2012-08-02
 - Fixed for g:neocomplcache_enable_insert_char_pre.
