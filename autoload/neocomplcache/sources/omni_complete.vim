@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2012.
+" Last Modified: 03 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -100,34 +100,10 @@ endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
   let filetype = neocomplcache#get_context_filetype()
-  let [omnifunc, pattern] = s:get_omni_func(filetype)
+  let s:complete_results = s:set_complete_results_pos(
+        \ s:get_omni_funcs(filetype), a:cur_text)
 
-  if omnifunc == '' ||
-        \ !neocomplcache#is_eskk_enabled()
-        \ && (pattern == '' ||
-        \     neocomplcache#is_auto_complete()
-        \     && a:cur_text !~ '\%(' . pattern . '\m\)$')
-    return -1
-  endif
-
-  " Save pos.
-  let pos = getpos('.')
-
-  try
-    let cur_keyword_pos = call(omnifunc, [1, ''])
-  catch
-    call neocomplcache#print_error(
-          \ 'Error occured calling omnifunction: ' . omnifunc)
-    call neocomplcache#print_error(v:throwpoint)
-    call neocomplcache#print_error(v:exception)
-    let cur_keyword_pos = -1
-  finally
-    if getpos('.') != pos
-      call setpos('.', pos)
-    endif
-  endtry
-
-  return cur_keyword_pos
+  return s:get_cur_keyword_pos(s:complete_results)
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
@@ -140,92 +116,53 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     endif
   endif
 
-  let is_wildcard = g:neocomplcache_enable_wildcard
-        \ && a:cur_keyword_str =~ '\*\w\+$'
-        \ && neocomplcache#is_eskk_enabled()
-        \ && neocomplcache#is_auto_complete()
-
-  let filetype = neocomplcache#get_context_filetype()
-  if neocomplcache#is_eskk_enabled()
-    let omnifunc = &l:omnifunc
-  elseif has_key(g:neocomplcache_omni_functions, filetype)
-    let omnifunc = g:neocomplcache_omni_functions[filetype]
-  elseif &filetype == filetype
-    let omnifunc = &l:omnifunc
-  endif
-
-  let pos = getpos('.')
-  if is_wildcard
-    " Check wildcard.
-    let cur_keyword_str = a:cur_keyword_str[:
-          \ match(a:cur_keyword_str, '\%(\*\w\+\)\+$') - 1]
-  else
-    let cur_keyword_str = a:cur_keyword_str
-  endif
-
-  try
-    let list = call(omnifunc, [0, cur_keyword_str])
-  catch
-    call neocomplcache#print_error(
-          \ 'Error occured calling omnifunction: ' . omnifunc)
-    call neocomplcache#print_error(v:throwpoint)
-    call neocomplcache#print_error(v:exception)
-    let list = []
-  finally
-    if getpos('.') != pos
-      call setpos('.', pos)
-    endif
-  endtry
-
-  if empty(list)
-    return []
-  endif
-
-  if is_wildcard
-    let list = neocomplcache#keyword_filter(
-          \ s:get_omni_list(list), a:cur_keyword_str)
-  else
-    let list = s:get_omni_list(list)
-  endif
-
-  return list
+  return s:get_complete_words(
+        \ s:set_complete_results_words(s:complete_results),
+        \ a:cur_keyword_pos, a:cur_keyword_str)
 endfunction"}}}
 
 function! neocomplcache#sources#omni_complete#define()"{{{
   return s:source
 endfunction"}}}
 
-function! s:get_omni_func(filetype)
-  let [omnifunc, pattern] = ['', '']
-
+function! s:get_omni_funcs(filetype)"{{{
+  let funcs = []
   for ft in split(a:filetype, '\.')
     if has_key(g:neocomplcache_omni_functions, ft)
           \ && !neocomplcache#is_eskk_enabled()
-      let omnifunc = g:neocomplcache_omni_functions[ft]
+      let omnifuncs =
+            \ (type(g:neocomplcache_omni_functions[ft]) == type([])) ?
+            \ g:neocomplcache_omni_functions[ft] :
+            \ [g:neocomplcache_omni_functions[ft]]
     else
-      let omnifunc = &l:omnifunc
+      let omnifuncs = [&l:omnifunc]
     endif
 
-    if omnifunc == ''
-      " &omnifunc is irregal.
-      continue
-    endif
+    for omnifunc in omnifuncs
+      if omnifunc == ''
+        " &omnifunc is irregal.
+        continue
+      endif
 
-    if has_key(g:neocomplcache_omni_patterns, omnifunc)
-      let pattern = g:neocomplcache_omni_patterns[omnifunc]
-    elseif has_key(g:neocomplcache_omni_patterns, ft)
-      let pattern = g:neocomplcache_omni_patterns[ft]
-    else
-      let pattern = ''
-    endif
+      if has_key(g:neocomplcache_omni_patterns, omnifunc)
+        let pattern = g:neocomplcache_omni_patterns[omnifunc]
+      elseif has_key(g:neocomplcache_omni_patterns, ft)
+        let pattern = g:neocomplcache_omni_patterns[ft]
+      else
+        let pattern = ''
+      endif
 
-    if pattern != ''
-      break
-    endif
+      if pattern == ''
+        continue
+      endif
+
+
+      call add(funcs, [omnifunc, pattern])
+    endfor
   endfor
 
-  return [omnifunc, pattern]
-endfunction
+  return funcs
+endfunction"}}}
 function! s:get_omni_list(list)"{{{
   let omni_list = []
 
@@ -245,6 +182,130 @@ function! s:get_omni_list(list)"{{{
   endfor
 
   return omni_list
+endfunction"}}}
+
+function! s:set_complete_results_pos(funcs, cur_text)"{{{
+  " Try omnifunc completion."{{{
+  let complete_results = {}
+  for [omnifunc, pattern] in a:funcs
+    if !neocomplcache#is_eskk_enabled()
+          \ && (neocomplcache#is_auto_complete()
+          \     && a:cur_text !~ '\%(' . pattern . '\m\)$')
+      continue
+    endif
+
+    " Save pos.
+    let pos = getpos('.')
+
+    try
+      let cur_keyword_pos = call(omnifunc, [1, ''])
+    catch
+      call neocomplcache#print_error(
+            \ 'Error occured calling omnifunction: ' . omnifunc)
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      let cur_keyword_pos = -1
+    finally
+      if getpos('.') != pos
+        call setpos('.', pos)
+      endif
+    endtry
+
+    if cur_keyword_pos < 0
+      continue
+    endif
+
+    let cur_keyword_str = a:cur_text[cur_keyword_pos :]
+
+    let complete_results[omnifunc] = {
+          \ 'complete_words' : [],
+          \ 'cur_keyword_pos' : cur_keyword_pos,
+          \ 'cur_keyword_str' : cur_keyword_str,
+          \ 'omnifunc' : omnifunc,
+          \}
+  endfor
+  "}}}
+
+  return complete_results
+endfunction"}}}
+function! s:set_complete_results_words(complete_results)"{{{
+  " Try source completion.
+  for [omnifunc, result] in items(a:complete_results)
+    if neocomplcache#complete_check()
+      return []
+    endif
+
+    let is_wildcard = g:neocomplcache_enable_wildcard
+          \ && result.cur_keyword_str =~ '\*\w\+$'
+          \ && neocomplcache#is_eskk_enabled()
+          \ && neocomplcache#is_auto_complete()
+
+    let pos = getpos('.')
+    let cur_keyword_str = result.cur_keyword_str
+
+    if is_wildcard
+      " Check wildcard.
+      let cur_keyword_str = cur_keyword_str[:
+            \ match(cur_keyword_str, '\%(\*\w\+\)\+$') - 1]
+    endif
+
+    try
+      let list = call(omnifunc, [0, cur_keyword_str])
+    catch
+      call neocomplcache#print_error(
+            \ 'Error occured calling omnifunction: ' . omnifunc)
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      let list = []
+    finally
+      if getpos('.') != pos
+        call setpos('.', pos)
+      endif
+    endtry
+
+    let list = s:get_omni_list(list)
+    if is_wildcard
+      let list = neocomplcache#keyword_filter(list,
+            \ result.cur_keyword_str)
+    endif
+
+    let result.complete_words = list
+  endfor
+
+  return a:complete_results
+endfunction"}}}
+function! s:get_cur_keyword_pos(complete_results)"{{{
+  if empty(a:complete_results)
+    return -1
+  endif
+
+  let cur_keyword_pos = col('.')
+  for result in values(a:complete_results)
+    if cur_keyword_pos > result.cur_keyword_pos
+      let cur_keyword_pos = result.cur_keyword_pos
+    endif
+  endfor
+
+  return cur_keyword_pos
+endfunction"}}}
+function! s:get_complete_words(complete_results, cur_keyword_pos, cur_keyword_str) "{{{
+  " Append prefix.
+  let complete_words = []
+  let len_words = 0
+  for [source_name, result] in items(a:complete_results)
+    if result.cur_keyword_pos > a:cur_keyword_pos
+      let prefix = a:cur_keyword_str[: result.cur_keyword_pos
+            \                            - a:cur_keyword_pos - 1]
+
+      for keyword in result.complete_words
+        let keyword.word = prefix . keyword.word
+      endfor
+    endif
+
+    let complete_words += result.complete_words
+  endfor
+
+  return complete_words
 endfunction"}}}
 
 let &cpo = s:save_cpo

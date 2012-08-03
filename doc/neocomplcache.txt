@@ -630,10 +630,11 @@ g:neocomplcache_delimiter_patterns		*g:neocomplcache_delimiter_patterns*
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_omni_functions			*g:neocomplcache_omni_functions*
-		This dictionary which appoints |omni_complete| call
-		function.  The key is |&filetype|. If
-		g:neocomplcache_omni_function_list[|&filetype|] is
-		undefined, |omni_complete| calls |omnifunc|.
+		This dictionary which appoints |omni_complete| call functions.
+		The key is |&filetype|. The value is omnifunc String or List of
+		omnifunc String. If
+		g:neocomplcache_omni_function_list[|&filetype|] is undefined,
+		|omni_complete| calls |omnifunc|.
 		
 		Default value is {}.
 
@@ -1057,6 +1058,9 @@ But you can use |unite.vim| to quick match.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-08-03
+- Improved omni_complete.
 
 2012-08-02
 - Fixed for g:neocomplcache_enable_insert_char_pre.
