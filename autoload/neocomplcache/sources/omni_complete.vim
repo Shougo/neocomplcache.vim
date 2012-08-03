@@ -33,6 +33,8 @@ let s:source = {
       \ 'compare_func' : 'neocomplcache#compare_nothing',
       \}
 
+let s:List = vital#of('neocomplcache').import('Data.List')
+
 function! s:source.initialize()"{{{
   " Initialize omni completion pattern."{{{
   if !exists('g:neocomplcache_omni_patterns')
@@ -127,7 +129,7 @@ endfunction"}}}
 
 function! s:get_omni_funcs(filetype)"{{{
   let funcs = []
-  for ft in split(a:filetype, '\.')
+  for ft in insert(split(a:filetype, '\.'), '_')
     if has_key(g:neocomplcache_omni_functions, ft)
           \ && !neocomplcache#is_eskk_enabled()
       let omnifuncs =
@@ -156,12 +158,11 @@ function! s:get_omni_funcs(filetype)"{{{
         continue
       endif
 
-
       call add(funcs, [omnifunc, pattern])
     endfor
   endfor
 
-  return funcs
+  return s:List.uniq(funcs)
 endfunction"}}}
 function! s:get_omni_list(list)"{{{
   let omni_list = []

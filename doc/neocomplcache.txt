@@ -635,6 +635,7 @@ g:neocomplcache_omni_functions			*g:neocomplcache_omni_functions*
 		omnifunc String. If
 		g:neocomplcache_omni_function_list[|&filetype|] is undefined,
 		|omni_complete| calls |omnifunc|.
+		If the key is "_", used for all filetypes.
 		
 		Default value is {}.
 
@@ -1061,6 +1062,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-08-03
 - Improved omni_complete.
+- Added _ omnifunc.
 
 2012-08-02
 - Fixed for g:neocomplcache_enable_insert_char_pre.
