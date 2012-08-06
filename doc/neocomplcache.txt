@@ -1053,6 +1053,10 @@ But you can use |unite.vim| to quick match.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-08-06
+- Improved remove next keyword.
+- Improved set context filetype.
+
 2012-08-03
 - Improved omni_complete.
 - Added _ omnifunc.

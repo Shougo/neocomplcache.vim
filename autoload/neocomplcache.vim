@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2012.
+" Last Modified: 06 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2093,34 +2093,35 @@ function! s:restore_update_time()"{{{
     let &updatetime = s:update_time_save
   endif
 endfunction"}}}
-function! s:remove_next_keyword(plugin_name, list)"{{{
-  let list = a:list
-  " Remove next keyword."{{{
-  if a:plugin_name  == 'filename_complete'
-    let pattern = '^\%(' . neocomplcache#get_next_keyword_pattern('filename') . '\m\)'
-  else
-    let pattern = '^\%(' . neocomplcache#get_next_keyword_pattern() . '\m\)'
-  endif
+function! s:remove_next_keyword(source_name, list)"{{{
+  " Remove next keyword.
+  let pattern = '^\%(' .
+        \ (a:source_name  == 'filename_complete' ?
+        \   neocomplcache#get_next_keyword_pattern('filename') :
+        \   neocomplcache#get_next_keyword_pattern()) . '\m\)'
 
   let next_keyword_str = matchstr('a'.
         \ getline('.')[len(neocomplcache#get_cur_text(1)) :], pattern)[1:]
-  if next_keyword_str != ''
-    let next_keyword_str = substitute(escape(next_keyword_str, '~" \.^$*[]'), "'", "''", 'g').'$'
+  if next_keyword_str == ''
+    return a:list
+  endif
 
-    " No ignorecase.
-    let ignorecase_save = &ignorecase
-    let &ignorecase = 0
+  let next_keyword_str = substitute(escape(next_keyword_str,
+        \ '~" \.^$*[]'), "'", "''", 'g').'$'
 
-    for r in list
-      if r.word =~ next_keyword_str
-        let r.word = r.word[:match(r.word, next_keyword_str)-1]
-      endif
-    endfor
+  " No ignorecase.
+  let ignorecase_save = &ignorecase
+  let &ignorecase = 0
 
-    let &ignorecase = ignorecase_save
-  endif"}}}
+  for r in a:list
+    if r.word =~ next_keyword_str
+      let r.word = r.word[:match(r.word, next_keyword_str)-1]
+    endif
+  endfor
 
-  return list
+  let &ignorecase = ignorecase_save
+
+  return a:list
 endfunction"}}}
 function! neocomplcache#popup_post()"{{{
   return  !pumvisible() ? "" :
@@ -2152,7 +2153,7 @@ function! s:set_context_filetype()"{{{
     let new_filetype = s:get_context_filetype(old_filetype)
 
     " Check filetype root.
-    if has_key(dup_check, old_filetype) && dup_check[old_filetype] ==# new_filetype
+    if get(dup_check, old_filetype, '') ==# new_filetype
       let s:context_filetype = old_filetype
       break
     endif
@@ -2171,18 +2172,18 @@ function! s:set_context_filetype()"{{{
 
   " Set filetype plugins.
   let s:loaded_ftplugin_sources = {}
-  for [source_name, source] in items(neocomplcache#available_ftplugins())
-    if has_key(source.filetypes, s:context_filetype)
-      let s:loaded_ftplugin_sources[source_name] = source
+  for [source_name, source] in
+        \ items(filter(copy(neocomplcache#available_ftplugins()),
+        \ 'has_key(v:val.filetypes, s:context_filetype)'))
+    let s:loaded_ftplugin_sources[source_name] = source
 
-      if !source.loaded
-        " Initialize.
-        if has_key(source, 'initialize')
-          call source.initialize()
-        endif
-
-        let source.loaded = 1
+    if !source.loaded
+      " Initialize.
+      if has_key(source, 'initialize')
+        call source.initialize()
       endif
+
+      let source.loaded = 1
     endif
   endfor
 
