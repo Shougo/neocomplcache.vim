@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Aug 2012.
+" Last Modified: 07 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -647,7 +647,8 @@ function! neocomplcache#sources_manual_complete(findstart, base)"{{{
     " Get cur_keyword_pos.
     let complete_results = neocomplcache#get_complete_results(
           \ s:get_cur_text(), s:use_sources)
-    let s:cur_keyword_pos = neocomplcache#get_cur_keyword_pos(complete_results)
+    let s:cur_keyword_pos =
+          \ neocomplcache#get_cur_keyword_pos(complete_results)
 
     if s:cur_keyword_pos < 0
       let s:cur_keyword_str = ''
@@ -1398,8 +1399,7 @@ function! neocomplcache#get_cur_keyword_pos(complete_results)"{{{
 
   return cur_keyword_pos
 endfunction"}}}
-function! neocomplcache#get_complete_words(complete_results,
-      \ cur_keyword_pos, cur_keyword_str) "{{{
+function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cur_keyword_str) "{{{
   let frequencies = s:get_frequencies()
 
   let sources = neocomplcache#available_sources()
