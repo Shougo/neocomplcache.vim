@@ -421,8 +421,8 @@ g:neocomplcache_omni_patterns			*g:neocomplcache_omni_patterns*
 		endif
 		let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 		let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-		let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
-		let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+		let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+		let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 <
 g:neocomplcache_tags_filter_patterns		*g:neocomplcache_tags_filter_patterns*
 		This dictionary records  a pattern to filter a candidate in
@@ -887,8 +887,8 @@ EXAMPLES					*neocomplcache-examples*
 	let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 	"autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
 	let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-	let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
-	let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+	let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+	let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 	
 	" For perlomni.vim setting.
 	" https://github.com/c9s/perlomni.vim
@@ -1055,6 +1055,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-08-07
 - Improved a bit.
+- Fixed omni patterns for c and cpp.
 
 2012-08-06
 - Improved remove next keyword.
