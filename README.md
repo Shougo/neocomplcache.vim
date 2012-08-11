@@ -16,7 +16,7 @@ Installation
    (usually ~/.vim/ or Program Files/Vim/vimfiles on Windows).
 * Execute `|:NeoComplCacheEnable|` command or
 `let g:neocomplcache_enable_at_startup = 1`
-in your .vimrc.
+in your `.vimrc`. Not in `.gvimrc`(`_gvimrc`)!
 
 Caution
 -------

@@ -169,7 +169,9 @@ VARIABLES 					*neocomplcache-variables*
 
 g:neocomplcache_enable_at_startup		*g:neocomplcache_enable_at_startup*
 		This variable controls whether I validate neocomplcache at
-		the time of Vim start.  This option should set it in .vimrc.
+		the time of Vim start.
+		Note: This option must set it in .vimrc(_vimrc). NOT IN
+		.gvimrc(_gvimrc)!
 		
 		Because default value is 0, you cannot use neocomplcache
 		unless you validate it by manual operation.
@@ -808,6 +810,7 @@ neocomplcache#complete_common_string()		*neocomplcache#complete_common_string()*
 ==============================================================================
 EXAMPLES					*neocomplcache-examples*
 >
+	"Note: This option must set it in .vimrc(_vimrc). NOT IN .gvimrc(_gvimrc)!
 	" Disable AutoComplPop.
 	let g:acp_enableAtStartup = 0
 	" Use neocomplcache.
@@ -1052,6 +1055,9 @@ But you can use |unite.vim| to quick match.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-08-11
+- Improved documentation.
 
 2012-08-07
 - Improved a bit.
