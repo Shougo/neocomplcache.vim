@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Mar 2012.
+" Last Modified: 14 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -167,6 +167,7 @@ endfunction"}}}
 function! neocomplcache#sources#vim_complete#get_cur_text()"{{{
   let cur_text = neocomplcache#get_cur_text(1)
   if &filetype == 'vimshell' && exists('*vimshell#get_secondary_prompt')
+        \   && empty(b:vimshell.continuation)
     return cur_text[len(vimshell#get_secondary_prompt()) :]
   endif
 

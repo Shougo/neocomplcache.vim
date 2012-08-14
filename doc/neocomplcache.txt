@@ -1056,6 +1056,9 @@ But you can use |unite.vim| to quick match.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-08-14
+- Fixed for vimshell.
+
 2012-08-11
 - Improved documentation.
 
