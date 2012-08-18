@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jun 2012.
+" Last Modified: 18 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -72,7 +72,7 @@ function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilenam
   endif
 
   let lines = map(readfile(a:filename),
-        \ 'iconv(v:val, a:fileencoding, &encoding)')
+        \ 's:iconv(v:val, a:fileencoding, &encoding)')
 
   let pattern = get(readfile(a:pattern_file_name), 0, '\h\w*')
 
@@ -122,7 +122,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
       if filereadable(tags_file_name)
         " Use filename.
         let tags_list = map(readfile(tags_file_name),
-              \ 'iconv(v:val, a:fileencoding, &encoding)')
+              \ 's:iconv(v:val, a:fileencoding, &encoding)')
         break
       endif
 
@@ -136,7 +136,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
 
     " Use filename.
     let tags_list = map(readfile(a:filename),
-          \ 'iconv(v:val, a:fileencoding, &encoding)')
+          \ 's:iconv(v:val, a:fileencoding, &encoding)')
   endif
 
   if empty(tags_list)
@@ -255,6 +255,14 @@ function! s:strwidthpart(str, width)"{{{
 
   return ret
 endfunction"}}}
+
+function! s:iconv(expr, from, to)
+  if a:from == '' || a:to == '' || a:from ==? a:to
+    return a:expr
+  endif
+  let result = iconv(a:expr, a:from, a:to)
+  return result != '' ? result : a:expr
+endfunction
 
 if v:version >= 703
   " Use builtin function.
