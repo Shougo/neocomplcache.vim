@@ -68,12 +68,15 @@ function! s:_import(name, scripts, debug)
   endif
   let path = s:_unify_path(get(paths, 0, ''))
   let sid = get(a:scripts, path, 0)
-  if !sid && a:name !=# ''
+  if !sid
     try
       source `=path`
     catch /^Vim\%((\a\+)\)\?:E484/
       throw 'vital: module not found: ' . a:name
+    catch /^Vim\%((\a\+)\)\?:E127/
+      " Ignore.
     endtry
+
     let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
     let a:scripts[path] = sid
   endif
