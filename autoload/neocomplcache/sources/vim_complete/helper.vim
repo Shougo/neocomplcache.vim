@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Mar 2012.
+" Last Modified: 22 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -671,10 +671,14 @@ function! s:get_cmdlist()"{{{
   redir END
 
   let keyword_list = []
-  let completions = [ 'augroup', 'buffer', 'command', 'dir', 'environment', 
-        \ 'event', 'expression', 'file', 'shellcmd', 'function', 
-        \ 'help', 'highlight', 'mapping', 'menu', 'option', 'tag', 'tag_listfiles', 
-        \ 'var', 'custom', 'customlist' ]
+  let completions = [ 'augroup', 'buffer', 'behave',
+        \ 'color', 'command', 'compiler', 'cscope',
+        \ 'dir', 'environment', 'event', 'expression',
+        \ 'file', 'file_in_path', 'filetype', 'function',
+        \ 'help', 'highlight', 'history', 'locale',
+        \ 'mapping', 'menu', 'option', 'shellcmd', 'sign',
+        \ 'syntax', 'tag', 'tag_listfiles',
+        \ 'var', 'custom,', 'customlist,' ]
   let command_prototypes = {}
   let command_completions = {}
   let menu_pattern = '[vim] command'

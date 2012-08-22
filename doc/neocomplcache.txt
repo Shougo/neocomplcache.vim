@@ -1062,6 +1062,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-08-22
 - Added :NeoComplCacheSetFileType command.
+- Improved command-completion.
 
 2012-08-21
 - Updated vital.
