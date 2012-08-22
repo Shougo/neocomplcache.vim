@@ -164,6 +164,10 @@ COMMANDS 					*neocomplcache-commands*
 		Create tags from [bufname] buffer.
 		Select current buffer when [bufname] omitted.
 
+:NeoComplCacheSetFileType [filetype]		*:NeoComplCacheSetFileType*
+		Change filetype to [filetype] in current buffer.
+		This filetype is only used neocomplcache.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
 
@@ -1055,6 +1059,9 @@ But you can use |unite.vim| to quick match.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-08-22
+- Added :NeoComplCacheSetFileType command.
 
 2012-08-21
 - Updated vital.

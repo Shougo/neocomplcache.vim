@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2012.
+" Last Modified: 22 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -73,9 +73,7 @@ function! neocomplcache#enable() "{{{
   let s:plugin_sources = {}
   let s:ftplugin_sources = {}
   let s:loaded_ftplugin_sources = {}
-  let s:complete_lock = {}
   let s:sources_lock = {}
-  let s:auto_completion_length = {}
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:complete_results = {}
@@ -1109,9 +1107,15 @@ function! neocomplcache#get_next_keyword()"{{{
   return matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], pattern)[1:]
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
-  if neocomplcache#is_auto_complete() && has_key(s:auto_completion_length, bufnr('%'))
-    return s:auto_completion_length[bufnr('%')]
-  elseif has_key(g:neocomplcache_source_completion_length, a:plugin_name)
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  if neocomplcache#is_auto_complete()
+        \ && b:neocomplcache.completion_length >= 0
+    return b:neocomplcache.completion_length
+  elseif has_key(g:neocomplcache_source_completion_length,
+        \ a:plugin_name)
     return g:neocomplcache_source_completion_length[a:plugin_name]
   elseif has_key(s:ftplugin_sources, a:plugin_name)
         \ || has_key(s:complfunc_sources, a:plugin_name)
@@ -1187,10 +1191,14 @@ function! neocomplcache#is_enabled()"{{{
   return s:is_enabled
 endfunction"}}}
 function! neocomplcache#is_locked(...)"{{{
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
   let bufnr = a:0 > 0 ? a:1 : bufnr('%')
   return !s:is_enabled
         \ || g:neocomplcache_disable_auto_complete
-        \ || get(s:complete_lock, bufnr, 0)
+        \ || b:neocomplcache.lock
         \ || (g:neocomplcache_lock_buffer_name_pattern != '' &&
         \   bufname(bufnr) =~ g:neocomplcache_lock_buffer_name_pattern)
         \ || &l:omnifunc ==# 'fuf#onComplete'
@@ -1691,7 +1699,11 @@ function! neocomplcache#toggle_lock()"{{{
     return
   endif
 
-  if !get(s:complete_lock, bufnr('%'), 0)
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  if b:neocomplcache.lock
     echo 'neocomplcache is locked!'
     call neocomplcache#lock()
   else
@@ -1706,7 +1718,11 @@ function! neocomplcache#lock()"{{{
     return
   endif
 
-  let s:complete_lock[bufnr('%')] = 1
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  let b:neocomplcache.lock = 1
 endfunction"}}}
 function! neocomplcache#unlock()"{{{
   if !neocomplcache#is_enabled()
@@ -1715,7 +1731,11 @@ function! neocomplcache#unlock()"{{{
     return
   endif
 
-  let s:complete_lock[bufnr('%')] = 0
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  let b:neocomplcache.lock = 0
 endfunction"}}}
 function! neocomplcache#lock_source(source_name)"{{{
   if !neocomplcache#is_enabled()
@@ -1901,8 +1921,19 @@ function! s:display_neco(number)"{{{
 
   let &cmdheight = cmdheight_save
 endfunction"}}}
+function! neocomplcache#set_file_type(filetype)"{{{
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  let b:neocomplcache.filetype = a:filetype
+endfunction"}}}
 function! s:set_auto_completion_length(len)"{{{
-  let s:auto_completion_length[bufnr('%')] = a:len
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  let b:neocomplcache.completion_length = a:len
 endfunction"}}}
 "}}}
 
@@ -2143,7 +2174,12 @@ function! s:get_cur_text()"{{{
   return s:cur_text
 endfunction"}}}
 function! s:set_context_filetype()"{{{
-  let old_filetype = &filetype
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  let old_filetype = (b:neocomplcache.filetype == '') ?
+        \ &filetype : b:neocomplcache.filetype
   if old_filetype == ''
     let old_filetype = 'nothing'
   endif
@@ -2166,8 +2202,8 @@ function! s:set_context_filetype()"{{{
   " Set text mode or not.
   let syn_name = neocomplcache#get_syn_name(1)
   let s:is_text_mode =
-        \ (has_key(g:neocomplcache_text_mode_filetypes, s:context_filetype)
-        \ && g:neocomplcache_text_mode_filetypes[s:context_filetype])
+        \ get(g:neocomplcache_text_mode_filetypes,
+        \ s:context_filetype, 0)
   let s:within_comment = (syn_name ==# 'Comment')
 
   " Set filetype plugins.
@@ -2285,6 +2321,13 @@ function! s:get_frequencies()"{{{
   endif
 
   return s:filetype_frequencies[filetype]
+endfunction"}}}
+function! s:initialize_buffer_variable()"{{{
+  let b:neocomplcache = {
+        \ 'lock' : 0,
+        \ 'filetype' : '',
+        \ 'completion_length' : -1,
+        \}
 endfunction"}}}
 "}}}
 
