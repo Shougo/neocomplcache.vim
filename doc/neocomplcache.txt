@@ -30,6 +30,7 @@ Interface		|neocomplcache-interface|
   Commands		  |neocomplcache-commands|
   Variables		  |neocomplcache-variables|
   Key mappings		  |neocomplcache-key-mappings|
+  Functions		  |neocomplcache-functions|
 Examples		|neocomplcache-examples|
 Sources			|neocomplcache-sources|
   User sources		  |neocomplcache-user-sources|
@@ -167,6 +168,8 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCacheSetFileType [filetype]		*:NeoComplCacheSetFileType*
 		Change filetype to [filetype] in current buffer.
 		This filetype is only used neocomplcache.
+		Note: You can get current filetype by
+		|neocomplcache#get_context_filetype()|
 
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
@@ -740,6 +743,12 @@ g:neocomplcache_ignore_composite_filetype_lists	*g:neocomplcache_ignore_composit
 		Default value is {}.
 
 ------------------------------------------------------------------------------
+FUNCTIONS 					*neocomplcache-functions*
+
+neocomplcache#get_context_filetype()		*unite#get_context_filetype()*
+		Get current context filetype.
+
+------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
 neocomplcache#start_manual_complete([{sources}])
@@ -1064,6 +1073,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Added :NeoComplCacheSetFileType command.
 - Improved command-completion.
 - Improved FAQ section.
+- Improved context filetype.
 
 2012-08-21
 - Updated vital.

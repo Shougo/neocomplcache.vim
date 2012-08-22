@@ -32,7 +32,6 @@ scriptencoding utf-8
 
 if !exists('s:is_enabled')
   let s:is_enabled = 0
-  let s:context_filetype = ''
 endif
 
 function! neocomplcache#enable() "{{{
@@ -81,7 +80,6 @@ function! neocomplcache#enable() "{{{
   let s:old_cur_text = ''
   let s:moved_cur_text = ''
   let s:changedtick = b:changedtick
-  let s:context_filetype = ''
   let s:is_text_mode = 0
   let s:within_comment = 0
   let s:skip_next_complete = 0
@@ -1341,11 +1339,15 @@ function! neocomplcache#escape_match(str)"{{{
   return escape(a:str, '~"*\.^$[]')
 endfunction"}}}
 function! neocomplcache#get_context_filetype(...)"{{{
-  if a:0 != 0 || s:context_filetype == ''
+  if !exists('b:neocomplcache')
+    call s:initialize_buffer_variable()
+  endif
+
+  if a:0 != 0 || b:neocomplcache.context_filetype == ''
     call s:set_context_filetype()
   endif
 
-  return s:context_filetype
+  return b:neocomplcache.context_filetype
 endfunction"}}}
 function! neocomplcache#get_source_rank(plugin_name)"{{{
   if has_key(g:neocomplcache_source_rank, a:plugin_name)
@@ -2090,7 +2092,6 @@ function! s:on_insert_leave()"{{{
   let s:cur_text = ''
   let s:cur_keyword_str = ''
   let s:complete_words = []
-  let s:context_filetype = ''
   let s:is_text_mode = 0
   let s:skip_next_complete = 0
   let s:is_prefetch = 0
@@ -2190,7 +2191,7 @@ function! s:set_context_filetype()"{{{
 
     " Check filetype root.
     if get(dup_check, old_filetype, '') ==# new_filetype
-      let s:context_filetype = old_filetype
+      let b:neocomplcache.context_filetype = old_filetype
       break
     endif
 
@@ -2203,14 +2204,14 @@ function! s:set_context_filetype()"{{{
   let syn_name = neocomplcache#get_syn_name(1)
   let s:is_text_mode =
         \ get(g:neocomplcache_text_mode_filetypes,
-        \ s:context_filetype, 0)
+        \ b:neocomplcache.context_filetype, 0)
   let s:within_comment = (syn_name ==# 'Comment')
 
   " Set filetype plugins.
   let s:loaded_ftplugin_sources = {}
   for [source_name, source] in
         \ items(filter(copy(neocomplcache#available_ftplugins()),
-        \ 'has_key(v:val.filetypes, s:context_filetype)'))
+        \ 'has_key(v:val.filetypes, b:neocomplcache.context_filetype)'))
     let s:loaded_ftplugin_sources[source_name] = source
 
     if !source.loaded
@@ -2223,7 +2224,7 @@ function! s:set_context_filetype()"{{{
     endif
   endfor
 
-  return s:context_filetype
+  return b:neocomplcache.context_filetype
 endfunction"}}}
 function! s:get_context_filetype(filetype)"{{{
   let filetype = a:filetype
@@ -2326,6 +2327,7 @@ function! s:initialize_buffer_variable()"{{{
   let b:neocomplcache = {
         \ 'lock' : 0,
         \ 'filetype' : '',
+        \ 'context_filetype' : '',
         \ 'completion_length' : -1,
         \}
 endfunction"}}}
