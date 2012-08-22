@@ -1075,6 +1075,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved FAQ section.
 - Improved context filetype.
 - Updated features dict.
+- Fixed g:neocomplcache_disable_auto_complete problem.
 
 2012-08-21
 - Updated vital.

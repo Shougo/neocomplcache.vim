@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jul 2012.
+" Last Modified: 22 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -286,7 +286,8 @@ function! s:check_source()"{{{
   if (!has_key(s:buffer_sources, bufnumber)
         \ || s:check_changed_buffer(bufnumber))
         \ && !has_key(s:disable_caching_list, bufnumber)
-        \ && !neocomplcache#is_locked(bufnumber)
+        \ && (!neocomplcache#is_locked(bufnumber) ||
+        \    g:neocomplcache_disable_auto_complete)
         \ && !getwinvar(bufwinnr(bufnumber), '&previewwindow')
         \ && getfsize(bufname) <
         \      g:neocomplcache_caching_limit_file_size
