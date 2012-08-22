@@ -216,7 +216,8 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
       let s:global_candidates_list.commands = s:get_cmdlist()
     endif
     if !has_key(s:internal_candidates_list, 'commands')
-      let s:internal_candidates_list.commands = s:caching_from_dict('commands', 'c')
+      let s:internal_candidates_list.commands =
+            \ s:caching_from_dict('commands', 'c')
 
       let s:internal_candidates_list.command_prototypes =
             \ s:caching_prototype_from_dict('command_prototypes')
@@ -237,7 +238,8 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
   else
     " Commands args.
     let command = neocomplcache#sources#vim_complete#get_command(a:cur_text)
-    let completion_name = neocomplcache#sources#vim_complete#helper#get_completion_name(command)
+    let completion_name =
+          \ neocomplcache#sources#vim_complete#helper#get_completion_name(command)
 
     " Prevent infinite loop.
     let cur_text = completion_name ==# 'command' ?
@@ -265,15 +267,18 @@ function! neocomplcache#sources#vim_complete#helper#command_args(cur_text, cur_k
           \ s:caching_from_dict('command_replaces', '')
   endif
 
-  return s:internal_candidates_list.command_args + s:internal_candidates_list.command_replaces
+  return s:internal_candidates_list.command_args +
+        \ s:internal_candidates_list.command_replaces
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#custom(command_name, cur_text, cur_keyword_str)"{{{
   if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
     return []
   endif
 
-  return s:make_completion_list(split(call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '\n'), '[vim] custom', '')
+  return s:make_completion_list(split(
+        \ call(g:neocomplcache_vim_completefuncs[a:command_name],
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]),
+        \ '\n'), '[vim] custom', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur_text, cur_keyword_str)"{{{
   if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
@@ -607,7 +612,8 @@ function! s:caching_from_dict(dict_name, kind)"{{{
   return keyword_list
 endfunction"}}}
 function! s:caching_completion_from_dict(dict_name)"{{{
-  let dict_files = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/vim_complete/'.a:dict_name.'.dict'), '\n')
+  let dict_files = split(globpath(&runtimepath,
+        \ 'autoload/neocomplcache/sources/vim_complete/'.a:dict_name.'.dict'), '\n')
   if empty(dict_files)
     return {}
   endif
