@@ -1074,6 +1074,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved command-completion.
 - Improved FAQ section.
 - Improved context filetype.
+- Updated features dict.
 
 2012-08-21
 - Updated vital.
