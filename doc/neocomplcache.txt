@@ -1019,9 +1019,9 @@ groups?:
 
 A: Like this:
 >
-	highlight Pmenu ctermbg=8
-	highlight PmenuSel ctermbg=1
-	highlight PmenuSbar ctermbg=0
+	highlight Pmenu ctermbg=8 guibg=#606060
+	highlight PmenuSel ctermbg=1 guifg=#dddd00 guibg=#1f82cd
+	highlight PmenuSbar ctermbg=0 guibg=#d6d6d6
 <
 
 Q: Python(or Ruby) interface crashes Vim using neocomplcache:
@@ -1063,6 +1063,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-08-22
 - Added :NeoComplCacheSetFileType command.
 - Improved command-completion.
+- Improved FAQ section.
 
 2012-08-21
 - Updated vital.
