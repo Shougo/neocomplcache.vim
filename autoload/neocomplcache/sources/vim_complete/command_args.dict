@@ -8,8 +8,8 @@
 -complete=command ; Ex command (and arguments)
 -complete=compiler ; compilers
 -complete=cscope ; :cscope suboptions
--complete=custom, ; custom completion, defined via {func}
--complete=customlist, ; custom completion, defined via {func}
+-complete=custom,{func} ; custom completion, defined via {func}
+-complete=customlist,{func} ; custom completion, defined via {func}
 -complete=dir ; directory names
 -complete=environment ; environment variable names
 -complete=event ; autocommand events
