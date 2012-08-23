@@ -1066,11 +1066,17 @@ But you can use |unite.vim| to quick match.
 	imap <expr> -  pumvisible() ?
 	    \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
 <
+Q: How can i change the order of candidates? :
+
+A: Please refer to g:neocomplcache_compare_function and
+g:neocomplcache_source_rank.
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
 2012-08-23
 - Fixed customlist completion problem.
+- Added FAQ item.
 
 2012-08-22
 - Added :NeoComplCacheSetFileType command.
