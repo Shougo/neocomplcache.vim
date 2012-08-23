@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2012.
+" Last Modified: 23 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -133,17 +133,20 @@ function! neocomplcache#sources#vim_complete#helper#get_command_completion(comma
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#get_completion_name(command_name)"{{{
   if !has_key(s:internal_candidates_list, 'command_completions')
-    let s:internal_candidates_list.command_completions = s:caching_completion_from_dict('command_completions')
+    let s:internal_candidates_list.command_completions =
+          \ s:caching_completion_from_dict('command_completions')
   endif
   if !has_key(s:global_candidates_list, 'command_completions')
     let s:global_candidates_list.commands = s:get_cmdlist()
   endif
 
   if has_key(s:internal_candidates_list.command_completions, a:command_name)
-        \&& exists('*neocomplcache#sources#vim_complete#helper#'.s:internal_candidates_list.command_completions[a:command_name])
+        \&& exists('*neocomplcache#sources#vim_complete#helper#'
+        \ .s:internal_candidates_list.command_completions[a:command_name])
     return s:internal_candidates_list.command_completions[a:command_name]
   elseif has_key(s:global_candidates_list.command_completions, a:command_name)
-        \&& exists('*neocomplcache#sources#vim_complete#helper#'.s:global_candidates_list.command_completions[a:command_name])
+        \&& exists('*neocomplcache#sources#vim_complete#helper#'
+        \ .s:global_candidates_list.command_completions[a:command_name])
     return s:global_candidates_list.command_completions[a:command_name]
   else
     return ''
@@ -285,8 +288,10 @@ function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur
     return []
   endif
 
-  return s:make_completion_list(call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '[vim] customlist', '')
+  return s:make_completion_list(
+        \ call(g:neocomplcache_vim_completefuncs[a:command_name],
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]),
+        \ '[vim] customlist', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_str)"{{{
   " Check dup.
@@ -684,7 +689,7 @@ function! s:get_cmdlist()"{{{
         \ 'help', 'highlight', 'history', 'locale',
         \ 'mapping', 'menu', 'option', 'shellcmd', 'sign',
         \ 'syntax', 'tag', 'tag_listfiles',
-        \ 'var', 'custom,', 'customlist,' ]
+        \ 'var', 'custom', 'customlist' ]
   let command_prototypes = {}
   let command_completions = {}
   let menu_pattern = '[vim] command'

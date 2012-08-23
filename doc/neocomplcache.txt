@@ -1069,6 +1069,9 @@ But you can use |unite.vim| to quick match.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-08-23
+- Fixed customlist completion problem.
+
 2012-08-22
 - Added :NeoComplCacheSetFileType command.
 - Improved command-completion.
