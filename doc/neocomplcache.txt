@@ -47,12 +47,6 @@ keyword completion including the Vim composing type, neocomplcache can be
 customized flexibly. Unfortunately neocomplcache may use more memory than
 other plugins.
 
-						*neocomplcache-version5*
-Because all variable names are changed in neocomplcache Ver.5, there is no
-backward compatibility. In the case of an upgrade, you should use the next
-script which Mr.thinca made.
-http://gist.github.com/422503
-
 ==============================================================================
 INSTALL						*neocomplcache-install*
 
@@ -63,10 +57,10 @@ let g:neocomplcache_enable_at_startup = 1
 in your .vimrc.
 
 						*neocomplcache-asyncronous*
-With neocomplcache Ver.6.0, if |vimproc| is installed, neocomplcache creates
-the cache asynchronously.
+With neocomplcache Ver.6.0 or later, when you have |vimproc| installed,
+neocomplcache creates caches asynchronously.
 
-vimproc is distributed at: http://github.com/Shougo/vimshell/tree/master
+vimproc is distributed at: http://github.com/Shougo/vimproc
 
 To use vimproc, you must compile it. Refer to the vimproc documentation.
 
