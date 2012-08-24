@@ -369,8 +369,9 @@ g:neocomplcache_compare_function		*g:neocomplcache_compare_function*
 		Default value is 'neocomplcache#compare_rank'.
 
 g:neocomplcache_enable_prefetch			*g:neocomplcache_enable_prefetch*
-		This variable controls whether neocomplcache prefetch.
-		This variable is non 0, neocomplcache don't flick in auto completion.
+		This variable controls whether neocomplcache prefetch.  This
+		variable is non 0, neocomplcache don't flick in auto
+		completion.
 		Note: This variable has side effect.
 		Partial function (ex: |complete_check()|) is disabled in
 		completefunc.
@@ -420,9 +421,9 @@ g:neocomplcache_omni_patterns			*g:neocomplcache_omni_patterns*
 		|omnifunc|. For example, ruby and php omnifunc are disabled,
 		because they are too slow.
 		
-		Because it is complicated, refer to
-		s:source.initialize() autoload/neocomplcache/sources/omni_complete.vim
-		for the initial value.
+		Because it is complicated, refer to s:source.initialize()
+		autoload/neocomplcache/sources/omni_complete.vim for the
+		initial value.
 >
 		" Examples:
 		if !exists('g:neocomplcache_omni_patterns')
