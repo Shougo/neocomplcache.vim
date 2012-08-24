@@ -372,9 +372,10 @@ g:neocomplcache_enable_prefetch			*g:neocomplcache_enable_prefetch*
 		This variable controls whether neocomplcache prefetch.  This
 		variable is non 0, neocomplcache don't flick in auto
 		completion.
-		Note: This variable has side effect.
-		Partial function (ex: |complete_check()|) is disabled in
-		completefunc.
+		Note: This variable has side effect. Partial function (ex:
+		|complete_check()|) is disabled in completefunc.
+		Note: It this variable is 0, input problem may be occurred in
+		using uim-skk or other IME in GVim.
 		
 		Default value is 0(less than 7.3.519).
 
