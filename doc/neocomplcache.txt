@@ -377,7 +377,8 @@ g:neocomplcache_enable_prefetch			*g:neocomplcache_enable_prefetch*
 		Note: It this variable is 0, input problem may be occurred in
 		using uim-skk or other IME in GVim.
 		
-		Default value is 0(less than 7.3.519).
+		Default value is 0(above equal than 7.3.519).
+		Default value is 1(|+xim| and GUI version).
 
 g:neocomplcache_lock_iminsert			*g:neocomplcache_lock_iminsert*
 		This variable is non 0, neocomplcache lock when 'iminsert' is
@@ -1083,6 +1084,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-08-24
 - Added FAQ item.
 - Set refresh always.
+- Change g:neocomplcache_enable_prefetch default value.
 
 2012-08-23
 - Fixed customlist completion problem.

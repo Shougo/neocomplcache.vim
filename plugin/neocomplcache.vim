@@ -141,9 +141,9 @@ let g:neocomplcache_force_overwrite_completefunc =
       \ get(g:, 'neocomplcache_force_overwrite_completefunc', 0)
 let g:neocomplcache_enable_prefetch =
       \ get(g:, 'neocomplcache_enable_prefetch',
-      \  !(v:version > 703 || v:version == 703 && has('patch519')
+      \  !(v:version > 703 || v:version == 703 && has('patch519'))
       \ || (has('gui_running') && has('xim'))
-      \ ))
+      \ )
 let g:neocomplcache_lock_iminsert =
       \ get(g:, 'neocomplcache_lock_iminsert', 0)
 let g:neocomplcache_release_cache_time =
