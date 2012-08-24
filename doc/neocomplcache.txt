@@ -1080,6 +1080,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-08-24
 - Added FAQ item.
+- Set refresh always.
 
 2012-08-23
 - Fixed customlist completion problem.
