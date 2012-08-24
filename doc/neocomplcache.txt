@@ -1071,8 +1071,15 @@ Q: How can i change the order of candidates? :
 A: Please refer to g:neocomplcache_compare_function and
 g:neocomplcache_source_rank.
 
+Q: Input problem occurred in using uim-skk or other IME :
+
+A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-08-24
+- Added FAQ item.
 
 2012-08-23
 - Fixed customlist completion problem.
