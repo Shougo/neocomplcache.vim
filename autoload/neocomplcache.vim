@@ -870,7 +870,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     "}}}
   endif
 
-  " echomsg keyword_escape
+  call neocomplcache#print_debug(keyword_escape)
   return keyword_escape
 endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
@@ -1298,7 +1298,11 @@ function! neocomplcache#trunk_string(string, max)"{{{
   return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
 function! neocomplcache#head_match(checkstr, headstr)"{{{
-  return stridx(a:checkstr, a:headstr) == 0
+  let checkstr = &ignorecase ?
+        \ tolower(a:checkstr) : checkstr
+  let headstr = &ignorecase ?
+        \ tolower(a:headstr) : headstr
+  return stridx(checkstr, headstr) == 0
 endfunction"}}}
 function! neocomplcache#get_source_filetypes(filetype)"{{{
   let filetype = (a:filetype == '') ? 'nothing' : a:filetype
@@ -1989,7 +1993,8 @@ function! neocomplcache#complete_common_string()"{{{
   let ignorecase_save = &ignorecase
 
   " Get cursor word.
-  let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(s:get_cur_text())
+  let [cur_keyword_pos, cur_keyword_str] =
+        \ neocomplcache#match_word(s:get_cur_text())
 
   if neocomplcache#is_text_mode()
     let &ignorecase = 1
@@ -2019,6 +2024,10 @@ function! neocomplcache#complete_common_string()"{{{
   endif
 
   let &ignorecase = ignorecase_save
+
+  if common_str == ''
+    return ''
+  endif
 
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(cur_keyword_str)) . common_str

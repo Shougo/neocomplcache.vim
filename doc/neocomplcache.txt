@@ -1083,6 +1083,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-08-28
 - Improved refresh behavior.
+- Fixed neocomplcache#complete_common_string().
 
 2012-08-25
 - Deleted obsolute changelog.
