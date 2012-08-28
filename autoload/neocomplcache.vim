@@ -1299,9 +1299,9 @@ function! neocomplcache#trunk_string(string, max)"{{{
 endfunction"}}}
 function! neocomplcache#head_match(checkstr, headstr)"{{{
   let checkstr = &ignorecase ?
-        \ tolower(a:checkstr) : checkstr
+        \ tolower(a:checkstr) : a:checkstr
   let headstr = &ignorecase ?
-        \ tolower(a:headstr) : headstr
+        \ tolower(a:headstr) : a:headstr
   return stridx(checkstr, headstr) == 0
 endfunction"}}}
 function! neocomplcache#get_source_filetypes(filetype)"{{{
