@@ -1081,6 +1081,9 @@ A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-08-29
+- Improved initialization.
+
 2012-08-28
 - Improved refresh behavior.
 - Fixed neocomplcache#complete_common_string().

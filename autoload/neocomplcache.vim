@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2012.
+" Last Modified: 29 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,8 +30,33 @@ set cpo&vim
 
 scriptencoding utf-8
 
+function! s:initialize_variables()"{{{
+  let s:is_enabled = 1
+  let s:complfunc_sources = {}
+  let s:plugin_sources = {}
+  let s:ftplugin_sources = {}
+  let s:loaded_ftplugin_sources = {}
+  let s:sources_lock = {}
+  let s:cur_keyword_str = ''
+  let s:complete_words = []
+  let s:complete_results = {}
+  let s:cur_text = ''
+  let s:old_cur_text = ''
+  let s:moved_cur_text = ''
+  let s:changedtick = b:changedtick
+  let s:is_text_mode = 0
+  let s:within_comment = 0
+  let s:skip_next_complete = 0
+  let s:is_prefetch = 0
+  let s:use_sources = {}
+  let s:update_time_save = &updatetime
+  let s:filetype_frequencies = {}
+  let s:cur_keyword_pos = -1
+endfunction"}}}
+
 if !exists('s:is_enabled')
   let s:is_enabled = 0
+  call s:initialize_variables()
 endif
 
 function! neocomplcache#enable() "{{{
@@ -66,29 +91,7 @@ function! neocomplcache#enable() "{{{
   endif
   "}}}
 
-  " Initialize"{{{
-  let s:is_enabled = 1
-  let s:complfunc_sources = {}
-  let s:plugin_sources = {}
-  let s:ftplugin_sources = {}
-  let s:loaded_ftplugin_sources = {}
-  let s:sources_lock = {}
-  let s:cur_keyword_str = ''
-  let s:complete_words = []
-  let s:complete_results = {}
-  let s:cur_text = ''
-  let s:old_cur_text = ''
-  let s:moved_cur_text = ''
-  let s:changedtick = b:changedtick
-  let s:is_text_mode = 0
-  let s:within_comment = 0
-  let s:skip_next_complete = 0
-  let s:is_prefetch = 0
-  let s:use_sources = {}
-  let s:update_time_save = &updatetime
-  let s:filetype_frequencies = {}
-  let s:cur_keyword_pos = -1
-  "}}}
+  call s:initialize_variables()
 
   " Initialize sources table."{{{
   " Search autoload.
