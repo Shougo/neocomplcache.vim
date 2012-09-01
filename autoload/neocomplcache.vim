@@ -55,8 +55,8 @@ function! s:initialize_variables()"{{{
 endfunction"}}}
 
 if !exists('s:is_enabled')
-  let s:is_enabled = 0
   call s:initialize_variables()
+  let s:is_enabled = 0
 endif
 
 function! neocomplcache#enable() "{{{
