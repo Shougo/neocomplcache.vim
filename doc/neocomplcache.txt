@@ -41,11 +41,12 @@ Changelog		|neocomplcache-changelog|
 ==============================================================================
 INTRODUCTION					*neocomplcache-introduction*
 
-*neocomplcache* performs keyword completion by maintaining a cache of keywords in
-the current buffer. Because I implemented it by paying own expenses unlike the
-keyword completion including the Vim composing type, neocomplcache can be
-customized flexibly. Note that neocomplcache may consume more memory than
-other average plugins unfortunately.
+*neocomplcache* performs keyword completion by maintaining a cache of keywords
+in the current buffer. Because I implemented it by paying own expenses unlike
+the keyword completion including the Vim composing type, neocomplcache can be
+customized flexibly.
+Note that neocomplcache may consume more memory than other average plugins
+unfortunately.
 
 ==============================================================================
 INSTALL						*neocomplcache-install*
