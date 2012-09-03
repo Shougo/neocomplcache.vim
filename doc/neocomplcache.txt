@@ -980,25 +980,25 @@ omni_complete.vim				*omni_complete*
 abbrev_complete.vim				*abbrev_complete*
 		This source collects candidates from abbrev.
 
+
 suffix of complete candidates in popup menu declaration.
 (This will be good for user to know where candidate from and what it is.)
-    TODO complete this list
-    abbrev_complete -> [A]
-    filename_complete -> [F]
-    dictionary_complete -> D [words]
-    member_complete -> [M] member
-    keyword_complete -> ??
-    buffer_complete -> [B] buffername
-    syntax_complete -> ??
-    include_complete -> [FI]
-    snippet_complete -> snippets
-    vim_complete -> [vim] type
-    omni_complete -> [O]
-    tags_complete -> ??
-    other plugin sources -> [plugin name] type?
-    other completefunc sources -> ??
-    other ftplugin sources -> ??
 
+    abbrev_complete            -> [A]
+    filename_complete          -> [F] {filename}
+    dictionary_complete        -> [D] {words}
+    member_complete            -> [M] member
+    buffer_complete            -> [B] {buffername}
+    syntax_complete            -> [S] {syntax-keyword}
+    include_complete           -> [FI] or [I]
+    snippets_complete          -> [Snip] (none placeholders) or
+                                  <Snip> (contains placeholders)
+    vim_complete               -> [vim] type
+    omni_complete              -> [O]
+    tags_complete              -> [T]
+    other plugin sources       -> [plugin-name-prefix]
+    other completefunc sources -> [plugin-name-prefix]
+    other ftplugin sources     -> [plugin-name-prefix]
 
 ------------------------------------------------------------------------------
 USER SOURCES 					*neocomplcache-user-sources*
