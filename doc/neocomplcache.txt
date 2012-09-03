@@ -44,8 +44,8 @@ INTRODUCTION					*neocomplcache-introduction*
 *neocomplcache* performs keyword completion by maintaining a cache of keywords in
 the current buffer. Because I implemented it by paying own expenses unlike the
 keyword completion including the Vim composing type, neocomplcache can be
-customized flexibly. Unfortunately neocomplcache may use more memory than
-other plugins.
+customized flexibly. Note that neocomplcache may consume more memory than
+other average plugins unfortunately.
 
 ==============================================================================
 INSTALL						*neocomplcache-install*
@@ -64,8 +64,9 @@ vimproc is distributed at: http://github.com/Shougo/vimproc
 
 To use vimproc, you must compile it. Refer to the vimproc documentation.
 
-Note: Snippets feature(snippets_complete source) was splitted from Ver.7.
-      If you used it, please install snippets_complete source manually.
+Note: Snippets feature (snippets_complete source), which was originally
+      built-in, left since neocomplcache ver.7.
+      If you were using it, please install snippets_complete source manually.
 
 https://github.com/Shougo/neocomplcache-snippets-complete
 
@@ -84,18 +85,19 @@ COMMANDS 					*neocomplcache-commands*
 
 :NeoComplCacheToggle				*:NeoComplCacheToggle*
 		Change a lock state of neocomplcache.
-		While locking neocomplcache, automatic completion is not
-		possible.
+		While neocomplcache is in locking, you can't use automatic
+		completions.
 		Note: This command enables neocomplcache when neocomplcache is
-		disabled.
+		already disabled.
 
 :Neco [{anim-number}] 				*:Neco*
 		Secret.
 
 :NeoComplCacheLock				*:NeoComplCacheLock*
 		Lock neocomplcache.
-		While locking neocomplcache, manual completion is possible.
-		The lock status is buffer local.
+		While neocomplcache is in locking, you can't use automatic
+		completions but can use manual completions.
+		The lock status is local to each buffer.
 		Note: This command is disabled when neocomplcache is disabled.
 
 :NeoComplCacheUnlock				*:NeoComplCacheUnlock*
@@ -104,20 +106,21 @@ COMMANDS 					*neocomplcache-commands*
 
 :NeoComplCacheLockSource {source-name}		*:NeoComplCacheLockSource*
 		Disable {source-name} source completion. Disable state is
-		buffer local.
+		local to each buffer.
 
 :NeoComplCacheUnlockSource {source-name}	*:NeoComplCacheUnlockSource*
 		Unlock {source-name} source completion.
 
 :NeoComplCacheAutoCompletionLength		*:NeoComplCacheAutoCompletionLength*
 		Change start length of automatic completion.
-		This length is buffer local.
+		This length value is local to each buffer.
 
 :NeoComplCacheCachingBuffer [bufname]		*:NeoComplCacheCachingBuffer*
-		Caching [bufname] buffer.  Warning: considerably take time,
-		for the big buffer.  Select current buffer when [bufname]
-		omitted.  When [bufname] buffer is not cacheed, perform only
-		simple cacheing.
+		Cache [bufname] buffer.
+		Warning: it may take time considerably for the big buffer.
+		This selects current buffer when you omitted [bufname].  When
+		[bufname] buffer is not cached, this performs only simple
+		caching.
 
 :NeoComplCacheCachingSyntax [filetype]		*:NeoComplCacheCachingSyntax*
 		Caching [filetype] syntax file.
