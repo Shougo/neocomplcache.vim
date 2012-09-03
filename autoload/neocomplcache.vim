@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2012.
+" Last Modified: 03 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,7 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 7.1, for Vim 7.2
 "=============================================================================
 
 let s:save_cpo = &cpo
@@ -210,7 +209,7 @@ function! neocomplcache#enable() "{{{
         \'html,xhtml,xml,markdown,eruby',
         \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
-        \'css,stylus',
+        \'css,stylus,scss',
         \'[@#.]\?[[:alpha:]_:-][[:alnum:]_:-]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'tags',
@@ -312,6 +311,10 @@ function! neocomplcache#enable() "{{{
         \ 'html,xml', 'xhtml')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
         \ 'html,xhtml', 'css,stylus')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'css', 'scss')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
+        \ 'scss', 'css')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
         \ 'stylus', 'css')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
