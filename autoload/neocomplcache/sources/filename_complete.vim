@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2012.
+" Last Modified: 04 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,7 +53,8 @@ function! s:source.initialize()"{{{
         \ 'filename_complete', g:neocomplcache_auto_completion_start_length)
 
   " Set filename pattern.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_keyword_patterns,
         \'filename',
         \ neocomplcache#util#is_windows() ?
         \'\%(\a\+:[/\\]\)\?[\\/[:alnum:]()$+_\~.-]\+' :
@@ -62,10 +63,12 @@ function! s:source.initialize()"{{{
   " Initialize filename include expr."{{{
   let g:neocomplcache_filename_include_exprs =
         \ get(g:, 'neocomplcache_filename_include_exprs', {})
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exprs,
         \ 'perl',
         \ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exprs,
         \ 'ruby,python,java,d',
         \ 'fnamemodify(substitute(v:fname, "/", ".", "g"), ":r")')
   "}}}
@@ -73,13 +76,17 @@ function! s:source.initialize()"{{{
   " Initialize filename include extensions."{{{
   let g:neocomplcache_filename_include_exts =
         \ get(g:, 'neocomplcache_filename_include_exts', {})
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'c', ['h'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'cpp', ['', 'h', 'hpp', 'hxx'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'perl', ['pm'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'java', ['java'])
   "}}}
 
@@ -185,7 +192,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let bufdirectory = neocomplcache#util#substitute_path_separator(
         \ fnamemodify(expand('%'), ':p:h'))
   let dir_list = []
-  let file_list = []
+  let file_list = s:get_default_include_files(filetype)
   for subpath in split(path, '[,;]')
     let dir = (subpath == '.') ? bufdirectory : subpath
     if !isdirectory(dir)
@@ -230,6 +237,16 @@ function! s:get_include_files(cur_keyword_str)"{{{
 
   return neocomplcache#keyword_filter(dir_list, a:cur_keyword_str)
         \ + neocomplcache#keyword_filter(file_list, a:cur_keyword_str)
+endfunction"}}}
+
+function! s:get_default_include_files(filetype)"{{{
+  let files = []
+
+  if a:filetype ==# 'python' || a:filetype ==# 'python3'
+    let files = ['sys']
+  endif
+
+  return map(files, "{ 'word' : v:val, 'menu' : '[FI]' }")
 endfunction"}}}
 
 let s:cached_files = {}

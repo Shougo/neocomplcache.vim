@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 May 2012.
+" Last Modified: 04 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -155,7 +155,8 @@ endfunction"}}}
 
 function! neocomplcache#sources#include_complete#get_include_tags(bufnumber)"{{{
   return filter(map(neocomplcache#sources#include_complete#get_include_files(a:bufnumber),
-        \ "neocomplcache#cache#encode_name('tags_output', v:val)"), 'filereadable(v:val)')
+        \ "neocomplcache#cache#encode_name('tags_output', v:val)"),
+        \ 'filereadable(v:val)')
 endfunction"}}}
 
 " For Debug.
@@ -287,24 +288,35 @@ function! s:get_buffer_include_files(bufnumber)"{{{
     return []
   endif
 
-  if filetype == 'python'
-        \ && !has_key(g:neocomplcache_include_paths, 'python')
-        \ && executable('python')
+  if filetype ==# 'python' || filetype ==# 'python3'
+        \ && (executable('python') || executable('python3'))
     " Initialize python path pattern.
-    call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'python',
-          \ neocomplcache#system('python -',
-          \ 'import sys;sys.stdout.write(",".join(sys.path))'))
-  elseif filetype == 'cpp' && isdirectory('/usr/include/c++')
+
+    if executable('python3')
+      let path2 = ',' . neocomplcache#system('python3 -',
+          \ 'import sys;sys.stdout.write(",".join(sys.path))')
+    endif
+    if executable('python')
+      let path3 = ',' . neocomplcache#system('python -',
+          \ 'import sys;sys.stdout.write(",".join(sys.path))')
+      call neocomplcache#set_dictionary_helper(
+            \ g:neocomplcache_include_paths, 'python3', path3)
+    endif
+    let path = join(neocomplcache#util#uniq(split(path3.path2, ',')), ',')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_include_paths, 'python', path)
+  elseif filetype ==# 'cpp' && isdirectory('/usr/include/c++')
     " Add cpp path.
-    call neocomplcache#set_dictionary_helper(g:neocomplcache_include_paths, 'cpp',
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_include_paths, 'cpp',
           \ getbufvar(a:bufnumber, '&path') .
           \ ','.join(split(glob('/usr/include/c++/*'), '\n'), ','))
   endif
 
   let pattern = get(g:neocomplcache_include_patterns, filetype,
         \ getbufvar(a:bufnumber, '&include'))
-  if pattern == '' ||
-        \ (filetype != 'c' && filetype != 'cpp' && pattern ==# '^\s*#\s*include')
+  if pattern == '' || (filetype !=# 'c' && filetype !=# 'cpp'
+        \     && pattern ==# '^\s*#\s*include')
     return []
   endif
   let path = get(g:neocomplcache_include_paths, filetype,

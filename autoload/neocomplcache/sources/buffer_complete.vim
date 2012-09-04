@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2012.
+" Last Modified: 04 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,6 +44,8 @@ function! s:source.initialize()"{{{
           \ call s:check_source()
     autocmd CursorHold *
           \ call s:check_cache()
+    autocmd BufWritePost *
+          \ call s:check_recache()
     autocmd InsertEnter,InsertLeave *
           \ call s:caching_current_buffer(
           \          line('.') - 1, line('.') + 1, 1)
@@ -229,6 +231,7 @@ function! s:initialize_source(srcname)"{{{
         \ 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : len(buflines),
         \ 'accessed_time' : localtime(),
+        \ 'cached_time' : localtime(),
         \ 'path' : path, 'loaded_cache' : 0,
         \ 'cache_name' : neocomplcache#cache#encode_name(
         \   'buffer_cache', path),
@@ -255,6 +258,8 @@ function! s:word_caching(srcname)"{{{
         \ neocomplcache#cache#async_load_from_file(
         \     'buffer_cache', source.path,
         \     source.keyword_pattern, 'B')
+  let source.cached_time = localtime()
+  let source.end_line = len(getbufline(a:srcname, 1, '$'))
   let s:async_dictionary_list[source.path] = [{
         \ 'filename' : source.path,
         \ 'cachename' : source.cache_name,
@@ -338,6 +343,32 @@ function! s:check_cache()"{{{
           \     v:val.word).'\\>', 'wn', 0, 300) > 0")
   endfor
 endfunction"}}}
+function! s:check_recache()"{{{
+  if !s:exists_current_source()
+    return
+  endif
+
+  let release_accessd_time =
+        \ localtime() - g:neocomplcache_release_cache_time
+
+  let source = s:buffer_sources[bufnr('%')]
+
+  " Check buffer access time.
+  if source.cached_time < release_accessd_time
+        \ || (abs(source.end_line - line('$')) * 10)/source.end_line > 1
+    " Member recache.
+    if neocomplcache#is_source_enabled('member_complete')
+      call neocomplcache#sources#member_complete#caching_current_buffer()
+    endif
+
+    if neocomplcache#util#has_vimproc()
+      return
+    endif
+
+    " Buffer recache.
+    call s:word_caching(bufnr('%'))
+  endif
+endfunction"}}}
 
 function! s:exists_current_source()"{{{
   return has_key(s:buffer_sources, bufnr('%'))
@@ -356,7 +387,7 @@ function! s:save_cache(srcname)"{{{
   let srcname = fnamemodify(bufname(str2nr(a:srcname)), ':p')
   if !filereadable(srcname) ||
         \ (g:neocomplcache_disable_caching_file_path_pattern != ''
-        \   && srcname =~ g:neocomplcache_disable_caching_file_path_pattern)
+        \   && srcname =~# g:neocomplcache_disable_caching_file_path_pattern)
     return
   endif
 
@@ -364,7 +395,7 @@ function! s:save_cache(srcname)"{{{
 
   if filereadable(cache_name) &&
         \ (g:neocomplcache_disable_caching_file_path_pattern != ''
-        \   && srcname =~ g:neocomplcache_disable_caching_file_path_pattern)
+        \   && srcname =~# g:neocomplcache_disable_caching_file_path_pattern)
     " Delete cache file.
     call delete(cache_name)
     return

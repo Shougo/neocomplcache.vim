@@ -949,10 +949,10 @@ include_complete.vim				*include_complete*
 		refers to to candidate.  It is convenient, because you do
 		not need to prepare a tags file and a dictionary file.
 		But it is necessary for 'path' and 'include',
-		'includeexpr' to be set adequately. If vimproc is installed,
-		neocomplcache will cache. But if not installed, auto caching
-		feature is disabled. Please execute
-		|:NeoComplCacheCachingInclude| manually.
+		'includeexpr' to be set adequately.
+		Note: If vimproc is installed, neocomplcache will cache. But
+		if not installed, auto caching feature is disabled. Please
+			execute |:NeoComplCacheCachingInclude| manually.
  
 vim_complete.vim				*vim_complete*
 		This source analyzes context and start Omni completion of
@@ -1096,8 +1096,26 @@ Q: Input problem occurred in using uim-skk or other IME :
 
 A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
 
+Q: include_complete does not work.
+
+A: include_complete uses |vimproc|. I recommend for you to install it.  And
+you can check 'path' option or change |g:neocomplcache_include_paths|.
+
+http://github.com/Shougo/vimproc
+
+Q: Error occurred in "sudo vim":
+
+A: neocomplcache is not supported "sudo vim". You must use sudo.vim or set
+"Defaults always_set_home" in "/etc/sudoers" or use "sudoedit" command.
+
+http://www.vim.org/scripts/script.php?script_id=729
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-09-04
+- Added default include files in include_file.
+- Fixed python default include paths.
 
 2012-09-03
 - Supported scss.

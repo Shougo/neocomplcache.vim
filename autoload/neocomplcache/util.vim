@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2012.
+" Last Modified: 04 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:V = vital#of('neocomplcache')
+let s:List = vital#of('neocomplcache').import('Data.List')
 
 function! neocomplcache#util#truncate_smart(...)"{{{
   return call(s:V.truncate_smart, a:000)
@@ -84,9 +85,12 @@ endfunction"}}}
 function! neocomplcache#util#escape_pattern(...)"{{{
   return call(s:V.escape_pattern, a:000)
 endfunction"}}}
-function! neocomplcache#util#iconv(...)
+function! neocomplcache#util#iconv(...)"{{{
   return call(s:V.iconv, a:000)
-endfunction
+endfunction"}}}
+function! neocomplcache#util#uniq(...)"{{{
+  return call(s:List.uniq, a:000)
+endfunction"}}}
 
 function! neocomplcache#util#glob(pattern, ...)"{{{
   if a:pattern =~ "'"
