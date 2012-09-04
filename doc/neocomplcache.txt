@@ -1138,9 +1138,13 @@ http://www.vim.org/scripts/script.php?script_id=729
 
 
 Q: Error occurred in ruby omni complete.
+https://github.com/vim-ruby/vim-ruby/issues/95
 
 A: Please set |g:neocomplcache_force_omni_patterns|.
 >
+	if !exists('g:neocomplcache_force_omni_patterns')
+	  let g:neocomplcache_force_omni_patterns = {}
+	endif
 	let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 <
 
