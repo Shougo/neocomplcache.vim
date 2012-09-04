@@ -1108,6 +1108,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-09-04
 - Added default include files in include_file.
+- Fixed python default include paths.
 
 2012-09-03
 - Supported scss.

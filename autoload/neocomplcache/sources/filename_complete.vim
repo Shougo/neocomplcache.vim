@@ -53,7 +53,8 @@ function! s:source.initialize()"{{{
         \ 'filename_complete', g:neocomplcache_auto_completion_start_length)
 
   " Set filename pattern.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_keyword_patterns,
         \'filename',
         \ neocomplcache#util#is_windows() ?
         \'\%(\a\+:[/\\]\)\?[\\/[:alnum:]()$+_\~.-]\+' :
@@ -62,10 +63,12 @@ function! s:source.initialize()"{{{
   " Initialize filename include expr."{{{
   let g:neocomplcache_filename_include_exprs =
         \ get(g:, 'neocomplcache_filename_include_exprs', {})
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exprs,
         \ 'perl',
         \ 'fnamemodify(substitute(v:fname, "/", "::", "g"), ":r")')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exprs,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exprs,
         \ 'ruby,python,java,d',
         \ 'fnamemodify(substitute(v:fname, "/", ".", "g"), ":r")')
   "}}}
@@ -73,13 +76,17 @@ function! s:source.initialize()"{{{
   " Initialize filename include extensions."{{{
   let g:neocomplcache_filename_include_exts =
         \ get(g:, 'neocomplcache_filename_include_exts', {})
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'c', ['h'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'cpp', ['', 'h', 'hpp', 'hxx'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'perl', ['pm'])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_filename_include_exts,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_filename_include_exts,
         \ 'java', ['java'])
   "}}}
 
