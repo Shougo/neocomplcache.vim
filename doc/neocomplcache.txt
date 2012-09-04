@@ -1131,6 +1131,9 @@ Q: Error occurred in "sudo vim":
 A: neocomplcache is not supported "sudo vim". You must use sudo.vim or set
 "Defaults always_set_home" in "/etc/sudoers" or use "sudoedit" command.
 
+Ubuntu has a command "sudoedit", it can work with neocomplcache together.
+I do not know whether other distros has this command.
+
 http://www.vim.org/scripts/script.php?script_id=729
 
 
