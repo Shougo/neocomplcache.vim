@@ -1103,13 +1103,19 @@ you can check 'path' option or change |g:neocomplcache_include_paths|.
 
 http://github.com/Shougo/vimproc
 
+Q: Error occurred in "sudo vim":
+
+A: neocomplcache is not supported "sudo vim". You must use sudo.vim or set
+"Defaults always_set_home" in "/etc/sudoers" or use "sudoedit" command.
+
+http://www.vim.org/scripts/script.php?script_id=729
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
 2012-09-04
 - Added default include files in include_file.
 - Fixed python default include paths.
-- Improved recache behavior in buffer_complete.
 
 2012-09-03
 - Supported scss.
