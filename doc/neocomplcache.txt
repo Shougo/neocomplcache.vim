@@ -1172,6 +1172,9 @@ A: Please try below settings.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-06
+- Fixed include pattern.
+
 2012-09-05
 - Fixed check force_omni_patterns.
 
