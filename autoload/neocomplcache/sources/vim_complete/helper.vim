@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2012.
+" Last Modified: 02 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -372,11 +372,13 @@ function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keywo
     for function in values(s:internal_candidates_list.functions)
       let function_prototypes[function.word] = function.abbr
     endfor
-    let s:internal_candidates_list.function_prototypes = s:caching_prototype_from_dict('functions')
+    let s:internal_candidates_list.function_prototypes =
+          \ s:caching_prototype_from_dict('functions')
 
     for function in values(s:internal_candidates_list.functions)
       if has_key(s:internal_candidates_list.function_prototypes, function.word)
-        let function.description = function.word . s:internal_candidates_list.function_prototypes[function.word]
+        let function.description = function.word
+              \ . s:internal_candidates_list.function_prototypes[function.word]
       endif
     endfor
   endif
@@ -392,7 +394,8 @@ function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keywo
     endfor
     let list = functions
   else
-    let list = values(s:internal_candidates_list.functions) + values(s:global_candidates_list.functions)
+    let list = values(s:internal_candidates_list.functions)
+          \ + values(s:global_candidates_list.functions)
   endif
 
   return list
@@ -645,7 +648,8 @@ function! s:caching_completion_from_dict(dict_name)"{{{
   return keyword_dict
 endfunction"}}}
 function! s:caching_prototype_from_dict(dict_name)"{{{
-  let dict_files = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/vim_complete/'.a:dict_name.'.dict'), '\n')
+  let dict_files = split(globpath(&runtimepath,
+        \ 'autoload/neocomplcache/sources/vim_complete/'.a:dict_name.'.dict'), '\n')
   if empty(dict_files)
     return {}
   endif

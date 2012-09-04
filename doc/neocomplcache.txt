@@ -1167,6 +1167,9 @@ A: Please try below settings.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-05
+- Fixed check force_omni_patterns.
+
 2012-09-04
 - Added default include files in include_file.
 - Fixed python default include paths.
