@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2012.
+" Last Modified: 04 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,7 +185,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
   let bufdirectory = neocomplcache#util#substitute_path_separator(
         \ fnamemodify(expand('%'), ':p:h'))
   let dir_list = []
-  let file_list = []
+  let file_list = s:get_default_include_files(filetype)
   for subpath in split(path, '[,;]')
     let dir = (subpath == '.') ? bufdirectory : subpath
     if !isdirectory(dir)
@@ -230,6 +230,16 @@ function! s:get_include_files(cur_keyword_str)"{{{
 
   return neocomplcache#keyword_filter(dir_list, a:cur_keyword_str)
         \ + neocomplcache#keyword_filter(file_list, a:cur_keyword_str)
+endfunction"}}}
+
+function! s:get_default_include_files(filetype)"{{{
+  let files = []
+
+  if a:filetype ==# 'python' || a:filetype ==# 'python3'
+    let files = ['sys']
+  endif
+
+  return map(files, "{ 'word' : v:val, 'menu' : '[FI]' }")
 endfunction"}}}
 
 let s:cached_files = {}

@@ -1099,6 +1099,9 @@ A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-04
+- Added default include files in include_file.
+
 2012-09-03
 - Supported scss.
 - Ver.7.2 development is started.
