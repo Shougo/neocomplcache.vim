@@ -344,7 +344,7 @@ function! s:check_cache()"{{{
   endfor
 endfunction"}}}
 function! s:check_recache()"{{{
-  if !s:exists_current_source() ||
+  if !s:exists_current_source()
     return
   endif
 
