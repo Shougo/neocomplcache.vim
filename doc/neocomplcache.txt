@@ -1089,12 +1089,14 @@ Q: Where is snippets for neocomplcache?
 
 A: https://github.com/Shougo/neocomplcache-snippets-complete
 
+
 Q: To disable python omni complete in neocomplcache?:
 
 A:
 >
 	let g:neocomplcache_omni_patterns['python'] = ''
 <
+
 Q: Can I enable quick match? :
 
 A: Quick match feature is removed in latest neocomplcache.
@@ -1104,14 +1106,17 @@ But you can use |unite.vim| to quick match.
 	imap <expr> -  pumvisible() ?
 	    \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
 <
+
 Q: How can i change the order of candidates? :
 
 A: Please refer to g:neocomplcache_compare_function and
 g:neocomplcache_source_rank.
 
+
 Q: Input problem occurred in using uim-skk or other IME :
 
 A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
+
 
 Q: include_complete does not work.
 
@@ -1120,6 +1125,7 @@ you can check 'path' option or change |g:neocomplcache_include_paths|.
 
 http://github.com/Shougo/vimproc
 
+
 Q: Error occurred in "sudo vim":
 
 A: neocomplcache is not supported "sudo vim". You must use sudo.vim or set
@@ -1127,12 +1133,14 @@ A: neocomplcache is not supported "sudo vim". You must use sudo.vim or set
 
 http://www.vim.org/scripts/script.php?script_id=729
 
+
 Q: Error occurred in ruby omni complete.
 
 A: Please set |g:neocomplcache_force_omni_patterns|.
 >
 	let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 <
+
 Q: Does not work with clang_complete.
 
 A: Please try below settings.
