@@ -500,6 +500,14 @@ function! neocomplcache#enable() "{{{
         \'v:val.word !~ ''^[~_]''')
   "}}}
 
+  " Initialize force omni completion pattern."{{{
+  if !exists('g:neocomplcache_force_omni_patterns')
+    let g:neocomplcache_force_omni_patterns = {}
+  endif
+  call neocomplcache#set_dictionary_helper(
+        \g:neocomplcache_force_omni_patterns, 'objc',
+        \'\h\w\+\|[^.[:digit:] *\t]\%(\.\|->\)')
+  "}}}
   " Initialize ignore composite filetypes
   if !exists('g:neocomplcache_ignore_composite_filetype_lists')
     let g:neocomplcache_ignore_composite_filetype_lists = {}
@@ -1267,17 +1275,15 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
 
   let omnifunc = &l:omnifunc
 
-  if has_key(g:neocomplcache_omni_patterns, omnifunc)
-    let pattern = g:neocomplcache_omni_patterns[omnifunc]
-  elseif filetype != '' && has_key(g:neocomplcache_omni_patterns, filetype)
-    let pattern = g:neocomplcache_omni_patterns[filetype]
+  if has_key(g:neocomplcache_force_omni_patterns, omnifunc)
+    let pattern = g:neocomplcache_force_omni_patterns[omnifunc]
+  elseif filetype != '' && has_key(g:neocomplcache_force_omni_patterns, filetype)
+    let pattern = g:neocomplcache_force_omni_patterns[filetype]
   else
     return 0
   endif
 
-  " For rubycomplete only.
-  return &l:omnifunc ==# 'rubycomplete#Complete'
-        \ && a:cur_text =~ pattern
+  return a:cur_text =~ pattern
 endfunction"}}}
 function! neocomplcache#is_source_enabled(plugin_name)"{{{
   return !get(g:neocomplcache_source_disable, a:plugin_name, 0)
