@@ -1554,20 +1554,25 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
 
   " Convert words.
   if neocomplcache#is_text_mode() "{{{
+    let convert_candidates = filter(copy(complete_words),
+          \ "get(v:val, 'neocomplcache__convertable', 1)")
+
     if a:cur_keyword_str =~ '^\l\+$'
-      for keyword in complete_words
+      for keyword in convert_candidates
         let keyword.word = tolower(keyword.word)
         let keyword.abbr = tolower(keyword.abbr)
       endfor
     elseif a:cur_keyword_str =~ '^\u\+$'
-      for keyword in complete_words
+      for keyword in convert_candidates
         let keyword.word = toupper(keyword.word)
         let keyword.abbr = toupper(keyword.abbr)
       endfor
     elseif a:cur_keyword_str =~ '^\u\l\+$'
-      for keyword in complete_words
-        let keyword.word = toupper(keyword.word[0]).tolower(keyword.word[1:])
-        let keyword.abbr = toupper(keyword.abbr[0]).tolower(keyword.abbr[1:])
+      for keyword in convert_candidates
+        let keyword.word = toupper(keyword.word[0]).
+              \ tolower(keyword.word[1:])
+        let keyword.abbr = toupper(keyword.abbr[0]).
+              \ tolower(keyword.abbr[1:])
       endfor
     endif
   endif"}}}
