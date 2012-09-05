@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2012.
+" Last Modified: 06 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -292,17 +292,18 @@ function! s:get_buffer_include_files(bufnumber)"{{{
         \ && (executable('python') || executable('python3'))
     " Initialize python path pattern.
 
+    let path = ''
     if executable('python3')
-      let path2 = ',' . neocomplcache#system('python3 -',
+      let path .= ',' . neocomplcache#system('python3 -',
           \ 'import sys;sys.stdout.write(",".join(sys.path))')
     endif
     if executable('python')
-      let path3 = ',' . neocomplcache#system('python -',
+      let path .= ',' . neocomplcache#system('python -',
           \ 'import sys;sys.stdout.write(",".join(sys.path))')
       call neocomplcache#set_dictionary_helper(
-            \ g:neocomplcache_include_paths, 'python3', path3)
+            \ g:neocomplcache_include_paths, 'python3', path)
     endif
-    let path = join(neocomplcache#util#uniq(split(path3.path2, ',')), ',')
+    let path = join(neocomplcache#util#uniq(split(path, ',')), ',')
     call neocomplcache#set_dictionary_helper(
           \ g:neocomplcache_include_paths, 'python', path)
   elseif filetype ==# 'cpp' && isdirectory('/usr/include/c++')
