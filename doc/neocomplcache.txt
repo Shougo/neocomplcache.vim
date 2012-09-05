@@ -1174,6 +1174,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-09-06
 - Fixed include pattern.
+- Fixed force omni patterns.
 
 2012-09-05
 - Fixed check force_omni_patterns.

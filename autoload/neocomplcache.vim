@@ -606,12 +606,18 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
             \ -1 : -3
     endif
 
+    let cur_text = s:get_cur_text()
+    if neocomplcache#is_omni_complete(cur_text)
+      " Use omni function.
+      return -1
+    endif
+
     " Get cur_keyword_pos.
     if s:is_prefetch && !empty(s:complete_results)
       " Use prefetch results.
     else
       let s:complete_results =
-            \ neocomplcache#get_complete_results(s:get_cur_text())
+            \ neocomplcache#get_complete_results(cur_text)
     endif
     let cur_keyword_pos =
           \ neocomplcache#get_cur_keyword_pos(s:complete_results)
