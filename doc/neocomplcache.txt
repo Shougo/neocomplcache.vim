@@ -415,11 +415,14 @@ g:neocomplcache_next_keyword_patterns		*g:neocomplcache_next_keyword_patterns*
 		autoload/neocomplcache.vim for the initial value.
 
 g:neocomplcache_omni_patterns			*g:neocomplcache_omni_patterns*
-		This dictionary records keyword patterns to Omni completion.
-		This is appointed in regular expression every file type.
-		If this pattern is not defined, neocomplcache don't call
-		|omnifunc|. For example, ruby and php omnifunc are disabled,
-		because they are too slow.
+		This dictionary records keyword patterns used in
+		|omni_complete|.  This is appointed in regular expression
+		every file type.  If this pattern is not defined,
+		neocomplcache does't call 'omnifunc'.
+		Note: ruby and php omnifunc are disabled, because they are too
+		slow.
+		Note: Partial omnifunc has problem when neocomplcache call(Ex:
+		rubycomplete and cocoa.vim and clang_complete).
 		
 		Because it is complicated, refer to s:source.initialize()
 		autoload/neocomplcache/sources/omni_complete.vim for the
@@ -434,6 +437,25 @@ g:neocomplcache_omni_patterns			*g:neocomplcache_omni_patterns*
 		let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 		let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 <
+g:neocomplcache_force_omni_patterns
+					*g:neocomplcache_force_omni_patterns*
+		This dictionary records keyword patterns to Omni completion.
+		This is appointed in regular expression every file type.
+		If this pattern is not defined, neocomplcache don't call
+		'omnifunc'.
+		Note: If it is set, neocomplcache wil call 'omnifunc'
+		directly. So almost neocomplcache features are disabled. But
+		all Omni completion works instead of
+		|g:neocomplcache_omni_patterns|.
+>
+		if !exists('g:neocomplcache_force_omni_patterns')
+		  let g:neocomplcache_force_omni_patterns = {}
+		endif
+		let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+<
+		Because it is complicated, refer to neocomplcache#enable() in
+		autoload/neocomplcache.vim for the initial value.
+>
 g:neocomplcache_tags_filter_patterns		*g:neocomplcache_tags_filter_patterns*
 		This dictionary records  a pattern to filter a candidate in
 		the tag completion.  For example, it can exclude a candidate
@@ -1054,47 +1076,53 @@ A: Like this:
 	highlight PmenuSbar ctermbg=0 guibg=#d6d6d6
 <
 
-Q: Python(or Ruby) interface crashes Vim using neocomplcache:
+Q: Python (or Ruby) interface crashes Vim when I use neocomplcache:
 
-A: This is not neocomplcache issue. Please report to omnicomplete(rubycomplete
-or pythoncomplete) and Vim interface maintainer.
+A: This is not neocomplcache's issue. Please report to
+the maintainers of the omnicomplete (rubycomplete or pythoncomplete) and its
+Vim interface.
 
 
-Q: I like to move cursor by cursor keys. But neocomplcache popups menus...
+Q: I like moving cursor by cursor-keys. But neocomplcache popups menus...
 
-A: Please set this in your .vimrc. But this feature requires Vim 7.3.418 or
-above.
+A: Please set this in your .vimrc. Note that this feature requires Vim 7.3.418
+or later.
 >
 	let g:neocomplcache_enable_insert_char_pre = 1
 <
 
-Q: Where is snippets for neocomplcache?
+Q: Where is snippets set for neocomplcache?
 
 A: https://github.com/Shougo/neocomplcache-snippets-complete
 
-Q: To disable python omni complete in neocomplcache?:
+
+Q: How I can disable python omni complete of neocomplcache?:
 
 A:
 >
 	let g:neocomplcache_omni_patterns['python'] = ''
 <
+
 Q: Can I enable quick match? :
 
-A: Quick match feature is removed in latest neocomplcache.
-Because quick match is hard to implement.
-But you can use |unite.vim| to quick match.
+A: Quick match feature had been removed in latest neocomplcache
+because quick match turned into hard to implement.
+But you can use |unite.vim| instead to use quick match.
 >
 	imap <expr> -  pumvisible() ?
 	    \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
 <
+
 Q: How can i change the order of candidates? :
 
-A: Please refer to g:neocomplcache_compare_function and
+A: Please refer g:neocomplcache_compare_function and
 g:neocomplcache_source_rank.
+
 
 Q: Input problem occurred in using uim-skk or other IME :
 
-A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
+A: It may be fixed with setting |g:neocomplcache_enable_prefetch| as 1.
+
 
 Q: include_complete does not work.
 
@@ -1102,6 +1130,7 @@ A: include_complete uses |vimproc|. I recommend for you to install it.  And
 you can check 'path' option or change |g:neocomplcache_include_paths|.
 
 http://github.com/Shougo/vimproc
+
 
 Q: Error occurred in "sudo vim":
 
@@ -1113,12 +1142,52 @@ I do not know whether other distros has this command.
 
 http://www.vim.org/scripts/script.php?script_id=729
 
+
+Q: Error occurred in ruby omni complete.
+https://github.com/vim-ruby/vim-ruby/issues/95
+
+A: Please set |g:neocomplcache_force_omni_patterns|.
+>
+	if !exists('g:neocomplcache_force_omni_patterns')
+	  let g:neocomplcache_force_omni_patterns = {}
+	endif
+	let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+<
+
+Q: Does not work with clang_complete.
+
+A: Please try below settings.
+>
+	if !exists('g:neocomplcache_force_omni_patterns')
+	  let g:neocomplcache_force_omni_patterns = {}
+	endif
+	let g:neocomplcache_force_overwrite_completefunc = 1
+	let g:neocomplcache_force_omni_patterns.c =
+	      \ '[^.[:digit:] *\t]\%(\.\|->\)'
+	let g:neocomplcache_force_omni_patterns.cpp =
+	      \ '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+	let g:clang_complete_auto = 0
+	let g:clang_auto_select = 0
+	let g:clang_use_library   = 0
+<
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-09-07
+- Fixed include_complete error.
+
+2012-09-06
+- Fixed include pattern.
+- Fixed force omni patterns.
+- Added neocomplcache__convertable attribute.
+
+2012-09-05
+- Fixed check force_omni_patterns.
 
 2012-09-04
 - Added default include files in include_file.
 - Fixed python default include paths.
+- Added g:neocomplcache_force_omni_patterns variable.
 
 2012-09-03
 - Supported scss.
