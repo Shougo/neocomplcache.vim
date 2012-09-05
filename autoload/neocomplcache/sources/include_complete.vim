@@ -288,7 +288,7 @@ function! s:get_buffer_include_files(bufnumber)"{{{
     return []
   endif
 
-  if filetype ==# 'python' || filetype ==# 'python3'
+  if (filetype ==# 'python' || filetype ==# 'python3')
         \ && (executable('python') || executable('python3'))
     " Initialize python path pattern.
 
