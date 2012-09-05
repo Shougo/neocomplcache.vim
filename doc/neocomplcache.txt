@@ -1076,26 +1076,27 @@ A: Like this:
 	highlight PmenuSbar ctermbg=0 guibg=#d6d6d6
 <
 
-Q: Python(or Ruby) interface crashes Vim using neocomplcache:
+Q: Python (or Ruby) interface crashes Vim when I use neocomplcache:
 
-A: This is not neocomplcache issue. Please report to omnicomplete(rubycomplete
-or pythoncomplete) and Vim interface maintainer.
+A: This is not neocomplcache's issue. Please report to
+the maintainers of the omnicomplete (rubycomplete or pythoncomplete) and its
+Vim interface.
 
 
-Q: I like to move cursor by cursor keys. But neocomplcache popups menus...
+Q: I like moving cursor by cursor-keys. But neocomplcache popups menus...
 
-A: Please set this in your .vimrc. But this feature requires Vim 7.3.418 or
-above.
+A: Please set this in your .vimrc. Note that this feature requires Vim 7.3.418
+or later.
 >
 	let g:neocomplcache_enable_insert_char_pre = 1
 <
 
-Q: Where is snippets for neocomplcache?
+Q: Where is snippets set for neocomplcache?
 
 A: https://github.com/Shougo/neocomplcache-snippets-complete
 
 
-Q: To disable python omni complete in neocomplcache?:
+Q: How I can disable python omni complete of neocomplcache?:
 
 A:
 >
@@ -1104,9 +1105,9 @@ A:
 
 Q: Can I enable quick match? :
 
-A: Quick match feature is removed in latest neocomplcache.
-Because quick match is hard to implement.
-But you can use |unite.vim| to quick match.
+A: Quick match feature had been removed in latest neocomplcache
+because quick match turned into hard to implement.
+But you can use |unite.vim| instead to use quick match.
 >
 	imap <expr> -  pumvisible() ?
 	    \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
@@ -1114,13 +1115,13 @@ But you can use |unite.vim| to quick match.
 
 Q: How can i change the order of candidates? :
 
-A: Please refer to g:neocomplcache_compare_function and
+A: Please refer g:neocomplcache_compare_function and
 g:neocomplcache_source_rank.
 
 
 Q: Input problem occurred in using uim-skk or other IME :
 
-A: It may be fixed |g:neocomplcache_enable_prefetch| is 1.
+A: It may be fixed with setting |g:neocomplcache_enable_prefetch| as 1.
 
 
 Q: include_complete does not work.
