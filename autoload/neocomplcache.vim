@@ -597,14 +597,17 @@ endfunction"}}}
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
     let cur_text = s:get_cur_text()
-    " echomsg string(cur_text)
-    " echomsg neocomplcache#is_omni_complete(cur_text)
     if !neocomplcache#is_enabled()
           \ || neocomplcache#is_omni_complete(cur_text)
       let s:cur_keyword_str = ''
       let s:complete_words = []
       let s:is_prefetch = 0
       let &l:completefunc = 'neocomplcache#manual_complete'
+      if neocomplcache#is_omni_complete(cur_text)
+        " Note: Why? If exit completefunc, start keyword completion.
+        " So neocomplcache must close completion window..
+        call feedkeys("\<C-e>")
+      endif
       return -3
     endif
 
@@ -767,8 +770,6 @@ function! s:do_auto_complete(event)"{{{
     return
   endif
 
-  " echomsg string(cur_text)
-  " echomsg neocomplcache#is_omni_complete(cur_text)
   if neocomplcache#is_omni_complete(cur_text)
     call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
     return
