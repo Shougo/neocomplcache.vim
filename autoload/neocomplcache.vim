@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2012.
+" Last Modified: 06 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -596,20 +596,19 @@ endfunction"}}}
 
 function! neocomplcache#manual_complete(findstart, base)"{{{
   if a:findstart
+    let cur_text = s:get_cur_text()
     if !neocomplcache#is_enabled()
+          \ || neocomplcache#is_omni_complete(cur_text)
       let s:cur_keyword_str = ''
       let s:complete_words = []
       let s:is_prefetch = 0
       let &l:completefunc = 'neocomplcache#manual_complete'
-      return (g:neocomplcache_enable_prefetch
-            \ || g:neocomplcache_enable_insert_char_pre) ?
-            \ -1 : -3
-    endif
-
-    let cur_text = s:get_cur_text()
-    if neocomplcache#is_omni_complete(cur_text)
-      " Use omni function.
-      return -1
+      if neocomplcache#is_omni_complete(cur_text)
+        " Note: Why? If exit completefunc, start keyword completion.
+        " So neocomplcache must close completion window..
+        call feedkeys("\<C-e>")
+      endif
+      return -3
     endif
 
     " Get cur_keyword_pos.
@@ -627,7 +626,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let s:complete_results = {}
-      return g:neocomplcache_enable_prefetch ? -1 : -3
+      return -3
     endif
 
     return cur_keyword_pos
