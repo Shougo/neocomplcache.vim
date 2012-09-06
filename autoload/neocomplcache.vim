@@ -383,52 +383,79 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_context_filetype_lists')
     let g:neocomplcache_context_filetype_lists = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'c,cpp', [
-        \ {'filetype' : 'masm', 'start' : '_*asm_*\s\+\h\w*', 'end' : '$'},
-        \ {'filetype' : 'masm', 'start' : '_*asm_*\s*\%(\n\s*\)\?{', 'end' : '}'},
-        \ {'filetype' : 'gas', 'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
+        \ {'filetype' : 'masm',
+        \  'start' : '_*asm_*\s\+\h\w*', 'end' : '$'},
+        \ {'filetype' : 'masm',
+        \  'start' : '_*asm_*\s*\%(\n\s*\)\?{', 'end' : '}'},
+        \ {'filetype' : 'gas',
+        \  'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'd', [
-        \ {'filetype' : 'masm', 'start' : 'asm\s*\%(\n\s*\)\?{', 'end' : '}'},
+        \ {'filetype' : 'masm',
+        \  'start' : 'asm\s*\%(\n\s*\)\?{', 'end' : '}'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'perl6', [
         \ {'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'vimshell', [
-        \ {'filetype' : 'vim', 'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
+        \ {'filetype' : 'vim',
+        \  'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
         \ {'filetype' : 'vim', 'start' : ' :\w*', 'end' : '\n'},
         \ {'filetype' : 'vim', 'start' : ' vexe\s\+', 'end' : '\n'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'eruby', [
         \ {'filetype' : 'ruby', 'start' : '<%[=#]\?', 'end' : '%>'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'vim', [
-        \ {'filetype' : 'python', 'start' : '^\s*python3\? <<\s*\(\h\w*\)', 'end' : '^\1'},
-        \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \ {'filetype' : 'python',
+        \  'start' : '^\s*python3\? <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \ {'filetype' : 'ruby',
+        \  'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'html,xhtml', [
-        \ {'filetype' : 'javascript', 'start' : '<script type="text/javascript">', 'end' : '</script>'},
-        \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},
+        \ {'filetype' : 'javascript', 'start' :
+        \'<script\%( [^>]*\)\? type="text/javascript"\%( [^>]*\)\?>',
+        \  'end' : '</script>'},
+        \ {'filetype' : 'coffee', 'start' :
+        \'<script\%( [^>]*\)\? type="text/coffeescript"\%( [^>]*\)\?>',
+        \  'end' : '</script>'},
+        \ {'filetype' : 'css', 'start' :
+        \'<script\%( [^>]*\)\? type="text/css"\%( [^>]*\)\?>',
+        \  'end' : '</style>'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'python', [
-        \ {'filetype' : 'vim', 'start' : 'vim.command\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
-        \ {'filetype' : 'vim', 'start' : 'vim.eval\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
+        \ {'filetype' : 'vim',
+        \  'start' : 'vim.command\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
+        \ {'filetype' : 'vim',
+        \  'start' : 'vim.eval\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'help', [
         \ {'filetype' : 'vim', 'start' : '^>', 'end' : '^<'},
         \])
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_context_filetype_lists,
         \ 'nyaos,int-nyaos', [
-        \ {'filetype' : 'lua', 'start' : '\<lua_e\s\+\(["'']\)', 'end' : '^\1'},
+        \ {'filetype' : 'lua',
+        \  'start' : '\<lua_e\s\+\(["'']\)', 'end' : '^\1'},
         \])
   "}}}
 
