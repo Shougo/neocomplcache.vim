@@ -412,9 +412,15 @@ function! neocomplcache#enable() "{{{
         \ {'filetype' : 'python', 'start' : '^\s*python3\? <<\s*\(\h\w*\)', 'end' : '^\1'},
         \ {'filetype' : 'ruby', 'start' : '^\s*ruby <<\s*\(\h\w*\)', 'end' : '^\1'},
         \])
+  " TODO
+  " the 'start' pattern here should be more smart.
+  " to match case like this:
+  " <script src="src/kk.js" type="text/javascript" charset="utf-8">
+  " </script>
   call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
         \ 'html,xhtml', [
         \ {'filetype' : 'javascript', 'start' : '<script type="text/javascript">', 'end' : '</script>'},
+        \ {'filetype' : 'coffee', 'start' : '<script type="text/coffeescript">', 'end' : '</script>'},
         \ {'filetype' : 'css', 'start' : '<style type="text/css">', 'end' : '</style>'},
         \])
   call neocomplcache#set_dictionary_helper(g:neocomplcache_context_filetype_lists,
