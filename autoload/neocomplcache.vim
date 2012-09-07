@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2012.
+" Last Modified: 07 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -630,12 +630,10 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let &l:completefunc = 'neocomplcache#manual_complete'
-      if neocomplcache#is_omni_complete(cur_text)
-        " Note: Why? If exit completefunc, start keyword completion.
-        " So neocomplcache must close completion window..
-        call feedkeys("\<C-e>")
-      endif
-      return -3
+
+      return (g:neocomplcache_enable_prefetch
+            \ || g:neocomplcache_enable_insert_char_pre) ?
+            \ -1 : -3
     endif
 
     " Get cur_keyword_pos.
@@ -653,30 +651,32 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let s:complete_results = {}
-      return -3
+      return (g:neocomplcache_enable_prefetch
+            \ || g:neocomplcache_enable_insert_char_pre) ?
+            \ -1 : -3
     endif
 
     return cur_keyword_pos
-  endif
-
-  let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
-  let s:complete_words = neocomplcache#get_complete_words(
-          \ s:complete_results, cur_keyword_pos, a:base)
-  let s:cur_keyword_str = a:base
-  let s:is_prefetch = 0
-
-  if v:version > 703 || v:version == 703 && has('patch418')
-    let dict = { 'words' : s:complete_words }
-
-    if len(s:complete_words) >= g:neocomplcache_max_list
-          \ && (g:neocomplcache_enable_cursor_hold_i
-          \ || v:version > 703 || v:version == 703 && has('patch561'))
-      " Note: If Vim is less than 7.3.561, it have broken register "." problem.
-      let dict.refresh = 'always'
-    endif
-    return dict
   else
-    return s:complete_words
+    let cur_keyword_pos = neocomplcache#get_cur_keyword_pos(s:complete_results)
+    let s:complete_words = neocomplcache#get_complete_words(
+          \ s:complete_results, cur_keyword_pos, a:base)
+    let s:cur_keyword_str = a:base
+    let s:is_prefetch = 0
+
+    if v:version > 703 || v:version == 703 && has('patch418')
+      let dict = { 'words' : s:complete_words }
+
+      if len(s:complete_words) >= g:neocomplcache_max_list
+            \ && (g:neocomplcache_enable_cursor_hold_i
+            \ || v:version > 703 || v:version == 703 && has('patch561'))
+        " Note: If Vim is less than 7.3.561, it have broken register "." problem.
+        let dict.refresh = 'always'
+      endif
+      return dict
+    else
+      return s:complete_words
+    endif
   endif
 endfunction"}}}
 
