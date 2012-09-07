@@ -1173,12 +1173,11 @@ A: Please try below settings.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
-2012-09-08
-- Fixed force omnifunc problem.
-
 2012-09-07
 - Fixed include_complete error.
 - Improved context filetype initialization.
+- Fixed force omnifunc problem.
+- Fixed completefunc return value.
 
 2012-09-06
 - Fixed include pattern.
