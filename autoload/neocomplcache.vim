@@ -630,8 +630,8 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let &l:completefunc = 'neocomplcache#manual_complete'
-      " Note: Why? If exit completefunc by -3, start keyword completion.
-      return neocomplcache#is_omni_complete(cur_text) ? -2 : -3
+
+      return -3
     endif
 
     " Get cur_keyword_pos.
