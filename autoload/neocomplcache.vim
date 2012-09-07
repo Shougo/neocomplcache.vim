@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2012.
+" Last Modified: 07 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -633,7 +633,7 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
       if neocomplcache#is_omni_complete(cur_text)
         " Note: Why? If exit completefunc, start keyword completion.
         " So neocomplcache must close completion window..
-        call feedkeys("\<C-e>")
+        call feedkeys("\<C-e>", 'n')
       endif
       return -3
     endif
