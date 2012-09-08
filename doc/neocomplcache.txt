@@ -1077,11 +1077,11 @@ A: Like this:
 <
 
 Q: Python (or Ruby) interface crashes Vim when I use neocomplcache or not
-ressponding when input ".":
+responding when input ".":
 
-A: This is not neocomplcache's issue. Please report to
-the maintainers of the omnicomplete (rubycomplete or pythoncomplete) and its
-Vim interface. You should disable omni_complete in python or ruby.
+A: This is not neocomplcache's issue. Please report to the maintainers of the
+omnicomplete (rubycomplete or pythoncomplete) and its Vim interface. You
+should disable omni_complete in python or ruby.
 >
 	if !exists('g:neocomplcache_omni_patterns')
 	  let g:neocomplcache_omni_patterns = {}
@@ -1129,26 +1129,26 @@ A: Please refer g:neocomplcache_compare_function and
 g:neocomplcache_source_rank.
 
 
-Q: Input problem occurred in using uim-skk or other IME :
+Q: An input problem occurred in using uim-skk or other IMEs:
 
 A: It may be fixed with setting |g:neocomplcache_enable_prefetch| as 1.
 
 
 Q: include_complete does not work.
 
-A: include_complete uses |vimproc|. I recommend for you to install it.  And
+A: include_complete depends on |vimproc|. I recommend you to install it.  Also
 you can check 'path' option or change |g:neocomplcache_include_paths|.
 
 http://github.com/Shougo/vimproc
 
 
-Q: Error occurred in "sudo vim":
+Q: An error occurred in "sudo vim":
 
-A: neocomplcache is not supported "sudo vim". You must use sudo.vim or set
-"Defaults always_set_home" in "/etc/sudoers" or use "sudoedit" command.
+A: neocomplcache does not support "sudo vim". You must use sudo.vim or set
+"Defaults always_set_home" in "/etc/sudoers", or must use "sudoedit" command.
 
-Ubuntu has a command "sudoedit", it can work with neocomplcache together.
-I do not know whether other distros has this command.
+Ubuntu has a command "sudoedit" which can work well with neocomplcache.
+I'm not sure if other distros has this command...
 
 http://www.vim.org/scripts/script.php?script_id=729
 
