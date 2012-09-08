@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jun 2012.
+" Last Modified: 08 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,9 +35,9 @@ function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dicti
     return
   endif
 
-  let cache_list = a:async_cache_dictionary[a:key]
   let keyword_list = []
-  for cache in a:async_cache_dictionary[a:key]
+  let cache_list = a:async_cache_dictionary[a:key]
+  for cache in cache_list
     if filereadable(cache.cachename)
       let keyword_list +=
             \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
@@ -46,9 +46,12 @@ function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dicti
 
   call neocomplcache#cache#list2index(keyword_list,
         \ a:index_keyword_list, a:completion_length)
+  call filter(cache_list, '!filereadable(v:val.cachename)')
 
-  " Delete from dictionary.
-  call remove(a:async_cache_dictionary, a:key)
+  if empty(cache_list)
+    " Delete from dictionary.
+    call remove(a:async_cache_dictionary, a:key)
+  endif
 endfunction"}}}
 function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary, completion_length) "{{{
   " Caching.

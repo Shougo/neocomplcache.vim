@@ -224,8 +224,8 @@ function! s:initialize_source(srcname)"{{{
         \ 'name' : filename, 'filetype' : ft,
         \ 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : len(buflines),
-        \ 'accessed_time' : localtime(),
-        \ 'cached_time' : localtime(),
+        \ 'accessed_time' : 0,
+        \ 'cached_time' : 0,
         \ 'path' : path, 'loaded_cache' : 0,
         \ 'cache_name' : neocomplcache#cache#encode_name(
         \   'buffer_cache', path),
@@ -290,7 +290,6 @@ function! s:check_source()"{{{
         \ && !getwinvar(bufwinnr(bufnumber), '&previewwindow')
         \ && getfsize(bufname) <
         \      g:neocomplcache_caching_limit_file_size
-
     " Caching.
     call s:word_caching(bufnumber)
   endif
@@ -312,7 +311,8 @@ function! s:check_cache()"{{{
   for [key, source] in items(s:buffer_sources)
     " Check deleted buffer and access time.
     if !bufloaded(str2nr(key))
-          \ || source.accessed_time < release_accessd_time
+          \ || (source.accessed_time > 0 &&
+          \ source.accessed_time < release_accessd_time)
       " Remove item.
       call remove(s:buffer_sources, key)
     endif
@@ -344,15 +344,12 @@ function! s:check_recache()"{{{
   let source = s:buffer_sources[bufnr('%')]
 
   " Check buffer access time.
-  if source.cached_time < release_accessd_time
-        \ || (abs(source.end_line - line('$')) * 10)/source.end_line > 1
+  if source.cached_time > 0 &&
+        \ (source.cached_time < release_accessd_time
+        \  || (abs(source.end_line - line('$')) * 10)/source.end_line > 1)
     " Member recache.
     if neocomplcache#is_source_enabled('member_complete')
       call neocomplcache#sources#member_complete#caching_current_buffer()
-    endif
-
-    if neocomplcache#util#has_vimproc()
-      return
     endif
 
     " Buffer recache.
