@@ -1083,8 +1083,11 @@ A: This is not neocomplcache's issue. Please report to
 the maintainers of the omnicomplete (rubycomplete or pythoncomplete) and its
 Vim interface. You should disable omni_complete in python or ruby.
 >
-	let g:neocomplcache_omni_patterns['python'] = ''
-	let g:neocomplcache_omni_patterns['ruby'] = ''
+	if !exists('g:neocomplcache_omni_patterns')
+	  let g:neocomplcache_omni_patterns = {}
+	endif
+	let g:neocomplcache_omni_patterns.python = ''
+	let g:neocomplcache_omni_patterns.ruby = ''
 <
 
 Q: I like moving cursor by cursor-keys. But neocomplcache popups menus...
@@ -1104,7 +1107,10 @@ Q: How I can disable python omni complete of neocomplcache?:
 
 A:
 >
-	let g:neocomplcache_omni_patterns['python'] = ''
+	if !exists('g:neocomplcache_omni_patterns')
+	  let g:neocomplcache_omni_patterns = {}
+	endif
+	let g:neocomplcache_omni_patterns.python = ''
 <
 
 Q: Can I enable quick match? :
@@ -1117,7 +1123,7 @@ But you can use |unite.vim| instead to use quick match.
 	    \ "\<Plug>(neocomplcache_start_unite_quick_match)" : '-'
 <
 
-Q: How can i change the order of candidates? :
+Q: How can I change the order of candidates? :
 
 A: Please refer g:neocomplcache_compare_function and
 g:neocomplcache_source_rank.
