@@ -80,6 +80,11 @@ function! s:source.initialize()"{{{
           "\'ruby',
           "\'[^. *\t]\.\h\w*\|\h\w*::')
   endif
+  if has('python/dyn') || has('python3/dyn')
+        \ || has('python') || has('python3')
+    call neocomplcache#set_dictionary_helper(g:neocomplcache_omni_patterns,
+          \'python', '[^. \t]\.\w*')
+  endif
   "}}}
 
   " Initialize omni function list."{{{

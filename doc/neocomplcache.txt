@@ -1076,12 +1076,16 @@ A: Like this:
 	highlight PmenuSbar ctermbg=0 guibg=#d6d6d6
 <
 
-Q: Python (or Ruby) interface crashes Vim when I use neocomplcache:
+Q: Python (or Ruby) interface crashes Vim when I use neocomplcache or not
+ressponding when input ".":
 
 A: This is not neocomplcache's issue. Please report to
 the maintainers of the omnicomplete (rubycomplete or pythoncomplete) and its
-Vim interface.
-
+Vim interface. You should disable omni_complete in python or ruby.
+>
+	let g:neocomplcache_omni_patterns['python'] = ''
+	let g:neocomplcache_omni_patterns['ruby'] = ''
+<
 
 Q: I like moving cursor by cursor-keys. But neocomplcache popups menus...
 
@@ -1177,7 +1181,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Deleted :NeoComplCacheSaveCache command.
 - Deleted save cache behavior.
 - Fixed caching behavior.
-- Set g:neocomplcache_force_omni_patterns in python.
+- Added FAQ.
 
 2012-09-07
 - Fixed include_complete error.
