@@ -1177,6 +1177,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Deleted :NeoComplCacheSaveCache command.
 - Deleted save cache behavior.
 - Fixed caching behavior.
+- Set g:neocomplcache_force_omni_patterns in python.
 
 2012-09-07
 - Fixed include_complete error.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Sep 2012.
+" Last Modified: 08 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -534,6 +534,12 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#set_dictionary_helper(
         \g:neocomplcache_force_omni_patterns, 'objc',
         \'\h\w\+\|[^.[:digit:] *\t]\%(\.\|->\)')
+  if has('python/dyn') || has('python3/dyn')
+        \ || has('python') || has('python3')
+    call neocomplcache#set_dictionary_helper(
+          \g:neocomplcache_force_omni_patterns, 'python',
+          \'[^. \t]\.\w*')
+  endif
   "}}}
   " Initialize ignore composite filetypes
   if !exists('g:neocomplcache_ignore_composite_filetype_lists')
