@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2012.
+" Last Modified: 11 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -242,7 +242,7 @@ function! s:word_caching(srcname)"{{{
         \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
     if a:srcname == bufnr('%')
       " Make buffer cache.
-      call s:caching_current_buffer(1, min([100, line('$')]), 0)
+      call s:caching_current_buffer(1, min([1000, line('$')]), 0)
     endif
 
     return

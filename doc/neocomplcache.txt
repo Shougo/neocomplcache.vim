@@ -1183,6 +1183,9 @@ A: Please try below settings.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-10
+- Changed default cache lines in nofile buffer.
+
 2012-09-08
 - Deleted :NeoComplCacheSaveCache command.
 - Deleted save cache behavior.
