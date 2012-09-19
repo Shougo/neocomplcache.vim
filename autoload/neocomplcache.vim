@@ -722,6 +722,10 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
   return neocomplcache#manual_complete(a:findstart, a:base)
 endfunction"}}}
 
+function! neocomplcache#fix_down()
+    return ( line('.') - b:neocomplcache.last_line == 1 ) ? "\<Up>" : ""
+endfunction
+
 function! s:do_auto_complete(event)"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || neocomplcache#is_locked()
@@ -832,10 +836,11 @@ function! s:do_auto_complete(event)"{{{
   set completeopt-=longest
   set completeopt+=menuone
 
+  let b:neocomplcache.last_line = line('.')
   " Start auto complete.
   if neocomplcache#is_prefetch()
     call feedkeys((g:neocomplcache_enable_auto_select ?
-          \ "\<C-x>\<C-u>\<C-p>\<Down>" :
+          \ "\<C-x>\<C-u>\<C-p>\<Down>\<C-r>=neocomplcache#fix_down()\<Enter>" :
           \ "\<C-x>\<C-u>\<C-p>"), 'n')
   else
     call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
