@@ -781,11 +781,7 @@ function! s:do_auto_complete(event)"{{{
   " Prevent infinity loop.
   if cur_text == ''
         \ || cur_text == s:old_cur_text
-        \ || (neocomplcache#is_eskk_enabled() &&
-        \      !neocomplcache#is_eskk_convertion(cur_text))
-        \ || (!neocomplcache#is_eskk_enabled() &&
-        \      neocomplcache#is_multibyte_input(cur_text))
-        \ || g:neocomplcache_lock_iminsert && &l:iminsert
+        \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
@@ -802,8 +798,9 @@ function! s:do_auto_complete(event)"{{{
     return
   endif
 
-  " Check eskk.
+  " Check multibyte input or eskk.
   if neocomplcache#is_eskk_enabled()
+        \ || neocomplcache#is_multibyte_input(cur_text)
     return
   endif
 
@@ -1301,6 +1298,9 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
   " Check eskk complete length.
   if neocomplcache#is_eskk_enabled()
         \ && exists('g:eskk#start_completion_length')
+    if !neocomplcache#is_eskk_convertion(a:cur_text)
+      return 0
+    endif
 
     let cur_keyword_pos = call(&l:omnifunc, [1, ''])
     let cur_keyword_str = a:cur_text[cur_keyword_pos :]
