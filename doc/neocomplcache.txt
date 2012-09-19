@@ -883,6 +883,8 @@ neocomplcache#smart_close_popup()		*neocomplcache#smart_close_popup()*
 		Inset candidate and close popup menu for neocomplcache.
 		Unlike|neocomplcache#close_popup()|, this function changes
 		behavior by|g:neocomplcache_enable_auto_select|smart.
+		Note: This mapping is conflicted with |SuperTab| or |endwise|
+		plugins.
 
 neocomplcache#undo_completion()			*neocomplcache#undo_completion()*
 		Use this function on inoremap <expr>. Undo inputed
@@ -943,9 +945,9 @@ EXAMPLES					*neocomplcache-examples*
 	
 	" Recommended key-mappings.
 	" <CR>: close popup and save indent.
-	inoremap <expr><silent> <CR> <SID>my_cr_function()
+	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 	function! s:my_cr_function()
-	  return pumvisible() ? neocomplcache#close_popup() . "\<CR>" : "\<CR>"
+	  return neocomplcache#smart_close_popup() . "\<CR>"
 	endfunction
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -1244,6 +1246,16 @@ A: Please try below settings.
 	let g:clang_auto_select = 0
 	let g:clang_use_library   = 0
 <
+Q: <CR> mapping conflicts with |SuperTab| or |endwise| plugins.
+
+A: Please try below settings.
+>
+	" <CR>: close popup and save indent.
+	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+	function! s:my_cr_function()
+	  return neocomplcache#smart_close_popup() . "\<CR>"
+	endfunction
+>
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
@@ -1255,6 +1267,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved for wildcard.
 - Deleted omni_complete wildcard support.
 - Skip omni_complete in string literal.
+- Added FAQ section.
 
 2012-09-14
 - Improved search base path.
