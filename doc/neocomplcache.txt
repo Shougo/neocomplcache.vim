@@ -948,6 +948,8 @@ EXAMPLES					*neocomplcache-examples*
 	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 	function! s:my_cr_function()
 	  return neocomplcache#smart_close_popup() . "\<CR>"
+	  " For no inserting <CR> key.
+	  "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 	endfunction
 	" <TAB>: completion.
 	inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -975,7 +977,6 @@ EXAMPLES					*neocomplcache-examples*
 	"let g:neocomplcache_enable_auto_select = 1
 	"let g:neocomplcache_disable_auto_complete = 1
 	"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-	"inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
 	
 	" Enable omni completion.
 	autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -1254,6 +1255,8 @@ A: Please try below settings.
 	inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 	function! s:my_cr_function()
 	  return neocomplcache#smart_close_popup() . "\<CR>"
+	  " For no inserting <CR> key.
+	  "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 	endfunction
 >
 ==============================================================================
