@@ -1061,6 +1061,7 @@ omni_complete.vim				*omni_complete*
 		text is matched with |g:neocomplcache_omni_patterns|. If
 		|g:neocomplcache_omni_function_list|is defined,
 		neocomplcache will give priority it.
+		Note: This source is not supported wildcard.
 
 abbrev_complete.vim				*abbrev_complete*
 		This source collects candidates from abbrev.
@@ -1252,6 +1253,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved <Plug>(neocomplcache_start_auto_complete).
 - Fixed for eskk.
 - Improved for wildcard.
+- Deleted omni_complete wildcard support.
 
 2012-09-14
 - Improved search base path.

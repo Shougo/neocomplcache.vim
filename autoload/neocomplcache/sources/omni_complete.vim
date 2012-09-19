@@ -225,12 +225,8 @@ function! s:set_complete_results_words(complete_results)"{{{
       return []
     endif
 
-    let is_wildcard = g:neocomplcache_enable_wildcard
-          \ && result.cur_keyword_str =~ '\*\w\+$'
-
     let pos = getpos('.')
-    let cur_keyword_str =
-          \ neocomplcache#match_wild_card(result.cur_keyword_str)
+    let cur_keyword_str = result.cur_keyword_str
 
     try
       let list = call(omnifunc, [0, cur_keyword_str])
@@ -247,10 +243,6 @@ function! s:set_complete_results_words(complete_results)"{{{
     endtry
 
     let list = s:get_omni_list(list)
-    if is_wildcard
-      let list = neocomplcache#keyword_filter(list,
-            \ result.cur_keyword_str)
-    endif
 
     let result.complete_words = list
   endfor
