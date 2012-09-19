@@ -1320,6 +1320,12 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
     return 0
   endif
 
+  let syn_name = neocomplcache#get_syn_name(1)
+  if syn_name ==# 'Comment' || syn_name ==# 'String'
+    " Skip omni_complete in string literal.
+    return 0
+  endif
+
   let omnifunc = &l:omnifunc
 
   if has_key(g:neocomplcache_force_omni_patterns, omnifunc)

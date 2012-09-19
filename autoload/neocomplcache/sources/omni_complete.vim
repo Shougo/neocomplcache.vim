@@ -101,6 +101,12 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
+  let syn_name = neocomplcache#get_syn_name(1)
+  if syn_name ==# 'Comment' || syn_name ==# 'String'
+    " Skip omni_complete in string literal.
+    return -1
+  endif
+
   let filetype = neocomplcache#get_context_filetype()
   let s:complete_results = s:set_complete_results_pos(
         \ s:get_omni_funcs(filetype), a:cur_text)

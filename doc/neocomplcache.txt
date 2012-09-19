@@ -1254,6 +1254,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed for eskk.
 - Improved for wildcard.
 - Deleted omni_complete wildcard support.
+- Skip omni_complete in string literal.
 
 2012-09-14
 - Improved search base path.
