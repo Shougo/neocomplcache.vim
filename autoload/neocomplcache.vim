@@ -802,6 +802,11 @@ function! s:do_auto_complete(event)"{{{
     return
   endif
 
+  " Check eskk.
+  if neocomplcache#is_eskk_enabled()
+    return
+  endif
+
   " Check complete position.
   let complete_results = s:set_complete_results_pos(cur_text)
   if empty(complete_results)
@@ -1293,6 +1298,16 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
     return 0
   endif
 
+  " Check eskk complete length.
+  if neocomplcache#is_eskk_enabled()
+        \ && exists('g:eskk#start_completion_length')
+
+    let cur_keyword_pos = call(&l:omnifunc, [1, ''])
+    let cur_keyword_str = a:cur_text[cur_keyword_pos :]
+    return neocomplcache#util#mb_strlen(cur_keyword_str) >=
+          \ g:eskk#start_completion_length
+  endif
+
   let filetype = neocomplcache#get_context_filetype()
 
   if &filetype !=# filetype
@@ -1671,10 +1686,6 @@ function! s:set_complete_results_pos(cur_text, ...)"{{{
 
   let sources = copy(get(a:000, 0, extend(copy(neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())))
-  if neocomplcache#is_eskk_enabled() && eskk#get_mode() !=# 'ascii'
-    " omni_complete only.
-    let sources = filter(sources, 'v:key ==# "omni_complete"')
-  endif
   if a:0 < 1
     call filter(sources, 'neocomplcache#is_source_enabled(v:key)
           \  && !neocomplcache#is_plugin_locked(v:key)')
@@ -2290,10 +2301,7 @@ function! s:get_context_filetype(filetype)"{{{
 
   " Default.
   let context_filetype = filetype
-  if neocomplcache#is_eskk_enabled()
-    let context_filetype = 'eskk'
-    let filetype = 'eskk'
-  elseif has_key(g:neocomplcache_context_filetype_lists, filetype)
+  if has_key(g:neocomplcache_context_filetype_lists, filetype)
         \ && !empty(g:neocomplcache_context_filetype_lists[filetype])
 
     let pos = [line('.'), col('.')]
@@ -2328,10 +2336,6 @@ function! s:get_context_filetype(filetype)"{{{
 endfunction"}}}
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos)"{{{
   let cur_keyword_pos = a:cur_keyword_pos
-  if neocomplcache#is_eskk_enabled() || !g:neocomplcache_enable_wildcard
-    return cur_keyword_pos
-  endif
-
   while cur_keyword_pos > 1 && a:cur_text[cur_keyword_pos - 1] == '*'
     let left_text = a:cur_text[: cur_keyword_pos - 2]
     if left_text == '' || left_text !~ a:pattern

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2012.
+" Last Modified: 19 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,15 +109,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  if neocomplcache#is_eskk_enabled()
-        \ && exists('g:eskk#start_completion_length')
-    " Check complete length.
-    if neocomplcache#util#mb_strlen(a:cur_keyword_str) <
-          \ g:eskk#start_completion_length
-      return []
-    endif
-  endif
-
   return s:get_complete_words(
         \ s:set_complete_results_words(s:complete_results),
         \ a:cur_keyword_pos, a:cur_keyword_str)
@@ -131,7 +122,6 @@ function! s:get_omni_funcs(filetype)"{{{
   let funcs = []
   for ft in insert(split(a:filetype, '\.'), '_')
     if has_key(g:neocomplcache_omni_functions, ft)
-          \ && !neocomplcache#is_eskk_enabled()
       let omnifuncs =
             \ (type(g:neocomplcache_omni_functions[ft]) == type([])) ?
             \ g:neocomplcache_omni_functions[ft] :
@@ -189,9 +179,8 @@ function! s:set_complete_results_pos(funcs, cur_text)"{{{
   " Try omnifunc completion."{{{
   let complete_results = {}
   for [omnifunc, pattern] in a:funcs
-    if !neocomplcache#is_eskk_enabled()
-          \ && (neocomplcache#is_auto_complete()
-          \     && a:cur_text !~ '\%(' . pattern . '\m\)$')
+    if neocomplcache#is_auto_complete()
+          \ && a:cur_text !~ '\%(' . pattern . '\m\)$'
       continue
     endif
 
@@ -238,7 +227,6 @@ function! s:set_complete_results_words(complete_results)"{{{
 
     let is_wildcard = g:neocomplcache_enable_wildcard
           \ && result.cur_keyword_str =~ '\*\w\+$'
-          \ && neocomplcache#is_eskk_enabled()
           \ && neocomplcache#is_auto_complete()
 
     let pos = getpos('.')
