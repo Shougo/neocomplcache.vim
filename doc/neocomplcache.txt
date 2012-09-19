@@ -112,9 +112,10 @@ COMMANDS 					*neocomplcache-commands*
 :NeoComplCacheUnlockSource {source-name}	*:NeoComplCacheUnlockSource*
 		Unlock {source-name} source completion.
 
-:NeoComplCacheAutoCompletionLength		*:NeoComplCacheAutoCompletionLength*
-		Change start length of automatic completion.
-		This length value is local to each buffer.
+:NeoComplCacheAutoCompletionLength {length}
+					*:NeoComplCacheAutoCompletionLength*
+		Change start length of automatic completion to {length}.
+		Note: This length value is local to each buffer.
 
 :NeoComplCacheCachingBuffer [bufname]		*:NeoComplCacheCachingBuffer*
 		Cache [bufname] buffer.
@@ -127,7 +128,8 @@ COMMANDS 					*neocomplcache-commands*
 		Caching [filetype] syntax file.
 		Select current buffer filetype when [filetype] omitted.
 
-:NeoComplCacheCachingDictionary [filetype]	*:NeoComplCacheCachingDictionary*
+:NeoComplCacheCachingDictionary [filetype]
+					*:NeoComplCacheCachingDictionary*
 		Caching [filetype] dictionary file.
 		Select current buffer filetype when [filetype] omitted.
 
@@ -1241,6 +1243,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-09-19
 - Improved documentation.
+- Fixed :NeoComplCacheAutoCompletionLength documentation.
 
 2012-09-14
 - Improved search base path.
