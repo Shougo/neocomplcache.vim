@@ -863,10 +863,9 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Escape."{{{
   let keyword_escape = escape(a:cur_keyword_str, '~" \.^$[]')
   if g:neocomplcache_enable_wildcard
-    let keyword_escape = substitute(substitute(keyword_escape, '.\zs\*', '.*', 'g'), '\%(^\|\*\)\zs\*', '\\*', 'g')
-    if '-' !~ '\k'
-      let keyword_escape = substitute(keyword_escape, '.\zs-', '.\\+', 'g')
-    endif
+    let keyword_escape = substitute(
+          \ substitute(keyword_escape, '.\zs\*', '.*', 'g'),
+          \ '\%(^\|\*\)\zs\*', '\\*', 'g')
   else
     let keyword_escape = escape(keyword_escape, '*')
   endif"}}}
@@ -1224,11 +1223,17 @@ function! neocomplcache#match_word(cur_text, ...)"{{{
   let pattern = a:0 >= 1 ? a:1 : neocomplcache#get_keyword_pattern_end()
 
   " Check wildcard.
-  let cur_keyword_pos = s:match_wildcard(a:cur_text, pattern, match(a:cur_text, pattern))
+  let cur_keyword_pos = s:match_wildcard(
+        \ a:cur_text, pattern, match(a:cur_text, pattern))
 
   let cur_keyword_str = a:cur_text[cur_keyword_pos :]
 
   return [cur_keyword_pos, cur_keyword_str]
+endfunction"}}}
+function! neocomplcache#match_wild_card(cur_keyword_str)"{{{
+  let index = stridx(a:cur_keyword_str, '*')
+  return !g:neocomplcache_enable_wildcard && index > 0 ?
+        \ a:cur_keyword_str : a:cur_keyword_str[: index]
 endfunction"}}}
 function! neocomplcache#is_enabled()"{{{
   return s:is_enabled

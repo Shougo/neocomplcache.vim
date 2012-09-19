@@ -227,16 +227,10 @@ function! s:set_complete_results_words(complete_results)"{{{
 
     let is_wildcard = g:neocomplcache_enable_wildcard
           \ && result.cur_keyword_str =~ '\*\w\+$'
-          \ && neocomplcache#is_auto_complete()
 
     let pos = getpos('.')
-    let cur_keyword_str = result.cur_keyword_str
-
-    if is_wildcard
-      " Check wildcard.
-      let cur_keyword_str = cur_keyword_str[:
-            \ match(cur_keyword_str, '\%(\*\w\+\)\+$') - 1]
-    endif
+    let cur_keyword_str =
+          \ neocomplcache#match_wild_card(result.cur_keyword_str)
 
     try
       let list = call(omnifunc, [0, cur_keyword_str])

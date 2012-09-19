@@ -1251,6 +1251,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed :NeoComplCacheAutoCompletionLength documentation.
 - Improved <Plug>(neocomplcache_start_auto_complete).
 - Fixed for eskk.
+- Improved for wildcard.
 
 2012-09-14
 - Improved search base path.
