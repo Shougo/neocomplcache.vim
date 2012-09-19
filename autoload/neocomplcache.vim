@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Sep 2012.
+" Last Modified: 19 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -574,8 +574,12 @@ function! neocomplcache#enable() "{{{
         \ unite#sources#neocomplcache#start_quick_match()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)
         \ unite#sources#snippet#start_complete()
-  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
-        \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
+  inoremap <silent><expr> <Plug>(neocomplcache_start_auto_complete)
+        \ !neocomplcache#is_prefetch() ?
+        \ "\<C-x>\<C-u>\<C-r>=neocomplcache#popup_post()\<CR>" :
+        \ g:neocomplcache_enable_auto_select ?
+        \ "\<C-x>\<C-u>\<C-p>\<Down>\<C-r>=neocomplcache#fix_down()\<CR>" :
+        \ "\<C-x>\<C-u>\<C-p>"
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
         \ <C-x><C-o><C-r>=neocomplcache#popup_post()<CR>
 
@@ -722,10 +726,6 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
   return neocomplcache#manual_complete(a:findstart, a:base)
 endfunction"}}}
 
-function! neocomplcache#fix_down()
-    return ( line('.') - b:neocomplcache.last_line == 1 ) ? "\<Up>" : ""
-endfunction
-
 function! s:do_auto_complete(event)"{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
         \ || neocomplcache#is_locked()
@@ -838,13 +838,7 @@ function! s:do_auto_complete(event)"{{{
 
   let b:neocomplcache.last_line = line('.')
   " Start auto complete.
-  if neocomplcache#is_prefetch()
-    call feedkeys((g:neocomplcache_enable_auto_select ?
-          \ "\<C-x>\<C-u>\<C-p>\<Down>\<C-r>=neocomplcache#fix_down()\<Enter>" :
-          \ "\<C-x>\<C-u>\<C-p>"), 'n')
-  else
-    call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-  endif
+  call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
 
   let s:changedtick = b:changedtick
 endfunction"}}}
@@ -2226,6 +2220,10 @@ function! neocomplcache#popup_post()"{{{
         \  || neocomplcache#is_eskk_enabled()) ? "\<C-p>" :
         \ "\<C-p>\<Down>"
 endfunction"}}}
+function! neocomplcache#fix_down()"{{{
+  return (line('.') != b:neocomplcache.last_line) ? "\<Up>" : ""
+endfunction"}}}
+
 "}}}
 
 " Internal helper functions."{{{
