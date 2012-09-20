@@ -74,7 +74,7 @@ function! s:source.initialize()"{{{
         \ g:neocomplcache_auto_completion_start_length)
 
   " Add commands."{{{
-  command! -nargs=? -complete=buffer -bar
+  command! -nargs=? -complete=file -bar
         \ NeoComplCacheCachingBuffer call s:caching_buffer(<q-args>)
   command! -nargs=? -complete=buffer -bar
         \ NeoComplCachePrintSource call s:print_source(<q-args>)
