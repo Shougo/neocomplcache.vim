@@ -371,8 +371,14 @@ function! s:caching_buffer(name)"{{{
     if number < 0
       let bufnr = bufnr('%')
 
+      " No swap warning.
+      let save_shm = &shortmess
+      set shortmess+=A
+
       " Open new buffer.
       execute 'silent! edit' fnameescape(a:name)
+
+      let &shortmess = save_shm
 
       if bufnr('%') != bufnr
         setlocal nobuflisted
