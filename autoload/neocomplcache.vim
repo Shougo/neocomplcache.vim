@@ -94,23 +94,27 @@ function! neocomplcache#enable() "{{{
 
   " Initialize sources table."{{{
   " Search autoload.
-  for file in split(globpath(&runtimepath,
-        \ 'autoload/neocomplcache/sources/*.vim'), '\n')
-    let source_name = fnamemodify(file, ':t:r')
-    if !has_key(s:plugin_sources, source_name)
-          \ && neocomplcache#is_source_enabled(source_name)
-      let source = call('neocomplcache#sources#' . source_name . '#define', [])
-      if empty(source)
-        " Ignore.
-      elseif source.kind ==# 'complfunc'
+  for source_name in filter(map(split(globpath(&runtimepath,
+        \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
+        \ "fnamemodify(v:val, ':t:r')"),
+        \ "neocomplcache#is_source_enabled(v:val)")
+    let source = neocomplcache#sources#{source_name}#define()
+    if empty(source)
+      " Ignore.
+    elseif source.kind ==# 'complfunc'
+      if !has_key(s:complfunc_sources, source_name)
         let s:complfunc_sources[source_name] = source
-      elseif source.kind ==# 'ftplugin'
+      endif
+    elseif source.kind ==# 'ftplugin'
+      if !has_key(s:ftplugin_sources, source_name)
         let s:ftplugin_sources[source_name] = source
 
         " Clear loaded flag.
         let s:ftplugin_sources[source_name].loaded = 0
-      elseif source.kind ==# 'plugin'
-            \ && neocomplcache#is_source_enabled('keyword_complete')
+      endif
+    elseif source.kind ==# 'plugin'
+          \ && neocomplcache#is_source_enabled('keyword_complete')
+      if !has_key(s:plugin_sources, source_name)
         let s:plugin_sources[source_name] = source
       endif
     endif
