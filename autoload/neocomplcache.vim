@@ -94,7 +94,8 @@ function! neocomplcache#enable() "{{{
 
   " Initialize sources table."{{{
   " Search autoload.
-  for file in split(globpath(&runtimepath, 'autoload/neocomplcache/sources/*.vim'), '\n')
+  for file in split(globpath(&runtimepath,
+        \ 'autoload/neocomplcache/sources/*.vim'), '\n')
     let source_name = fnamemodify(file, ':t:r')
     if !has_key(s:plugin_sources, source_name)
           \ && neocomplcache#is_source_enabled(source_name)
