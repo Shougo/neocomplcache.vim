@@ -1287,6 +1287,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-09-21
 - Improved sudo check.
 - Improved member completion.
+- Improved delimiter patterns behavior.
 
 2012-09-20
 - Improved :NeoComplCacheCachingBuffer behavior.

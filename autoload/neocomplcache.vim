@@ -790,7 +790,22 @@ function! s:do_auto_complete(event)"{{{
   let s:old_cur_text = cur_text
   if s:skip_next_complete
     let s:skip_next_complete = 0
-    return
+
+    " Check delimiter pattern.
+    let is_delimiter = 0
+    let filetype = neocomplcache#get_context_filetype()
+
+    for delimiter in get(g:neocomplcache_delimiter_patterns,
+          \ filetype, [])
+      if cur_text =~ delimiter . '$'
+        let is_delimiter = 1
+        break
+      endif
+    endfor
+
+    if !is_delimiter
+      return
+    endif
   endif
 
   if neocomplcache#is_omni_complete(cur_text)
@@ -923,12 +938,10 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
 
   " Delimiter check.
   let filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_delimiter_patterns, filetype)"{{{
-    for delimiter in g:neocomplcache_delimiter_patterns[filetype]
-      let cur_keyword_str = substitute(cur_keyword_str,
-            \ delimiter, '*' . delimiter, 'g')
-    endfor
-  endif"}}}
+  for delimiter in get(g:neocomplcache_delimiter_patterns, filetype, [])
+    let cur_keyword_str = substitute(cur_keyword_str,
+          \ delimiter, '*' . delimiter, 'g')
+  endfor
 
   if cur_keyword_str == ''
     return a:list
@@ -1557,42 +1570,40 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
 
   " Delimiter check.
   let filetype = neocomplcache#get_context_filetype()
-  if has_key(g:neocomplcache_delimiter_patterns, filetype)"{{{
-    for delimiter in g:neocomplcache_delimiter_patterns[filetype]
-      " Count match.
-      let delim_cnt = 0
-      let matchend = matchend(a:cur_keyword_str, delimiter)
-      while matchend >= 0
-        let matchend = matchend(a:cur_keyword_str, delimiter, matchend)
-        let delim_cnt += 1
-      endwhile
+  for delimiter in get(g:neocomplcache_delimiter_patterns, filetype, [])"{{{
+    " Count match.
+    let delim_cnt = 0
+    let matchend = matchend(a:cur_keyword_str, delimiter)
+    while matchend >= 0
+      let matchend = matchend(a:cur_keyword_str, delimiter, matchend)
+      let delim_cnt += 1
+    endwhile
 
-      for keyword in complete_words
-        let split_list = split(keyword.word, delimiter, 1)
-        if len(split_list) > 1
-          let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
-          let keyword.word = join(split_list[ : delim_cnt], delimiter_sub)
-          let keyword.abbr = join(
-                \ split(keyword.abbr, delimiter, 1)[ : delim_cnt],
-                \ delimiter_sub)
+    for keyword in complete_words
+      let split_list = split(keyword.word, delimiter, 1)
+      if len(split_list) > 1
+        let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
+        let keyword.word = join(split_list[ : delim_cnt], delimiter_sub)
+        let keyword.abbr = join(
+              \ split(keyword.abbr, delimiter, 1)[ : delim_cnt],
+              \ delimiter_sub)
 
-          if g:neocomplcache_max_keyword_width >= 0
-                \ && len(keyword.abbr) > g:neocomplcache_max_keyword_width
-            let keyword.abbr = substitute(keyword.abbr,
-                  \ '\(\h\)\w*'.delimiter, '\1'.delimiter_sub, 'g')
-          endif
-          if delim_cnt+1 < len(split_list)
-            let keyword.abbr .= delimiter_sub . '~'
-            let keyword.dup = 0
+        if g:neocomplcache_max_keyword_width >= 0
+              \ && len(keyword.abbr) > g:neocomplcache_max_keyword_width
+          let keyword.abbr = substitute(keyword.abbr,
+                \ '\(\h\)\w*'.delimiter, '\1'.delimiter_sub, 'g')
+        endif
+        if delim_cnt+1 < len(split_list)
+          let keyword.abbr .= delimiter_sub . '~'
+          let keyword.dup = 0
 
-            if g:neocomplcache_enable_auto_delimiter
-              let keyword.word .= delimiter_sub
-            endif
+          if g:neocomplcache_enable_auto_delimiter
+            let keyword.word .= delimiter_sub
           endif
         endif
-      endfor
+      endif
     endfor
-  endif"}}}
+  endfor"}}}
 
   if neocomplcache#complete_check()
     return []
