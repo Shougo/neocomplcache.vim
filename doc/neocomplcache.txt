@@ -1263,6 +1263,9 @@ A: Please try below settings.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-21
+- Improved sudo check.
+
 2012-09-20
 - Improved :NeoComplCacheCachingBuffer behavior.
 
