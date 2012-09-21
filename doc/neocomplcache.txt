@@ -509,7 +509,18 @@ g:neocomplcache_same_filetype_lists
 				*g:neocomplcache_same_filetype_lists*
 		It is a dictionary to connect file type mutually.  It is
 		effective at time to let you refer to c and cpp mutually.
-		
+		The value are comma-separated filetypes.
+		Note: neocomplcache completes from same filetype buffers in
+		default.
+>
+	if !exists('g:neocomplcache_same_filetype_lists')
+	  let g:neocomplcache_same_filetype_lists = {}
+	endif
+	" In c buffers, completes from cpp and d buffers.
+	let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
+	" In cpp buffers, completes from c buffers.
+	let g:neocomplcache_same_filetype_lists.cpp = 'c'
+<
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
@@ -1260,6 +1271,12 @@ A: Please try below settings.
 	  "return pumvisible() ? neocomplcache#close_popup() : "\<CR>"
 	endfunction
 >
+Q: No completion offered from "vim" buffers in "non-vim" buffers.
+
+A: It is feature. neocomplcache completes from same filetype buffers in
+default. But you can completes from other filetype buffers using
+|g:neocomplcache_same_filetype_lists|.
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
