@@ -510,6 +510,8 @@ g:neocomplcache_same_filetype_lists
 		It is a dictionary to connect file type mutually.  It is
 		effective at time to let you refer to c and cpp mutually.
 		The value are comma-separated filetypes.
+		If the value contains "_", neocomplcache completes from all
+		buffers.
 		Note: neocomplcache completes from same filetype buffers in
 		default.
 >
@@ -520,6 +522,8 @@ g:neocomplcache_same_filetype_lists
 	let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
 	" In cpp buffers, completes from c buffers.
 	let g:neocomplcache_same_filetype_lists.cpp = 'c'
+	" In gitconfig buffers, completes from all buffers.
+	let g:neocomplcache_same_filetype_lists.gitconfig = '_'
 <
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
