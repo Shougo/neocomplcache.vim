@@ -1390,7 +1390,7 @@ ChangeLog neocomplcache 7.1:
 
 2012-08-02
 - Fixed for g:neocomplcache_enable_insert_char_pre.
-- Fixed omni_complete for compound filetype.
+- Fixed omni_complete for composite filetype.
 - Fixed dictionary_complete caching timing.
 
 2012-08-01

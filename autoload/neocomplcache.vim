@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Sep 2012.
+" Last Modified: 21 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1378,7 +1378,7 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
     if has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
       let filetypes = [g:neocomplcache_ignore_composite_filetype_lists[filetype]]
     else
-      " Set compound filetype.
+      " Set composite filetype.
       let filetypes += split(filetype, '\.')
     endif
   endif
@@ -2361,7 +2361,7 @@ function! s:unite_patterns(pattern_var, filetype)"{{{
   let keyword_patterns = []
   let dup_check = {}
 
-  " Compound filetype.
+  " Composite filetype.
   for ft in split(a:filetype, '\.')
     if has_key(a:pattern_var, ft) && !has_key(dup_check, ft)
       let dup_check[ft] = 1
