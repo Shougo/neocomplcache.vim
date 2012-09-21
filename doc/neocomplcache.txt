@@ -1289,6 +1289,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved member completion.
 - Improved delimiter patterns behavior.
 - Improved source initialization.
+- Don't delete longest completeopt.
 
 2012-09-20
 - Improved :NeoComplCacheCachingBuffer behavior.

@@ -851,7 +851,6 @@ function! s:do_auto_complete(event)"{{{
 
   " Set options.
   set completeopt-=menu
-  set completeopt-=longest
   set completeopt+=menuone
 
   " Start auto complete.
