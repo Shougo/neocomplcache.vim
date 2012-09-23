@@ -1288,6 +1288,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved C# support.
 - Improved completeopt behavior.
 - Changed check_source() behavior in buffer_complete.
+- Improved completion_length.
 
 2012-09-21
 - Improved sudo check.

@@ -39,8 +39,6 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Initialize.
   let s:dictionary_list = {}
-  let s:completion_length =
-        \ neocomplcache#get_auto_completion_length('dictionary_complete')
   let s:async_dictionary_list = {}
 
   " Initialize dictionary."{{{
@@ -94,12 +92,10 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
 
   for ft in neocomplcache#get_source_filetypes(filetype)
     call neocomplcache#cache#check_cache('dictionary_cache', ft,
-          \ s:async_dictionary_list,
-          \ s:dictionary_list, s:completion_length)
+          \ s:async_dictionary_list, s:dictionary_list)
 
     for dict in neocomplcache#get_sources_list(s:dictionary_list, ft)
-      let list += neocomplcache#dictionary_filter(dict,
-            \ a:cur_keyword_str, s:completion_length)
+      let list += neocomplcache#dictionary_filter(dict, a:cur_keyword_str)
     endfor
   endfor
 

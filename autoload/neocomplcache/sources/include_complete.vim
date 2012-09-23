@@ -41,8 +41,6 @@ function! s:source.initialize()"{{{
   let s:cache_accessed_time = {}
   let s:async_include_cache = {}
   let s:cached_pattern = {}
-  let s:completion_length =
-        \ neocomplcache#get_auto_completion_length('include_complete')
 
   " Set rank.
   call neocomplcache#set_dictionary_helper(
@@ -131,12 +129,11 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   " Check caching.
   for include in s:include_info[bufnr('%')].include_files
     call neocomplcache#cache#check_cache(
-          \ 'include_cache', include, s:async_include_cache,
-          \ s:include_cache, s:completion_length)
+          \ 'include_cache', include, s:async_include_cache, s:include_cache)
     if has_key(s:include_cache, include)
       let s:cache_accessed_time[include] = localtime()
       let keyword_list += neocomplcache#dictionary_filter(
-            \ s:include_cache[include], a:cur_keyword_str, s:completion_length)
+            \ s:include_cache[include], a:cur_keyword_str)
     endif
   endfor
 
@@ -177,12 +174,14 @@ function! s:doc_dict.search(cur_text)"{{{
     return []
   endif
 
+  let completion_length = 2
+
   " Collect words.
   let words = []
   let i = 0
   while i >= 0
     let word = matchstr(a:cur_text, '\k\+', i)
-    if len(word) >= s:completion_length
+    if len(word) >= completion_length
       call add(words, word)
     endif
 
@@ -190,7 +189,7 @@ function! s:doc_dict.search(cur_text)"{{{
   endwhile
 
   for word in reverse(words)
-    let key = tolower(word[: s:completion_length-1])
+    let key = tolower(word[: completion_length-1])
 
     for include in filter(copy(s:include_info[bufnr('%')].include_files),
           \ 'has_key(s:include_cache, v:val) && has_key(s:include_cache[v:val], key)')

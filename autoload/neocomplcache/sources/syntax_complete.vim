@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,8 +35,6 @@ let s:source = {
 function! s:source.initialize()"{{{
   " Initialize.
   let s:syntax_list = {}
-  let s:completion_length =
-        \ neocomplcache#get_auto_completion_length('syntax_complete')
 
   " Set rank.
   call neocomplcache#set_dictionary_helper(
@@ -71,8 +69,8 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
 
   let filetype = neocomplcache#get_context_filetype()
   if !has_key(s:syntax_list, filetype)
-    let keyword_lists = neocomplcache#cache#index_load_from_cache('syntax_cache',
-          \ filetype, s:completion_length)
+    let keyword_lists = neocomplcache#cache#index_load_from_cache(
+          \ 'syntax_cache', filetype)
     if !empty(keyword_lists)
       " Caching from cache.
       let s:syntax_list[filetype] = keyword_lists
@@ -80,8 +78,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   endif
 
   for source in neocomplcache#get_sources_list(s:syntax_list, filetype)
-    let list += neocomplcache#dictionary_filter(
-          \ source, a:cur_keyword_str, s:completion_length)
+    let list += neocomplcache#dictionary_filter(source, a:cur_keyword_str)
   endfor
 
   return list
@@ -109,8 +106,8 @@ function! s:caching()"{{{
           let s:syntax_list[filetype] = s:caching_from_syn(filetype)
         endif
       else
-        let s:syntax_list[filetype] = neocomplcache#cache#index_load_from_cache(
-            \ 'syntax_cache', filetype, s:completion_length)
+        let s:syntax_list[filetype] =
+              \ neocomplcache#cache#index_load_from_cache('syntax_cache', filetype)
       endif
     endif
   endfor
@@ -177,6 +174,7 @@ function! s:caching_from_syn(filetype)"{{{
 
     " Add keywords.
     let match_num = 0
+    let completion_length = 2
     let match_str = matchstr(line, keyword_pattern, match_num)
     while match_str != ''
       " Ignore too short keyword.
@@ -185,7 +183,7 @@ function! s:caching_from_syn(filetype)"{{{
             \&& match_str =~ '^[[:print:]]\+$'
         let keyword = { 'word' : match_str, 'menu' : menu }
 
-        let key = tolower(keyword.word[: s:completion_length-1])
+        let key = tolower(keyword.word[: completion_length-1])
         if !has_key(keyword_lists, key)
           let keyword_lists[key] = []
         endif

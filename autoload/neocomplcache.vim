@@ -1039,19 +1039,20 @@ function! neocomplcache#fuzzy_filter(list, cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completion_length)"{{{
+function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
   if empty(a:dictionary)
     return []
   endif
 
-  if len(a:cur_keyword_str) < a:completion_length ||
+  let completion_length = 2
+  if len(a:cur_keyword_str) < completion_length ||
         \ neocomplcache#check_completion_length_match(
-        \   a:cur_keyword_str, a:completion_length)
+        \   a:cur_keyword_str, completion_length)
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   endif
 
-  let key = tolower(a:cur_keyword_str[: a:completion_length-1])
+  let key = tolower(a:cur_keyword_str[: completion_length-1])
 
   if !has_key(a:dictionary, key)
     return []
@@ -1064,7 +1065,7 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str, completio
     let list = values(a:dictionary[key])
   endif
 
-  return (len(a:cur_keyword_str) == a:completion_length && &ignorecase)?
+  return (len(a:cur_keyword_str) == completion_length && &ignorecase)?
         \ list : neocomplcache#keyword_filter(copy(list), a:cur_keyword_str)
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
