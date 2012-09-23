@@ -1285,7 +1285,8 @@ default. But you can completes from other filetype buffers using
 CHANGELOG					*neocomplcache-changelog*
 
 2012-09-23
-- Improvd C# support.
+- Improved C# support.
+- Improved completeopt behavior.
 
 2012-09-21
 - Improved sudo check.

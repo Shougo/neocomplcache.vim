@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -568,10 +568,6 @@ function! neocomplcache#enable() "{{{
   let &completefunc = 'neocomplcache#manual_complete'
   let &l:completefunc = 'neocomplcache#manual_complete'
 
-  " Set options.
-  set completeopt-=menu
-  set completeopt+=menuone
-
   " For auto complete keymappings.
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)
         \ unite#sources#neocomplcache#start_complete()
@@ -850,7 +846,7 @@ function! s:do_auto_complete(event)"{{{
   let s:changedtick = b:changedtick
 
   " Set options.
-  set completeopt-=menu
+  set completeopt-=menu,longest
   set completeopt+=menuone
 
   " Start auto complete.
