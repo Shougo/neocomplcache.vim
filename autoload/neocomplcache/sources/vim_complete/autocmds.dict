@@ -71,6 +71,7 @@ InsertEnter ; starting Insert mode
 InsertChange ; when typing <Insert> while in Insert or Replace mode
 InsertLeave ; when leaving Insert mode
 ColorScheme ; after loading a color scheme
+CompleteDone ; after Insert mode completion is done
 RemoteReply ; a reply from a server Vim was received
 QuickFixCmdPre ; before a quickfix command is run
 QuickFixCmdPost ; after a quickfix command is run
