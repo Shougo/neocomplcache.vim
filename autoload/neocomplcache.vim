@@ -846,7 +846,8 @@ function! s:do_auto_complete(event)"{{{
   let s:changedtick = b:changedtick
 
   " Set options.
-  set completeopt-=menu,longest
+  set completeopt-=menu
+  set completeopt-=longest
   set completeopt+=menuone
 
   " Start auto complete.
