@@ -578,7 +578,8 @@ function! neocomplcache#enable() "{{{
   inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
         \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
-        \ <C-x><C-o><C-r>=neocomplcache#popup_post()<CR>
+        \ <C-x><C-o><C-p>
+        " \ <C-x><C-o><C-r>=neocomplcache#popup_post()<CR>
 
   " Initialize.
   for source in values(neocomplcache#available_complfuncs())
@@ -810,8 +811,7 @@ function! s:do_auto_complete(event)"{{{
   endif
 
   if neocomplcache#is_omni_complete(cur_text)
-    " call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
-    call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
+    call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
     return
   endif
 

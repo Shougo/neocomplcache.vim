@@ -1289,6 +1289,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved completeopt behavior.
 - Changed check_source() behavior in buffer_complete.
 - Improved completion_length.
+- Fixed start omni complete.
 
 2012-09-21
 - Improved sudo check.
