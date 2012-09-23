@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,8 +40,6 @@ let s:source = {
 function! s:source.initialize()"{{{
   augroup neocomplcache"{{{
     " Caching events
-    autocmd BufRead,FileType,BufNewFile *
-          \ call s:check_source()
     autocmd CursorHold *
           \ call s:check_cache()
     autocmd BufWritePost *
@@ -107,9 +105,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  if !s:exists_current_source()
-    call s:check_source()
-  endif
+  call s:check_source()
 
   let keyword_list = []
   for [key, source] in s:get_sources_list()
