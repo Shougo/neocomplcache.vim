@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Sep 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -60,14 +60,16 @@ function! s:source.initialize()"{{{
   let g:neocomplcache_include_patterns =
         \ get(g:, 'neocomplcache_include_patterns', {})
   call neocomplcache#set_dictionary_helper(g:neocomplcache_include_patterns,
-        \ 'java,haskell', '^import')
+        \ 'java,haskell', '\<import')
+  call neocomplcache#set_dictionary_helper(g:neocomplcache_include_patterns,
+        \ 'cs', '\<using')
   "}}}
   " Initialize expr pattern."{{{
   let g:neocomplcache_include_exprs =
         \ get(g:, 'neocomplcache_include_exprs', {})
   call neocomplcache#set_dictionary_helper(g:neocomplcache_include_exprs,
-        \ 'haskell',
-        \ 'substitute(v:fname,''\\.'',''/'',''g'')')
+        \ 'haskell,cs',
+        \ "substitute(v:fname, '\\.', '/', 'g')")
   "}}}
   " Initialize path pattern."{{{
   let g:neocomplcache_include_paths =
