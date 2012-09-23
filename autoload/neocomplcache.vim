@@ -810,7 +810,8 @@ function! s:do_auto_complete(event)"{{{
   endif
 
   if neocomplcache#is_omni_complete(cur_text)
-    call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
+    " call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
+    call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
     return
   endif
 
