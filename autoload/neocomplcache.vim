@@ -2450,6 +2450,7 @@ function! s:initialize_sources(source_names)"{{{
             \ || has_key(s:ftplugin_sources, source_name)
             \ || has_key(s:plugin_sources, source_name)
         " Ignore.
+        continue
       endif
 
       if source.kind ==# 'complfunc'
