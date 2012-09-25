@@ -420,8 +420,8 @@ g:neocomplcache_temporary_dir		*g:neocomplcache_temporary_dir*
 		This variable appoints the directory that neocomplcache
 		begins to write a file at one time.  When there is not the
 		directory which appointed here, it is made.  For example,
-		keyword_complete.vim stores cache of the keyword in this
-		'keyword_cache' sub directory.
+		buffer_complete.vim stores cache of the keyword in this
+		'buffer_cache' sub directory.
 		
 		Default value is '~/.neocon'.
 
@@ -898,13 +898,6 @@ neocomplcache#manual_omni_complete()		*neocomplcache#manual_omni_complete()*
 >
 		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_keyword_complete()		*neocomplcache#manual_keyword_complete()*
-		Use this function on inoremap <expr>.  The keymapping call
-		keyword completion of neocomplcache.  When you rearrange the
-		keyword completion of the Vim standard, you use it.
->
-		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
-
 neocomplcache#close_popup()			*neocomplcache#close_popup()*
 		Inset candidate and close popup menu for neocomplcache.
 >
@@ -1040,12 +1033,6 @@ SOURCES						*neocomplcache-sources*
 
 Neocomplcache reads automatically sources saved in an
 autoload/neocomplcache/sources directory.
-
-keyword_complete.vim				*keyword_complete*
-		This source collects keywords from dictionaries... etc, and to
-		use for completion.  Because the plugin offer the basic
-		function of neocomplcache, neocomplcache does not work normally
-		when you delete this plugin.
 
 buffer_complete.vim				*buffer_complete*
 		This source collects keywords from buffer.
