@@ -92,34 +92,6 @@ function! neocomplcache#enable() "{{{
 
   call s:initialize_variables()
 
-  " Initialize sources table."{{{
-  " Search autoload.
-  for source_name in filter(map(split(globpath(&runtimepath,
-        \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
-        \ "fnamemodify(v:val, ':t:r')"),
-        \ "neocomplcache#is_source_enabled(v:val)")
-    let source = neocomplcache#sources#{source_name}#define()
-    if empty(source)
-      " Ignore.
-    elseif source.kind ==# 'complfunc'
-      if !has_key(s:complfunc_sources, source_name)
-        let s:complfunc_sources[source_name] = source
-      endif
-    elseif source.kind ==# 'ftplugin'
-      if !has_key(s:ftplugin_sources, source_name)
-        let s:ftplugin_sources[source_name] = source
-
-        " Clear loaded flag.
-        let s:ftplugin_sources[source_name].loaded = 0
-      endif
-    elseif source.kind ==# 'plugin'
-      if !has_key(s:plugin_sources, source_name)
-        let s:plugin_sources[source_name] = source
-      endif
-    endif
-  endfor
-  "}}}
-
   " Initialize keyword patterns."{{{
   if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
@@ -1747,7 +1719,7 @@ function! s:set_complete_results_words(complete_results)"{{{
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error(
             \ 'Source name is ' . source_name)
-      if source.kind ==# 'plugin'
+      if result.source.kind ==# 'plugin'
         call neocomplcache#print_error(
               \ 'Error occured in source''s get_keyword_list()!')
       else
@@ -2439,6 +2411,7 @@ function! s:initialize_buffer_variable()"{{{
 endfunction"}}}
 function! s:initialize_sources(source_names)"{{{
   " Initialize sources table.
+
   for name in a:source_names
     " Search autoload.
     for source_name in filter(map(split(globpath(&runtimepath,
