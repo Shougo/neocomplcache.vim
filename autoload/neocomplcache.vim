@@ -585,13 +585,6 @@ function! neocomplcache#enable() "{{{
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
         \ <C-x><C-o><C-p>
         " \ <C-x><C-o><C-r>=neocomplcache#popup_post()<CR>
-
-  " Initialize.
-  for source in values(neocomplcache#available_complfuncs())
-    if has_key(source, 'initialize')
-      call source.initialize()
-    endif
-  endfor
 endfunction"}}}
 
 function! neocomplcache#disable()"{{{
@@ -1713,8 +1706,7 @@ function! s:set_complete_results_pos(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
 
-  let sources = copy(get(a:000, 0, extend(copy(neocomplcache#available_complfuncs()),
-        \ neocomplcache#available_loaded_ftplugins())))
+  let sources = copy(get(a:000, 0, s:get_sources_list()))
   if a:0 < 1
     call filter(sources, 'neocomplcache#is_source_enabled(v:key)
           \  && !neocomplcache#is_plugin_locked(v:key)')
@@ -2441,6 +2433,47 @@ function! s:initialize_buffer_variable()"{{{
         \ 'context_filetype' : '',
         \ 'completion_length' : -1,
         \}
+endfunction"}}}
+function! s:initialize_sources(source_names)"{{{
+  " Initialize sources table.
+  for name in a:source_names
+    " Search autoload.
+    for source_name in filter(map(split(globpath(&runtimepath,
+          \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
+          \ "fnamemodify(v:val, ':t:r')"),
+          \ "neocomplcache#is_source_enabled(v:val)")
+      let source = neocomplcache#sources#{source_name}#define()
+      if empty(source) || has_key(s:complfunc_sources, source_name)
+            \ || has_key(s:ftplugin_sources, source_name)
+            \ || has_key(s:plugin_sources, source_name)
+        " Ignore.
+      endif
+
+      if source.kind ==# 'complfunc'
+        let s:complfunc_sources[source_name] = source
+
+        if has_key(source, 'initialize')
+          call source.initialize()
+        endif
+      elseif source.kind ==# 'ftplugin'
+        let s:ftplugin_sources[source_name] = source
+
+        " Clear loaded flag.
+        let s:ftplugin_sources[source_name].loaded = 0
+      elseif source.kind ==# 'plugin'
+        let s:plugin_sources[source_name] = source
+      endif
+    endfor
+  endfor
+endfunction"}}}
+function! s:get_sources_list()"{{{
+  let filetype = neocomplcache#get_context_filetype()
+
+  let source_names = ['']
+  call s:initialize_sources(source_names)
+
+  return extend(copy(neocomplcache#available_complfuncs()),
+        \ neocomplcache#available_loaded_ftplugins())
 endfunction"}}}
 "}}}
 
