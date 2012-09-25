@@ -1307,6 +1307,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-09-25
 - Fixed for prefetch.
 - Improved source initialization.
+- Improved manual complete.
 
 2012-09-24
 - Added g:neocomplcache_wildcard_characters option.

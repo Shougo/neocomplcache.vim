@@ -2132,16 +2132,8 @@ function! neocomplcache#start_manual_complete(...)"{{{
   let all_sources = extend(copy(neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())
   let sources = get(a:000, 0, keys(all_sources))
-  for source_name in type(sources) == type([]) ?
-   \ sources : [sources]
-    if has_key(all_sources, source_name)
-      let s:use_sources[source_name] = all_sources[source_name]
-    else
-      call neocomplcache#print_warning(printf(
-            \ "Invalid completefunc name %s is given.", a:complfunc_name))
-      return ''
-    endif
-  endfor
+  let s:use_sources = s:get_sources_list(type(sources) == type([]) ?
+        \ sources : [sources])
 
   " Start complete.
   return "\<C-x>\<C-u>\<C-p>"
@@ -2466,14 +2458,33 @@ function! s:initialize_sources(source_names)"{{{
     endfor
   endfor
 endfunction"}}}
-function! s:get_sources_list()"{{{
+function! s:get_sources_list(...)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let source_names = ['']
+  let source_names = get(a:000, 0, [''])
   call s:initialize_sources(source_names)
 
-  return extend(copy(neocomplcache#available_complfuncs()),
+  let all_sources = extend(copy(
+        \ neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())
+  let sources = {}
+  for source_name in source_names
+    if source_name == ''
+      " All sources.
+      let sources = all_sources
+      break
+    endif
+
+    if !has_key(all_sources, source_name)
+      call neocomplcache#print_warning(printf(
+            \ 'Invalid source name "%s" is given.', source_name))
+      continue
+    endif
+
+    let sources[source_name] = all_sources[source_name]
+  endfor
+
+  return sources
 endfunction"}}}
 "}}}
 
