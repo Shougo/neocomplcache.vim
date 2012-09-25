@@ -1311,10 +1311,6 @@ function! neocomplcache#is_prefetch()"{{{
         \ || &l:formatoptions =~# 'a'
 endfunction"}}}
 function! neocomplcache#is_omni_complete(cur_text)"{{{
-  if !neocomplcache#is_source_enabled('omni_complete')
-    return 0
-  endif
-
   " Check eskk complete length.
   if neocomplcache#is_eskk_enabled()
         \ && exists('g:eskk#start_completion_length')
@@ -2166,13 +2162,17 @@ function! s:on_moved_i()"{{{
   " Get cursor word.
   let cur_text = s:get_cur_text()
 
+  let complfuncs = neocomplcache#available_complfuncs()
+
   " Make cache.
   if cur_text =~ '^\s*$\|\s\+$'
     if neocomplcache#is_source_enabled('buffer_complete')
+          \ && has_key(complfuncs, 'buffer_complete')
       " Caching current cache line.
       call neocomplcache#sources#buffer_complete#caching_current_line()
     endif
     if neocomplcache#is_source_enabled('member_complete')
+          \ && has_key(complfuncs, 'member_complete')
       " Caching current cache line.
       call neocomplcache#sources#member_complete#caching_current_line()
     endif
