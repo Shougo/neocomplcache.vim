@@ -587,6 +587,8 @@ g:neocomplcache_text_mode_filetypes
 		candidate "foo" to "Foo".  If you input "foo", neocomplcache
 		will convert candidate "FooBar" to "foobar". If you input
 		"FO", neocomplcache will convert candidate "foo" to "FOO".
+		Note: Text mode convetion is only used for "foobar" or
+		"Foobar" or "FOOBAR" words. Not "fooBar" or "FooBar".
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
