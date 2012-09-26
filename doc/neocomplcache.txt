@@ -1288,8 +1288,22 @@ A: It is feature. neocomplcache completes from same filetype buffers in
 default. But you can completes from other filetype buffers using
 |g:neocomplcache_same_filetype_lists|.
 
+Q: Suggestions are case insensitive in "gitcommit" buffers, but not
+"javascript".
+
+A: This is g:neocomplcache_text_mode_filetypes feature.
+You can disable it by following code.
+>
+	if !exists('g:neocomplcache_text_mode_filetypes')
+	  let g:neocomplcache_tags_filter_patterns = {}
+	endif
+	let g:neocomplcache_text_mode_filetypes.gitcommit = 0
+<
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-09-26
+- Improved FAQ section.
 
 2012-09-25
 - Fixed for prefetch.
