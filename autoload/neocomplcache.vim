@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Sep 2012.
+" Last Modified: 27 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2413,15 +2413,21 @@ function! s:initialize_sources(source_names)"{{{
   " Initialize sources table.
 
   for name in a:source_names
+    if has_key(s:complfunc_sources, name)
+            \ || has_key(s:ftplugin_sources, name)
+            \ || has_key(s:plugin_sources, name)
+      continue
+    endif
+
     " Search autoload.
     for source_name in filter(map(split(globpath(&runtimepath,
           \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
           \ "fnamemodify(v:val, ':t:r')"),
           \ "neocomplcache#is_source_enabled(v:val)")
       let source = neocomplcache#sources#{source_name}#define()
-      if empty(source) || has_key(s:complfunc_sources, source_name)
-            \ || has_key(s:ftplugin_sources, source_name)
-            \ || has_key(s:plugin_sources, source_name)
+      if empty(source) || has_key(s:complfunc_sources, source.name)
+            \ || has_key(s:ftplugin_sources, source.name)
+            \ || has_key(s:plugin_sources, source.name)
         " Ignore.
         continue
       endif

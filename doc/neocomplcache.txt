@@ -1307,6 +1307,9 @@ You can disable it by following code.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-27
+- Improved initialization.
+
 2012-09-26
 - Improved FAQ section.
 
