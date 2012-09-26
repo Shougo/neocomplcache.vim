@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jun 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,34 +30,36 @@ set cpo&vim
 let s:Cache = vital#of('neocomplcache').import('System.Cache')
 
 " Cache loader.
-function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dictionary, index_keyword_list, completion_length) "{{{
+function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dictionary, index_keyword_list) "{{{
   if !has_key(a:async_cache_dictionary, a:key)
     return
   endif
 
-  let cache_list = a:async_cache_dictionary[a:key]
   let keyword_list = []
-  for cache in a:async_cache_dictionary[a:key]
+  let cache_list = a:async_cache_dictionary[a:key]
+  for cache in cache_list
     if filereadable(cache.cachename)
       let keyword_list +=
             \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
     endif
   endfor
 
-  call neocomplcache#cache#list2index(keyword_list,
-        \ a:index_keyword_list, a:completion_length)
+  call neocomplcache#cache#list2index(keyword_list, a:index_keyword_list)
+  call filter(cache_list, '!filereadable(v:val.cachename)')
 
-  " Delete from dictionary.
-  call remove(a:async_cache_dictionary, a:key)
+  if empty(cache_list)
+    " Delete from dictionary.
+    call remove(a:async_cache_dictionary, a:key)
+  endif
 endfunction"}}}
-function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary, completion_length) "{{{
+function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary) "{{{
   " Caching.
   if !has_key(a:keyword_list_dictionary, a:key)
     let a:keyword_list_dictionary[a:key] = {}
   endif
   return neocomplcache#cache#check_cache_list(
         \ a:cache_dir, a:key, a:async_cache_dictionary,
-        \ a:keyword_list_dictionary[a:key], a:completion_length)
+        \ a:keyword_list_dictionary[a:key])
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
   try
@@ -86,11 +88,12 @@ function! neocomplcache#cache#load_from_cache_old(cache_dir, filename)"{{{
     return []
   endtry
 endfunction"}}}
-function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, completion_length)"{{{
+function! neocomplcache#cache#index_load_from_cache(cache_dir, filename)"{{{
   let keyword_lists = {}
 
+  let completion_length = 2
   for keyword in neocomplcache#cache#load_from_cache(a:cache_dir, a:filename)
-    let key = tolower(keyword.word[: a:completion_length-1])
+    let key = tolower(keyword.word[: completion_length-1])
     if !has_key(keyword_lists, key)
       let keyword_lists[key] = []
     endif
@@ -99,9 +102,10 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, complet
 
   return keyword_lists
 endfunction"}}}
-function! neocomplcache#cache#list2index(list, dictionary, completion_length)"{{{
+function! neocomplcache#cache#list2index(list, dictionary)"{{{
+  let completion_length = 2
   for keyword in a:list
-    let key = tolower(keyword.word[: a:completion_length-1])
+    let key = tolower(keyword.word[: completion_length-1])
     if !has_key(a:dictionary, key)
       let a:dictionary[key] = {}
     endif
@@ -310,7 +314,7 @@ function! s:async_load(argv, cache_dir, filename)"{{{
       endif
     else
       let base_path = neocomplcache#util#substitute_path_separator(
-            \ fnamemodify(vimproc#get_command_name(paths[0]), ':p:h'))
+            \ fnamemodify(paths[0], ':p:h'))
 
       let vim_path = base_path .
             \ (neocomplcache#util#is_windows() ? '/vim.exe' : '/vim')

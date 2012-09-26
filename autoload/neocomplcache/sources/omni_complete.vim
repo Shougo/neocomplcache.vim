@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2012.
+" Last Modified: 19 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,6 +101,12 @@ function! s:source.finalize()"{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text)"{{{
+  let syn_name = neocomplcache#get_syn_name(1)
+  if syn_name ==# 'Comment' || syn_name ==# 'String'
+    " Skip omni_complete in string literal.
+    return -1
+  endif
+
   let filetype = neocomplcache#get_context_filetype()
   let s:complete_results = s:set_complete_results_pos(
         \ s:get_omni_funcs(filetype), a:cur_text)
@@ -109,15 +115,6 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
-  if neocomplcache#is_eskk_enabled()
-        \ && exists('g:eskk#start_completion_length')
-    " Check complete length.
-    if neocomplcache#util#mb_strlen(a:cur_keyword_str) <
-          \ g:eskk#start_completion_length
-      return []
-    endif
-  endif
-
   return s:get_complete_words(
         \ s:set_complete_results_words(s:complete_results),
         \ a:cur_keyword_pos, a:cur_keyword_str)
@@ -131,7 +128,6 @@ function! s:get_omni_funcs(filetype)"{{{
   let funcs = []
   for ft in insert(split(a:filetype, '\.'), '_')
     if has_key(g:neocomplcache_omni_functions, ft)
-          \ && !neocomplcache#is_eskk_enabled()
       let omnifuncs =
             \ (type(g:neocomplcache_omni_functions[ft]) == type([])) ?
             \ g:neocomplcache_omni_functions[ft] :
@@ -189,9 +185,8 @@ function! s:set_complete_results_pos(funcs, cur_text)"{{{
   " Try omnifunc completion."{{{
   let complete_results = {}
   for [omnifunc, pattern] in a:funcs
-    if !neocomplcache#is_eskk_enabled()
-          \ && (neocomplcache#is_auto_complete()
-          \     && a:cur_text !~ '\%(' . pattern . '\m\)$')
+    if neocomplcache#is_auto_complete()
+          \ && a:cur_text !~ '\%(' . pattern . '\m\)$'
       continue
     endif
 
@@ -236,19 +231,8 @@ function! s:set_complete_results_words(complete_results)"{{{
       return []
     endif
 
-    let is_wildcard = g:neocomplcache_enable_wildcard
-          \ && result.cur_keyword_str =~ '\*\w\+$'
-          \ && neocomplcache#is_eskk_enabled()
-          \ && neocomplcache#is_auto_complete()
-
     let pos = getpos('.')
     let cur_keyword_str = result.cur_keyword_str
-
-    if is_wildcard
-      " Check wildcard.
-      let cur_keyword_str = cur_keyword_str[:
-            \ match(cur_keyword_str, '\%(\*\w\+\)\+$') - 1]
-    endif
 
     try
       let list = call(omnifunc, [0, cur_keyword_str])
@@ -265,10 +249,6 @@ function! s:set_complete_results_words(complete_results)"{{{
     endtry
 
     let list = s:get_omni_list(list)
-    if is_wildcard
-      let list = neocomplcache#keyword_filter(list,
-            \ result.cur_keyword_str)
-    endif
 
     let result.complete_words = list
   endfor

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2012.
+" Last Modified: 24 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,6 +32,7 @@ elseif v:version < 702
   finish
 elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
       \ && $HOME !=# expand('~'.$USER)
+      \ && $HOME ==# expand('~'.$SUDO_USER)
   echoerr '"sudo vim" and $HOME is not same to /root are detected.'
         \.'Please use sudo.vim plugin instead of sudo command or set always_set_home in sudoers.'
   finish
@@ -147,6 +148,9 @@ let g:neocomplcache_lock_iminsert =
       \ get(g:, 'neocomplcache_lock_iminsert', 0)
 let g:neocomplcache_release_cache_time =
       \ get(g:, 'neocomplcache_release_cache_time', 900)
+let g:neocomplcache_wildcard_characters =
+      \ get(g:, 'neocomplcache_wildcard_characters', {
+      \ '_' : '*' })
 
 if exists('g:neocomplcache_plugin_disable')
   let g:neocomplcache_source_disable =

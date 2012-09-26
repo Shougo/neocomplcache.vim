@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: member_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Sep 2012.
+" Last Modified: 21 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,14 +56,18 @@ function! s:source.initialize()"{{{
   if !exists('g:neocomplcache_member_prefix_patterns')
     let g:neocomplcache_member_prefix_patterns = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'c,cpp,objc,objcpp', '\.\|->')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'perl,php', '->')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'cs,java,javascript,d,vim,ruby,python,perl6,scala,vb', '\.')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_member_prefix_patterns,
-        \'lua', '\.\|:')
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_member_prefix_patterns,
+        \ 'c,cpp,objc,objcpp', '\.\|->')
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_member_prefix_patterns,
+        \ 'perl,php', '->')
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_member_prefix_patterns,
+        \ 'cs,java,javascript,d,vim,ruby,python,perl6,scala,vb', '\.')
+  call neocomplcache#set_dictionary_helper(
+        \ g:neocomplcache_member_prefix_patterns,
+        \ 'lua', '\.\|:')
   "}}}
 
   " Initialize member patterns."{{{
@@ -89,9 +93,10 @@ function! s:source.get_keyword_pos(cur_text)"{{{
     return -1
   endif
 
+  let member = s:get_member_pattern(filetype)
+  let prefix = g:neocomplcache_member_prefix_patterns[filetype]
   let cur_keyword_pos = matchend(a:cur_text,
-        \ '\%(' . s:get_member_pattern(filetype) . '\%(' .
-        \ g:neocomplcache_member_prefix_patterns[filetype] . '\m\)\)\+\ze\w*$')
+        \ '\%(' . member . '\%(' . prefix . '\m\)\)\+\ze\w*$')
   return cur_keyword_pos
 endfunction"}}}
 
@@ -198,6 +203,7 @@ function! s:get_sources_list()"{{{
 
   for [key, source] in items(s:member_sources)
     if has_key(filetypes_dict, source.filetype)
+          \ || has_key(filetypes_dict, '_')
           \ || bufnr('%') == key
           \ || (bufname('%') ==# '[Command Line]' && bufnr('#') == key)
       call add(sources_list, [key, source])
