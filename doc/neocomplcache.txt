@@ -1309,6 +1309,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-09-27
 - Improved initialization.
+- Improved text mode.
 
 2012-09-26
 - Improved FAQ section.

@@ -1584,7 +1584,8 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
   " Convert words.
   if neocomplcache#is_text_mode() "{{{
     let convert_candidates = filter(copy(complete_words),
-          \ "get(v:val, 'neocomplcache__convertable', 1)")
+          \ "get(v:val, 'neocomplcache__convertable', 1)
+          \  && v:val.word =~ '^\\u\\+$\\|^\\u\\?\\l\\+$'")
 
     if a:cur_keyword_str =~ '^\l\+$'
       for keyword in convert_candidates
