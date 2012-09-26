@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2012.
+" Last Modified: 24 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -148,6 +148,9 @@ let g:neocomplcache_lock_iminsert =
       \ get(g:, 'neocomplcache_lock_iminsert', 0)
 let g:neocomplcache_release_cache_time =
       \ get(g:, 'neocomplcache_release_cache_time', 900)
+let g:neocomplcache_wildcard_characters =
+      \ get(g:, 'neocomplcache_wildcard_characters', {
+      \ '_' : '*' })
 
 if exists('g:neocomplcache_plugin_disable')
   let g:neocomplcache_source_disable =

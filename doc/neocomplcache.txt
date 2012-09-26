@@ -266,6 +266,8 @@ g:neocomplcache_enable_wildcard
 					*g:neocomplcache_enable_wildcard*
 		This variable controls whether neocomplcache accept wild
 		card character '*' for input-saving.
+		Note: You can customize the wildcard character by
+		|g:neocomplcache_wildcard_characters|.
 		
 		Default value is 1.
 
@@ -418,8 +420,8 @@ g:neocomplcache_temporary_dir		*g:neocomplcache_temporary_dir*
 		This variable appoints the directory that neocomplcache
 		begins to write a file at one time.  When there is not the
 		directory which appointed here, it is made.  For example,
-		keyword_complete.vim stores cache of the keyword in this
-		'keyword_cache' sub directory.
+		buffer_complete.vim stores cache of the keyword in this
+		'buffer_cache' sub directory.
 		
 		Default value is '~/.neocon'.
 
@@ -849,6 +851,24 @@ g:neocomplcache_ignore_composite_filetype_lists
 		
 		Default value is {}.
 
+g:neocomplcache_wildcard_characters
+					*g:neocomplcache_wildcard_characters*
+		It is a dictionary to define wildcard characters.
+		You can change default wildcard character "*" to other
+		characters.
+		The dictionary's key is filetype and the value is a wildcard
+		character. If the key is "_", it is default wildcard
+		character.
+		Note: The wildcard character must be 1 length character.
+>
+		" Examples:
+		if !exists('g:neocomplcache_wildcard_characters')
+		  let g:neocomplcache_wildcard_characters = {}
+		endif
+		let g:neocomplcache_wildcard_characters._ = '-'
+<
+		Default value is { '_' : '*' }.
+
 ------------------------------------------------------------------------------
 FUNCTIONS 					*neocomplcache-functions*
 
@@ -883,13 +903,6 @@ neocomplcache#manual_omni_complete()		*neocomplcache#manual_omni_complete()*
 >
 		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_keyword_complete()		*neocomplcache#manual_keyword_complete()*
-		Use this function on inoremap <expr>.  The keymapping call
-		keyword completion of neocomplcache.  When you rearrange the
-		keyword completion of the Vim standard, you use it.
->
-		inoremap <expr><C-n>  pumvisible() ? "\<C-n>" : neocomplcache#manual_keyword_complete()
-
 neocomplcache#close_popup()			*neocomplcache#close_popup()*
 		Inset candidate and close popup menu for neocomplcache.
 >
@@ -1025,12 +1038,6 @@ SOURCES						*neocomplcache-sources*
 
 Neocomplcache reads automatically sources saved in an
 autoload/neocomplcache/sources directory.
-
-keyword_complete.vim				*keyword_complete*
-		This source collects keywords from dictionaries... etc, and to
-		use for completion.  Because the plugin offer the basic
-		function of neocomplcache, neocomplcache does not work normally
-		when you delete this plugin.
 
 buffer_complete.vim				*buffer_complete*
 		This source collects keywords from buffer.
@@ -1286,8 +1293,31 @@ A: It is feature. neocomplcache completes from same filetype buffers in
 default. But you can completes from other filetype buffers using
 |g:neocomplcache_same_filetype_lists|.
 
+Q: Suggestions are case insensitive in "gitcommit" buffers, but not
+"javascript".
+
+A: This is g:neocomplcache_text_mode_filetypes feature.
+You can disable it by following code.
+>
+	if !exists('g:neocomplcache_text_mode_filetypes')
+	  let g:neocomplcache_tags_filter_patterns = {}
+	endif
+	let g:neocomplcache_text_mode_filetypes.gitcommit = 0
+<
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-09-26
+- Improved FAQ section.
+
+2012-09-25
+- Fixed for prefetch.
+- Improved source initialization.
+- Improved manual complete.
+- Deleted keyword_complete source.
+
+2012-09-24
+- Added g:neocomplcache_wildcard_characters option.
 
 2012-09-23
 - Improved C# support.

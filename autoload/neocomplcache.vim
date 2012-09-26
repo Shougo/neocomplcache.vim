@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2012.
+" Last Modified: 25 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -92,35 +92,6 @@ function! neocomplcache#enable() "{{{
 
   call s:initialize_variables()
 
-  " Initialize sources table."{{{
-  " Search autoload.
-  for source_name in filter(map(split(globpath(&runtimepath,
-        \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
-        \ "fnamemodify(v:val, ':t:r')"),
-        \ "neocomplcache#is_source_enabled(v:val)")
-    let source = neocomplcache#sources#{source_name}#define()
-    if empty(source)
-      " Ignore.
-    elseif source.kind ==# 'complfunc'
-      if !has_key(s:complfunc_sources, source_name)
-        let s:complfunc_sources[source_name] = source
-      endif
-    elseif source.kind ==# 'ftplugin'
-      if !has_key(s:ftplugin_sources, source_name)
-        let s:ftplugin_sources[source_name] = source
-
-        " Clear loaded flag.
-        let s:ftplugin_sources[source_name].loaded = 0
-      endif
-    elseif source.kind ==# 'plugin'
-          \ && neocomplcache#is_source_enabled('keyword_complete')
-      if !has_key(s:plugin_sources, source_name)
-        let s:plugin_sources[source_name] = source
-      endif
-    endif
-  endfor
-  "}}}
-
   " Initialize keyword patterns."{{{
   if !exists('g:neocomplcache_keyword_patterns')
     let g:neocomplcache_keyword_patterns = {}
@@ -136,13 +107,15 @@ function! neocomplcache#enable() "{{{
         \'^=\%(b\%[egin]\|e\%[nd]\)\|\%(@@\|[:$@]\)\h\w*\|\h\w*\%(::\w*\)*[!?]\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'php,int-php',
-        \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?\|\$\h\w*\|\h\w*\%(\%(\\\|::\)\w*\)*')
+        \'</\?\%(\h[[:alnum:]_-]*\s*\)\?\%(/\?>\)\?'.
+        \'\|\$\h\w*\|\h\w*\%(\%(\\\|::\)\w*\)*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'perl,int-perlsh',
         \'<\h\w*>\?\|[$@%&*]\h\w*\|\h\w*\%(::\w*\)*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'perl6,int-perl6',
-        \'<\h\w*>\?\|[$@%&][!.*?]\?\h[[:alnum:]_-]*\|\h[[:alnum:]_-]*\%(::[[:alnum:]_-]*\)*')
+        \'<\h\w*>\?\|[$@%&][!.*?]\?\h[[:alnum:]_-]*'.
+        \'\|\h[[:alnum:]_-]*\%(::[[:alnum:]_-]*\)*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'pir',
         \'[$@%.=]\?\h\w*')
@@ -151,11 +124,13 @@ function! neocomplcache#enable() "{{{
         \'[=]\?\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'vim,help',
-        \'-\h[[:alnum:]-]*=\?\|\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|'
-        \'<SID>\%(\h\w*\)\?\|<Plug>([^)]*)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?\|$\h\w*')
+        \'-\h[[:alnum:]-]*=\?\|\c\[:\%(\h\w*:\]\)\?\|&\h[[:alnum:]_:]*\|'.
+        \'<SID>\%(\h\w*\)\?\|<Plug>([^)]*)\?'.
+        \'\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#]*!\?\|$\h\w*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'tex',
-        \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*\%({\%([[:alnum:]:_]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:_]*\*\?')
+        \'\\\a{\a\{1,2}}\|\\[[:alpha:]@][[:alnum:]@]*'.
+        \'\%({\%([[:alnum:]:_]\+\*\?}\?\)\?\)\?\|\a[[:alnum:]:_]*\*\?')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'sh,zsh,int-zsh,int-bash,int-sh',
         \'[[:alpha:]_.-][[:alnum:]_.-]*')
@@ -212,7 +187,8 @@ function! neocomplcache#enable() "{{{
         \'^\s*-\h\w*\|\%(\h\w*:\)*\h\w\|\h[[:alnum:]_@]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'html,xhtml,xml,markdown,eruby',
-        \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
+        \'</\?\%([[:alnum:]_:-]\+\s*\)\?\%(/\?>\)\?\|&\h\%(\w*;\)\?'.
+        \'\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#set_dictionary_helper(g:neocomplcache_keyword_patterns,
         \'css,stylus,scss',
         \'[@#.]\?[[:alpha:]_:-][[:alnum:]_:-]*')
@@ -580,13 +556,6 @@ function! neocomplcache#enable() "{{{
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
         \ <C-x><C-o><C-p>
         " \ <C-x><C-o><C-r>=neocomplcache#popup_post()<CR>
-
-  " Initialize.
-  for source in values(neocomplcache#available_complfuncs())
-    if has_key(source, 'initialize')
-      call source.initialize()
-    endif
-  endfor
 endfunction"}}}
 
 function! neocomplcache#disable()"{{{
@@ -613,6 +582,9 @@ function! neocomplcache#disable()"{{{
     if has_key(source, 'finalize')
       call source.finalize()
     endif
+  endfor
+  for source in values(neocomplcache#available_plugins())
+    call source.finalize()
   endfor
   for source in values(neocomplcache#available_ftplugins())
     if source.loaded
@@ -832,7 +804,7 @@ function! s:do_auto_complete(event)"{{{
   if neocomplcache#is_prefetch()
     " Do prefetch.
     let s:complete_results =
-          \ neocomplcache#get_complete_results(s:get_cur_text())
+          \ neocomplcache#get_complete_results(cur_text)
 
     if empty(s:complete_results)
       " Skip completion.
@@ -1311,10 +1283,6 @@ function! neocomplcache#is_prefetch()"{{{
         \ || &l:formatoptions =~# 'a'
 endfunction"}}}
 function! neocomplcache#is_omni_complete(cur_text)"{{{
-  if !neocomplcache#is_source_enabled('omni_complete')
-    return 0
-  endif
-
   " Check eskk complete length.
   if neocomplcache#is_eskk_enabled()
         \ && exists('g:eskk#start_completion_length')
@@ -1443,7 +1411,7 @@ function! neocomplcache#get_source_rank(plugin_name)"{{{
   elseif has_key(s:ftplugin_sources, a:plugin_name)
     return 100
   elseif has_key(s:plugin_sources, a:plugin_name)
-    return neocomplcache#get_source_rank('keyword_complete')
+    return 5
   else
     " unknown.
     return 1
@@ -1661,55 +1629,11 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
 
   return complete_words
 endfunction"}}}
-function! s:set_complete_results_words(complete_results)"{{{
-  " Try source completion.
-  for [source_name, result] in items(a:complete_results)
-    if neocomplcache#complete_check()
-      return
-    endif
-
-    " Save options.
-    let ignorecase_save = &ignorecase
-
-    if neocomplcache#is_text_mode()
-      let &ignorecase = 1
-    elseif g:neocomplcache_enable_smart_case
-          \ && result.cur_keyword_str =~ '\u'
-      let &ignorecase = 0
-    else
-      let &ignorecase = g:neocomplcache_enable_ignore_case
-    endif
-
-    let pos = getpos('.')
-
-    try
-      let words = result.source.get_complete_words(
-            \ result.cur_keyword_pos, result.cur_keyword_str)
-    catch
-      call neocomplcache#print_error(v:throwpoint)
-      call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error(
-            \ 'Error occured in complfunc''s get_complete_words()!')
-      call neocomplcache#print_error(
-            \ 'Source name is ' . source_name)
-      return
-    finally
-      if getpos('.') != pos
-        call setpos('.', pos)
-      endif
-    endtry
-
-    let &ignorecase = ignorecase_save
-
-    let result.complete_words = words
-  endfor
-endfunction"}}}
 function! s:set_complete_results_pos(cur_text, ...)"{{{
   " Set context filetype.
   call s:set_context_filetype()
 
-  let sources = copy(get(a:000, 0, extend(copy(neocomplcache#available_complfuncs()),
-        \ neocomplcache#available_loaded_ftplugins())))
+  let sources = copy(get(a:000, 0, s:get_sources_list()))
   if a:0 < 1
     call filter(sources, 'neocomplcache#is_source_enabled(v:key)
           \  && !neocomplcache#is_plugin_locked(v:key)')
@@ -1718,23 +1642,28 @@ function! s:set_complete_results_pos(cur_text, ...)"{{{
   " Try source completion."{{{
   let complete_results = {}
   for [source_name, source] in items(sources)
-    let pos = getpos('.')
+    if source.kind ==# 'plugin'
+      " Plugin default keyword position.
+      let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
+    else
+      let pos = getpos('.')
 
-    try
-      let cur_keyword_pos = source.get_keyword_pos(a:cur_text)
-    catch
-      call neocomplcache#print_error(v:throwpoint)
-      call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error(
-            \ 'Error occured in complfunc''s get_keyword_pos()!')
-      call neocomplcache#print_error(
-            \ 'Source name is ' . source_name)
-      return complete_results
-    finally
-      if getpos('.') != pos
-        call setpos('.', pos)
-      endif
-    endtry
+      try
+        let cur_keyword_pos = source.get_keyword_pos(a:cur_text)
+      catch
+        call neocomplcache#print_error(v:throwpoint)
+        call neocomplcache#print_error(v:exception)
+        call neocomplcache#print_error(
+              \ 'Error occured in complfunc''s get_keyword_pos()!')
+        call neocomplcache#print_error(
+              \ 'Source name is ' . source_name)
+        return complete_results
+      finally
+        if getpos('.') != pos
+          call setpos('.', pos)
+        endif
+      endtry
+    endif
 
     if cur_keyword_pos < 0
       continue
@@ -1758,6 +1687,56 @@ function! s:set_complete_results_pos(cur_text, ...)"{{{
   "}}}
 
   return complete_results
+endfunction"}}}
+function! s:set_complete_results_words(complete_results)"{{{
+  " Try source completion.
+  for [source_name, result] in items(a:complete_results)
+    if neocomplcache#complete_check()
+      return
+    endif
+
+    " Save options.
+    let ignorecase_save = &ignorecase
+
+    if neocomplcache#is_text_mode()
+      let &ignorecase = 1
+    elseif g:neocomplcache_enable_smart_case
+          \ && result.cur_keyword_str =~ '\u'
+      let &ignorecase = 0
+    else
+      let &ignorecase = g:neocomplcache_enable_ignore_case
+    endif
+
+    let pos = getpos('.')
+
+    try
+      let words = result.source.kind ==# 'plugin' ?
+            \ result.source.get_keyword_list(result.cur_keyword_str) :
+            \ result.source.get_complete_words(
+            \   result.cur_keyword_pos, result.cur_keyword_str)
+    catch
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      call neocomplcache#print_error(
+            \ 'Source name is ' . source_name)
+      if result.source.kind ==# 'plugin'
+        call neocomplcache#print_error(
+              \ 'Error occured in source''s get_keyword_list()!')
+      else
+        call neocomplcache#print_error(
+              \ 'Error occured in source''s get_complete_words()!')
+      endif
+      return
+    finally
+      if getpos('.') != pos
+        call setpos('.', pos)
+      endif
+    endtry
+
+    let &ignorecase = ignorecase_save
+
+    let result.complete_words = words
+  endfor
 endfunction"}}}
 
 " Set default pattern helper.
@@ -2119,9 +2098,6 @@ endfunction"}}}
 function! neocomplcache#manual_omni_complete()"{{{
   return neocomplcache#start_manual_complete('omni_complete')
 endfunction"}}}
-function! neocomplcache#manual_keyword_complete()"{{{
-  return neocomplcache#start_manual_complete('keyword_complete')
-endfunction"}}}
 
 " Manual complete wrapper.
 function! neocomplcache#start_manual_complete(...)"{{{
@@ -2135,16 +2111,8 @@ function! neocomplcache#start_manual_complete(...)"{{{
   let all_sources = extend(copy(neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())
   let sources = get(a:000, 0, keys(all_sources))
-  for source_name in type(sources) == type([]) ?
-   \ sources : [sources]
-    if has_key(all_sources, source_name)
-      let s:use_sources[source_name] = all_sources[source_name]
-    else
-      call neocomplcache#print_warning(printf(
-            \ "Invalid completefunc name %s is given.", a:complfunc_name))
-      return ''
-    endif
-  endfor
+  let s:use_sources = s:get_sources_list(type(sources) == type([]) ?
+        \ sources : [sources])
 
   " Start complete.
   return "\<C-x>\<C-u>\<C-p>"
@@ -2166,13 +2134,17 @@ function! s:on_moved_i()"{{{
   " Get cursor word.
   let cur_text = s:get_cur_text()
 
+  let complfuncs = neocomplcache#available_complfuncs()
+
   " Make cache.
   if cur_text =~ '^\s*$\|\s\+$'
     if neocomplcache#is_source_enabled('buffer_complete')
+          \ && has_key(complfuncs, 'buffer_complete')
       " Caching current cache line.
       call neocomplcache#sources#buffer_complete#caching_current_line()
     endif
     if neocomplcache#is_source_enabled('member_complete')
+          \ && has_key(complfuncs, 'member_complete')
       " Caching current cache line.
       call neocomplcache#sources#member_complete#caching_current_line()
     endif
@@ -2256,11 +2228,33 @@ endfunction"}}}
 
 " Internal helper functions."{{{
 function! s:get_cur_text()"{{{
-  let s:cur_text =
+  let cur_text =
         \ (mode() ==# 'i' ? (col('.')-1) : col('.')) >= len(getline('.')) ?
         \      getline('.') :
         \      matchstr(getline('.'),
         \         '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+
+  let cur_keyword_str = matchstr(cur_text, '\S\+$')
+  let cur_text = matchstr(cur_text, '^.\{-}\ze\S\+$')
+
+  let filetype = neocomplcache#get_context_filetype()
+  let wildcard = get(g:neocomplcache_wildcard_characters, filetype,
+        \ get(g:neocomplcache_wildcard_characters, '_', '*'))
+  if g:neocomplcache_enable_wildcard &&
+        \ wildcard !=# '*' && len(wildcard) == 1
+    " Substitute wildcard character.
+    while 1
+      let index = stridx(cur_keyword_str, wildcard)
+      if index <= 0
+        break
+      endif
+
+      let cur_keyword_str = cur_keyword_str[: index-1]
+            \ . '*' . cur_keyword_str[index+1: ]
+    endwhile
+  endif
+
+  let s:cur_text = cur_text . cur_keyword_str
 
   " Save cur_text.
   return s:cur_text
@@ -2414,6 +2408,73 @@ function! s:initialize_buffer_variable()"{{{
         \ 'context_filetype' : '',
         \ 'completion_length' : -1,
         \}
+endfunction"}}}
+function! s:initialize_sources(source_names)"{{{
+  " Initialize sources table.
+
+  for name in a:source_names
+    " Search autoload.
+    for source_name in filter(map(split(globpath(&runtimepath,
+          \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
+          \ "fnamemodify(v:val, ':t:r')"),
+          \ "neocomplcache#is_source_enabled(v:val)")
+      let source = neocomplcache#sources#{source_name}#define()
+      if empty(source) || has_key(s:complfunc_sources, source_name)
+            \ || has_key(s:ftplugin_sources, source_name)
+            \ || has_key(s:plugin_sources, source_name)
+        " Ignore.
+        continue
+      endif
+
+      if source.kind ==# 'complfunc'
+        let s:complfunc_sources[source_name] = source
+
+        if has_key(source, 'initialize')
+          call source.initialize()
+        endif
+      elseif source.kind ==# 'ftplugin'
+        let s:ftplugin_sources[source_name] = source
+
+        " Clear loaded flag.
+        let s:ftplugin_sources[source_name].loaded = 0
+      elseif source.kind ==# 'plugin'
+        let s:plugin_sources[source_name] = source
+
+        if has_key(source, 'initialize')
+          call source.initialize()
+        endif
+      endif
+    endfor
+  endfor
+endfunction"}}}
+function! s:get_sources_list(...)"{{{
+  let filetype = neocomplcache#get_context_filetype()
+
+  let source_names = get(a:000, 0, [''])
+  call s:initialize_sources(source_names)
+
+  let all_sources = extend(extend(copy(
+        \ neocomplcache#available_complfuncs()),
+        \ neocomplcache#available_loaded_ftplugins()),
+        \ neocomplcache#available_plugins())
+  let sources = {}
+  for source_name in source_names
+    if source_name == ''
+      " All sources.
+      let sources = all_sources
+      break
+    endif
+
+    if !has_key(all_sources, source_name)
+      call neocomplcache#print_warning(printf(
+            \ 'Invalid source name "%s" is given.', source_name))
+      continue
+    endif
+
+    let sources[source_name] = all_sources[source_name]
+  endfor
+
+  return sources
 endfunction"}}}
 "}}}
 
