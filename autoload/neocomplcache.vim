@@ -51,6 +51,7 @@ function! s:initialize_variables()"{{{
   let s:update_time_save = &updatetime
   let s:filetype_frequencies = {}
   let s:cur_keyword_pos = -1
+  let s:loaded_all_sources = 0
 endfunction"}}}
 
 if !exists('s:is_enabled')
@@ -2416,6 +2417,7 @@ function! s:initialize_sources(source_names)"{{{
     if has_key(s:complfunc_sources, name)
             \ || has_key(s:ftplugin_sources, name)
             \ || has_key(s:plugin_sources, name)
+            \ || s:loaded_all_sources
       continue
     endif
 
@@ -2451,6 +2453,10 @@ function! s:initialize_sources(source_names)"{{{
         endif
       endif
     endfor
+
+    if name == ''
+      let s:loaded_all_sources = 1
+    endif
   endfor
 endfunction"}}}
 function! s:get_sources_list(...)"{{{
