@@ -1358,7 +1358,7 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
 
   let filetype_dict = {}
 
-  let filetypes = [filetype]
+  let filetypes = [filetype, '_']
   if filetype =~ '\.'
     if has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
       let filetypes = [g:neocomplcache_ignore_composite_filetype_lists[filetype]]
@@ -1368,9 +1368,9 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
     endif
   endif
 
-  for ft in filter(copy(filetypes),
-        \ 'has_key(g:neocomplcache_same_filetype_lists, v:val)')
-    for same_ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
+  for ft in filetypes
+    for same_ft in split(get(g:neocomplcache_same_filetype_lists, ft,
+          \ get(g:neocomplcache_same_filetype_lists, '_', '')), ',')
       if index(filetypes, same_ft) < 0
         " Add same filetype.
         call add(filetypes, same_ft)
@@ -1378,7 +1378,7 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
     endfor
   endfor
 
-  return filetypes
+  return neocomplcache#util#uniq(filetypes)
 endfunction"}}}
 function! neocomplcache#get_sources_list(dictionary, filetype)"{{{
   let list = []
