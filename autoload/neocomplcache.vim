@@ -1371,7 +1371,7 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
   for ft in filetypes
     for same_ft in split(get(g:neocomplcache_same_filetype_lists, ft,
           \ get(g:neocomplcache_same_filetype_lists, '_', '')), ',')
-      if index(filetypes, same_ft) < 0
+      if same_ft != '' && index(filetypes, same_ft) < 0
         " Add same filetype.
         call add(filetypes, same_ft)
       endif
