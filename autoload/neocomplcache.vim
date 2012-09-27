@@ -2109,7 +2109,6 @@ function! neocomplcache#start_manual_complete(...)"{{{
   " Set function.
   let &l:completefunc = 'neocomplcache#sources_manual_complete'
 
-  let s:use_sources = {}
   let all_sources = extend(copy(neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())
   let sources = get(a:000, 0, keys(all_sources))
@@ -2463,7 +2462,9 @@ endfunction"}}}
 function! s:get_sources_list(...)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let source_names = get(a:000, 0, [''])
+  let source_names = get(a:000, 0,
+        \ get(g:neocomplcache_sources_list, filetype,
+        \   get(g:neocomplcache_sources_list, '_', [''])))
   call s:initialize_sources(source_names)
 
   let all_sources = extend(extend(copy(

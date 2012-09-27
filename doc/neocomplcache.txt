@@ -761,6 +761,22 @@ g:neocomplcache_vim_completefuncs
 		endif
 		let g:neocomplcache_vim_completefuncs.Ref = 'ref#complete'
 <
+g:neocomplcache_sources_list
+					*g:neocomplcache_sources_list*
+		It is a dictionary to decide use source names. The key is
+		filetype and the value is source names list. If the key is
+		"_", the value will be used for default filetypes. For
+		example, you can disable some sources in C++ filetype.
+		Default value is {}.
+>
+		" Examples:
+		if !exists('g:neocomplcache_sources_list')
+		  let g:neocomplcache_sources_list = {}
+		endif
+		let g:neocomplcache_sources_list._ = ['buffer_complete']
+		let g:neocomplcache_sources_list.cpp =
+		\ ['buffer_complete', 'include_complete']
+<
 g:neocomplcache_source_disable
 					*g:neocomplcache_source_disable*
 		The dictionary which appoints whether you invalidate a
@@ -1322,6 +1338,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved initialization.
 - Improved text mode.
 - Improved g:neocomplcache_same_filetype_lists.
+- Added g:neocomplcache_sources_list option.
 
 2012-09-26
 - Improved FAQ section.
