@@ -451,12 +451,13 @@ g:neocomplcache_next_keyword_patterns
 g:neocomplcache_omni_patterns		*g:neocomplcache_omni_patterns*
 		This dictionary records keyword patterns used in
 		|omni_complete|.  This is appointed in regular expression
-		every file type.  If this pattern is not defined,
-		neocomplcache does't call 'omnifunc'.
+		every file type or 'omnifunc' name.  If this pattern is not
+		defined, neocomplcache does't call 'omnifunc'.
 		Note: ruby and php omnifunc are disabled, because they are too
 		slow.
 		Note: Partial omnifunc has problem when neocomplcache call(Ex:
-		rubycomplete and cocoa.vim and clang_complete).
+		rubycomplete and cocoa.vim and clang_complete). You should
+		|g:neocomplcache_force_omni_patterns| instead.
 		
 		Because it is complicated, refer to s:source.initialize()
 		autoload/neocomplcache/sources/omni_complete.vim for the
