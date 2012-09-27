@@ -1306,6 +1306,11 @@ You can disable it by following code.
 	endif
 	let g:neocomplcache_text_mode_filetypes.gitcommit = 0
 <
+Q: Conflicts completefunc with other plugins in neocomplcache.
+
+A: You can disable the error by |g:neocomplcache_force_overwrite_completefunc|
+variable to 1.
+
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
