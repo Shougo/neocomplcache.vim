@@ -371,12 +371,12 @@ function! s:get_glob_files(cur_keyword_str, path)"{{{
 
   return dir_list + file_list
 endfunction"}}}
-function! s:caching_current_files()
+function! s:caching_current_files()"{{{
   let s:cached_files[getcwd()] = neocomplcache#util#glob('*')
   if !exists('vimproc#readdir')
     let s:cached_files[getcwd()] += neocomplcache#util#glob('.*')
   endif
-endfunction
+endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#define()"{{{
   return s:source

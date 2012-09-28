@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2012.
+" Last Modified: 28 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1540,9 +1540,10 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
   endfor
   let complete_words = words
 
-  " Delimiter check.
+  " Delimiter check. "{{{
   let filetype = neocomplcache#get_context_filetype()
-  for delimiter in get(g:neocomplcache_delimiter_patterns, filetype, [])"{{{
+  for delimiter in ['/'] +
+        \ get(g:neocomplcache_delimiter_patterns, filetype, [])
     " Count match.
     let delim_cnt = 0
     let matchend = matchend(a:cur_keyword_str, delimiter)
@@ -1552,12 +1553,12 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
     endwhile
 
     for keyword in complete_words
-      let split_list = split(keyword.word, delimiter, 1)
+      let split_list = split(keyword.word, delimiter.'\ze.', 1)
       if len(split_list) > 1
         let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
         let keyword.word = join(split_list[ : delim_cnt], delimiter_sub)
         let keyword.abbr = join(
-              \ split(keyword.abbr, delimiter, 1)[ : delim_cnt],
+              \ split(keyword.abbr, delimiter.'\ze.', 1)[ : delim_cnt],
               \ delimiter_sub)
 
         if g:neocomplcache_max_keyword_width >= 0
