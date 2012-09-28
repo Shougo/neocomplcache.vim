@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Sep 2012.
+" Last Modified: 28 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,8 +57,8 @@ function! s:source.initialize()"{{{
         \ g:neocomplcache_keyword_patterns,
         \'filename',
         \ neocomplcache#util#is_windows() ?
-        \'\%(\a\+:[/\\]\)\?[\\/[:alnum:]()$+_\~.-]\+' :
-        \'\%(\\.\|[/\[\][:alnum:]()$+_\~.-]\)\+')
+        \'\%(\a\+:[/\\]\)\?\%([\\/[:alnum:]()$+_\~.\x80-\xff-]\|[^[:print:]]\)\+' :
+        \'\%(\\.\|[/\[\][:alnum:]()$+_\~.-]\|[^[:print:]]\)\+')
 
   " Initialize filename include expr."{{{
   let g:neocomplcache_filename_include_exprs =
