@@ -1337,6 +1337,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-09-28
 - Improved filename pattern.
 - Added / delimiter for filename_complete.
+- Improved filename delimiter behavior.
 
 2012-09-27
 - Improved initialization.
