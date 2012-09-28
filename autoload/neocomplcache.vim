@@ -1358,7 +1358,7 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
 
   let filetype_dict = {}
 
-  let filetypes = [filetype]
+  let filetypes = [filetype, '_']
   if filetype =~ '\.'
     if has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
       let filetypes = [g:neocomplcache_ignore_composite_filetype_lists[filetype]]
@@ -1368,17 +1368,17 @@ function! neocomplcache#get_source_filetypes(filetype)"{{{
     endif
   endif
 
-  for ft in filter(copy(filetypes),
-        \ 'has_key(g:neocomplcache_same_filetype_lists, v:val)')
-    for same_ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
-      if index(filetypes, same_ft) < 0
+  for ft in filetypes
+    for same_ft in split(get(g:neocomplcache_same_filetype_lists, ft,
+          \ get(g:neocomplcache_same_filetype_lists, '_', '')), ',')
+      if same_ft != '' && index(filetypes, same_ft) < 0
         " Add same filetype.
         call add(filetypes, same_ft)
       endif
     endfor
   endfor
 
-  return filetypes
+  return neocomplcache#util#uniq(filetypes)
 endfunction"}}}
 function! neocomplcache#get_sources_list(dictionary, filetype)"{{{
   let list = []
@@ -2109,7 +2109,6 @@ function! neocomplcache#start_manual_complete(...)"{{{
   " Set function.
   let &l:completefunc = 'neocomplcache#sources_manual_complete'
 
-  let s:use_sources = {}
   let all_sources = extend(copy(neocomplcache#available_complfuncs()),
         \ neocomplcache#available_loaded_ftplugins())
   let sources = get(a:000, 0, keys(all_sources))
@@ -2463,7 +2462,9 @@ endfunction"}}}
 function! s:get_sources_list(...)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let source_names = get(a:000, 0, [''])
+  let source_names = get(a:000, 0,
+        \ get(g:neocomplcache_sources_list, filetype,
+        \   get(g:neocomplcache_sources_list, '_', [''])))
   call s:initialize_sources(source_names)
 
   let all_sources = extend(extend(copy(
