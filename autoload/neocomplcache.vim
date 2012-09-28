@@ -1744,7 +1744,7 @@ endfunction"}}}
 
 " Set default pattern helper.
 function! neocomplcache#set_dictionary_helper(variable, keys, value)"{{{
-  return neocomplcache#util#set_default_dictionary_helper(a:variable, a:keys, a:value)
+  return neocomplcache#util#set_dictionary_helper(a:variable, a:keys, a:value)
 endfunction"}}}
 
 " Complete filetype helper.
