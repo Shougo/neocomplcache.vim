@@ -1343,6 +1343,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed cur_text problem.
 - Improved vim_complete.
 - Added FAQ section.
+- Deleted <Plug>(neocomplcache_start_unite_snippet) mapping.
 
 2012-09-28
 - Improved filename pattern.

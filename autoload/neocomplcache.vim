@@ -550,8 +550,6 @@ function! neocomplcache#enable() "{{{
         \ unite#sources#neocomplcache#start_complete()
   inoremap <expr><silent> <Plug>(neocomplcache_start_unite_quick_match)
         \ unite#sources#neocomplcache#start_quick_match()
-  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_snippet)
-        \ unite#sources#snippet#start_complete()
   inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
         \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
