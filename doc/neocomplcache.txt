@@ -1334,6 +1334,9 @@ variable to 1.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-09-30
+- Fixed cur_text problem.
+
 2012-09-28
 - Improved filename pattern.
 - Added / delimiter for filename_complete.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Sep 2012.
+" Last Modified: 30 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2236,8 +2236,12 @@ function! s:get_cur_text()"{{{
         \      matchstr(getline('.'),
         \         '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
 
-  let cur_keyword_str = matchstr(cur_text, '\S\+$')
-  let cur_text = matchstr(cur_text, '^.\{-}\ze\S\+$')
+  if cur_text =~ '^.\{-}\ze\S\+$'
+    let cur_keyword_str = matchstr(cur_text, '\S\+$')
+    let cur_text = matchstr(cur_text, '^.\{-}\ze\S\+$')
+  else
+    let cur_keyword_str = ''
+  endif
 
   let filetype = neocomplcache#get_context_filetype()
   let wildcard = get(g:neocomplcache_wildcard_characters, filetype,
