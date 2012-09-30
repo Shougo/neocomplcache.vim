@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Aug 2012.
+" Last Modified: 30 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -75,7 +75,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   let pattern = '\.\%(\h\w*\)\?$\|' .
-        \ neocomplcache#get_keyword_pattern_end('vim')
+        \ neocomplcache#get_keyword_pattern_end('vim').'\|\m\S\+$'
   if cur_text != '' && cur_text !~
         \ '^[[:digit:],[:space:][:tab:]$''<>]*\h\w*$'
     let command_completion =
