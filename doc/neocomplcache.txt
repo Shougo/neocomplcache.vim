@@ -1270,16 +1270,11 @@ I'm not sure if other distros has this command...
 http://www.vim.org/scripts/script.php?script_id=729
 
 
-Q: Error occurred in ruby omni complete.
+Q: Error occurred in ruby omni complete using |g:neocomplcache_omni_patterns|.
 https://github.com/vim-ruby/vim-ruby/issues/95
 
-A: Please set |g:neocomplcache_force_omni_patterns|.
->
-	if !exists('g:neocomplcache_force_omni_patterns')
-	  let g:neocomplcache_force_omni_patterns = {}
-	endif
-	let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
-<
+A: Please set |g:neocomplcache_force_omni_patterns| instead of
+|g:neocomplcache_omni_patterns|.
 
 Q: Does not work with clang_complete.
 
@@ -1331,12 +1326,23 @@ Q: Conflicts completefunc with other plugins in neocomplcache.
 A: You can disable the error by |g:neocomplcache_force_overwrite_completefunc|
 variable to 1.
 
+Q: I want to use Ruby omni_complete.
+
+A: Please set |g:neocomplcache_force_omni_patterns|. But this completion is
+heavy, so disabled by default.
+>
+	if !exists('g:neocomplcache_force_omni_patterns')
+	  let g:neocomplcache_force_omni_patterns = {}
+	endif
+	let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+<
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
 2012-09-30
 - Fixed cur_text problem.
 - Improved vim_complete.
+- Added FAQ section.
 
 2012-09-28
 - Improved filename pattern.
