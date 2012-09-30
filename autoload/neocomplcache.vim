@@ -1751,7 +1751,8 @@ endfunction"}}}
 function! neocomplcache#filetype_complete(arglead, cmdline, cursorpos)"{{{
   " Dup check.
   let ret = {}
-  for item in map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'), 'fnamemodify(v:val, ":t:r")')
+  for item in map(split(globpath(&runtimepath, 'syntax/*.vim'), '\n'),
+        \ 'fnamemodify(v:val, ":t:r")')
     if !has_key(ret, item) && item =~ '^'.a:arglead
       let ret[item] = 1
     endif
