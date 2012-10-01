@@ -1848,9 +1848,8 @@ function! neocomplcache#set_dictionary_helper(variable, keys, value)"{{{
         \ a:variable, a:keys, a:value)
 endfunction"}}}
 
-function! neocomplcache#disable_default_dictionary(variable, keys, value)"{{{
-  return neocomplcache#util#disable_default_dictionary(
-        \ a:variable, a:keys, a:value)
+function! neocomplcache#disable_default_dictionary(variable)"{{{
+  return neocomplcache#util#disable_default_dictionary(a:variable)
 endfunction"}}}
 
 " Complete filetype helper.

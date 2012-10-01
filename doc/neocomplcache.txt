@@ -533,9 +533,8 @@ g:neocomplcache_same_filetype_lists
 <
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
-		Note: If you set "_" key in
-		|g:neocomplcache_same_filetype_lists|, neocomplcache will not
-		set default values in it.
+		Note: To disable neocomplcache initialization, you must use
+		|neocomplcache#disable_default_dictionary()|.
 
 g:neocomplcache_dictionary_filetype_lists
 				*g:neocomplcache_dictionary_filetype_lists*
@@ -900,6 +899,14 @@ FUNCTIONS 					*neocomplcache-functions*
 neocomplcache#get_context_filetype()		*unite#get_context_filetype()*
 		Get current context filetype.
 
+neocomplcache#disable_default_dictionary({variable-name})
+				*neocomplcache#disable_default_dictionary()*
+		Disable default {variable-name} dictionary initialization.
+		Note: It must be called in .vimrc.
+>
+	call neocomplcache#disable_default_dictionary(
+	      \ 'g:neocomplcache_same_filetype_lists')
+<
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
@@ -1344,6 +1351,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-10-02
 - Improved initialization.
+- Added neocomplcache#disable_default_dictionary().
 
 2012-10-01
 - Changed g:neocomplcache_same_filetype_lists initialization.
