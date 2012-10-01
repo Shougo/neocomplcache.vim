@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Sep 2012.
+" Last Modified: 30 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -353,8 +353,11 @@ function! neocomplcache#sources#vim_complete#helper#file(cur_text, cur_keyword_s
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#filetype(cur_text, cur_keyword_str)"{{{
   return s:make_completion_list(filter(map(
-        \ split(globpath(&runtimepath, 'syntax/*.vim'), '\n') + split(globpath(&runtimepath, 'ftplugin/*.vim'), '\n'),
-        \'matchstr(fnamemodify(v:val, ":t:r"), "^[[:alnum:]-]*")'), 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] filetype', '')
+        \ split(globpath(&runtimepath, 'syntax/*.vim'), '\n') +
+        \ split(globpath(&runtimepath, 'indent/*.vim'), '\n') +
+        \ split(globpath(&runtimepath, 'ftplugin/*.vim'), '\n')
+        \ , "matchstr(fnamemodify(v:val, ':t:r'), '^[[:alnum:]-]*')"),
+        \ 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] filetype', '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keyword_str)"{{{
   " Caching.
