@@ -533,6 +533,9 @@ g:neocomplcache_same_filetype_lists
 <
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
+		Note: If you set "_" key in
+		|g:neocomplcache_same_filetype_lists|, neocomplcache will not
+		set default values in it.
 
 g:neocomplcache_dictionary_filetype_lists
 				*g:neocomplcache_dictionary_filetype_lists*
@@ -1333,6 +1336,9 @@ variable to 1.
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-10-01
+- Changed g:neocomplcache_same_filetype_lists initialization.
 
 2012-09-28
 - Improved filename pattern.

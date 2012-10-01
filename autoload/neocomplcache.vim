@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Sep 2012.
+" Last Modified: 01 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -283,78 +283,115 @@ function! neocomplcache#enable() "{{{
   if !exists('g:neocomplcache_same_filetype_lists')
     let g:neocomplcache_same_filetype_lists = {}
   endif
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'c', 'cpp')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'cpp', 'c')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'erb', 'ruby,html,xhtml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'html,xml', 'xhtml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'html,xhtml', 'css,stylus')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'css', 'scss')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'scss', 'css')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'stylus', 'css')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'xhtml', 'html,xml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'help', 'vim')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'tex', 'bib,plaintex')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'plaintex', 'bib,tex')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'lingr-say', 'lingr-messages,lingr-members')
+  if !has_key(g:neocomplcache_same_filetype_lists, '_')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'c', 'cpp')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'cpp', 'c')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'erb', 'ruby,html,xhtml')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'html,xml', 'xhtml')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'html,xhtml', 'css,stylus')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'css', 'scss')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'scss', 'css')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'stylus', 'css')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'xhtml', 'html,xml')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'help', 'vim')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'tex', 'bib,plaintex')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'plaintex', 'bib,tex')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'lingr-say', 'lingr-messages,lingr-members')
 
-  " Interactive filetypes.
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-irb', 'ruby')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-ghci,int-hugs', 'haskell')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-python,int-ipython', 'python')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-gosh', 'scheme')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-clisp', 'lisp')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-erl', 'erlang')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-zsh', 'zsh')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-bash', 'bash')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-sh', 'sh')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-cmdproxy', 'dosbatch')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-powershell', 'powershell')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-perlsh', 'perl')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-perl6', 'perl6')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-ocaml', 'ocaml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-clj', 'clojure')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-sml,int-smlsharp', 'sml')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-js,int-kjs,int-rhino', 'javascript')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-coffee', 'coffee')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-gdb', 'gdb')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-scala', 'scala')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-nyaos', 'nyaos')
-  call neocomplcache#set_dictionary_helper(g:neocomplcache_same_filetype_lists,
-        \ 'int-php', 'php')
+    " Interactive filetypes.
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-irb', 'ruby')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-ghci,int-hugs', 'haskell')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-python,int-ipython', 'python')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-gosh', 'scheme')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-clisp', 'lisp')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-erl', 'erlang')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-zsh', 'zsh')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-bash', 'bash')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-sh', 'sh')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-cmdproxy', 'dosbatch')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-powershell', 'powershell')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-perlsh', 'perl')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-perl6', 'perl6')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-ocaml', 'ocaml')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-clj', 'clojure')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-sml,int-smlsharp', 'sml')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-js,int-kjs,int-rhino', 'javascript')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-coffee', 'coffee')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-gdb', 'gdb')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-scala', 'scala')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-nyaos', 'nyaos')
+    call neocomplcache#set_dictionary_helper(
+          \ g:neocomplcache_same_filetype_lists,
+          \ 'int-php', 'php')
+  endif
   "}}}
 
   " Initialize context filetype lists."{{{
