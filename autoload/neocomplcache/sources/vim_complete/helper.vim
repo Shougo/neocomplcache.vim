@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Sep 2012.
+" Last Modified: 02 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1012,13 +1012,16 @@ function! s:set_dictionary_helper(variable, keys, value)"{{{
   endfor
 endfunction"}}}
 let s:function_return_types = {}
-call neocomplcache#set_dictionary_helper(s:function_return_types,
+call neocomplcache#util#set_dictionary_helper(
+      \ s:function_return_types,
       \ 'len,match,matchend',
       \ '0')
-call neocomplcache#set_dictionary_helper(s:function_return_types,
+call neocomplcache#util#set_dictionary_helper(
+      \ s:function_return_types,
       \ 'input,matchstr',
       \ '""')
-call neocomplcache#set_dictionary_helper(s:function_return_types,
+call neocomplcache#util#set_dictionary_helper(
+      \ s:function_return_types,
       \ 'expand,filter,sort,split',
       \ '[]')
 "}}}

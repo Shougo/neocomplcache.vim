@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2012.
+" Last Modified: 02 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,8 +59,8 @@ function! s:source.initialize()"{{{
   " Set caching event.
   autocmd neocomplcache FileType * call s:caching()
 
-  call neocomplcache#set_dictionary_helper(
-        \ g:neocomplcache_source_rank,
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_source_rank',
         \ 'dictionary_complete', 4)
 
   " Add command.
