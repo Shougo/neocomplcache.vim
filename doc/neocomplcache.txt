@@ -427,9 +427,10 @@ g:neocomplcache_temporary_dir		*g:neocomplcache_temporary_dir*
 
 g:neocomplcache_keyword_patterns
 					*g:neocomplcache_keyword_patterns*
-		This dictionary records regular expression to recognize a
-		keyword pattern of the next than a cursor.  The form is the
-		same as|g:neocomplcache_keyword_patterns|.
+		This dictionary records keyword patterns to completion.
+		This is appointed in regular expression every file type.
+		If the key is "_" or "default", it is used for default
+		pattern.
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
@@ -438,12 +439,13 @@ g:neocomplcache_keyword_patterns
 		if !exists('g:neocomplcache_keyword_patterns')
 		  let g:neocomplcache_keyword_patterns = {}
 		endif
-		let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
+		let g:neocomplcache_keyword_patterns._ = '\h\w*'
 <
 g:neocomplcache_next_keyword_patterns
 				*g:neocomplcache_next_keyword_patterns*
-		This dictionary records keyword patterns to completion.
-		This is appointed in regular expression every file type.
+		This dictionary records regular expression to recognize a
+		keyword pattern of the next than a cursor. The form is the
+		same as|g:neocomplcache_keyword_patterns|.
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
@@ -610,7 +612,8 @@ g:neocomplcache_ctags_arguments_list
 		It is the dictionary of the character string to set a value
 		to give as an argument of the commands when buffer_complete
 		and include_complete use a ctags command.  The dictionary's
-		key is filetype.
+		key is filetype. If the key is "_", it will be used for
+		default.
 		
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
@@ -1352,6 +1355,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-10-02
 - Improved initialization.
 - Added neocomplcache#disable_default_dictionary().
+- Improved default pattern behavior.
 
 2012-10-01
 - Changed g:neocomplcache_same_filetype_lists initialization.

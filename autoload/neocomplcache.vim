@@ -98,7 +98,7 @@ function! neocomplcache#enable() "{{{
         \ 'g:neocomplcache_keyword_patterns', {})
   call neocomplcache#util#set_default_dictionary(
         \'g:neocomplcache_keyword_patterns',
-        \'default',
+        \'_',
         \'\k\+')
   call neocomplcache#util#set_default_dictionary(
         \'g:neocomplcache_keyword_patterns',
@@ -565,7 +565,7 @@ function! neocomplcache#enable() "{{{
         \ 'g:neocomplcache_ctags_arguments_list', {})
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_ctags_arguments_list',
-        \ 'default', '')
+        \ '_', '')
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_ctags_arguments_list', 'vim',
         \ '--extra=fq --fields=afmiKlnsStz ' .
@@ -2510,8 +2510,11 @@ function! s:unite_patterns(pattern_var, filetype)"{{{
     endif
   endfor
 
-  if empty(keyword_patterns) && has_key(a:pattern_var, 'default')
-    call add(keyword_patterns, g:neocomplcache_keyword_patterns['default'])
+  if empty(keyword_patterns)
+    let default = get(a:pattern_var, '_', get(a:pattern_var, 'default', ''))
+    if default != ''
+      call add(keyword_patterns, default)
+    endif
   endif
 
   return join(keyword_patterns, '\m\|')
