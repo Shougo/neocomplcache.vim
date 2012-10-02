@@ -1356,6 +1356,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved initialization.
 - Added neocomplcache#disable_default_dictionary().
 - Improved default pattern behavior.
+- Fixed delimiter.
 
 2012-10-01
 - Changed g:neocomplcache_same_filetype_lists initialization.

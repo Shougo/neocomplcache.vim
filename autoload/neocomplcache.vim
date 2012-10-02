@@ -864,7 +864,7 @@ function! s:do_auto_complete(event)"{{{
     let is_delimiter = 0
     let filetype = neocomplcache#get_context_filetype()
 
-    for delimiter in ['/', '.'] +
+    for delimiter in ['/', '\.'] +
           \ get(g:neocomplcache_delimiter_patterns, filetype, [])
       if cur_text =~ delimiter . '$'
         let is_delimiter = 1
