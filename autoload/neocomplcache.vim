@@ -1757,7 +1757,7 @@ function! s:set_complete_results_pos(cur_text, ...)"{{{
         call neocomplcache#print_error(v:throwpoint)
         call neocomplcache#print_error(v:exception)
         call neocomplcache#print_error(
-              \ 'Error occured in complfunc''s get_keyword_pos()!')
+              \ 'Error occured in source''s get_keyword_pos()!')
         call neocomplcache#print_error(
               \ 'Source name is ' . source_name)
         return complete_results
@@ -2422,7 +2422,7 @@ function! s:set_context_filetype()"{{{
           call neocomplcache#print_error(v:throwpoint)
           call neocomplcache#print_error(v:exception)
           call neocomplcache#print_error(
-                \ 'Error occured in complfunc''s initialize()!')
+                \ 'Error occured in source''s initialize()!')
           call neocomplcache#print_error(
                 \ 'Source name is ' . source.name)
         endtry
@@ -2561,20 +2561,7 @@ function! s:initialize_sources(source_names)"{{{
 
       if source.kind ==# 'complfunc'
         let s:complfunc_sources[source_name] = source
-
-        if has_key(source, 'initialize')
-          try
-            call source.initialize()
-            let source.loaded = 1
-          catch
-            call neocomplcache#print_error(v:throwpoint)
-            call neocomplcache#print_error(v:exception)
-            call neocomplcache#print_error(
-                  \ 'Error occured in source''s initialize()!')
-            call neocomplcache#print_error(
-                  \ 'Source name is ' . source.name)
-          endtry
-        endif
+        let source.loaded = 1
       elseif source.kind ==# 'ftplugin'
         let s:ftplugin_sources[source_name] = source
 
@@ -2582,20 +2569,21 @@ function! s:initialize_sources(source_names)"{{{
         let s:ftplugin_sources[source_name].loaded = 0
       elseif source.kind ==# 'plugin'
         let s:plugin_sources[source_name] = source
+        let source.loaded = 1
+      endif
 
-        if has_key(source, 'initialize')
-          try
-            call source.initialize()
-            let source.loaded = 1
-          catch
-            call neocomplcache#print_error(v:throwpoint)
-            call neocomplcache#print_error(v:exception)
-            call neocomplcache#print_error(
-                  \ 'Error occured in source''s initialize()!')
-            call neocomplcache#print_error(
-                  \ 'Source name is ' . source.name)
-          endtry
-        endif
+      if (source.kind ==# 'complfunc' || source.kind ==# 'plugin')
+            \ && has_key(source, 'initialize')
+        try
+          call source.initialize()
+        catch
+          call neocomplcache#print_error(v:throwpoint)
+          call neocomplcache#print_error(v:exception)
+          call neocomplcache#print_error(
+                \ 'Error occured in source''s initialize()!')
+          call neocomplcache#print_error(
+                \ 'Source name is ' . source.name)
+        endtry
       endif
     endfor
 
@@ -2612,10 +2600,7 @@ function! s:get_sources_list(...)"{{{
         \   get(g:neocomplcache_sources_list, '_', [''])))
   call s:initialize_sources(source_names)
 
-  let all_sources = extend(extend(copy(
-        \ neocomplcache#available_complfuncs()),
-        \ neocomplcache#available_loaded_ftplugins()),
-        \ neocomplcache#available_plugins())
+  let all_sources = neocomplcache#available_sources()
   let sources = {}
   for source_name in source_names
     if source_name == ''
