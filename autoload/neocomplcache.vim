@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 03 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -964,14 +964,14 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   if g:neocomplcache_enable_fuzzy_completion
         \ && (g:neocomplcache_fuzzy_completion_start_length
         \          <= keyword_len && keyword_len < 20)
-    let fuzzy_start = g:neocomplcache_fuzzy_completion_start_length
-    if fuzzy_start <= 1
+    let start = g:neocomplcache_fuzzy_completion_start_length
+    if start <= 1
       let keyword_escape =
             \ substitute(keyword_escape, '\w',
             \   '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
     elseif keyword_len < 8
-      let keyword_escape = keyword_escape[: fuzzy_start - 2]
-            \ . substitute(keyword_escape[fuzzy_start-1 :], '\w',
+      let keyword_escape = keyword_escape[: start - 2]
+            \ . substitute(keyword_escape[start-1 :], '\w',
             \     '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
     else
       let keyword_escape = keyword_escape[: 3] .
@@ -979,23 +979,29 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
             \     '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g') . keyword_escape[13:]
     endif
   else
+    let head = neocomplcache#is_auto_complete() ?
+          \ keyword_escape[: 1] : ''
+
     " Underbar completion."{{{
     if g:neocomplcache_enable_underbar_completion
-          \ && keyword_escape =~ '_'
-      let keyword_escape_orig = keyword_escape
-      let keyword_escape = substitute(keyword_escape,
+          \ && keyword_escape =~ '[^_]_'
+      let keyword_escape = head .
+            \ substitute(keyword_escape[len(head): ],
             \ '[^_]\zs_', '[^_]*_', 'g')
     endif
     if g:neocomplcache_enable_underbar_completion
-          \ && '-' =~ '\k' && keyword_escape =~ '-'
-      let keyword_escape = substitute(keyword_escape,
+          \ && '-' =~ '\k' && keyword_escape =~ '[^-]-'
+      let keyword_escape = head .
+            \ substitute(keyword_escape[len(head): ],
             \ '[^-]\zs-', '[^-]*-', 'g')
     endif
     "}}}
     " Camel case completion."{{{
     if g:neocomplcache_enable_camel_case_completion
-          \ && keyword_escape =~ '\u'
-      let keyword_escape = substitute(keyword_escape, '\u\?\zs\U*',
+          \ && keyword_escape =~ '\u\?\U*'
+      let keyword_escape = head .
+            \ substitute(keyword_escape[len(head): ],
+            \ '\u\?\zs\U*',
             \ '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
     endif
     "}}}

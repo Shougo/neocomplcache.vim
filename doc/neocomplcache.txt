@@ -319,7 +319,11 @@ g:neocomplcache_enable_camel_case_completion
 		When you input a capital letter, this variable controls
 		whether neocomplcache takes an ambiguous searching as an end
 		of the words in it.  For example, neocomplcache come to match
-		it with "ArgumentsException" when you input it with "AE".
+		it with "ArgumentsException" when you input it with "ArE".
+		
+		Note: To optimize performance, the ambiguous searching not
+		enabled top two characters in auto completion. "AE" does not
+		complete "ArgumentsException".
 		
 		Default value is 0.
 
@@ -328,7 +332,11 @@ g:neocomplcache_enable_underbar_completion
 		When you input _, this variable controls whether
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it
-		with "public_html" when you input it with "p_h".
+		with "public_html" when you input it with "pu_h".
+		
+		Note: To optimize performance, the ambiguous searching is not
+		enabled top two characters in auto completion. "p_h" does not
+		complete "public_html".
 		
 		Default value is 0.
 
@@ -338,8 +346,14 @@ g:neocomplcache_enable_fuzzy_completion
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it with
 		"public_html" or "PublicHtml" when you input it with "puh".
+		
+		Note: If you enable it,
+		|g:neocomplcache_enable_underbar_completion| and
+		|g:neocomplcache_enable_camel_case_completion| is disabled.
+		
 		Note: If |g:neocomplcache_fuzzy_completion_start_length| is 3,
 		"ph" does not complete "public_html".
+
 		Note: This match is too heavy. So, it is enabled when your
 		input length is longer than or equal to
 		|g:neocomplcache_fuzzy_completion_start_length| and less than
@@ -349,10 +363,10 @@ g:neocomplcache_enable_fuzzy_completion
 
 g:neocomplcache_fuzzy_completion_start_length
 			*g:neocomplcache_fuzzy_completion_start_length*
-		This variable controls length of fuzzy completion start
-		length.  For example, If this variable is "3", third and after
-		input characters are fuzzy matched.  But first and second
-		input characters are not fuzzy matched.
+		It controls length of fuzzy completion start length.  For
+		example, If this variable is "3", third and after input
+		characters are fuzzy matched.  But first and second input
+		characters are not fuzzy matched.
 		Note: If this variable changed, completion speed may be too
 		slow.
 
@@ -1351,6 +1365,10 @@ heavy, so disabled by default.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-10-03
+- Changed g:neocomplcache_enable_underbar_completion and
+  g:neocomplcache_enable_camel_case_completion behavior.
 
 2012-10-02
 - Improved initialization.
