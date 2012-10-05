@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 05 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +27,12 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+" Important variables.
+if !exists('s:dictionary_list')
+  let s:dictionary_list = {}
+  let s:async_dictionary_list = {}
+endif
+
 function! neocomplcache#sources#dictionary_complete#define()"{{{
   return s:source
 endfunction"}}}
@@ -37,10 +43,6 @@ let s:source = {
       \}
 
 function! s:source.initialize()"{{{
-  " Initialize.
-  let s:dictionary_list = {}
-  let s:async_dictionary_list = {}
-
   " Initialize dictionary."{{{
   if !exists('g:neocomplcache_dictionary_filetype_lists')
     let g:neocomplcache_dictionary_filetype_lists = {}
@@ -62,10 +64,6 @@ function! s:source.initialize()"{{{
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_source_rank',
         \ 'dictionary_complete', 4)
-
-  " Add command.
-  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
-        \ NeoComplCacheCachingDictionary call s:recaching(<q-args>)
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/dictionary_cache')
@@ -112,7 +110,7 @@ function! s:caching()"{{{
   for filetype in neocomplcache#get_source_filetypes(key)
     if !has_key(s:dictionary_list, filetype)
           \ && !has_key(s:async_dictionary_list, filetype)
-      call s:recaching(filetype)
+      call neocomplcache#sources#dictionary_complete#recaching(filetype)
     endif
   endfor
 endfunction"}}}
@@ -129,9 +127,9 @@ function! s:caching_dictionary(filetype)
     call delete(s:async_dictionary_list[filetype].cache_name)
   endif
 
-  call s:recaching(filetype)
+  call neocomplcache#sources#dictionary_complete#recaching(filetype)
 endfunction
-function! s:recaching(filetype)"{{{
+function! neocomplcache#sources#dictionary_complete#recaching(filetype)"{{{
   let filetype = a:filetype
   if filetype == ''
     let filetype = neocomplcache#get_context_filetype(1)

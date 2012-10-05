@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 05 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,7 +27,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:include_info = {}
+if !exists('s:include_info')
+  let s:include_info = {}
+  let s:include_cache = {}
+  let s:cache_accessed_time = {}
+  let s:async_include_cache = {}
+  let s:cached_pattern = {}
+endif
 
 let s:source = {
       \ 'name' : 'include_complete',
@@ -35,13 +41,6 @@ let s:source = {
       \}
 
 function! s:source.initialize()"{{{
-  " Initialize
-  let s:include_info = {}
-  let s:include_cache = {}
-  let s:cache_accessed_time = {}
-  let s:async_include_cache = {}
-  let s:cached_pattern = {}
-
   " Set rank.
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_source_rank', 'include_complete', 8)
@@ -101,10 +100,6 @@ function! s:source.initialize()"{{{
   if !isdirectory(neocomplcache#get_temporary_directory() . '/include_cache')
     call mkdir(neocomplcache#get_temporary_directory() . '/include_cache', 'p')
   endif
-
-  " Add command.
-  command! -nargs=? -complete=buffer NeoComplCacheCachingInclude
-        \ call s:caching_include(<q-args>)
 
   if neocomplcache#exists_echodoc()
     call echodoc#register('include_complete', s:doc_dict)
@@ -408,7 +403,7 @@ function! s:initialize_include(filename, filetype)"{{{
         \              'include_cache', a:filename, a:filetype, 'I', 1)
         \ }
 endfunction"}}}
-function! s:caching_include(bufname)"{{{
+function! neocomplcache#sources#include_complete#caching_include(bufname)"{{{
   let bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
   if has_key(s:async_include_cache, bufnumber)
         \ && filereadable(s:async_include_cache[bufnumber].cache_name)
