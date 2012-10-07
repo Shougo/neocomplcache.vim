@@ -1507,6 +1507,10 @@ function! neocomplcache#escape_match(str)"{{{
   return escape(a:str, '~"*\.^$[]')
 endfunction"}}}
 function! neocomplcache#get_context_filetype(...)"{{{
+  if !neocomplcache#is_enabled()
+    return &filetype
+  endif
+
   if !exists('b:neocomplcache')
     call s:initialize_buffer_variable()
   endif
