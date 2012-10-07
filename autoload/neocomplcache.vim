@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Oct 2012.
+" Last Modified: 07 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -948,8 +948,7 @@ function! neocomplcache#available_sources()"{{{
   return extend(extend(copy(s:complfunc_sources), s:plugin_sources),
         \ s:loaded_ftplugin_sources)
 endfunction"}}}
-function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
-  " Escape."{{{
+function! s:keyword_escape(cur_keyword_str)
   let keyword_escape = escape(a:cur_keyword_str, '~" \.^$[]')
   if g:neocomplcache_enable_wildcard
     let keyword_escape = substitute(
@@ -957,13 +956,18 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
           \ '\%(^\|\*\)\zs\*', '\\*', 'g')
   else
     let keyword_escape = escape(keyword_escape, '*')
-  endif"}}}
+  endif
 
+  return keyword_escape
+endfunction
+function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Fuzzy completion.
-  let keyword_len = len(keyword_escape)
+  let keyword_len = len(a:cur_keyword_str)
   if g:neocomplcache_enable_fuzzy_completion
         \ && (g:neocomplcache_fuzzy_completion_start_length
         \          <= keyword_len && keyword_len < 20)
+    let keyword_escape = s:keyword_escape(a:cur_keyword_str)
+
     let start = g:neocomplcache_fuzzy_completion_start_length
     if start <= 1
       let keyword_escape =
@@ -980,31 +984,34 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     endif
   else
     let head = neocomplcache#is_auto_complete() ?
-          \ keyword_escape[: 1] : ''
+          \ s:keyword_escape(a:cur_keyword_str[: 1]) : ''
+    let keyword_escape = s:keyword_escape(
+          \   (neocomplcache#is_auto_complete() ?
+          \    a:cur_keyword_str[2: ] :a:cur_keyword_str))
 
     " Underbar completion."{{{
     if g:neocomplcache_enable_underbar_completion
           \ && keyword_escape =~ '[^_]_'
-      let keyword_escape = head .
-            \ substitute(keyword_escape[len(head): ],
+      let keyword_escape = substitute(keyword_escape,
             \ '[^_]\zs_', '[^_]*_', 'g')
     endif
     if g:neocomplcache_enable_underbar_completion
           \ && '-' =~ '\k' && keyword_escape =~ '[^-]-'
-      let keyword_escape = head .
-            \ substitute(keyword_escape[len(head): ],
+      let keyword_escape = substitute(keyword_escape,
             \ '[^-]\zs-', '[^-]*-', 'g')
     endif
     "}}}
     " Camel case completion."{{{
     if g:neocomplcache_enable_camel_case_completion
           \ && keyword_escape =~ '\u\?\U*'
-      let keyword_escape = head .
-            \ substitute(keyword_escape[len(head): ],
+      let keyword_escape =
+            \ substitute(keyword_escape,
             \ '\u\?\zs\U*',
             \ '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
     endif
     "}}}
+
+    let keyword_escape = head . keyword_escape
   endif
 
   call neocomplcache#print_debug(keyword_escape)

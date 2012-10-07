@@ -1366,6 +1366,9 @@ heavy, so disabled by default.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-10-07
+- Fixed keyword escape error.
+
 2012-10-05
 - Improved commands definitions.
 
