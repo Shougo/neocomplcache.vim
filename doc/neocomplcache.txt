@@ -1489,7 +1489,7 @@ ChangeLog neocomplcache 7.1:
 - Fixed neocomplcache#complete_common_string().
 
 2012-08-25
-- Deleted obsolute changelog.
+- Deleted obsolete changelog.
 
 2012-08-24
 - Added FAQ item.
