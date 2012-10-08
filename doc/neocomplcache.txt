@@ -1115,9 +1115,10 @@ include_complete.vim				*include_complete*
 		not need to prepare a tags file and a dictionary file.
 		But it is necessary for 'path' and 'include',
 		'includeexpr' to be set adequately.
-		Note: If vimproc is installed, neocomplcache will cache. But
-		if not installed, auto caching feature is disabled. Please
-			execute |:NeoComplCacheCachingInclude| manually.
+
+		Note: If you have vimproc installed, neocomplcache will cache
+		automatically.  Otherwise it won't; please execute
+		|:NeoComplCacheCachingInclude| manually.
  
 vim_complete.vim				*vim_complete*
 		This source analyzes context and start Omni completion of
