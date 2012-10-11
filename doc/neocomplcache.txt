@@ -1270,6 +1270,32 @@ A: Please try below settings.
 	let g:clang_auto_select = 0
 	let g:clang_use_library   = 0
 <
+
+Q: support omni patterns for external plugins.
+
+A: you add find some already found omni patterns and functions at here.
+
+Some patterns are omitted here, (someone should check out those plugin's
+source code's complete function, and find out the omni pattern).
+>
+	" JavaScript (plugin: jscomplete-vim)
+	let g:neocomplcache_omni_functions['javascript'] = 'jscomplete#CompleteJS'
+	" Go (plugin: gocode)
+	let g:neocomplcache_omni_functions['go'] = 'gocomplete#Complete'
+	" Clojure (plugin: vim-clojure)
+	let g:neocomplcache_omni_functions['clojure'] = 'vimclojure#OmniCompletion'
+	" Haskell (plugin: neco-ghc)
+	let g:neocomplcache_omni_functions['haskell'] = 'necoghc#omnifunc'
+	" SQL
+	let g:neocomplcache_omni_functions['sql'] = 'sqlcomplete#Complete'
+	" R (plugin: vim-R-plugin)
+	let g:neocomplcache_omni_patterns['r'] = '[[:alnum:].\\]\+'
+	let g:neocomplcache_omni_functions['r'] = 'rcomplete#CompleteR'
+	" XQuery (plugin: XQuery-indentomnicompleteftplugin)
+	let g:neocomplcache_omni_patterns['xquery'] = '\k\|:\|\-\|&'
+	let g:neocomplcache_omni_functions['xquery'] = 'xquerycomplete#CompleteXQuery'
+<
+
 Q: <CR> mapping conflicts with |SuperTab| or |endwise| plugins.
 
 A: Please try below settings.
