@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2012.
+" Last Modified: 05 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,25 +27,23 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+" Important variables.
+if !exists('s:syntax_list')
+  let s:syntax_list = {}
+endif
+
 let s:source = {
       \ 'name' : 'syntax_complete',
       \ 'kind' : 'plugin',
       \}
 
 function! s:source.initialize()"{{{
-  " Initialize.
-  let s:syntax_list = {}
-
   " Set rank.
-  call neocomplcache#set_dictionary_helper(
-        \ g:neocomplcache_source_rank, 'syntax_complete', 7)
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_source_rank', 'syntax_complete', 7)
 
   " Set caching event.
   autocmd neocomplcache Syntax * call s:caching()
-
-  " Add command.
-  command! -nargs=? -complete=customlist,neocomplcache#filetype_complete
-        \ NeoComplCacheCachingSyntax call s:recaching(<q-args>)
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/syntax_cache')
@@ -113,7 +111,7 @@ function! s:caching()"{{{
   endfor
 endfunction"}}}
 
-function! s:recaching(filetype)"{{{
+function! neocomplcache#sources#syntax_complete#recaching(filetype)"{{{
   if a:filetype == ''
     let filetype = &filetype
   else

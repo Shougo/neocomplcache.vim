@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2012.
+" Last Modified: 02 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -249,9 +249,8 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
     let tags_file_name =
           \ neocomplcache#cache#encode_name('tags_output', a:filename)
 
-    let args = has_key(g:neocomplcache_ctags_arguments_list, a:filetype) ?
-          \ g:neocomplcache_ctags_arguments_list[a:filetype]
-          \ : g:neocomplcache_ctags_arguments_list['default']
+    let default = get(g:neocomplcache_ctags_arguments_list, '_', '')
+    let args = get(g:neocomplcache_ctags_arguments_list, a:filetype, default)
 
     if has('win32') || has('win64')
       let filename =
