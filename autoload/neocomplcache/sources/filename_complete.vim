@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 13 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -384,6 +384,10 @@ function! neocomplcache#sources#filename_complete#define()"{{{
 endfunction"}}}
 
 function! neocomplcache#sources#filename_complete#get_complete_words(cur_keyword_str, path)"{{{
+  if !neocomplcache#is_enabled()
+    return []
+  endif
+
   return s:get_glob_files(a:cur_keyword_str, a:path)
 endfunction"}}}
 

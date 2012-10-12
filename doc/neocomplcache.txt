@@ -1393,6 +1393,9 @@ heavy, so disabled by default.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-10-13
+- Fixed neocomplcache enabled check.
+
 2012-10-07
 - Fixed keyword escape error.
 
