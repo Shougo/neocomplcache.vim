@@ -2231,7 +2231,7 @@ endfunction"}}}
 " Manual complete wrapper.
 function! neocomplcache#start_manual_complete(...)"{{{
   if !neocomplcache#is_enabled()
-    return []
+    return ''
   endif
 
   " Set context filetype.
