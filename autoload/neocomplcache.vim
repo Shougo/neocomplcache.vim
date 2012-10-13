@@ -1568,8 +1568,8 @@ endfunction"}}}
 function! neocomplcache#complete_check()"{{{
   " echomsg split(reltimestr(reltime(s:start_time)))[0]
   return !neocomplcache#is_prefetch() && complete_check()
-        \ || (neocomplcache#is_auto_complete() &&
-        \     has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
+        \ || (neocomplcache#is_auto_complete() && !neocomplcache#is_eskk_enabled()
+        \     && has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
         \     && split(reltimestr(reltime(s:start_time)))[0] >
         \          g:neocomplcache_skip_auto_completion_time)
 endfunction"}}}

@@ -1344,8 +1344,6 @@ source code's complete function, and find out the omni pattern).
 	let g:neocomplcache_omni_functions.go = 'gocomplete#Complete'
 	" Clojure (plugin: vim-clojure)
 	let g:neocomplcache_omni_functions.clojure = 'vimclojure#OmniCompletion'
-	" Haskell (plugin: neco-ghc)
-	let g:neocomplcache_omni_functions.haskell = 'necoghc#omnifunc'
 	" SQL
 	let g:neocomplcache_omni_functions.sql = 'sqlcomplete#Complete'
 	" R (plugin: vim-R-plugin)
