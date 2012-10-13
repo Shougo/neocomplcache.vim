@@ -858,7 +858,8 @@ function! s:do_auto_complete(event)"{{{
   if cur_text == ''
         \ || cur_text == s:old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
-        \ || (len(cur_word) > 1 && len(old_cur_word) > 1
+        \ || (!neocomplcache#is_eskk_enabled()
+        \     && len(cur_word) > 1 && len(old_cur_word) > 1
         \     && stridx(cur_text, s:old_cur_text) == 0
         \     && stridx(cur_word, old_cur_word) == 0
         \     && empty(s:complete_words))
@@ -1568,7 +1569,7 @@ endfunction"}}}
 function! neocomplcache#complete_check()"{{{
   " echomsg split(reltimestr(reltime(s:start_time)))[0]
   return !neocomplcache#is_prefetch() && complete_check()
-        \ || (neocomplcache#is_auto_complete() && !neocomplcache#is_eskk_enabled()
+        \ || (neocomplcache#is_auto_complete()
         \     && has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
         \     && split(reltimestr(reltime(s:start_time)))[0] >
         \          g:neocomplcache_skip_auto_completion_time)
