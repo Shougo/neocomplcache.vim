@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Oct 2012.
+" Last Modified: 14 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -848,9 +848,15 @@ function! s:do_auto_complete(event)"{{{
   endif
 
   " Prevent infinity loop.
+  let cur_word = matchstr(cur_text, '\h\w\+$')
+  let old_cur_word = matchstr(s:old_cur_text, '\h\w\+$')
   if cur_text == ''
         \ || cur_text == s:old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
+        \ || (len(cur_word) > 1 && len(old_cur_word) > 1
+        \     && stridx(cur_text, s:old_cur_text) == 0
+        \     && stridx(cur_word, old_cur_word) == 0
+        \     && empty(s:complete_words))
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return

@@ -1393,6 +1393,9 @@ heavy, so disabled by default.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-10-14
+- Improved auto completion.
+
 2012-10-13
 - Fixed neocomplcache enabled check.
 
