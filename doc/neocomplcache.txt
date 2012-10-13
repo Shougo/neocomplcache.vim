@@ -910,6 +910,16 @@ g:neocomplcache_wildcard_characters
 <
 		Default value is { '_' : '*' }.
 
+g:neocomplcache_skip_auto_completion_time
+				*g:neocomplcache_skip_auto_completion_time*
+		It is a string for skip auto completion.
+		If completion time is higher than it, neocomplcache will skip
+		auto completion.
+		If it is "", the skip feature will be disabled.
+
+		Default value is "0.15".
+		{only available when compiled with the |+reltime| feature}
+
 ------------------------------------------------------------------------------
 FUNCTIONS 					*neocomplcache-functions*
 
@@ -1395,6 +1405,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-10-14
 - Improved auto completion.
+- Added g:neocomplcache_skip_auto_completion_time option.
 
 2012-10-13
 - Fixed neocomplcache enabled check.

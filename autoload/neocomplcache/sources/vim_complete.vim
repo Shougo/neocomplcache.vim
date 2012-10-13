@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2012.
+" Last Modified: 14 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -110,7 +110,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   if cur_text =~ '\h\w*\.\%(\h\w*\)\?$'
     " Dictionary.
     let cur_keyword_str = matchstr(cur_text, '.\%(\h\w*\)\?$')
-    let list = neocomplcache#sources#vim_complete#helper#var_dictionary(cur_text, cur_keyword_str)
+    let list = neocomplcache#sources#vim_complete#helper#var_dictionary(
+          \ cur_text, cur_keyword_str)
     return neocomplcache#keyword_filter(list, cur_keyword_str)
   elseif a:cur_keyword_str =~# '^&\%([gl]:\)\?'
     " Options.

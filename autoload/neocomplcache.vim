@@ -52,6 +52,10 @@ function! s:initialize_variables()"{{{
   let s:filetype_frequencies = {}
   let s:cur_keyword_pos = -1
   let s:loaded_all_sources = 0
+
+  if has('reltime')
+    let s:start_time = reltime()
+  endif
 endfunction"}}}
 
 if !exists('s:is_enabled')
@@ -654,7 +658,8 @@ endfunction"}}}
 
 function! neocomplcache#disable()"{{{
   if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
+    call neocomplcache#print_warning(
+          \ 'neocomplcache is disabled! This command is ignored.')
     return
   endif
 
@@ -848,8 +853,8 @@ function! s:do_auto_complete(event)"{{{
   endif
 
   " Prevent infinity loop.
-  let cur_word = matchstr(cur_text, '\h\w\+$')
-  let old_cur_word = matchstr(s:old_cur_text, '\h\w\+$')
+  let cur_word = matchstr(cur_text, '\S\+$')
+  let old_cur_word = matchstr(s:old_cur_text, '\S\+$')
   if cur_text == ''
         \ || cur_text == s:old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
@@ -1561,11 +1566,20 @@ function! neocomplcache#get_temporary_directory()"{{{
   return directory
 endfunction"}}}
 function! neocomplcache#complete_check()"{{{
+  " echomsg split(reltimestr(reltime(s:start_time)))[0]
   return !neocomplcache#is_prefetch() && complete_check()
+        \ || (neocomplcache#is_auto_complete() &&
+        \     has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
+        \     && split(reltimestr(reltime(s:start_time)))[0] >
+        \          g:neocomplcache_skip_auto_completion_time)
 endfunction"}}}
 
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...)"{{{
+  if has('reltime')
+    let s:start_time = reltime()
+  endif
+
   let complete_results = call(
         \ 's:set_complete_results_pos', [a:cur_text] + a:000)
   call s:set_complete_results_words(complete_results)
@@ -1626,11 +1640,11 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
           \ && len_words > g:neocomplcache_max_list
       break
     endif
-  endfor
 
-  if neocomplcache#complete_check()
-    return []
-  endif
+    if neocomplcache#complete_check()
+      return []
+    endif
+  endfor
 
   if g:neocomplcache_max_list > 0
     let complete_words = complete_words[: g:neocomplcache_max_list]
