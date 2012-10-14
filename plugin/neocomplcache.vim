@@ -152,7 +152,7 @@ let g:neocomplcache_wildcard_characters =
       \ get(g:, 'neocomplcache_wildcard_characters', {
       \ '_' : '*' })
 let g:neocomplcache_skip_auto_completion_time =
-      \ get(g:, 'neocomplcache_skip_auto_completion_time', '0.15')
+      \ get(g:, 'neocomplcache_skip_auto_completion_time', '0.2')
 
 let g:neocomplcache_sources_list =
       \ get(g:, 'neocomplcache_sources_list', {})

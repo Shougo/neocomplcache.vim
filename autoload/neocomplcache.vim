@@ -858,7 +858,7 @@ function! s:do_auto_complete(event)"{{{
   if cur_text == ''
         \ || cur_text == s:old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
-        \ || (!neocomplcache#is_eskk_enabled()
+        \ || (!neocomplcache#is_eskk_enabled() && !s:skip_next_complete
         \     && len(cur_word) > 1 && len(old_cur_word) > 1
         \     && stridx(cur_text, s:old_cur_text) == 0
         \     && stridx(cur_word, old_cur_word) == 0
@@ -1171,6 +1171,20 @@ function! neocomplcache#unpack_dictionary(dict)"{{{
   let ret = []
   for l in values(a:dict)
     let ret += type(l) == type([]) ? l : values(l)
+  endfor
+
+  return ret
+endfunction"}}}
+function! neocomplcache#pack_dictionary(list)"{{{
+  let completion_length = 2
+  let ret = {}
+  for candidate in a:list
+    let key = tolower(candidate.word[: completion_length-1])
+    if !has_key(ret, key)
+      let ret[key] = {}
+    endif
+
+    let ret[key][candidate.word] = candidate
   endfor
 
   return ret
@@ -1567,7 +1581,9 @@ function! neocomplcache#get_temporary_directory()"{{{
   return directory
 endfunction"}}}
 function! neocomplcache#complete_check()"{{{
-  " echomsg split(reltimestr(reltime(s:start_time)))[0]
+  if g:neocomplcache_enable_debug
+    echomsg split(reltimestr(reltime(s:start_time)))[0]
+  endif
   return !neocomplcache#is_prefetch() && complete_check()
         \ || (neocomplcache#is_auto_complete()
         \     && has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
@@ -1578,6 +1594,10 @@ endfunction"}}}
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...)"{{{
   if has('reltime')
+    if g:neocomplcache_enable_debug
+      echomsg 'start get_complete_results'
+    endif
+
     let s:start_time = reltime()
   endif
 
@@ -1873,6 +1893,10 @@ function! s:set_complete_results_words(complete_results)"{{{
         call setpos('.', pos)
       endif
     endtry
+
+    if g:neocomplcache_enable_debug
+      echomsg source_name
+    endif
 
     let &ignorecase = ignorecase_save
 

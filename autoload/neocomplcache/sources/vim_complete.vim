@@ -176,7 +176,8 @@ function! neocomplcache#sources#vim_complete#get_cur_text()"{{{
   let line = line('.')
   let cnt = 0
   while cur_text =~ '^\s*\\' && line > 1 && cnt < 5
-    let cur_text = getline(line - 1) . substitute(cur_text, '^\s*\\', '', '')
+    let cur_text = getline(line - 1) .
+          \ substitute(cur_text, '^\s*\\', '', '')
     let line -= 1
     let cnt += 1
   endwhile
@@ -184,7 +185,8 @@ function! neocomplcache#sources#vim_complete#get_cur_text()"{{{
   return split(cur_text, '\s\+|\s\+\|<bar>', 1)[-1]
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#get_command(cur_text)"{{{
-  return matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
+  return matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|'.
+        \ '\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
 endfunction"}}}
 
 let &cpo = s:save_cpo

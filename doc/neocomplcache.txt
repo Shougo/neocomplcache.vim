@@ -1404,6 +1404,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-10-14
 - Improved auto completion.
 - Added g:neocomplcache_skip_auto_completion_time option.
+- Optimised vim_complete.
 
 2012-10-13
 - Fixed neocomplcache enabled check.
