@@ -1401,6 +1401,9 @@ heavy, so disabled by default.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-10-15
+- Fixed error in vim_complete.
+
 2012-10-14
 - Improved auto completion.
 - Added g:neocomplcache_skip_auto_completion_time option.

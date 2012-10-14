@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2012.
+" Last Modified: 15 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1169,8 +1169,10 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
   let ret = []
-  for l in values(a:dict)
-    let ret += type(l) == type([]) ? l : values(l)
+  let values = values(a:dict)
+  for l in (type(values) == type([]) ?
+        \ values : values(values))
+    let ret += (type(l) == type([])) ? l : values(l)
   endfor
 
   return ret
