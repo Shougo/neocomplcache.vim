@@ -497,11 +497,9 @@ endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_str)"{{{
   " Caching.
   if !has_key(s:global_candidates_list, 'variables')
-    let dict = {}
-    for var in s:get_variablelist(g:, 'g:') + s:get_variablelist(v:, 'v:')
-      let dict[var.word] = var
-    endfor
-    let s:global_candidates_list.variables = dict
+    let s:global_candidates_list.variables =
+          \ neocomplcache#pack_dictionary(
+          \  s:get_variablelist(g:, 'g:') + s:get_variablelist(v:, 'v:'))
   endif
 
   if a:cur_keyword_str =~ '^[swtb]:'
@@ -511,7 +509,8 @@ function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_st
       let list += s:get_variablelist(eval(prefix), prefix)
     endif
   elseif a:cur_keyword_str =~ '^[vg]:'
-    let list = values(s:global_candidates_list.variables)
+    let list = neocomplcache#dictionary_filter(
+          \ s:global_candidates_list.variables, a:cur_keyword_str)
   else
     let list = s:get_local_variables()
   endif
