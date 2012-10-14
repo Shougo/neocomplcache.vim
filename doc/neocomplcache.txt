@@ -917,7 +917,7 @@ g:neocomplcache_skip_auto_completion_time
 		auto completion.
 		If it is "", the skip feature will be disabled.
 
-		Default value is "0.15".
+		Default value is "0.5".
 		{only available when compiled with the |+reltime| feature}
 
 ------------------------------------------------------------------------------
