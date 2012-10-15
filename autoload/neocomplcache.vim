@@ -1175,7 +1175,7 @@ function! neocomplcache#unpack_dictionary(dict)"{{{
   let values = values(a:dict)
   for l in (type(values) == type([]) ?
         \ values : values(values))
-    let ret += (type(l) == type([])) ? l : values(l)
+    let ret += (type(l) == type([])) ? copy(l) : values(l)
   endfor
 
   return ret

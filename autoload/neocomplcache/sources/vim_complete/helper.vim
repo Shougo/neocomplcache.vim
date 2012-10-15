@@ -235,6 +235,8 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
             \ neocomplcache#pack_dictionary(commands)
     endif
 
+    " echomsg string(s:internal_candidates_list.commands)[: 1000]
+    " echomsg string(s:global_candidates_list.commands)[: 1000]
     let list = neocomplcache#dictionary_filter(
           \ s:internal_candidates_list.commands, a:cur_keyword_str)
           \ + neocomplcache#dictionary_filter(
