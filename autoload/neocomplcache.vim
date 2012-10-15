@@ -853,16 +853,7 @@ function! s:do_auto_complete(event)"{{{
   endif
 
   " Prevent infinity loop.
-  let cur_word = matchstr(cur_text, '\S\+$')
-  let old_cur_word = matchstr(s:old_cur_text, '\S\+$')
-  if cur_text == ''
-        \ || cur_text == s:old_cur_text
-        \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
-        \ || (!neocomplcache#is_eskk_enabled() && !s:skip_next_complete
-        \     && len(cur_word) > 1 && len(old_cur_word) > 1
-        \     && stridx(cur_text, s:old_cur_text) == 0
-        \     && stridx(cur_word, old_cur_word) == 0
-        \     && empty(s:complete_words))
+  if s:is_skip_auto_complete(cur_text)
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
@@ -1278,13 +1269,9 @@ function! neocomplcache#get_next_keyword()"{{{
   return matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], pattern)[1:]
 endfunction"}}}
 function! neocomplcache#get_completion_length(plugin_name)"{{{
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
   if neocomplcache#is_auto_complete()
-        \ && b:neocomplcache.completion_length >= 0
-    return b:neocomplcache.completion_length
+        \ && s:get_current_neocomplcache().completion_length >= 0
+    return s:get_current_neocomplcache().completion_length
   elseif has_key(g:neocomplcache_source_completion_length,
         \ a:plugin_name)
     return g:neocomplcache_source_completion_length[a:plugin_name]
@@ -1368,14 +1355,10 @@ function! neocomplcache#is_enabled()"{{{
   return s:is_enabled
 endfunction"}}}
 function! neocomplcache#is_locked(...)"{{{
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
   let bufnr = a:0 > 0 ? a:1 : bufnr('%')
   return !s:is_enabled
         \ || g:neocomplcache_disable_auto_complete
-        \ || b:neocomplcache.lock
+        \ || s:get_current_neocomplcache().lock
         \ || (g:neocomplcache_lock_buffer_name_pattern != '' &&
         \   bufname(bufnr) =~ g:neocomplcache_lock_buffer_name_pattern)
         \ || &l:omnifunc ==# 'fuf#onComplete'
@@ -1539,15 +1522,12 @@ function! neocomplcache#get_context_filetype(...)"{{{
     return &filetype
   endif
 
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
-  if a:0 != 0 || b:neocomplcache.context_filetype == ''
+  if a:0 != 0 ||
+        \ s:get_current_neocomplcache().context_filetype == ''
     call s:set_context_filetype()
   endif
 
-  return b:neocomplcache.context_filetype
+  return s:get_current_neocomplcache().context_filetype
 endfunction"}}}
 function! neocomplcache#get_source_rank(plugin_name)"{{{
   if has_key(g:neocomplcache_source_rank, a:plugin_name)
@@ -1941,11 +1921,7 @@ function! neocomplcache#toggle_lock()"{{{
     return
   endif
 
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
-  if b:neocomplcache.lock
+  if s:get_current_neocomplcache().lock
     echo 'neocomplcache is unlocked!'
     call neocomplcache#unlock()
   else
@@ -1960,11 +1936,8 @@ function! neocomplcache#lock()"{{{
     return
   endif
 
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
-  let b:neocomplcache.lock = 1
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.lock = 1
 endfunction"}}}
 function! neocomplcache#unlock()"{{{
   if !neocomplcache#is_enabled()
@@ -1973,11 +1946,8 @@ function! neocomplcache#unlock()"{{{
     return
   endif
 
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
-  let b:neocomplcache.lock = 0
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.lock = 0
 endfunction"}}}
 function! neocomplcache#lock_source(source_name)"{{{
   if !neocomplcache#is_enabled()
@@ -2164,18 +2134,12 @@ function! s:display_neco(number)"{{{
   let &cmdheight = cmdheight_save
 endfunction"}}}
 function! neocomplcache#set_file_type(filetype)"{{{
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
-  let b:neocomplcache.filetype = a:filetype
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.filetype = a:filetype
 endfunction"}}}
 function! s:set_auto_completion_length(len)"{{{
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
-  endif
-
-  let b:neocomplcache.completion_length = a:len
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.completion_length = a:len
 endfunction"}}}
 "}}}
 
@@ -2401,7 +2365,6 @@ function! neocomplcache#popup_post()"{{{
         \  || neocomplcache#is_eskk_enabled()) ? "\<C-p>" :
         \ "\<C-p>\<Down>"
 endfunction"}}}
-
 "}}}
 
 " Internal helper functions."{{{
@@ -2442,12 +2405,10 @@ function! s:get_cur_text()"{{{
   return s:cur_text
 endfunction"}}}
 function! s:set_context_filetype()"{{{
-  if !exists('b:neocomplcache')
-    call s:initialize_buffer_variable()
+  let old_filetype = s:get_current_neocomplcache().filetype
+  if old_filetype == ''
+    let old_filetype = &filetype
   endif
-
-  let old_filetype = (b:neocomplcache.filetype == '') ?
-        \ &filetype : b:neocomplcache.filetype
   if old_filetype == ''
     let old_filetype = 'nothing'
   endif
@@ -2595,13 +2556,17 @@ function! s:get_frequencies()"{{{
 
   return s:filetype_frequencies[filetype]
 endfunction"}}}
-function! s:initialize_buffer_variable()"{{{
-  let b:neocomplcache = {
-        \ 'lock' : 0,
-        \ 'filetype' : '',
-        \ 'context_filetype' : '',
-        \ 'completion_length' : -1,
-        \}
+function! s:get_current_neocomplcache()"{{{
+  if !exists('b:neocomplcache')
+    let b:neocomplcache = {
+          \ 'lock' : 0,
+          \ 'filetype' : '',
+          \ 'context_filetype' : '',
+          \ 'completion_length' : -1,
+          \}
+  endif
+
+  return b:neocomplcache
 endfunction"}}}
 function! s:initialize_sources(source_names)"{{{
   " Initialize sources table.
@@ -2687,6 +2652,31 @@ function! s:get_sources_list(...)"{{{
   endfor
 
   return sources
+endfunction"}}}
+function! s:is_skip_auto_complete(cur_text)"{{{
+  if a:cur_text == ''
+        \ || a:cur_text == s:old_cur_text
+        \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
+    return 1
+  endif
+
+  let cur_word = matchstr(a:cur_text, '\%(\h\w*\|\S\+\)$')
+  let old_cur_word = matchstr(s:old_cur_text, '\%(\h\w*\|\S\+\)$')
+
+  let completion_length = max(
+        \ values(g:neocomplcache_source_completion_length) +
+        \ [b:neocomplcache.completion_length,
+        \  g:neocomplcache_auto_completion_start_length, 3])
+
+  if !neocomplcache#is_eskk_enabled() && !s:skip_next_complete
+        \ && len(cur_word) > completion_length
+        \ && stridx(cur_word, old_cur_word) == 0
+        \ && stridx(a:cur_text, s:old_cur_text) == 0
+        \ && empty(s:complete_words)
+    return 1
+  endif
+
+  return 0
 endfunction"}}}
 "}}}
 

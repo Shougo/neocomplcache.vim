@@ -1403,6 +1403,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-10-15
 - Fixed error in vim_complete.
+- Improved skip auto completion.
 
 2012-10-14
 - Improved auto completion.
