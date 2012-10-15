@@ -1144,9 +1144,7 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
   endif
 
   let completion_length = 2
-  if len(a:cur_keyword_str) < completion_length ||
-        \ neocomplcache#check_completion_length_match(
-        \   a:cur_keyword_str, completion_length)
+  if len(a:cur_keyword_str) < completion_length
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   endif
@@ -1164,8 +1162,10 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
     let list = values(a:dictionary[key])
   endif
 
-  return (len(a:cur_keyword_str) == completion_length && &ignorecase)?
-        \ list : neocomplcache#keyword_filter(copy(list), a:cur_keyword_str)
+  return (len(a:cur_keyword_str) == completion_length && &ignorecase
+        \ && !neocomplcache#check_completion_length_match(
+        \   a:cur_keyword_str, completion_length)) ?
+        \ copy(list) : neocomplcache#keyword_filter(copy(list), a:cur_keyword_str)
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
   let ret = []

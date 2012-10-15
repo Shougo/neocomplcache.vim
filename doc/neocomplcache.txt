@@ -1425,6 +1425,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed error in vim_complete.
 - Improved skip auto completion.
 - Added neocomplcache#initialize().
+- Improved unpack behavior.
 
 2012-10-14
 - Improved auto completion.

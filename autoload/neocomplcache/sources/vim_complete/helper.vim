@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2012.
+" Last Modified: 15 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -221,19 +221,18 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
             \ neocomplcache#pack_dictionary(s:get_cmdlist())
     endif
     if !has_key(s:internal_candidates_list, 'commands')
-      let s:internal_candidates_list.commands =
-            \ neocomplcache#pack_dictionary(
-            \   s:caching_from_dict('commands', 'c'))
-
       let s:internal_candidates_list.command_prototypes =
             \ s:caching_prototype_from_dict('command_prototypes')
-      for command in neocomplcache#unpack_dictionary(
-            \ s:internal_candidates_list.commands)
+      let commands = s:caching_from_dict('commands', 'c')
+      for command in commands
         if has_key(s:internal_candidates_list.command_prototypes, command.word)
           let command.description = command.word .
                 \ s:internal_candidates_list.command_prototypes[command.word]
         endif
       endfor
+
+      let s:internal_candidates_list.commands =
+            \ neocomplcache#pack_dictionary(commands)
     endif
 
     let list = neocomplcache#dictionary_filter(
@@ -378,21 +377,19 @@ function! neocomplcache#sources#vim_complete#helper#function(cur_text, cur_keywo
           \ neocomplcache#pack_dictionary(s:get_functionlist())
   endif
   if !has_key(s:internal_candidates_list, 'functions')
-    let s:internal_candidates_list.functions =
-          \ neocomplcache#pack_dictionary(
-          \           s:caching_from_dict('functions', 'f'))
-
     let s:internal_candidates_list.function_prototypes =
           \ s:caching_prototype_from_dict('functions')
 
-    for function in neocomplcache#unpack_dictionary(
-          \ s:internal_candidates_list.functions)
+    let functions = s:caching_from_dict('functions', 'f')
+    for function in functions
       if has_key(s:internal_candidates_list.function_prototypes, function.word)
         let function.description = function.word
               \ . s:internal_candidates_list.function_prototypes[function.word]
-      else
       endif
     endfor
+
+    let s:internal_candidates_list.functions =
+          \ neocomplcache#pack_dictionary(functions)
   endif
 
   let script_candidates_list = s:get_cached_script_candidates()
@@ -614,18 +611,21 @@ function! s:get_script_candidates(bufnumber)"{{{
 endfunction"}}}
 
 function! s:caching_from_dict(dict_name, kind)"{{{
-  let dict_files = split(globpath(&runtimepath, 'autoload/neocomplcache/sources/vim_complete/'.a:dict_name.'.dict'), '\n')
+  let dict_files = split(globpath(&runtimepath,
+        \ 'autoload/neocomplcache/sources/vim_complete/'.a:dict_name.'.dict'), '\n')
   if empty(dict_files)
     return []
   endif
 
   let menu_pattern = '[vim] '.a:dict_name[: -2]
   let keyword_pattern =
-        \'^\%(-\h\w*\%(=\%(\h\w*\|[01*?+%]\)\?\)\?\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
+        \'^\%(-\h\w*\%(=\%(\h\w*\|[01*?+%]\)\?\)\?'.
+        \'\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
   let keyword_list = []
   for line in readfile(dict_files[0])
     call add(keyword_list, {
-          \ 'word' : substitute(matchstr(line, keyword_pattern), '[\[\]]', '', 'g'), 
+          \ 'word' : substitute(matchstr(
+          \       line, keyword_pattern), '[\[\]]', '', 'g'),
           \ 'menu' : menu_pattern, 'kind' : a:kind, 'abbr' : line
           \})
   endfor
