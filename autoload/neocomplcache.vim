@@ -2690,8 +2690,10 @@ function! s:is_skip_auto_complete(cur_text)"{{{
     return 1
   endif
 
-  let cur_word = matchstr(a:cur_text, '\%(\h\w*\|\S\+\)$')
-  let old_cur_word = matchstr(s:old_cur_text, '\%(\h\w*\|\S\+\)$')
+  let cur_word = matchstr(a:cur_text,
+        \ '\%(\h\w*\|[^[:alnum:][:space:]_]\+\)$')
+  let old_cur_word = matchstr(s:old_cur_text,
+        \ '\%(\h\w*\|[^[:alnum:][:space:]_]\+\)$')
 
   let completion_length = max(
         \ values(g:neocomplcache_source_completion_length) +
