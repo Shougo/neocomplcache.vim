@@ -63,7 +63,16 @@ if !exists('s:is_enabled')
   let s:is_enabled = 0
 endif
 
+function! neocomplcache#initialize() "{{{
+  call neocomplcache#enable()
+  call s:initialize_sources([''])
+endfunction"}}}
+
 function! neocomplcache#enable() "{{{
+  if neocomplcache#is_enabled()
+    return
+  endif
+
   " Auto commands."{{{
   augroup neocomplcache
     autocmd!
