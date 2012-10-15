@@ -1426,6 +1426,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved skip auto completion.
 - Added neocomplcache#initialize().
 - Improved unpack behavior.
+- Disabled vim include functions.
 
 2012-10-14
 - Improved auto completion.
