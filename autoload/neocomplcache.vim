@@ -859,7 +859,7 @@ function! s:do_auto_complete(event)"{{{
         \ || cur_text == s:old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
         \ || (!neocomplcache#is_eskk_enabled() && !s:skip_next_complete
-        \     && len(cur_word) > 1 && len(old_cur_word) > 1
+        \     && len(cur_word) > 3 && len(old_cur_word) > 3
         \     && stridx(cur_text, s:old_cur_text) == 0
         \     && stridx(cur_word, old_cur_word) == 0
         \     && empty(s:complete_words))
