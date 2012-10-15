@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2012.
+" Last Modified: 15 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -85,9 +85,9 @@ function! s:source.initialize()"{{{
   " Initialize include functions."{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_include_functions', {})
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_functions', 'vim',
-        \ 'neocomplcache#sources#include_complete#analyze_vim_include_files')
+  " call neocomplcache#util#set_default_dictionary(
+  "       \ 'g:neocomplcache_include_functions', 'vim',
+  "       \ 'neocomplcache#sources#include_complete#analyze_vim_include_files')
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_include_functions', 'ruby',
         \ 'neocomplcache#sources#include_complete#analyze_ruby_include_files')

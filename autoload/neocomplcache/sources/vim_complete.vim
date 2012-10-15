@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2012.
+" Last Modified: 14 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -110,7 +110,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   if cur_text =~ '\h\w*\.\%(\h\w*\)\?$'
     " Dictionary.
     let cur_keyword_str = matchstr(cur_text, '.\%(\h\w*\)\?$')
-    let list = neocomplcache#sources#vim_complete#helper#var_dictionary(cur_text, cur_keyword_str)
+    let list = neocomplcache#sources#vim_complete#helper#var_dictionary(
+          \ cur_text, cur_keyword_str)
     return neocomplcache#keyword_filter(list, cur_keyword_str)
   elseif a:cur_keyword_str =~# '^&\%([gl]:\)\?'
     " Options.
@@ -175,7 +176,8 @@ function! neocomplcache#sources#vim_complete#get_cur_text()"{{{
   let line = line('.')
   let cnt = 0
   while cur_text =~ '^\s*\\' && line > 1 && cnt < 5
-    let cur_text = getline(line - 1) . substitute(cur_text, '^\s*\\', '', '')
+    let cur_text = getline(line - 1) .
+          \ substitute(cur_text, '^\s*\\', '', '')
     let line -= 1
     let cnt += 1
   endwhile
@@ -183,7 +185,8 @@ function! neocomplcache#sources#vim_complete#get_cur_text()"{{{
   return split(cur_text, '\s\+|\s\+\|<bar>', 1)[-1]
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#get_command(cur_text)"{{{
-  return matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
+  return matchstr(a:cur_text, '\<\%(\d\+\)\?\zs\h\w*\ze!\?\|'.
+        \ '\<\%([[:digit:],[:space:]$''<>]\+\)\?\zs\h\w*\ze/.*')
 endfunction"}}}
 
 let &cpo = s:save_cpo
