@@ -137,7 +137,7 @@ function! neocomplcache#sources#vim_complete#helper#get_completion_name(command_
     let s:internal_candidates_list.command_completions =
           \ s:caching_completion_from_dict('command_completions')
   endif
-  if !has_key(s:global_candidates_list, 'commands')
+  if !has_key(s:global_candidates_list, 'command_completions')
     let s:global_candidates_list.commands =
           \ neocomplcache#pack_dictionary(s:get_cmdlist())
   endif
