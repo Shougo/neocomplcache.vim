@@ -76,6 +76,7 @@ function! neocomplcache#enable() "{{{
   " Auto commands."{{{
   augroup neocomplcache
     autocmd!
+    autocmd InsertEnter * call s:on_insert_enter()
     autocmd InsertLeave * call s:on_insert_leave()
     autocmd CursorMovedI * call s:on_moved_i()
   augroup END
@@ -2311,6 +2312,20 @@ function! s:on_insert_leave()"{{{
   let s:skip_next_complete = 0
   let s:is_prefetch = 0
   let s:cur_keyword_pos = -1
+
+  " Restore foldinfo.
+  let neocomplcache = s:get_current_neocomplcache()
+  if neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
+     let [&l:foldmethod, &l:foldexpr] = neocomplcache.foldinfo
+  endif
+endfunction"}}}
+function! s:on_insert_enter()"{{{
+  " Save foldinfo.
+  if &l:foldmethod ==# 'expr'
+    let neocomplcache = s:get_current_neocomplcache()
+    let neocomplcache.foldinfo = [&l:foldmethod, &l:foldexpr]
+    setlocal foldmethod=manual foldexpr=0
+  endif
 endfunction"}}}
 function! s:on_complete_done()"{{{
   " Get cursor word.
@@ -2330,14 +2345,16 @@ endfunction"}}}
 function! s:change_update_time()"{{{
   if &updatetime > g:neocomplcache_cursor_hold_i_time
     " Change updatetime.
-    let s:update_time_save = &updatetime
+    let neocomplcache = s:get_current_neocomplcache()
+    let neocomplcache.update_time_save = &updatetime
     let &updatetime = g:neocomplcache_cursor_hold_i_time
   endif
 endfunction"}}}
 function! s:restore_update_time()"{{{
-  if &updatetime < s:update_time_save
+  let neocomplcache = s:get_current_neocomplcache()
+  if &updatetime < neocomplcache.update_time_save
     " Restore updatetime.
-    let &updatetime = s:update_time_save
+    let &updatetime = neocomplcache.update_time_save
   endif
 endfunction"}}}
 function! s:remove_next_keyword(source_name, list)"{{{
@@ -2574,6 +2591,8 @@ function! s:get_current_neocomplcache()"{{{
           \ 'filetype' : '',
           \ 'context_filetype' : '',
           \ 'completion_length' : -1,
+          \ 'update_time_save' : &updatetime,
+          \ 'foldinfo' : [&l:foldmethod, &l:foldexpr],
           \}
   endif
 
