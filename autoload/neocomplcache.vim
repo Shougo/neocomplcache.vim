@@ -1160,12 +1160,14 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
     " Convert dictionary dictionary.
     unlet list
     let list = values(a:dictionary[key])
+  else
+    let list = copy(list)
   endif
 
   return (len(a:cur_keyword_str) == completion_length && &ignorecase
         \ && !neocomplcache#check_completion_length_match(
         \   a:cur_keyword_str, completion_length)) ?
-        \ copy(list) : neocomplcache#keyword_filter(copy(list), a:cur_keyword_str)
+        \ list : neocomplcache#keyword_filter(list, a:cur_keyword_str)
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict)"{{{
   let ret = []
