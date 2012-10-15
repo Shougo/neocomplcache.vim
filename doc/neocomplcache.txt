@@ -1096,6 +1096,18 @@ EXAMPLES					*neocomplcache-examples*
 	" For perlomni.vim setting.
 	" https://github.com/c9s/perlomni.vim
 	let g:neocomplcache_omni_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+	
+	" Disable foldmethod in insertmode.
+	augroup foldmethod-expr
+	  autocmd!
+	  autocmd InsertEnter * if &l:foldmethod ==# 'expr'
+	  \                   |   let b:foldinfo = [&l:foldmethod, &l:foldexpr]
+	  \                   |   setlocal foldmethod=manual foldexpr=0
+	  \                   | endif
+	  autocmd InsertLeave * if exists('b:foldmethod')
+	  \                   |   let [&l:foldmethod, &l:foldexpr] = b:foldinfo
+	  \                   | endif
+	augroup END
 <
 ==============================================================================
 SOURCES						*neocomplcache-sources*
@@ -1418,6 +1430,21 @@ your Vim initialization.
 >
 	call neocomplcache#initialize()
 <
+Q: neocomplcache is too heavy.
+A: Please try below settings.
+>
+	" Disable foldmethod in insertmode.
+	augroup foldmethod-expr
+	  autocmd!
+	  autocmd InsertEnter * if &l:foldmethod ==# 'expr'
+	  \                   |   let b:foldinfo = [&l:foldmethod, &l:foldexpr]
+	  \                   |   setlocal foldmethod=manual foldexpr=0
+	  \                   | endif
+	  autocmd InsertLeave * if exists('b:foldmethod')
+	  \                   |   let [&l:foldmethod, &l:foldexpr] = b:foldinfo
+	  \                   | endif
+	augroup END
+<
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
@@ -1427,6 +1454,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Added neocomplcache#initialize().
 - Improved unpack behavior.
 - Disabled vim include functions.
+- Added FAQ section.
 
 2012-10-14
 - Improved auto completion.
