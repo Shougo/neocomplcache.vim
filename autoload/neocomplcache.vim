@@ -2310,6 +2310,7 @@ function! s:on_moved_i()"{{{
 endfunction"}}}
 function! s:on_insert_leave()"{{{
   let s:cur_text = ''
+  let s:old_cur_text = ''
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:is_text_mode = 0
