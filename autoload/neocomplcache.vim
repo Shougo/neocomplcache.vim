@@ -2325,7 +2325,8 @@ function! s:on_insert_leave()"{{{
 
   " Restore foldinfo.
   let neocomplcache = s:get_current_neocomplcache()
-  if neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
+  if !empty(neocomplcache.foldinfo) &&
+        \ neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
      let [&l:foldmethod, &l:foldexpr] = neocomplcache.foldinfo
   endif
 endfunction"}}}
@@ -2602,7 +2603,7 @@ function! s:get_current_neocomplcache()"{{{
           \ 'context_filetype' : '',
           \ 'completion_length' : -1,
           \ 'update_time_save' : &updatetime,
-          \ 'foldinfo' : [&l:foldmethod, &l:foldexpr],
+          \ 'foldinfo' : [],
           \}
   endif
 
