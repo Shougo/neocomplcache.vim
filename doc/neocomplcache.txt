@@ -1425,6 +1425,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed error in neocomplcache#initialize().
 - Optimised fuzzy completion.
 - Fixed for foldmethod.
+- Fixed omni_complete error.
 
 2012-10-15
 - Fixed error in vim_complete.
