@@ -2741,7 +2741,7 @@ function! s:is_skip_auto_complete(cur_text)"{{{
   endif
 
   if !neocomplcache#is_eskk_enabled() && !s:skip_next_complete
-        \ && len(old_cur_word) > 0
+        \ && old_cur_word != ''
         \ && len(cur_word) > completion_length
         \ && stridx(cur_word, old_cur_word) == 0
         \ && stridx(a:cur_text, s:old_cur_text) == 0
