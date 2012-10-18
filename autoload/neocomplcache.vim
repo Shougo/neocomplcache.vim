@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Oct 2012.
+" Last Modified: 18 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -866,8 +866,16 @@ function! s:do_auto_complete(event)"{{{
     let cur_text .= v:char
   endif
 
+  if g:neocomplcache_enable_debug
+    echomsg 'cur_text = ' . cur_text
+  endif
+
   " Prevent infinity loop.
   if s:is_skip_auto_complete(cur_text)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
@@ -890,6 +898,10 @@ function! s:do_auto_complete(event)"{{{
     endfor
 
     if !is_delimiter
+      if g:neocomplcache_enable_debug
+        echomsg 'Skipped.'
+      endif
+
       return
     endif
   endif
@@ -902,12 +914,20 @@ function! s:do_auto_complete(event)"{{{
   " Check multibyte input or eskk.
   if neocomplcache#is_eskk_enabled()
         \ || neocomplcache#is_multibyte_input(cur_text)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     return
   endif
 
   " Check complete position.
   let complete_results = s:set_complete_results_pos(cur_text)
   if empty(complete_results)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     return
   endif
 
@@ -919,6 +939,10 @@ function! s:do_auto_complete(event)"{{{
           \ neocomplcache#get_complete_results(cur_text)
 
     if empty(s:complete_results)
+      if g:neocomplcache_enable_debug
+        echomsg 'Skipped.'
+      endif
+
       " Skip completion.
       let &l:completefunc = 'neocomplcache#manual_complete'
       let s:complete_words = []
@@ -2711,7 +2735,13 @@ function! s:is_skip_auto_complete(cur_text)"{{{
         \ [b:neocomplcache.completion_length,
         \  g:neocomplcache_auto_completion_start_length, 3])
 
+  if g:neocomplcache_enable_debug
+    echomsg '[cur_word, old_cur_word, completion_length] = '
+          \ . string([cur_word, old_cur_word, completion_length])
+  endif
+
   if !neocomplcache#is_eskk_enabled() && !s:skip_next_complete
+        \ && len(old_cur_word) > 0
         \ && len(cur_word) > completion_length
         \ && stridx(cur_word, old_cur_word) == 0
         \ && stridx(a:cur_text, s:old_cur_text) == 0

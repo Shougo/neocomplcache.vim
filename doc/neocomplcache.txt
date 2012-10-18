@@ -1421,6 +1421,9 @@ your Vim initialization.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-10-18
+- Fixed skip auto completion behavior.
+
 2012-10-16
 - Fixed error in neocomplcache#initialize().
 - Optimised fuzzy completion.
