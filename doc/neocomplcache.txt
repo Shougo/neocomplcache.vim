@@ -1434,6 +1434,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Improved lock sources behavior.
 - Added b:neocomplcache_sources_list.
 - Fixed vim_complete behavior.
+- Fixed complete_common_string.
 
 2012-10-18
 - Fixed skip auto completion behavior.

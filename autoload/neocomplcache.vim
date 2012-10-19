@@ -1061,10 +1061,6 @@ endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   let cur_keyword_str = a:cur_keyword_str
 
-  if neocomplcache#complete_check()
-    return []
-  endif
-
   if g:neocomplcache_enable_debug
     echomsg len(a:list)
   endif
