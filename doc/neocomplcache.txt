@@ -803,7 +803,7 @@ b:neocomplcache_sources_list
 >
 		" Examples:
 		" In cmdwin, only use vim_complete source.
-		autocmd CmdWinEnter let b:neocomplcache_sources_list = ['vim_complete']
+		autocmd CmdwinEnter let b:neocomplcache_sources_list = ['vim_complete']
 <
 g:neocomplcache_source_disable
 					*g:neocomplcache_source_disable*
