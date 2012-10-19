@@ -535,17 +535,17 @@ g:neocomplcache_same_filetype_lists
 		Note: neocomplcache completes from same filetype buffers in
 		default.
 >
-	if !exists('g:neocomplcache_same_filetype_lists')
-	  let g:neocomplcache_same_filetype_lists = {}
-	endif
-	" In c buffers, completes from cpp and d buffers.
-	let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
-	" In cpp buffers, completes from c buffers.
-	let g:neocomplcache_same_filetype_lists.cpp = 'c'
-	" In gitconfig buffers, completes from all buffers.
-	let g:neocomplcache_same_filetype_lists.gitconfig = '_'
-	" In default, completes from all buffers.
-	let g:neocomplcache_same_filetype_lists._ = '_'
+		if !exists('g:neocomplcache_same_filetype_lists')
+		let g:neocomplcache_same_filetype_lists = {}
+		endif
+		" In c buffers, completes from cpp and d buffers.
+		let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
+		" In cpp buffers, completes from c buffers.
+		let g:neocomplcache_same_filetype_lists.cpp = 'c'
+		" In gitconfig buffers, completes from all buffers.
+		let g:neocomplcache_same_filetype_lists.gitconfig = '_'
+		" In default, completes from all buffers.
+		let g:neocomplcache_same_filetype_lists._ = '_'
 <
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
