@@ -2690,18 +2690,19 @@ endfunction"}}}
 function! s:get_sources_list(...)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let source_names = get(a:000, 0,
+  let source_names = exists('b:neocomplcache_sources_list') ?
+        \ b:neocomplcache_sources_list :
+        \ get(a:000, 0,
         \ get(g:neocomplcache_sources_list, filetype,
-        \   get(g:neocomplcache_sources_list, '_', [''])))
+        \   get(g:neocomplcache_sources_list, '_', ['_'])))
   call s:initialize_sources(source_names)
 
   let all_sources = neocomplcache#available_sources()
   let sources = {}
   for source_name in source_names
-    if source_name == ''
+    if source_name ==# '_'
       " All sources.
-      let sources = all_sources
-      break
+      return all_sources
     endif
 
     if !has_key(all_sources, source_name)
