@@ -1344,7 +1344,7 @@ A: Please try below settings.
 	      \ '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 	let g:clang_complete_auto = 0
 	let g:clang_auto_select = 0
-	let g:clang_use_library   = 0
+	"let g:clang_use_library = 1
 <
 
 Q: I wanto to support omni patterns for external plugins.
