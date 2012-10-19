@@ -241,7 +241,7 @@ function! s:set_complete_results_words(complete_results)"{{{
   " Try source completion.
   for [omnifunc, result] in items(a:complete_results)
     if neocomplcache#complete_check()
-      return []
+      return a:complete_results
     endif
 
     let pos = getpos('.')
@@ -268,7 +268,7 @@ function! s:set_complete_results_words(complete_results)"{{{
 
     if type(list) != type([])
       " Error.
-      return []
+      return a:complete_results
     endif
 
     let list = s:get_omni_list(list)
