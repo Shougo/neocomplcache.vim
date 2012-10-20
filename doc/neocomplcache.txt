@@ -536,7 +536,7 @@ g:neocomplcache_same_filetype_lists
 		default.
 >
 		if !exists('g:neocomplcache_same_filetype_lists')
-		let g:neocomplcache_same_filetype_lists = {}
+		  let g:neocomplcache_same_filetype_lists = {}
 		endif
 		" In c buffers, completes from cpp and d buffers.
 		let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
