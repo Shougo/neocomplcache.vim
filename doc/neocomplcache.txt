@@ -177,19 +177,20 @@ VARIABLES 					*neocomplcache-variables*
 
 g:neocomplcache_enable_at_startup
 					*g:neocomplcache_enable_at_startup*
-		This variable controls whether I validate neocomplcache at
-		the time of Vim start.
-		Note: This option must set it in .vimrc(_vimrc). NOT IN
-		.gvimrc(_gvimrc)!
-		
-		Because default value is 0, you cannot use neocomplcache
-		unless you validate it by manual operation.
+		Neocomplcache gets started automatically when Vim starts if
+		this value is 1.
+
+		With the default value 0, you cannot use neocomplcache
+		unless you start it manually.
+
+		Note: This option has to be set in .vimrc or _vimrc. NOT IN
+		.gvimrc nor _gvimrc!
 
 g:neocomplcache_max_list			*g:neocomplcache_max_list*
 		This variable controls the number of candidates displayed in
-		a pop-up menu.  The case beyond this value is cut down a
-		candidate.
-		
+		a pop-up menu.  Candidates more than this value won't be show
+		up.
+
 		Default value is 100.
 
 g:neocomplcache_max_keyword_width
@@ -939,7 +940,19 @@ neocomplcache#initialize()			*neocomplcache#initialize()*
 
 neocomplcache#get_context_filetype()
 					*neocomplcache#get_context_filetype()*
-		Get current context filetype.
+		Get current context filetype of the cursor. This is smarter
+		than |&filetype| about handling nested filetypes.
+
+		For example html filetype has javascript inside. Say, you have
+		a buffer which content is below with filetype is html.
+>
+		<script type="text/javascript">
+		  var x = 1;
+		</script>
+<
+		At the line 1 and 3, neocomplcache#get_context_filetype() is
+		"html" and at the line 2 it's "javascript", whilst at any
+		lines &filetype is "html".
 
 neocomplcache#disable_default_dictionary({variable-name})
 				*neocomplcache#disable_default_dictionary()*
