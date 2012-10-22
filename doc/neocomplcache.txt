@@ -940,7 +940,19 @@ neocomplcache#initialize()			*neocomplcache#initialize()*
 
 neocomplcache#get_context_filetype()
 					*neocomplcache#get_context_filetype()*
-		Get current context filetype.
+		Get current context filetype of the cursor. This is smarter
+		than |&filetype| about handling nested filetypes.
+
+		For example html filetype has javascript inside. Say, you have
+		a buffer which content is below with filetype is html.
+>
+		<script type="text/javascript">
+		  var x = 1;
+		</script>
+<
+		At the line 1 and 3, neocomplcache#get_context_filetype() is
+		"html" and at the line 2 it's "javascript", whilst at any
+		lines &filetype is "html".
 
 neocomplcache#disable_default_dictionary({variable-name})
 				*neocomplcache#disable_default_dictionary()*
