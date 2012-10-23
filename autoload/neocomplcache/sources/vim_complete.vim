@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Oct 2012.
+" Last Modified: 19 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   endif
 
   let pattern = '\.\%(\h\w*\)\?$\|' .
-        \ neocomplcache#get_keyword_pattern_end('vim').'\|\m\S\+$'
+        \ neocomplcache#get_keyword_pattern_end('vim')
   if cur_text != '' && cur_text !~
         \ '^[[:digit:],[:space:][:tab:]$''<>]*\h\w*$'
     let command_completion =
@@ -89,6 +89,12 @@ function! s:source.get_keyword_pos(cur_text)"{{{
 
   let [cur_keyword_pos, cur_keyword_str] =
         \ neocomplcache#match_word(a:cur_text, pattern)
+  if cur_keyword_pos < 0
+    " Use args pattern.
+    let [cur_keyword_pos, cur_keyword_str] =
+          \ neocomplcache#match_word(a:cur_text, '\S\+$')
+  endif
+
   if a:cur_text !~ '\.\%(\h\w*\)\?$' && neocomplcache#is_auto_complete()
         \ && bufname('%') !=# '[Command Line]'
         \ && neocomplcache#util#mb_strlen(cur_keyword_str)

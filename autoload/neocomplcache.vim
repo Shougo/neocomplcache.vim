@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2012.
+" Last Modified: 19 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,6 +24,10 @@
 " }}}
 "=============================================================================
 
+if !exists('g:loaded_neocomplcache')
+  runtime! plugin/neocomplcache.vim
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -35,7 +39,6 @@ function! s:initialize_variables()"{{{
   let s:plugin_sources = {}
   let s:ftplugin_sources = {}
   let s:loaded_ftplugin_sources = {}
-  let s:sources_lock = {}
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:complete_results = {}
@@ -862,8 +865,16 @@ function! s:do_auto_complete(event)"{{{
     let cur_text .= v:char
   endif
 
+  if g:neocomplcache_enable_debug
+    echomsg 'cur_text = ' . cur_text
+  endif
+
   " Prevent infinity loop.
   if s:is_skip_auto_complete(cur_text)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     let s:cur_keyword_str = ''
     let s:complete_words = []
     return
@@ -886,6 +897,10 @@ function! s:do_auto_complete(event)"{{{
     endfor
 
     if !is_delimiter
+      if g:neocomplcache_enable_debug
+        echomsg 'Skipped.'
+      endif
+
       return
     endif
   endif
@@ -898,12 +913,20 @@ function! s:do_auto_complete(event)"{{{
   " Check multibyte input or eskk.
   if neocomplcache#is_eskk_enabled()
         \ || neocomplcache#is_multibyte_input(cur_text)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     return
   endif
 
   " Check complete position.
   let complete_results = s:set_complete_results_pos(cur_text)
   if empty(complete_results)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     return
   endif
 
@@ -915,6 +938,10 @@ function! s:do_auto_complete(event)"{{{
           \ neocomplcache#get_complete_results(cur_text)
 
     if empty(s:complete_results)
+      if g:neocomplcache_enable_debug
+        echomsg 'Skipped.'
+      endif
+
       " Skip completion.
       let &l:completefunc = 'neocomplcache#manual_complete'
       let s:complete_words = []
@@ -980,20 +1007,21 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
         \ && (g:neocomplcache_fuzzy_completion_start_length
         \          <= keyword_len && keyword_len < 20)
     let keyword_escape = s:keyword_escape(a:cur_keyword_str)
+    let pattern = keyword_len >= 8 ?
+          \ '\0\\w*\\W\\?' :
+          \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)'
 
     let start = g:neocomplcache_fuzzy_completion_start_length
     if start <= 1
       let keyword_escape =
-            \ substitute(keyword_escape, '\w',
-            \   '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
+            \ substitute(keyword_escape, '\w', pattern, 'g')
     elseif keyword_len < 8
       let keyword_escape = keyword_escape[: start - 2]
-            \ . substitute(keyword_escape[start-1 :], '\w',
-            \     '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g')
+            \ . substitute(keyword_escape[start-1 :], '\w', pattern, 'g')
     else
       let keyword_escape = keyword_escape[: 3] .
             \ substitute(keyword_escape[4:12], '\w',
-            \     '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)', 'g') . keyword_escape[13:]
+            \   pattern, 'g') . keyword_escape[13:]
     endif
   else
     let head = neocomplcache#is_auto_complete() ?
@@ -1033,8 +1061,8 @@ endfunction"}}}
 function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
   let cur_keyword_str = a:cur_keyword_str
 
-  if neocomplcache#complete_check()
-    return []
+  if g:neocomplcache_enable_debug
+    echomsg len(a:list)
   endif
 
   " Delimiter check.
@@ -1376,14 +1404,13 @@ function! neocomplcache#is_locked(...)"{{{
         \ || &l:omnifunc ==# 'fuf#onComplete'
 endfunction"}}}
 function! neocomplcache#is_plugin_locked(source_name)"{{{
-  if !s:is_enabled
+  if !neocomplcache#is_enabled()
     return 1
   endif
 
-  let bufnr = bufnr('%')
-  return has_key(s:sources_lock, bufnr)
-        \ && has_key(s:sources_lock[bufnr], a:source_name)
-        \ && s:sources_lock[bufnr][a:source_name]
+  let neocomplcache = s:get_current_neocomplcache()
+
+  return get(neocomplcache.lock_sources, a:source_name, 0)
 endfunction"}}}
 function! neocomplcache#is_auto_select()"{{{
   return g:neocomplcache_enable_auto_select && !neocomplcache#is_eskk_enabled()
@@ -1963,27 +1990,25 @@ function! neocomplcache#unlock()"{{{
 endfunction"}}}
 function! neocomplcache#lock_source(source_name)"{{{
   if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
+    call neocomplcache#print_warning(
+          \ 'neocomplcache is disabled! This command is ignored.')
     return
   endif
 
-  if !has_key(s:sources_lock, bufnr('%'))
-    let s:sources_lock[bufnr('%')] = {}
-  endif
+  let neocomplcache = s:get_current_neocomplcache()
 
-  let s:sources_lock[bufnr('%')][a:source_name] = 1
+  let neocomplcache.lock_sources[a:source_name] = 1
 endfunction"}}}
 function! neocomplcache#unlock_source(source_name)"{{{
   if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning('neocomplcache is disabled! This command is ignored.')
+    call neocomplcache#print_warning(
+          \ 'neocomplcache is disabled! This command is ignored.')
     return
   endif
 
-  if !has_key(s:sources_lock, bufnr('%'))
-    let s:sources_lock[bufnr('%')] = {}
-  endif
+  let neocomplcache = s:get_current_neocomplcache()
 
-  let s:sources_lock[bufnr('%')][a:source_name] = 0
+  let neocomplcache.lock_sources[a:source_name] = 1
 endfunction"}}}
 function! s:display_neco(number)"{{{
   let cmdheight_save = &cmdheight
@@ -2306,6 +2331,7 @@ function! s:on_moved_i()"{{{
 endfunction"}}}
 function! s:on_insert_leave()"{{{
   let s:cur_text = ''
+  let s:old_cur_text = ''
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:is_text_mode = 0
@@ -2315,7 +2341,8 @@ function! s:on_insert_leave()"{{{
 
   " Restore foldinfo.
   let neocomplcache = s:get_current_neocomplcache()
-  if neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
+  if !empty(neocomplcache.foldinfo) &&
+        \ neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
      let [&l:foldmethod, &l:foldexpr] = neocomplcache.foldinfo
   endif
 endfunction"}}}
@@ -2592,7 +2619,8 @@ function! s:get_current_neocomplcache()"{{{
           \ 'context_filetype' : '',
           \ 'completion_length' : -1,
           \ 'update_time_save' : &updatetime,
-          \ 'foldinfo' : [&l:foldmethod, &l:foldexpr],
+          \ 'foldinfo' : [],
+          \ 'lock_sources' : {},
           \}
   endif
 
@@ -2658,18 +2686,19 @@ endfunction"}}}
 function! s:get_sources_list(...)"{{{
   let filetype = neocomplcache#get_context_filetype()
 
-  let source_names = get(a:000, 0,
+  let source_names = exists('b:neocomplcache_sources_list') ?
+        \ b:neocomplcache_sources_list :
+        \ get(a:000, 0,
         \ get(g:neocomplcache_sources_list, filetype,
-        \   get(g:neocomplcache_sources_list, '_', [''])))
+        \   get(g:neocomplcache_sources_list, '_', ['_'])))
   call s:initialize_sources(source_names)
 
   let all_sources = neocomplcache#available_sources()
   let sources = {}
   for source_name in source_names
-    if source_name == ''
+    if source_name ==# '_'
       " All sources.
-      let sources = all_sources
-      break
+      return all_sources
     endif
 
     if !has_key(all_sources, source_name)
@@ -2700,7 +2729,13 @@ function! s:is_skip_auto_complete(cur_text)"{{{
         \ [b:neocomplcache.completion_length,
         \  g:neocomplcache_auto_completion_start_length, 3])
 
+  if g:neocomplcache_enable_debug
+    echomsg '[cur_word, old_cur_word, completion_length] = '
+          \ . string([cur_word, old_cur_word, completion_length])
+  endif
+
   if !neocomplcache#is_eskk_enabled() && !s:skip_next_complete
+        \ && old_cur_word != ''
         \ && len(cur_word) > completion_length
         \ && stridx(cur_word, old_cur_word) == 0
         \ && stridx(a:cur_text, s:old_cur_text) == 0

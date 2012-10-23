@@ -177,19 +177,20 @@ VARIABLES 					*neocomplcache-variables*
 
 g:neocomplcache_enable_at_startup
 					*g:neocomplcache_enable_at_startup*
-		This variable controls whether I validate neocomplcache at
-		the time of Vim start.
-		Note: This option must set it in .vimrc(_vimrc). NOT IN
-		.gvimrc(_gvimrc)!
-		
-		Because default value is 0, you cannot use neocomplcache
-		unless you validate it by manual operation.
+		Neocomplcache gets started automatically when Vim starts if
+		this value is 1.
+
+		With the default value 0, you cannot use neocomplcache
+		unless you start it manually.
+
+		Note: This option has to be set in .vimrc or _vimrc. NOT IN
+		.gvimrc nor _gvimrc!
 
 g:neocomplcache_max_list			*g:neocomplcache_max_list*
 		This variable controls the number of candidates displayed in
-		a pop-up menu.  The case beyond this value is cut down a
-		candidate.
-		
+		a pop-up menu.  Candidates more than this value won't be show
+		up.
+
 		Default value is 100.
 
 g:neocomplcache_max_keyword_width
@@ -413,21 +414,22 @@ g:neocomplcache_compare_function	*g:neocomplcache_compare_function*
 		Default value is 'neocomplcache#compare_rank'.
 
 g:neocomplcache_enable_prefetch		*g:neocomplcache_enable_prefetch*
-		This variable controls whether neocomplcache prefetch.  This
-		variable is non 0, neocomplcache don't flick in auto
+		This variable controls whether neocomplcache prefetches.  If
+		this variable is non-zero, neocomplcache doesn't flick in auto
 		completion.
-		Note: This variable has side effect. Partial function (ex:
+
+		Note: This variable has a side effect. Partial function (ex:
 		|complete_check()|) is disabled in completefunc.
-		Note: It this variable is 0, input problem may be occurred in
-		using uim-skk or other IME in GVim.
-		
-		Default value is 0(above equal than 7.3.519).
-		Default value is 1(|+xim| and GUI version).
+		Note: It this variable is 0, an input problem may occur in
+		using uim-skk or other IMEs on GVim.
+
+		Default value is 0 (above or equal to 7.3.519.)
+		Default value is 1 (|+xim| and GUI version.)
 
 g:neocomplcache_lock_iminsert		*g:neocomplcache_lock_iminsert*
-		This variable is non 0, neocomplcache lock when 'iminsert' is
-		non zero.
-		
+		If this variable is non-zero, neocomplcache locks when
+		'iminsert' is non-zero.
+
 		Default value is 0.
 
 g:neocomplcache_temporary_dir		*g:neocomplcache_temporary_dir*
@@ -459,8 +461,8 @@ g:neocomplcache_next_keyword_patterns
 				*g:neocomplcache_next_keyword_patterns*
 		This dictionary records regular expression to recognize a
 		keyword pattern of the next than a cursor. The form is the
-		same as|g:neocomplcache_keyword_patterns|.
-		
+		same as |g:neocomplcache_keyword_patterns|.
+
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
 
@@ -535,17 +537,17 @@ g:neocomplcache_same_filetype_lists
 		Note: neocomplcache completes from same filetype buffers in
 		default.
 >
-	if !exists('g:neocomplcache_same_filetype_lists')
-	  let g:neocomplcache_same_filetype_lists = {}
-	endif
-	" In c buffers, completes from cpp and d buffers.
-	let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
-	" In cpp buffers, completes from c buffers.
-	let g:neocomplcache_same_filetype_lists.cpp = 'c'
-	" In gitconfig buffers, completes from all buffers.
-	let g:neocomplcache_same_filetype_lists.gitconfig = '_'
-	" In default, completes from all buffers.
-	let g:neocomplcache_same_filetype_lists._ = '_'
+		if !exists('g:neocomplcache_same_filetype_lists')
+		  let g:neocomplcache_same_filetype_lists = {}
+		endif
+		" In c buffers, completes from cpp and d buffers.
+		let g:neocomplcache_same_filetype_lists.c = 'cpp,d'
+		" In cpp buffers, completes from c buffers.
+		let g:neocomplcache_same_filetype_lists.cpp = 'c'
+		" In gitconfig buffers, completes from all buffers.
+		let g:neocomplcache_same_filetype_lists.gitconfig = '_'
+		" In default, completes from all buffers.
+		let g:neocomplcache_same_filetype_lists._ = '_'
 <
 		Because it is complicated, refer to neocomplcache#enable() in
 		autoload/neocomplcache.vim for the initial value.
@@ -786,6 +788,7 @@ g:neocomplcache_sources_list
 		filetype and the value is source names list. If the key is
 		"_", the value will be used for default filetypes. For
 		example, you can disable some sources in C++ filetype.
+		If the value is "_", it will load all sources.
 		Default value is {}.
 >
 		" Examples:
@@ -795,6 +798,14 @@ g:neocomplcache_sources_list
 		let g:neocomplcache_sources_list._ = ['buffer_complete']
 		let g:neocomplcache_sources_list.cpp =
 		\ ['buffer_complete', 'include_complete']
+<
+b:neocomplcache_sources_list
+					*b:neocomplcache_sources_list*
+		It is a list to decide use source names in buffer local.
+>
+		" Examples:
+		" In cmdwin, only use vim_complete source.
+		autocmd CmdwinEnter * let b:neocomplcache_sources_list = ['vim_complete']
 <
 g:neocomplcache_source_disable
 					*g:neocomplcache_source_disable*
@@ -929,7 +940,19 @@ neocomplcache#initialize()			*neocomplcache#initialize()*
 
 neocomplcache#get_context_filetype()
 					*neocomplcache#get_context_filetype()*
-		Get current context filetype.
+		Get current context filetype of the cursor. This is smarter
+		than |&filetype| about handling nested filetypes.
+
+		For example html filetype has javascript inside. Say, you have
+		a buffer which content is below with filetype is html.
+>
+		<script type="text/javascript">
+		  var x = 1;
+		</script>
+<
+		At the line 1 and 3, neocomplcache#get_context_filetype() is
+		"html" and at the line 2 it's "javascript", whilst at any
+		lines &filetype is "html".
 
 neocomplcache#disable_default_dictionary({variable-name})
 				*neocomplcache#disable_default_dictionary()*
@@ -1173,8 +1196,9 @@ suffix of complete candidates in popup menu declaration.
     buffer_complete            -> [B] {buffername}
     syntax_complete            -> [S] {syntax-keyword}
     include_complete           -> [FI] or [I]
-    snippets_complete          -> [Snip] (none placeholders) or
-                                  <Snip> (contains placeholders)
+    snippets_complete          -> [Snip] (none or one placeholder) or
+				  <Snip> (contains multiple placeholders,
+				          you must jump)
     vim_complete               -> [vim] type
     omni_complete              -> [O]
     tags_complete              -> [T]
@@ -1333,9 +1357,13 @@ A: Please try below settings.
 	      \ '[^.[:digit:] *\t]\%(\.\|->\)'
 	let g:neocomplcache_force_omni_patterns.cpp =
 	      \ '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+	let g:neocomplcache_force_omni_patterns.objc =
+	      \ '[^.[:digit:] *\t]\%(\.\|->\)'
+	let g:neocomplcache_force_omni_patterns.objcpp =
+	      \ '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 	let g:clang_complete_auto = 0
 	let g:clang_auto_select = 0
-	let g:clang_use_library   = 0
+	"let g:clang_use_library = 1
 <
 
 Q: I wanto to support omni patterns for external plugins.
@@ -1420,6 +1448,21 @@ your Vim initialization.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-10-19
+- Improved lock sources behavior.
+- Added b:neocomplcache_sources_list.
+- Fixed vim_complete behavior.
+- Fixed complete_common_string.
+
+2012-10-18
+- Fixed skip auto completion behavior.
+
+2012-10-16
+- Fixed error in neocomplcache#initialize().
+- Optimised fuzzy completion.
+- Fixed for foldmethod.
+- Fixed omni_complete error.
 
 2012-10-15
 - Fixed error in vim_complete.
