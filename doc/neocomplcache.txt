@@ -1196,8 +1196,8 @@ suffix of complete candidates in popup menu declaration.
     buffer_complete            -> [B] {buffername}
     syntax_complete            -> [S] {syntax-keyword}
     include_complete           -> [FI] or [I]
-    snippets_complete          -> [Snip] (none placeholders) or
-                                  <Snip> (contains placeholders)
+    snippets_complete          -> [Snip] (none or one placeholder) or
+                                  <Snip> (contains multiple placeholders)
     vim_complete               -> [vim] type
     omni_complete              -> [O]
     tags_complete              -> [T]
