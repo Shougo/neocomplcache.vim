@@ -420,7 +420,7 @@ g:neocomplcache_enable_prefetch		*g:neocomplcache_enable_prefetch*
 
 		Note: This variable has a side effect. Partial function (ex:
 		|complete_check()|) is disabled in completefunc.
-		Note: It this variable is 0, an input problem may occur in
+		Note: If this variable is 0, an input problem may occur in
 		using uim-skk or other IMEs on GVim.
 
 		Default value is 0 (above or equal to 7.3.519.)
