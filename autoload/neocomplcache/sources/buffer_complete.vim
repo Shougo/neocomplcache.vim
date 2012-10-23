@@ -326,9 +326,6 @@ function! s:check_recache()"{{{
   if source.cached_time > 0 &&
         \ (source.cached_time < release_accessd_time
         \  || (abs(source.end_line - line('$')) * 10)/source.end_line > 1)
-    " Member recache.
-    call neocomplcache#sources#member_complete#caching_current_buffer()
-
     " Buffer recache.
     call s:word_caching(bufnr('%'))
   endif
