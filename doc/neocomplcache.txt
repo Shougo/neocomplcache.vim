@@ -807,22 +807,26 @@ b:neocomplcache_sources_list
 		" In cmdwin, only use vim_complete source.
 		autocmd CmdwinEnter * let b:neocomplcache_sources_list = ['vim_complete']
 <
-g:neocomplcache_source_disable
-					*g:neocomplcache_source_disable*
-		The dictionary which appoints whether you invalidate a
-		source. With a source name as a key, it becomes invalid by
-		making a value 1.
-					*g:neocomplcache_plugin_disable*
-		Note: g:neocomplcache_plugin_disable is deprecated name.
+g:neocomplcache_disabled_sources_list
+				*g:neocomplcache_disabled_sources_list*
+		It is a dictionary to decide disabled source names. The key is
+		filetype and the value is source names list. If the key is
+		"_", the value will be used for default filetypes.
+		If the value is "_", it will load all sources.
 		Default value is {}.
 >
 		" Examples:
-		if !exists('g:neocomplcache_source_disable')
-		  let g:neocomplcache_source_disable = {}
+		if !exists('g:neocomplcache_disabled_sources_list')
+		  let g:neocomplcache_disabled_sources_list = {}
 		endif
-		let g:neocomplcache_source_disable.member_complete = 1
-		let g:neocomplcache_source_disable.include_complete = 1
+		" Disable dictionary_complete in python filetype.
+		let g:neocomplcache_disabled_sources_list.python =
+		\ ['dictionary_complete']
 <
+					*g:neocomplcache_source_disable*
+		Note: g:neocomplcache_source_disable is deprecated variable.
+		Default value is {}.
+
 g:neocomplcache_source_completion_length
 				*g:neocomplcache_source_completion_length*
 		It is a dictionary to control each source's completion
@@ -1197,8 +1201,8 @@ suffix of complete candidates in popup menu declaration.
     syntax_complete            -> [S] {syntax-keyword}
     include_complete           -> [FI] or [I]
     snippets_complete          -> [Snip] (none or one placeholder) or
-				  <Snip> (contains multiple placeholders,
-				          you must jump)
+                                  <Snip> (contains multiple placeholders,
+                                          you must jump)
     vim_complete               -> [vim] type
     omni_complete              -> [O]
     tags_complete              -> [T]
@@ -1448,6 +1452,9 @@ your Vim initialization.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-10-23
+- Added g:neocomplcache_disabled_sources_list option.
 
 2012-10-19
 - Improved lock sources behavior.

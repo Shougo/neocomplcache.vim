@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2012.
+" Last Modified: 23 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -156,12 +156,13 @@ let g:neocomplcache_skip_auto_completion_time =
 
 let g:neocomplcache_sources_list =
       \ get(g:, 'neocomplcache_sources_list', {})
-if exists('g:neocomplcache_plugin_disable')
-  let g:neocomplcache_source_disable =
-        \ g:neocomplcache_plugin_disable
+let g:neocomplcache_disabled_sources_list =
+      \ get(g:, 'neocomplcache_disabled_sources_list', {})
+if exists('g:neocomplcache_source_disable')
+  let g:neocomplcache_disabled_sources_list._ =
+        \ keys(filter(copy(g:neocomplcache_source_disable), 'v:val'))
 endif
-let g:neocomplcache_source_disable =
-      \ get(g:, 'neocomplcache_source_disable', {})
+
 if exists('g:neocomplcache_plugin_completion_length')
   let g:neocomplcache_source_completion_length =
         \ g:neocomplcache_plugin_completion_length
