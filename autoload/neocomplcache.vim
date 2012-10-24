@@ -2733,7 +2733,7 @@ function! s:is_skip_auto_complete(cur_text)"{{{
 
   if !neocomplcache#is_eskk_enabled() && !s:skip_next_complete
         \ && old_cur_word != ''
-        \ && len(cur_word) > completion_length
+        \ && len(cur_word) < completion_length
         \ && stridx(cur_word, old_cur_word) == 0
         \ && stridx(a:cur_text, s:old_cur_text) == 0
         \ && empty(s:complete_words)
