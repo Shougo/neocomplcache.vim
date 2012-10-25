@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Oct 2012.
+" Last Modified: 25 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -535,12 +535,6 @@ function! s:get_local_variables()"{{{
     if line =~ '\<endf\%[unction]\>'
       break
     elseif line =~ '\<fu\%[nction]!\?\s\+'
-      let candidates_list = line =~ '\<fu\%[nction]!\?\s\+s:' && has_key(s:script_candidates_list, bufnr('%')) ?
-            \ s:script_candidates_list[bufnr('%')] : s:global_candidates_list
-      if has_key(candidates_list, 'functions') && has_key(candidates_list, 'function_prototypes')
-        call s:analyze_function_line(line, candidates_list.functions, candidates_list.function_prototypes) 
-      endif
-
       " Get function arguments.
       call s:analyze_variable_line(line, keyword_dict)
       break
