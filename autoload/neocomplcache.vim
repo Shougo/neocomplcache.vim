@@ -1252,22 +1252,41 @@ function! neocomplcache#compare_rank(i1, i2)
   endif
   return diff
 endfunction"}}}
-" Pos order."{{{
-function! s:compare_pos(i1, i2)
-  return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
-endfunction"}}}
 " Word order."{{{
 function! neocomplcache#compare_word(i1, i2)
   return (a:i1.word ># a:i2.word) ? 1 : -1
 endfunction"}}}
+" Nothing order."{{{
+function! neocomplcache#compare_nothing(i1, i2)
+  return 0
+endfunction"}}}
+" Human order."{{{
+function! neocomplcache#compare_human(i1, i2)
+  let words_1 = map(split(a:i1.word, '\D\zs\ze\d'),
+        \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
+  let words_2 = map(split(a:i2.word, '\D\zs\ze\d'),
+        \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
+
+  for i in range(0, min([len(words_1), len(words_2)]))
+    if words_1[i] ># words_2[i]
+      return 1
+    elseif words_1[i] <# words_2[i]
+      return -1
+    endif
+  endfor
+
+  return len(words_1) > len(words_2) ?  1 :
+        \ len(words_1) > len(words_2) ? -1 : 0
+endfunction"}}}
+
 " Source rank order."{{{
 function! s:compare_source_rank(i1, i2)
   return neocomplcache#get_source_rank(a:i2[0]) -
         \ neocomplcache#get_source_rank(a:i1[0])
 endfunction"}}}
-" Nothing order."{{{
-function! neocomplcache#compare_nothing(i1, i2)
-  return 0
+" Pos order."{{{
+function! s:compare_pos(i1, i2)
+  return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
 endfunction"}}}
 
 function! neocomplcache#rand(max)"{{{

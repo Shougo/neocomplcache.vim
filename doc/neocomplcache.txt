@@ -1325,6 +1325,7 @@ To make new compare function, please refer |g:neocomplcache_compare_function|.
 The built-in compare functions:
 	neocomplcache#compare_rank        : Rank order (default)
 	neocomplcache#compare_word        : Alphabetical order
+	neocomplcache#compare_human       : Human order(slow)
 	neocomplcache#compare_nothing     : Do not sort
 
 
@@ -1468,6 +1469,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed documentaion for neosnippet.
 - Improved documentation.
 - Improved skip.
+- Added neocomplcache#compare_human compare function.
 
 2012-10-25
 - Fixed vim_complete error.
