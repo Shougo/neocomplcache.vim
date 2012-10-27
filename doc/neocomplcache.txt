@@ -67,9 +67,9 @@ To use vimproc, you must compile it. Refer to the vimproc documentation.
 
 Note: Snippets feature (snippets_complete source), which was originally
       built-in, left since neocomplcache ver.7.
-      If you were using it, please install snippets_complete source manually.
+      If you were using it, please install neosnippet source manually.
 
-https://github.com/Shougo/neocomplcache-snippets-complete
+https://github.com/Shougo/neosnippet
 
 ==============================================================================
 INTERFACE					*neocomplcache-interface*
@@ -1215,19 +1215,19 @@ USER SOURCES 					*neocomplcache-user-sources*
 
 This section, introduce non default neocomplcache sources.
 
-snippets_complete.vim				*neocomplcache-sources-snippets_complete*
+neosnippet				*neocomplcache-sources-neosnippet*
 		This source is for snippets completion.
-		Note: This source is not in default sources after neocomplcache
-		ver.7.0.
-		https://github.com/Shougo/neocomplcache-snippets-complete
+		Note: This source is not in default sources after
+		neocomplcache ver.7.0.
+		https://github.com/Shougo/neosnippet
 
-neco-ghc					*neocomplcache-sources-neco-ghc*
+neco-ghc				*neocomplcache-sources-neco-ghc*
 		https://github.com/ujihisa/neco-ghc
 		eagletmt originally implemented and now ujihisa is maintaining
 		this source.  It completes a source file written in Haskell.
 		It requires ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
-neco-ruby					*neocomplcache-sources-neco-ruby*
+neco-ruby				*neocomplcache-sources-neco-ruby*
 		https://github.com/ujihisa/neco-ruby
 		This source is for ruby completion.  Only require_relative
 		completion is implemented so far.
@@ -1288,7 +1288,7 @@ or later.
 
 Q: Where is snippets set for neocomplcache?
 
-A: https://github.com/Shougo/neocomplcache-snippets-complete
+A: https://github.com/Shougo/neosnippet
 
 
 Q: How I can disable python omni complete of neocomplcache?:
@@ -1452,6 +1452,9 @@ your Vim initialization.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-10-27
+- Fixed documentaion for neosnippet.
 
 2012-10-25
 - Fixed vim_complete error.
