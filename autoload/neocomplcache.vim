@@ -1269,7 +1269,7 @@ function! neocomplcache#compare_human(i1, i2)
   let words_1_len = len(words_1)
   let words_2_len = len(words_2)
 
-  for i in range(0, min([words_1_len, words_2_len]))
+  for i in range(0, min([words_1_len, words_2_len])-1)
     if words_1[i] ># words_2[i]
       return 1
     elseif words_1[i] <# words_2[i]
