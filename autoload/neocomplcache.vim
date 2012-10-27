@@ -1277,8 +1277,7 @@ function! neocomplcache#compare_human(i1, i2)
     endif
   endfor
 
-  return words_1_len > words_2_len ?  1 :
-        \ words_1_len < words_2_len ? -1 : 0
+  return words_1_len - words_2_len
 endfunction"}}}
 
 " Source rank order."{{{
