@@ -1313,8 +1313,19 @@ But you can use |unite.vim| instead to use quick match.
 
 Q: How can I change the order of candidates? :
 
-A: Please refer g:neocomplcache_compare_function and
-g:neocomplcache_source_rank.
+A: The default compare function is rank order. It sorts rank order and
+alphabetical order. If you select candidates, the candidate's rank will be
+high. To change compare function, you can change
+|g:neocomplcache_compare_function| value.
+>
+	let g:neocomplcache_compare_function = 'neocomplcache#compare_word'
+<
+To make new compare function, please refer |g:neocomplcache_compare_function|.
+
+The built-in compare functions:
+	neocomplcache#compare_rank        : Rank order (default)
+	neocomplcache#compare_word        : Alphabetical order
+	neocomplcache#compare_nothing     : Do not sort
 
 
 Q: An input problem occurred in using uim-skk or other IMEs:
@@ -1455,6 +1466,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-10-27
 - Fixed documentaion for neosnippet.
+- Improved documentation.
 
 2012-10-25
 - Fixed vim_complete error.
