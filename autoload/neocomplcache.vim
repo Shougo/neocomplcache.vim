@@ -1266,8 +1266,10 @@ function! neocomplcache#compare_human(i1, i2)
         \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
   let words_2 = map(split(a:i2.word, '\D\zs\ze\d'),
         \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
+  let words_1_len = len(words_1)
+  let words_2_len = len(words_2)
 
-  for i in range(0, min([len(words_1), len(words_2)]))
+  for i in range(0, min([words_1_len, words_2_len]))
     if words_1[i] ># words_2[i]
       return 1
     elseif words_1[i] <# words_2[i]
@@ -1275,8 +1277,8 @@ function! neocomplcache#compare_human(i1, i2)
     endif
   endfor
 
-  return len(words_1) > len(words_2) ?  1 :
-        \ len(words_1) > len(words_2) ? -1 : 0
+  return words_1_len > words_2_len ?  1 :
+        \ words_1_len < words_2_len ? -1 : 0
 endfunction"}}}
 
 " Source rank order."{{{
