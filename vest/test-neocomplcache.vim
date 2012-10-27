@@ -7,10 +7,10 @@ set cpo&vim
 
 Context types
   It tests compare functions.
-    Should sort([{ 'word' : 'z0' }, { 'word' : 'z10' },
+    ShouldEqual sort([{ 'word' : 'z0' }, { 'word' : 'z10' },
           \ { 'word' : 'z2'}, { 'word' : 'z3'} ],
-          \ 'neocomplcache#compare_human')
-          \ == [{ 'word' : 'z0' }, { 'word' : 'z2' },
+          \ 'neocomplcache#compare_human'),
+          \ [{ 'word' : 'z0' }, { 'word' : 'z2' },
           \  { 'word' : 'z3' }, { 'word' : 'z10' }]
   End
 End
