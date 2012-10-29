@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Oct 2012.
+" Last Modified: 29 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -200,7 +200,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
       continue
     endif
 
-    lcd `=dir`
+    execute 'lcd' fnameescape(dir)
 
     for word in split(
           \ neocomplcache#util#substitute_path_separator(
@@ -234,7 +234,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
       endif
     endfor
   endfor
-  lcd `=cwd`
+  execute 'lcd' fnameescape(cwd)
 
   return neocomplcache#keyword_filter(dir_list, a:cur_keyword_str)
         \ + neocomplcache#keyword_filter(file_list, a:cur_keyword_str)

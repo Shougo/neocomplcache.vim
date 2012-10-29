@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2012.
+" Last Modified: 29 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -333,14 +333,14 @@ function! s:get_buffer_include_files(bufnumber)"{{{
   let cwd_save = getcwd()
   let buffer_dir = fnamemodify(bufname(a:bufnumber), ':p:h')
   if isdirectory(buffer_dir)
-    lcd `=buffer_dir`
+    execute 'lcd' fnameescape(buffer_dir)
   endif
 
   let include_files = s:get_include_files(0,
         \ getbufline(a:bufnumber, 1, 100), filetype, pattern, path, expr)
 
   if isdirectory(buffer_dir)
-    lcd `=cwd_save`
+    execute 'lcd' fnameescape(cwd_save)
   endif
 
   " Restore option.
