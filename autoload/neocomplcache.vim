@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2012.
+" Last Modified: 30 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1377,26 +1377,6 @@ function! neocomplcache#get_keyword_pattern_end(...)"{{{
   let filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
   return '\%('.neocomplcache#get_keyword_pattern(filetype).'\m\)$'
-endfunction"}}}
-function! neocomplcache#get_prev_word(cur_keyword_str)"{{{
-  let keyword_pattern = neocomplcache#get_keyword_pattern()
-  let line_part = neocomplcache#get_cur_text()[: -1-len(a:cur_keyword_str)]
-  let prev_word_end = matchend(line_part, keyword_pattern)
-  if prev_word_end > 0
-    let word_end = matchend(line_part, keyword_pattern, prev_word_end)
-    if word_end >= 0
-      while word_end >= 0
-        let prev_word_end = word_end
-        let word_end = matchend(line_part, keyword_pattern, prev_word_end)
-      endwhile
-    endif
-
-    let prev_word = matchstr(line_part[: prev_word_end-1], keyword_pattern . '$')
-  else
-    let prev_word = '^'
-  endif
-
-  return prev_word
 endfunction"}}}
 function! neocomplcache#match_word(cur_text, ...)"{{{
   let pattern = a:0 >= 1 ? a:1 : neocomplcache#get_keyword_pattern_end()

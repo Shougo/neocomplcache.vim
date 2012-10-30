@@ -1465,6 +1465,9 @@ your Vim initialization.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-10-30
+- Deleted neocomplcache#prev_word().
+
 2012-10-29
 - Use fnameescape().
 
