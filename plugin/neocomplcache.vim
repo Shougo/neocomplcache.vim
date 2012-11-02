@@ -28,13 +28,17 @@
 if exists('g:loaded_neocomplcache')
   finish
 elseif v:version < 702
-  echoerr 'neocomplcache does not work this version of Vim (' . v:version . ').'
+  echohl Error
+  echomsg 'neocomplcache does not work this version of Vim (' . v:version . ').'
+  echohl None
   finish
 elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
       \ && $HOME !=# expand('~'.$USER)
       \ && $HOME ==# expand('~'.$SUDO_USER)
-  echoerr '"sudo vim" and $HOME is not same to /root are detected.'
+  echohl Error
+  echomsg '"sudo vim" and $HOME is not same to /root are detected.'
         \.'Please use sudo.vim plugin instead of sudo command or set always_set_home in sudoers.'
+  echohl None
   finish
 endif
 
