@@ -141,15 +141,6 @@ COMMANDS 					*neocomplcache-commands*
 		Caching [bufname] include file.
 		Select current buffer name when [bufname] omitted.
 
-:NeoComplCacheCachingDisable [bufname]		*:NeoComplCacheCachingDisable*
-		Disable [bufname] buffer's cache.
-		The cache will be deleted.
-		Select current buffer when [bufname] omitted.
-
-:NeoComplCacheCachingEnable [bufname]		*:NeoComplCacheCachingEnable*
-		Enable [bufname] buffer's cache.
-		Select current buffer when [bufname] omitted.
-
 :NeoComplCachePrintSource [bufname]		*:NeoComplCachePrintSource*
 		Output [bufname] buffer's cache in current buffer.
 		This command is for debug.
