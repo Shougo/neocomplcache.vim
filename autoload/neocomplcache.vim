@@ -754,7 +754,8 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if v:version > 703 || v:version == 703 && has('patch418')
       let dict = { 'words' : s:complete_words }
 
-      if (g:neocomplcache_enable_refresh_always ||
+      if (!empty(filter(copy(s:complete_words),
+            \    "get(v:val, 'neocomplcache__refresh', 0)")) ||
             \ len(s:complete_words) >= g:neocomplcache_max_list)
             \  && (g:neocomplcache_enable_cursor_hold_i
             \      || v:version > 703 || v:version == 703 && has('patch561'))
