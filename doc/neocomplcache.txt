@@ -935,6 +935,15 @@ g:neocomplcache_skip_auto_completion_time
 		Default value is "0.3".
 		{only available when compiled with the |+reltime| feature}
 
+g:neocomplcache_enable_refresh_always
+				*g:neocomplcache_enable_refresh_always*
+		If it is non 0, neocomplcache will refresh completion window
+		always.
+		Note: It is good for partial match. But your Vim may flick in
+		completion.
+		
+		Default value is 0.
+
 ------------------------------------------------------------------------------
 FUNCTIONS 					*neocomplcache-functions*
 
@@ -1464,6 +1473,9 @@ your Vim initialization.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-11-02
+- Added g:neocomplcache_enable_refresh_always option.
 
 2012-10-30
 - Deleted neocomplcache#prev_word().

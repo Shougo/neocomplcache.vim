@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Oct 2012.
+" Last Modified: 02 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -754,9 +754,10 @@ function! neocomplcache#manual_complete(findstart, base)"{{{
     if v:version > 703 || v:version == 703 && has('patch418')
       let dict = { 'words' : s:complete_words }
 
-      if len(s:complete_words) >= g:neocomplcache_max_list
-            \ && (g:neocomplcache_enable_cursor_hold_i
-            \ || v:version > 703 || v:version == 703 && has('patch561'))
+      if (g:neocomplcache_enable_refresh_always ||
+            \ len(s:complete_words) >= g:neocomplcache_max_list)
+            \  && (g:neocomplcache_enable_cursor_hold_i
+            \      || v:version > 703 || v:version == 703 && has('patch561'))
         " Note: If Vim is less than 7.3.561, it have broken register "." problem.
         let dict.refresh = 'always'
       endif
