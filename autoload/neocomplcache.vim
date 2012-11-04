@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Nov 2012.
+" Last Modified: 04 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -664,9 +664,11 @@ function! neocomplcache#enable() "{{{
         \ unite#sources#neocomplcache#start_quick_match()
   inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
         \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
+  inoremap <silent> <Plug>(neocomplcache_start_auto_complete_no_select)
+        \ <C-x><C-u><C-p>
+        " \ <C-x><C-u><C-p>
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
         \ <C-x><C-o><C-p>
-        " \ <C-x><C-o><C-r>=neocomplcache#popup_post()<CR>
 endfunction"}}}
 
 function! neocomplcache#disable()"{{{
@@ -963,10 +965,13 @@ function! s:do_auto_complete(event)"{{{
   set completeopt-=longest
   set completeopt+=menuone
 
+  let s:changedtick = b:changedtick
+
   " Start auto complete.
   call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-
-  let s:changedtick = b:changedtick
+  " call feedkeys(g:neocomplcache_enable_auto_select ?
+  "       \ "\<Plug>(neocomplcache_start_auto_complete)":
+  "       \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
 endfunction"}}}
 
 " Source helper."{{{
@@ -2415,9 +2420,8 @@ function! s:remove_next_keyword(source_name, list)"{{{
 endfunction"}}}
 function! neocomplcache#popup_post()"{{{
   return  !pumvisible() ? "" :
-        \ (!g:neocomplcache_enable_auto_select
-        \  || neocomplcache#is_eskk_enabled()) ? "\<C-p>" :
-        \ "\<C-p>\<Down>"
+        \ g:neocomplcache_enable_auto_select ? "\<C-p>\<Down>" :
+        \ "\<C-p>"
 endfunction"}}}
 "}}}
 
