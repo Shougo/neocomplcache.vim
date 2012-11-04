@@ -1458,6 +1458,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-11-04
 - Improved keymappings.
+- Convert to full path in dictionary_complete.
 
 2012-11-02
 - Implemented refresh automatically.

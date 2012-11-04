@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2012.
+" Last Modified: 04 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -155,6 +155,8 @@ function! neocomplcache#sources#dictionary_complete#recaching(filetype)"{{{
   let pattern = get(g:neocomplcache_dictionary_patterns, filetype,
         \ neocomplcache#get_keyword_pattern(filetype))
   for dictionary in split(dictionaries, ',')
+    let dictionary = neocomplcache#util#substitute_path_separator(
+          \ fnamemodify(dictionary, ':p'))
     if filereadable(dictionary)
       call neocomplcache#print_debug('Caching dictionary: ' . dictionary)
       call add(s:async_dictionary_list[filetype], {
