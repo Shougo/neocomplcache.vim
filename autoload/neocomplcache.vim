@@ -649,6 +649,12 @@ function! neocomplcache#enable() "{{{
     let g:neocomplcache_min_keyword_length = 1
   endif
 
+  " Initialize omni function list."{{{
+  if !exists('g:neocomplcache_omni_functions')
+    let g:neocomplcache_omni_functions = {}
+  endif
+  "}}}
+
   " Save options.
   let s:completefunc_save = &completefunc
   let s:completeopt_save = &completeopt
@@ -1471,7 +1477,8 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
   endif
 
   let filetype = neocomplcache#get_context_filetype()
-  let omnifunc = &l:omnifunc
+  let omnifunc = get(g:neocomplcache_omni_functions,
+        \ filetype, &l:omnifunc)
 
   if &filetype !=# filetype || omnifunc == ''
         \ || (omnifunc !~ '#' && !exists('*' . omnifunc))
@@ -1493,7 +1500,14 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
     return 0
   endif
 
-  return a:cur_text =~# '\%(' . pattern . '\m\)$'
+  if a:cur_text !~# '\%(' . pattern . '\m\)$'
+    return 0
+  endif
+
+  " Set omnifunc.
+  let &omnifunc = omnifunc
+
+  return 1
 endfunction"}}}
 function! neocomplcache#exists_echodoc()"{{{
   return exists('g:loaded_echodoc') && g:loaded_echodoc

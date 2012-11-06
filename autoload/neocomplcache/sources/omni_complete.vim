@@ -99,12 +99,6 @@ function! s:source.initialize()"{{{
   endif
   "}}}
 
-  " Initialize omni function list."{{{
-  if !exists('g:neocomplcache_omni_functions')
-    let g:neocomplcache_omni_functions = {}
-  endif
-  "}}}
-
   " Set rank.
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_source_rank',
