@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Oct 2012.
+" Last Modified: 06 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -150,7 +150,8 @@ function! s:get_omni_funcs(filetype)"{{{
     endif
 
     for omnifunc in omnifuncs
-      if omnifunc == ''
+      if omnifunc == '' ||
+            \ (omnifunc !~ '#' && !exists('*' . omnifunc))
         " &omnifunc is irregal.
         continue
       endif

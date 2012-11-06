@@ -1456,6 +1456,9 @@ your Vim initialization.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-11-06
+- Improved check of omnifunc.
+
 2012-11-04
 - Improved keymappings.
 - Convert to full path in dictionary_complete.

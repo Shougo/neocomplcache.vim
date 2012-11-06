@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Nov 2012.
+" Last Modified: 06 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1471,8 +1471,10 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
   endif
 
   let filetype = neocomplcache#get_context_filetype()
+  let omnifunc = &l:omnifunc
 
   if &filetype !=# filetype
+        \ || (omnifunc !~ '#' && !exists('*' . omnifunc))
     " &omnifunc is irregal.
     return 0
   endif
@@ -1482,8 +1484,6 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
     " Skip omni_complete in string literal.
     return 0
   endif
-
-  let omnifunc = &l:omnifunc
 
   if has_key(g:neocomplcache_force_omni_patterns, omnifunc)
     let pattern = g:neocomplcache_force_omni_patterns[omnifunc]
