@@ -487,10 +487,11 @@ g:neocomplcache_force_omni_patterns
 		This is appointed in regular expression every file type.
 		If this pattern is not defined, neocomplcache don't call
 		'omnifunc'.
-		Note: If it is set, neocomplcache wil call 'omnifunc'
-		directly. So almost neocomplcache features are disabled. But
-		all Omni completion works instead of
-		|g:neocomplcache_omni_patterns|.
+		Note: If it is set, neocomplcache wil call 'omnifunc' or
+		|g:neocomplcache_omni_functions| directly. So almost
+		neocomplcache features are disabled. But all Omni completion
+		works instead of |g:neocomplcache_omni_patterns|.
+		Note: This feature may change 'omnifunc' value.
 >
 		if !exists('g:neocomplcache_force_omni_patterns')
 		  let g:neocomplcache_force_omni_patterns = {}
