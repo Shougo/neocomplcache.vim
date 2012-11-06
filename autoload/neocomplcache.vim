@@ -1473,7 +1473,7 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
   let filetype = neocomplcache#get_context_filetype()
   let omnifunc = &l:omnifunc
 
-  if &filetype !=# filetype
+  if &filetype !=# filetype || omnifunc == ''
         \ || (omnifunc !~ '#' && !exists('*' . omnifunc))
     " &omnifunc is irregal.
     return 0
