@@ -1582,24 +1582,32 @@ function! neocomplcache#get_context_filetype(...)"{{{
     return &filetype
   endif
 
+  let neocomplcache = s:get_current_neocomplcache()
+
   if a:0 != 0 || mode() !=# 'i' ||
-        \ s:get_current_neocomplcache().context_filetype == ''
+        \ neocomplcache.context_filetype == ''
     call s:set_context_filetype()
   endif
 
-  return s:get_current_neocomplcache().context_filetype
+  return neocomplcache.context_filetype
 endfunction"}}}
 function! neocomplcache#get_context_filetype_range(...)"{{{
   if !neocomplcache#is_enabled()
     return [1, line('$')]
   endif
 
+  let neocomplcache = s:get_current_neocomplcache()
+
   if a:0 != 0 || mode() !=# 'i' ||
-        \ s:get_current_neocomplcache().context_filetype == ''
+        \ neocomplcache.context_filetype == ''
     call s:set_context_filetype()
   endif
 
-  return s:get_current_neocomplcache().context_filetype_range
+  if neocomplcache.context_filetype ==# &filetype
+    return [1, line('$')]
+  endif
+
+  return neocomplcache.context_filetype_range
 endfunction"}}}
 function! neocomplcache#get_source_rank(plugin_name)"{{{
   if has_key(g:neocomplcache_source_rank, a:plugin_name)
@@ -2558,7 +2566,6 @@ function! s:get_context_filetype(filetype)"{{{
 
   " Default range.
   let neocomplcache = s:get_current_neocomplcache()
-  let neocomplcache.context_filetype_range = [1, line('$')]
 
   let pos = [line('.'), col('.')]
   for include in get(g:neocomplcache_context_filetype_lists, filetype, [])
@@ -2592,7 +2599,7 @@ function! s:get_context_filetype(filetype)"{{{
     endif
 
     let neocomplcache.context_filetype_range =
-          \ [ start_backward[0], end_backward[0] ]
+          \ [ start_backward[0], end_forward[0] ]
     return include.filetype
   endfor
 
