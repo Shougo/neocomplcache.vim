@@ -1480,9 +1480,7 @@ function! neocomplcache#is_omni_complete(cur_text)"{{{
   let omnifunc = get(g:neocomplcache_omni_functions,
         \ filetype, &l:omnifunc)
 
-  if &filetype !=# filetype || omnifunc == ''
-        \ || (omnifunc !~ '#' && !exists('*' . omnifunc))
-    " &omnifunc is irregal.
+  if neocomplcache#check_invalid_omnifunc(omnifunc)
     return 0
   endif
 
@@ -1652,6 +1650,24 @@ function! neocomplcache#complete_check()"{{{
         \     && split(reltimestr(reltime(s:start_time)))[0] >
         \          g:neocomplcache_skip_auto_completion_time)
 endfunction"}}}
+function! neocomplcache#check_invalid_omnifunc(omnifunc)
+  if a:omnifunc == ''
+    " omnifunc is irregal.
+    return 0
+  endif
+
+  if a:omnifunc =~ '#' && !exists('*' . a:omnifunc)
+    " Source automatically.
+    for path in split(globpath(&runtimepath,
+          \ printf('autoload/%s.vim',
+          \   fnamemodify(substitute(a:omnifunc,
+          \         '#', '/', 'g'),':h'))), '\n')
+      source `=path`
+    endfor
+  endif
+
+  return !exists('*' . a:omnifunc)
+endfunction
 
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...)"{{{
