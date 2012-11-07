@@ -1582,7 +1582,7 @@ function! neocomplcache#get_context_filetype(...)"{{{
     return &filetype
   endif
 
-  if a:0 != 0 ||
+  if a:0 != 0 || mode() !=# 'i' ||
         \ s:get_current_neocomplcache().context_filetype == ''
     call s:set_context_filetype()
   endif
@@ -1594,7 +1594,7 @@ function! neocomplcache#get_context_filetype_range(...)"{{{
     return [1, line('$')]
   endif
 
-  if a:0 != 0 ||
+  if a:0 != 0 || mode() !=# 'i' ||
         \ s:get_current_neocomplcache().context_filetype == ''
     call s:set_context_filetype()
   endif
