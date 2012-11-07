@@ -981,12 +981,6 @@ function! s:do_auto_complete(event)"{{{
 endfunction"}}}
 
 " Source helper."{{{
-function! neocomplcache#available_sources()"{{{
-  return extend(extend(copy(
-        \ neocomplcache#available_complfuncs()),
-        \ neocomplcache#available_loaded_ftplugins()),
-        \ neocomplcache#available_loaded_plugins())
-endfunction"}}}
 function! neocomplcache#available_complfuncs()"{{{
   return s:complfunc_sources
 endfunction"}}}
@@ -1001,8 +995,16 @@ function! neocomplcache#available_plugins()"{{{
 endfunction"}}}
 function! neocomplcache#available_sources()"{{{
   call s:set_context_filetype()
-  return extend(extend(copy(s:complfunc_sources), s:plugin_sources),
-        \ s:loaded_ftplugin_sources)
+  return extend(extend(copy(s:complfunc_sources),
+        \ s:ftplugin_sources), s:plugin_sources)
+endfunction"}}}
+function! neocomplcache#is_enabled_source(source_name)"{{{
+  let neocomplcache = s:get_current_neocomplcache()
+  if !has_key(neocomplcache, 'sources')
+    call s:get_sources_list()
+  endif
+
+  return index(keys(neocomplcache.sources), a:source_name) >= 0
 endfunction"}}}
 function! s:keyword_escape(cur_keyword_str)
   let keyword_escape = escape(a:cur_keyword_str, '~" \.^$[]')
@@ -1650,7 +1652,7 @@ function! neocomplcache#complete_check()"{{{
         \     && split(reltimestr(reltime(s:start_time)))[0] >
         \          g:neocomplcache_skip_auto_completion_time)
 endfunction"}}}
-function! neocomplcache#check_invalid_omnifunc(omnifunc)
+function! neocomplcache#check_invalid_omnifunc(omnifunc)"{{{
   if a:omnifunc == ''
     " omnifunc is irregal.
     return 0
@@ -1667,7 +1669,7 @@ function! neocomplcache#check_invalid_omnifunc(omnifunc)
   endif
 
   return !exists('*' . a:omnifunc)
-endfunction
+endfunction"}}}
 
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...)"{{{
@@ -2369,15 +2371,13 @@ function! s:on_moved_i()"{{{
   " Get cursor word.
   let cur_text = s:get_cur_text()
 
-  let sources = neocomplcache#available_sources()
-
   " Make cache.
   if cur_text =~ '^\s*$\|\s\+$'
-    if has_key(sources, 'buffer_complete')
+    if neocomplcache#is_enabled_source('buffer_complete')
       " Caching current cache line.
       call neocomplcache#sources#buffer_complete#caching_current_line()
     endif
-    if has_key(sources, 'member_complete')
+    if neocomplcache#is_enabled_source('member_complete')
       " Caching current cache line.
       call neocomplcache#sources#member_complete#caching_current_line()
     endif
@@ -2751,9 +2751,10 @@ function! s:get_sources_list(...)"{{{
   let source_names = exists('b:neocomplcache_sources_list') ?
         \ b:neocomplcache_sources_list :
         \ get(a:000, 0,
-        \ get(g:neocomplcache_sources_list, filetype,
-        \   get(g:neocomplcache_sources_list, '_', ['_'])))
-  let disabled_sources = get(g:neocomplcache_disabled_sources_list, filetype,
+        \   get(g:neocomplcache_sources_list, filetype,
+        \     get(g:neocomplcache_sources_list, '_', ['_'])))
+  let disabled_sources = get(
+        \ g:neocomplcache_disabled_sources_list, filetype,
         \   get(g:neocomplcache_disabled_sources_list, '_', []))
   call s:initialize_sources(source_names)
 
@@ -2775,8 +2776,13 @@ function! s:get_sources_list(...)"{{{
     let sources[source_name] = all_sources[source_name]
   endfor
 
-  return filter(sources,
-        \ 'index(disabled_sources, v:val.name) < 0')
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.sources = filter(sources, "
+        \ index(disabled_sources, v:val.name) < 0 &&
+        \   (v:val.kind !=# 'ftplugin' ||
+        \    get(v:val.filetypes, neocomplcache.context_filetype, 0))")
+
+  return neocomplcache.sources
 endfunction"}}}
 function! s:is_skip_auto_complete(cur_text)"{{{
   if a:cur_text == ''

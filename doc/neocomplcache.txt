@@ -1459,6 +1459,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-11-07
 - Added neocomplcache#get_context_filetype_range().
+- Added neocomplcache#is_enabled_source().
 
 2012-11-06
 - Improved check of omnifunc.
