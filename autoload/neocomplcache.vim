@@ -1006,6 +1006,14 @@ function! neocomplcache#is_enabled_source(source_name)"{{{
 
   return index(keys(neocomplcache.sources), a:source_name) >= 0
 endfunction"}}}
+function! neocomplcache#is_disabled_source(source_name)"{{{
+  let filetype = neocomplcache#get_context_filetype()
+
+  let disabled_sources = get(
+        \ g:neocomplcache_disabled_sources_list, filetype,
+        \   get(g:neocomplcache_disabled_sources_list, '_', []))
+  return index(disabled_sources, a:source_name) >= 0
+endfunction"}}}
 function! s:keyword_escape(cur_keyword_str)
   let keyword_escape = escape(a:cur_keyword_str, '~" \.^$[]')
   if g:neocomplcache_enable_wildcard

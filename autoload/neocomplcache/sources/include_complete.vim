@@ -217,6 +217,10 @@ endfunction"}}}
 "}}}
 
 function! s:check_buffer(bufnumber, is_force)"{{{
+  if neocomplcache#is_disabled_source('include_complete')
+    return
+  endif
+
   let bufnumber = (a:bufnumber == '') ? bufnr('%') : a:bufnumber
   let filename = fnamemodify(bufname(bufnumber), ':p')
 
@@ -385,6 +389,10 @@ function! s:get_include_files(nestlevel, lines, filetype, pattern, path, expr)"{
 endfunction"}}}
 
 function! s:check_cache()"{{{
+  if neocomplcache#is_disabled_source('include_complete')
+    return
+  endif
+
   let release_accessd_time = localtime() - g:neocomplcache_release_cache_time
 
   for key in keys(s:include_cache)
@@ -404,9 +412,6 @@ function! s:initialize_include(filename, filetype)"{{{
         \ }
 endfunction"}}}
 function! neocomplcache#sources#include_complete#caching_include(bufname)"{{{
-  if neocomplcache#is_enabled()
-    <`0:TARGET`>
-  endif
   let bufnumber = (a:bufname == '') ? bufnr('%') : bufnr(a:bufname)
   if has_key(s:async_include_cache, bufnumber)
         \ && filereadable(s:async_include_cache[bufnumber].cache_name)
