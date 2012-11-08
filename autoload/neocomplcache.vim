@@ -1601,7 +1601,7 @@ function! neocomplcache#get_context_filetype(...)"{{{
 endfunction"}}}
 function! neocomplcache#get_context_filetype_range(...)"{{{
   if !neocomplcache#is_enabled()
-    return [1, line('$')]
+    return [[1, 1], [line('$'), len(getline('$'))+1]]
   endif
 
   let neocomplcache = s:get_current_neocomplcache()
@@ -1612,7 +1612,7 @@ function! neocomplcache#get_context_filetype_range(...)"{{{
   endif
 
   if neocomplcache.context_filetype ==# &filetype
-    return [1, line('$')]
+    return [[1, 1], [line('$'), len(getline('$'))+1]]
   endif
 
   return neocomplcache.context_filetype_range
@@ -2607,7 +2607,7 @@ function! s:get_context_filetype(filetype)"{{{
     endif
     let end_forward = searchpos(end_pattern, 'nW')
     if end_forward[0] == 0
-      let end_forward[0] = line('$')
+      let end_forward = [line('$'), len(getline('$'))+1]
     endif
 
     " Check end > pos.
@@ -2623,7 +2623,7 @@ function! s:get_context_filetype(filetype)"{{{
     endif
 
     let neocomplcache.context_filetype_range =
-          \ [ start_backward[0], end_forward[0] ]
+          \ [ start_backward, end_forward ]
     return include.filetype
   endfor
 
@@ -2687,7 +2687,8 @@ function! s:get_current_neocomplcache()"{{{
           \ 'lock' : 0,
           \ 'filetype' : '',
           \ 'context_filetype' : '',
-          \ 'context_filetype_range' : [1, line('$')],
+          \ 'context_filetype_range' :
+          \    [[1, 1], [line('$'), len(getline('$'))+1]],
           \ 'completion_length' : -1,
           \ 'update_time_save' : &updatetime,
           \ 'foldinfo' : [],
