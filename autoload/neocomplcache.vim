@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Nov 2012.
+" Last Modified: 09 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1073,8 +1073,9 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
           \ && keyword_escape =~ '\u\?\U*'
       if head != ''
         " Append tail character.
-        let keyword_escape = head[-1:] . keyword_escape
-        let head = head[: -2]
+        let keyword_escape = s:keyword_escape(
+              \ a:cur_keyword_str[-1: ]) . keyword_escape
+        let head = s:keyword_escape(a:cur_keyword_str[: 0])
       endif
 
       let keyword_escape =
@@ -1205,7 +1206,10 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
   endif
 
   let completion_length = 2
-  if len(a:cur_keyword_str) < completion_length
+  if len(a:cur_keyword_str) < completion_length ||
+        \ (!neocomplcache#is_auto_complete() &&
+        \   neocomplcache#check_completion_length_match(
+        \         a:cur_keyword_str, completion_length))
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   endif
