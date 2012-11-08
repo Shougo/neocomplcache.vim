@@ -1661,22 +1661,7 @@ function! neocomplcache#complete_check()"{{{
         \          g:neocomplcache_skip_auto_completion_time)
 endfunction"}}}
 function! neocomplcache#check_invalid_omnifunc(omnifunc)"{{{
-  if a:omnifunc == ''
-    " omnifunc is irregal.
-    return 0
-  endif
-
-  if a:omnifunc =~ '#' && !exists('*' . a:omnifunc)
-    " Source automatically.
-    for path in split(globpath(&runtimepath,
-          \ printf('autoload/%s.vim',
-          \   fnamemodify(substitute(a:omnifunc,
-          \         '#', '/', 'g'),':h'))), '\n')
-      silent! source `=path`
-    endfor
-  endif
-
-  return !exists('*' . a:omnifunc)
+  return a:omnifunc == '' || (a:omnifunc !~ '#' && !exists('*' . a:omnifunc))
 endfunction"}}}
 
 " For unite source.
