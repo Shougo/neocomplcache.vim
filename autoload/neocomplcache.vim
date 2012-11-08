@@ -1054,13 +1054,13 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
           \ s:keyword_escape(a:cur_keyword_str[: 1]) : ''
     let keyword_escape = s:keyword_escape(
           \   (neocomplcache#is_auto_complete() ?
-          \    a:cur_keyword_str[2: ] :a:cur_keyword_str))
+          \    a:cur_keyword_str[2: ] : a:cur_keyword_str))
 
     " Underbar completion."{{{
     if g:neocomplcache_enable_underbar_completion
-          \ && keyword_escape =~ '[^_]_'
+          \ && keyword_escape =~ '[^_]_\|^_'
       let keyword_escape = substitute(keyword_escape,
-            \ '[^_]\zs_', '[^_]*_', 'g')
+            \ '\%(^\|[^_]\)\zs_', '[^_]*_', 'g')
     endif
     if g:neocomplcache_enable_underbar_completion
           \ && '-' =~ '\k' && keyword_escape =~ '[^-]-'
@@ -1071,6 +1071,12 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     " Camel case completion."{{{
     if g:neocomplcache_enable_camel_case_completion
           \ && keyword_escape =~ '\u\?\U*'
+      if head != ''
+        " Append tail character.
+        let keyword_escape = head[-1:] . keyword_escape
+        let head = head[: -2]
+      endif
+
       let keyword_escape =
             \ substitute(keyword_escape,
             \ '\u\?\zs\U*',
