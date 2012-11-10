@@ -311,11 +311,9 @@ g:neocomplcache_enable_camel_case_completion
 		When you input a capital letter, this variable controls
 		whether neocomplcache takes an ambiguous searching as an end
 		of the words in it.  For example, neocomplcache come to match
-		it with "ArgumentsException" when you input it with "ArE".
+		it with "ArgumentsException" when you input it with "AE".
 
-		Note: To optimize performance, the ambiguous searching not
-		enabled top two characters in auto completion. "AE" does not
-		complete "ArgumentsException".
+		Note: This feature may be too slow.
 
 		Default value is 0.
 
@@ -324,11 +322,9 @@ g:neocomplcache_enable_underbar_completion
 		When you input _, this variable controls whether
 		neocomplcache takes an ambiguous searching as an end of the
 		words in it.  For example, neocomplcache come to match it
-		with "public_html" when you input it with "pu_h".
+		with "public_html" when you input it with "p_h".
 
-		Note: To optimize performance, the ambiguous searching is not
-		enabled top two characters in auto completion. "p_h" does not
-		complete "public_html".
+		Note: This feature may be too slow.
 
 		Default value is 0.
 
@@ -1035,13 +1031,15 @@ EXAMPLES					*neocomplcache-examples*
 	let g:neocomplcache_enable_at_startup = 1
 	" Use smartcase.
 	let g:neocomplcache_enable_smart_case = 1
-	" Use camel case completion.
-	let g:neocomplcache_enable_camel_case_completion = 1
-	" Use underbar completion.
-	let g:neocomplcache_enable_underbar_completion = 1
 	" Set minimum syntax keyword length.
 	let g:neocomplcache_min_syntax_length = 3
 	let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
+	" Enable heavy features.
+	" Use camel case completion.
+	"let g:neocomplcache_enable_camel_case_completion = 1
+	" Use underbar completion.
+	"let g:neocomplcache_enable_underbar_completion = 1
 
 	" Define dictionary.
 	let g:neocomplcache_dictionary_filetype_lists = {
@@ -1459,6 +1457,8 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-11-10
 - Fixed include_complete initialization.
+- Changed underbar completion and camel case completion behaviors.
+- Optimised match filter.
 
 2012-11-09
 - Fixed for camel case completion.

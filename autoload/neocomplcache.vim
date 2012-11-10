@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Nov 2012.
+" Last Modified: 10 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1029,10 +1029,10 @@ endfunction
 function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
   " Fuzzy completion.
   let keyword_len = len(a:cur_keyword_str)
+  let keyword_escape = s:keyword_escape(a:cur_keyword_str)
   if g:neocomplcache_enable_fuzzy_completion
         \ && (g:neocomplcache_fuzzy_completion_start_length
         \          <= keyword_len && keyword_len < 20)
-    let keyword_escape = s:keyword_escape(a:cur_keyword_str)
     let pattern = keyword_len >= 8 ?
           \ '\0\\w*\\W\\?' :
           \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)'
@@ -1050,12 +1050,6 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
             \   pattern, 'g') . keyword_escape[13:]
     endif
   else
-    let head = neocomplcache#is_auto_complete() ?
-          \ s:keyword_escape(a:cur_keyword_str[: 1]) : ''
-    let keyword_escape = s:keyword_escape(
-          \   (neocomplcache#is_auto_complete() ?
-          \    a:cur_keyword_str[2: ] : a:cur_keyword_str))
-
     " Underbar completion."{{{
     if g:neocomplcache_enable_underbar_completion
           \ && keyword_escape =~ '[^_]_\|^_'
@@ -1071,21 +1065,12 @@ function! neocomplcache#keyword_escape(cur_keyword_str)"{{{
     " Camel case completion."{{{
     if g:neocomplcache_enable_camel_case_completion
           \ && keyword_escape =~ '\u\?\U*'
-      if head != ''
-        " Append tail character.
-        let keyword_escape = s:keyword_escape(
-              \ a:cur_keyword_str[-1: ]) . keyword_escape
-        let head = s:keyword_escape(a:cur_keyword_str[: 0])
-      endif
-
       let keyword_escape =
             \ substitute(keyword_escape,
             \ '\u\?\zs\U*',
             \ '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
     endif
     "}}}
-
-    let keyword_escape = head . keyword_escape
   endif
 
   call neocomplcache#print_debug(keyword_escape)
@@ -1115,6 +1100,14 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
       " Don't complete cursor word.
       let expr .= ' && v:val.word !=? a:cur_keyword_str'
     endif
+
+    " Check head character.
+    if cur_keyword_str[0] != '\' && cur_keyword_str[0] != '.'
+      let expr = 'v:val.word[0] == ' .
+            \ string(cur_keyword_str[0]) .' && ' . expr
+    endif
+
+    call neocomplcache#print_debug(expr)
 
     return filter(a:list, expr)
   else
@@ -1207,9 +1200,8 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str)"{{{
 
   let completion_length = 2
   if len(a:cur_keyword_str) < completion_length ||
-        \ (!neocomplcache#is_auto_complete() &&
-        \   neocomplcache#check_completion_length_match(
-        \         a:cur_keyword_str, completion_length))
+        \ neocomplcache#check_completion_length_match(
+        \         a:cur_keyword_str, completion_length)
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   endif
