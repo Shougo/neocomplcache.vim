@@ -217,8 +217,7 @@ endfunction"}}}
 "}}}
 
 function! s:check_buffer(bufnumber, is_force)"{{{
-  if neocomplcache#is_disabled_source('include_complete')
-        \ || !neocomplcache#is_enabled()
+  if !neocomplcache#is_enabled_source('include_complete')
     return
   endif
 

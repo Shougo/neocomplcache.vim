@@ -1459,6 +1459,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed include_complete initialization.
 - Changed underbar completion and camel case completion behaviors.
 - Optimised match filter.
+- Fixed for check sources.
 
 2012-11-09
 - Fixed for camel case completion.

@@ -999,6 +999,10 @@ function! neocomplcache#available_sources()"{{{
         \ s:ftplugin_sources), s:plugin_sources)
 endfunction"}}}
 function! neocomplcache#is_enabled_source(source_name)"{{{
+  if neocomplcache#is_disabled_source(a:source_name)
+    return 0
+  endif
+
   let neocomplcache = s:get_current_neocomplcache()
   if !has_key(neocomplcache, 'sources')
     call s:get_sources_list()
