@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Nov 2012.
+" Last Modified: 10 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -218,6 +218,7 @@ endfunction"}}}
 
 function! s:check_buffer(bufnumber, is_force)"{{{
   if neocomplcache#is_disabled_source('include_complete')
+        \ || !neocomplcache#is_enabled()
     return
   endif
 

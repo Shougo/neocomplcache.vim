@@ -1457,6 +1457,9 @@ your Vim initialization.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-11-10
+- Fixed include_complete initialization.
+
 2012-11-09
 - Fixed for camel case completion.
 
