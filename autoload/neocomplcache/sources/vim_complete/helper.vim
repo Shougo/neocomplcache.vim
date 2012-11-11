@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Oct 2012.
+" Last Modified: 11 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -554,7 +554,8 @@ function! s:get_local_variables()"{{{
         let candidates_list = s:script_candidates_list[bufnr('%')].variables
       elseif line =~ '\<\%(let\|for\)\s\+[btwg]:'
             \ && has_key(s:global_candidates_list, 'variables')
-        let candidates_list = s:global_candidates_list.variables
+        let candidates_list = neocomplcache#unpack_dictionary(
+              \ s:global_candidates_list.variables)
       else
         let candidates_list = keyword_dict
       endif

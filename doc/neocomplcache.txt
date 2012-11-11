@@ -1455,6 +1455,9 @@ your Vim initialization.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-11-11
+- Fixed complete variables in vim_complete.
+
 2012-11-10
 - Fixed include_complete initialization.
 - Changed underbar completion and camel case completion behaviors.

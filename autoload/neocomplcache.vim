@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2012.
+" Last Modified: 11 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1112,6 +1112,7 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     endif
 
     call neocomplcache#print_debug(expr)
+    echomsg string(a:list)
 
     return filter(a:list, expr)
   else
