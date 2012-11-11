@@ -1112,7 +1112,6 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str)"{{{
     endif
 
     call neocomplcache#print_debug(expr)
-    echomsg string(a:list)
 
     return filter(a:list, expr)
   else

@@ -549,16 +549,14 @@ function! s:get_local_variables()"{{{
     let line = getline(line_num)
 
     if line =~ '\<\%(let\|for\)\s\+'
-      if line =~ '\<\%(let\|for\)\s\+s:' && has_key(s:script_candidates_list, bufnr('%'))
+      if line =~ '\<\%(let\|for\)\s\+s:' &&
+            \ has_key(s:script_candidates_list, bufnr('%'))
             \ && has_key(s:script_candidates_list[bufnr('%')], 'variables')
         let candidates_list = s:script_candidates_list[bufnr('%')].variables
-      elseif line =~ '\<\%(let\|for\)\s\+[btwg]:'
-            \ && has_key(s:global_candidates_list, 'variables')
-        let candidates_list = neocomplcache#unpack_dictionary(
-              \ s:global_candidates_list.variables)
       else
         let candidates_list = keyword_dict
       endif
+
       call s:analyze_variable_line(line, candidates_list)
     endif
 
@@ -937,8 +935,10 @@ function! s:analyze_variable_line(line, keyword_dict)"{{{
     endif
   elseif a:line =~ '\<\%(let\|for\)\s\+\[.\{-}\]'
     " let [var1, var2] = pattern.
-    let words = split(matchstr(a:line, '\<\%(let\|for\)\s\+\[\zs.\{-}\ze\]'), '[,[:space:]]\+')
-      let expressions = split(matchstr(a:line, '\<let\s\+\[.\{-}\]\s*=\s*\[\zs.\{-}\ze\]$'), '[,[:space:];]\+')
+    let words = split(matchstr(a:line,
+          \'\<\%(let\|for\)\s\+\[\zs.\{-}\ze\]'), '[,[:space:]]\+')
+      let expressions = split(matchstr(a:line,
+            \'\<let\s\+\[.\{-}\]\s*=\s*\[\zs.\{-}\ze\]$'), '[,[:space:];]\+')
 
       let i = 0
       while i < len(words)
