@@ -1457,6 +1457,8 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-11-11
 - Fixed complete variables in vim_complete.
+- Improved neocomplcache#sources#include_complete#get_include_files()
+  behavior.
 
 2012-11-10
 - Fixed include_complete initialization.
