@@ -27,7 +27,10 @@
 
 if exists('g:loaded_neocomplcache')
   finish
-elseif v:version < 702
+endif
+let g:loaded_neocomplcache = 1
+
+if v:version < 702
   echohl Error
   echomsg 'neocomplcache does not work this version of Vim (' . v:version . ').'
   echohl None
@@ -193,7 +196,5 @@ endif"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
-let g:loaded_neocomplcache = 1
 
 " vim: foldmethod=marker
