@@ -39,8 +39,10 @@ elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
       \ && $HOME !=# expand('~'.$USER)
       \ && $HOME ==# expand('~'.$SUDO_USER)
   echohl Error
-  echomsg '"sudo vim" and $HOME is not same to /root are detected.'
-        \.'Please use sudo.vim plugin instead of sudo command or set always_set_home in sudoers.'
+  echomsg 'NeoComplCache disabled: "sudo vim" is detected and $HOME is set to '
+        \.'your user''s home. '
+        \.'You may want to use the sudo.vim plugin, the "-H" option '
+        \.'with "sudo" or set always_set_home in /etc/sudoers instead.'
   echohl None
   finish
 endif
