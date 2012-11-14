@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Nov 2012.
+" Last Modified: 15 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,7 +39,7 @@ elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
       \ && $HOME !=# expand('~'.$USER)
       \ && $HOME ==# expand('~'.$SUDO_USER)
   echohl Error
-  echomsg 'NeoComplCache disabled: "sudo vim" is detected and $HOME is set to '
+  echomsg 'neocomplcache disabled: "sudo vim" is detected and $HOME is set to '
         \.'your user''s home. '
         \.'You may want to use the sudo.vim plugin, the "-H" option '
         \.'with "sudo" or set always_set_home in /etc/sudoers instead.'
