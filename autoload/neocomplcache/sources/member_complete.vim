@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: member_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 16 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -104,6 +104,11 @@ endfunction"}}}
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   " Check member prefix pattern.
   let filetype = neocomplcache#get_context_filetype()
+  if !has_key(g:neocomplcache_member_prefix_patterns, filetype)
+        \ || g:neocomplcache_member_prefix_patterns[filetype] == ''
+    return []
+  endif
+
   let cur_text = neocomplcache#get_cur_text()
   let var_name = matchstr(cur_text,
         \ '\%(' . s:get_member_pattern(filetype) . '\%(' .

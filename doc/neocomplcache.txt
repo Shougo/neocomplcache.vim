@@ -1455,6 +1455,9 @@ your Vim initialization.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-11-16
+- Fixed member_complete error.
+
 2012-11-11
 - Fixed complete variables in vim_complete.
 - Improved neocomplcache#sources#include_complete#get_include_files()
