@@ -599,7 +599,6 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#util#set_default_dictionary(
           \ 'g:neocomplcache_ctags_arguments_list', 'c',
           \ '-R --sort=1 --c-kinds=+p --fields=+iaS --extra=+q ' .
-          \ '-I __wur,__THROW,__attribute_malloc__')
           \ '-I __wur,__THROW,__attribute_malloc__,__nonnull+,'.
           \   '__attribute_pure__,__attribute_warn_unused_result__,__attribute__+')
   endif
