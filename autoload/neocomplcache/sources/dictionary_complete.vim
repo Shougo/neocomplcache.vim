@@ -63,7 +63,7 @@ function! s:source.initialize()"{{{
 
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_source_rank',
-        \ 'dictionary_complete', 2)
+        \ 'dictionary_complete', 4)
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/dictionary_cache')

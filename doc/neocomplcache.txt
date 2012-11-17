@@ -1165,6 +1165,9 @@ dictionary_complete.vim				*dictionary_complete*
 		|g:neocomplcache_dictionary_filetype_lists|.
 
 filename_complete.vim				*filename_complete*
+		This source collects filename candidates.
+
+filename_include.vim				*filename_include*
 		This source collects filename candidates. It is useful
 		when you input header file name.  It recognizes include
 		pattern and include path like include_complete.
@@ -1185,12 +1188,14 @@ suffix of complete candidates in popup menu declaration.
 
     abbrev_complete            -> [A]
     filename_complete          -> [F] {filename}
+    filename_include           -> [FI] {filename}
     dictionary_complete        -> [D] {words}
     member_complete            -> [M] member
     buffer_complete            -> [B] {buffername}
     syntax_complete            -> [S] {syntax-keyword}
-    include_complete           -> [FI] or [I]
-    snippets_complete          -> [Snip] (none or one placeholder) or
+    include_complete           -> [I]
+    snippets_complete(neosnippet)
+                               -> [Snip] (none or one placeholder) or
                                   <Snip> (contains multiple placeholders,
                                           you must jump)
     vim_complete               -> [vim] type
@@ -1452,6 +1457,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-11-17
 - Supported require_relative in filename_complete.
+- Added filename_include source.
 
 2012-11-16
 - Fixed member_complete error.
