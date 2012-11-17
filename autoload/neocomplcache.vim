@@ -851,9 +851,6 @@ function! s:do_auto_complete(event)"{{{
   let neocomplcache = s:get_current_neocomplcache()
 
   let s:old_cur_text = cur_text
-  if s:skip_auto_complete(cur_text)
-    return
-  endif
 
   if neocomplcache#is_omni_complete(cur_text)
     call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
@@ -959,37 +956,6 @@ function! s:check_in_do_auto_complete()"{{{
     call neocomplcache#print_error(output)
     call neocomplcache#print_error(
           \ 'Detected set paste! Disabled neocomplcache.')
-    return 1
-  endif
-endfunction"}}}
-function! s:skip_auto_complete(cur_text)"{{{
-  let neocomplcache = s:get_current_neocomplcache()
-  if !neocomplcache.skip_next_complete
-    return 0
-  endif
-
-  let neocomplcache.skip_next_complete = 0
-
-  " Check delimiter pattern.
-  let is_delimiter = 0
-  let filetype = neocomplcache#get_context_filetype()
-
-  for delimiter in ['/', '\.'] +
-        \ get(g:neocomplcache_delimiter_patterns, filetype, [])
-    if a:cur_text =~ delimiter . '$'
-      let is_delimiter = 1
-      break
-    endif
-  endfor
-
-  if !is_delimiter
-    let s:cur_text = ''
-    let s:old_cur_text = ''
-
-    if g:neocomplcache_enable_debug
-      echomsg 'Skipped.'
-    endif
-
     return 1
   endif
 endfunction"}}}
@@ -1674,7 +1640,7 @@ function! neocomplcache#complete_check()"{{{
   if g:neocomplcache_enable_debug
     echomsg split(reltimestr(reltime(s:start_time)))[0]
   endif
-  return !neocomplcache#is_prefetch() && complete_check()
+  return (!neocomplcache#is_prefetch() && complete_check())
         \ || (neocomplcache#is_auto_complete()
         \     && has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
         \     && split(reltimestr(reltime(s:start_time)))[0] >
@@ -2824,28 +2790,34 @@ function! s:is_skip_auto_complete(cur_text)"{{{
     return 1
   endif
 
-  let cur_word = matchstr(a:cur_text,
-        \ '\%(\h\w*\|[^[:alnum:][:space:]_]\+\)$')
-  let old_cur_word = matchstr(s:old_cur_text,
-        \ '\%(\h\w*\|[^[:alnum:][:space:]_]\+\)$')
+  let neocomplcache = s:get_current_neocomplcache()
 
-  let completion_length = max(
-        \ values(g:neocomplcache_source_completion_length) +
-        \ [b:neocomplcache.completion_length,
-        \  g:neocomplcache_auto_completion_start_length, 3])
-
-  if g:neocomplcache_enable_debug
-    echomsg '[cur_word, old_cur_word, completion_length] = '
-          \ . string([cur_word, old_cur_word, completion_length])
+  if !neocomplcache.skip_next_complete
+    return 0
   endif
 
-  let neocomplcache = s:get_current_neocomplcache()
-  if !neocomplcache#is_eskk_enabled() && !neocomplcache.skip_next_complete
-        \ && old_cur_word != ''
-        \ && len(cur_word) > completion_length
-        \ && stridx(cur_word, old_cur_word) == 0
-        \ && stridx(a:cur_text, s:old_cur_text) == 0
-        \ && empty(s:complete_words)
+  let neocomplcache.skip_next_complete = 0
+
+  " Check delimiter pattern.
+  let is_delimiter = 0
+  let filetype = neocomplcache#get_context_filetype()
+
+  for delimiter in ['/', '\.'] +
+        \ get(g:neocomplcache_delimiter_patterns, filetype, [])
+    if a:cur_text =~ delimiter . '$'
+      let is_delimiter = 1
+      break
+    endif
+  endfor
+
+  if !is_delimiter
+    let s:cur_text = ''
+    let s:old_cur_text = ''
+
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
     return 1
   endif
 

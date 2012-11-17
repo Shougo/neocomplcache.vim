@@ -1460,6 +1460,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Added filename_include source.
 - Fixed context filetype range.
 - Refactored skip next completion feature.
+- Improved skip completion behavior.
 
 2012-11-16
 - Fixed member_complete error.
