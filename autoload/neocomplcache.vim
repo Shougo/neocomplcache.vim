@@ -2593,7 +2593,7 @@ function! s:get_context_filetype(filetype)"{{{
 
   let pos = [line('.'), col('.')]
   for include in get(g:neocomplcache_context_filetype_lists, filetype, [])
-    let start_backward = searchpos(include.start, 'bnW')
+    let start_backward = searchpos(include.start, 'bneW')
 
     " Check pos > start.
     if start_backward[0] == 0 || s:compare_pos(start_backward, pos) > 0
@@ -2620,6 +2620,17 @@ function! s:get_context_filetype(filetype)"{{{
     " Check start <= end.
     if s:compare_pos(start_backward, end_backward) < 0
       continue
+    endif
+
+    if start_backward[1] == len(getline(start_backward[0]))
+      " Next line.
+      let start_backward[0] += 1
+      let start_backward[1] = 1
+    endif
+    if end_forward[1] == 1
+      " Previous line.
+      let end_forward[0] -= 1
+      let end_forward[1] = len(getline(end_forward[0]))
     endif
 
     let neocomplcache.context_filetype_range =
