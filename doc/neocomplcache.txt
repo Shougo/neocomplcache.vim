@@ -1217,11 +1217,6 @@ neco-ghc				*neocomplcache-sources-neco-ghc*
 		this source.  It completes a source file written in Haskell.
 		It requires ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
-neco-ruby				*neocomplcache-sources-neco-ruby*
-		https://github.com/ujihisa/neco-ruby
-		This source is for ruby completion.  Only require_relative
-		completion is implemented so far.
-
 ==============================================================================
 UNITE SOURCES					*neocomplcache-unite-sources*
 
@@ -1454,6 +1449,9 @@ your Vim initialization.
 <
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-11-17
+- Supported require_relative in filename_complete.
 
 2012-11-16
 - Fixed member_complete error.

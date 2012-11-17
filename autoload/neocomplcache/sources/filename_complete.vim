@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Oct 2012.
+" Last Modified: 17 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -177,7 +177,13 @@ function! s:get_include_files(cur_keyword_str)"{{{
         \ '')
   let exts = get(g:neocomplcache_filename_include_exts, filetype,
         \ [])
+
   let line = neocomplcache#get_cur_text()
+  if line =~ '^\s*\<require_relative\>' && &filetype =~# 'ruby'
+    " For require_relative.
+    let path = expand('%:p:h')
+  endif
+
   let match_end = matchend(line, pattern)
   let cur_keyword_str = matchstr(line[match_end :], '\f\+')
   if expr != ''

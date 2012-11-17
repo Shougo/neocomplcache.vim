@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Nov 2012.
+" Last Modified: 17 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,10 +39,13 @@ if !exists('s:include_info')
         \ get(g:, 'neocomplcache_include_patterns', {})
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_include_patterns',
-        \ 'java,haskell', '\<import')
+        \ 'java,haskell', '^\s*\<import')
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_include_patterns',
-        \ 'cs', '\<using')
+        \ 'cs', '^\s*\<using')
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_patterns',
+        \ 'ruby', '^\s*\<\%(load\|require\|require_relative\)\>')
   "}}}
   " Initialize expr pattern."{{{
   call neocomplcache#util#set_default(
