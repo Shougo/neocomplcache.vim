@@ -1459,6 +1459,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Supported require_relative in filename_complete.
 - Added filename_include source.
 - Fixed context filetype range.
+- Refactored skip next completion feature.
 
 2012-11-16
 - Fixed member_complete error.

@@ -48,7 +48,6 @@ function! s:initialize_variables()"{{{
   let s:changedtick = b:changedtick
   let s:is_text_mode = 0
   let s:within_comment = 0
-  let s:skip_next_complete = 0
   let s:is_prefetch = 0
   let s:use_sources = {}
   let s:update_time_save = &updatetime
@@ -829,61 +828,11 @@ function! neocomplcache#auto_complete(findstart, base)"{{{
 endfunction"}}}
 
 function! s:do_auto_complete(event)"{{{
-  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
-        \ || neocomplcache#is_locked()
+  if s:check_in_do_auto_complete()
     return
   endif
 
-  " Detect completefunc.
-  if &l:completefunc != 'neocomplcache#manual_complete'
-        \ && &l:completefunc != 'neocomplcache#auto_complete'
-    if g:neocomplcache_force_overwrite_completefunc
-          \ || &l:completefunc == ''
-          \ || &l:completefunc ==# 'neocomplcache#sources_manual_complete'
-      " Set completefunc.
-      let &l:completefunc = 'neocomplcache#manual_complete'
-    else
-      " Warning.
-      redir => output
-      99verbose setl completefunc
-      redir END
-      call neocomplcache#print_error(output)
-      call neocomplcache#print_error(
-            \ 'Another plugin set completefunc! Disabled neocomplcache.')
-      NeoComplCacheLock
-      return
-    endif
-  endif
-
-  " Detect AutoComplPop.
-  if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
-    call neocomplcache#print_error(
-          \ 'Detected enabled AutoComplPop! Disabled neocomplcache.')
-    NeoComplCacheLock
-    return
-  endif
-
-  " Detect set paste.
-  if &paste
-    redir => output
-      99verbose set paste
-    redir END
-    call neocomplcache#print_error(output)
-    call neocomplcache#print_error(
-          \ 'Detected set paste! Disabled neocomplcache.')
-    return
-  endif
-
-  " Get cursor word.
   let cur_text = s:get_cur_text()
-  if a:event ==# 'InsertCharPre'
-    if v:char =~ '[[:cntrl:]]'
-      return
-    endif
-
-    let cur_text .= v:char
-  endif
-
   if g:neocomplcache_enable_debug
     echomsg 'cur_text = ' . cur_text
   endif
@@ -899,32 +848,11 @@ function! s:do_auto_complete(event)"{{{
     return
   endif
 
+  let neocomplcache = s:get_current_neocomplcache()
+
   let s:old_cur_text = cur_text
-  if s:skip_next_complete
-    let s:skip_next_complete = 0
-
-    " Check delimiter pattern.
-    let is_delimiter = 0
-    let filetype = neocomplcache#get_context_filetype()
-
-    for delimiter in ['/', '\.'] +
-          \ get(g:neocomplcache_delimiter_patterns, filetype, [])
-      if cur_text =~ delimiter . '$'
-        let is_delimiter = 1
-        break
-      endif
-    endfor
-
-    if !is_delimiter
-      let s:cur_text = ''
-      let s:old_cur_text = ''
-
-      if g:neocomplcache_enable_debug
-        echomsg 'Skipped.'
-      endif
-
-      return
-    endif
+  if s:skip_auto_complete(cur_text)
+    return
   endif
 
   if neocomplcache#is_omni_complete(cur_text)
@@ -987,6 +915,83 @@ function! s:do_auto_complete(event)"{{{
   " call feedkeys(g:neocomplcache_enable_auto_select ?
   "       \ "\<Plug>(neocomplcache_start_auto_complete)":
   "       \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
+endfunction"}}}
+function! s:check_in_do_auto_complete()"{{{
+  if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
+        \ || neocomplcache#is_locked()
+    return 1
+  endif
+
+  " Detect completefunc.
+  if &l:completefunc != 'neocomplcache#manual_complete'
+        \ && &l:completefunc != 'neocomplcache#auto_complete'
+    if g:neocomplcache_force_overwrite_completefunc
+          \ || &l:completefunc == ''
+          \ || &l:completefunc ==# 'neocomplcache#sources_manual_complete'
+      " Set completefunc.
+      let &l:completefunc = 'neocomplcache#manual_complete'
+    else
+      " Warning.
+      redir => output
+      99verbose setl completefunc
+      redir END
+      call neocomplcache#print_error(output)
+      call neocomplcache#print_error(
+            \ 'Another plugin set completefunc! Disabled neocomplcache.')
+      NeoComplCacheLock
+      return 1
+    endif
+  endif
+
+  " Detect AutoComplPop.
+  if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
+    call neocomplcache#print_error(
+          \ 'Detected enabled AutoComplPop! Disabled neocomplcache.')
+    NeoComplCacheLock
+    return 1
+  endif
+
+  " Detect set paste.
+  if &paste
+    redir => output
+      99verbose set paste
+    redir END
+    call neocomplcache#print_error(output)
+    call neocomplcache#print_error(
+          \ 'Detected set paste! Disabled neocomplcache.')
+    return 1
+  endif
+endfunction"}}}
+function! s:skip_auto_complete(cur_text)"{{{
+  let neocomplcache = s:get_current_neocomplcache()
+  if !neocomplcache.skip_next_complete
+    return 0
+  endif
+
+  let neocomplcache.skip_next_complete = 0
+
+  " Check delimiter pattern.
+  let is_delimiter = 0
+  let filetype = neocomplcache#get_context_filetype()
+
+  for delimiter in ['/', '\.'] +
+        \ get(g:neocomplcache_delimiter_patterns, filetype, [])
+    if a:cur_text =~ delimiter . '$'
+      let is_delimiter = 1
+      break
+    endif
+  endfor
+
+  if !is_delimiter
+    let s:cur_text = ''
+    let s:old_cur_text = ''
+
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
+    return 1
+  endif
 endfunction"}}}
 
 " Source helper."{{{
@@ -1678,6 +1683,10 @@ endfunction"}}}
 function! neocomplcache#check_invalid_omnifunc(omnifunc)"{{{
   return a:omnifunc == '' || (a:omnifunc !~ '#' && !exists('*' . a:omnifunc))
 endfunction"}}}
+function! neocomplcache#skip_next_complete()
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.skip_next_complete = 1
+endfunction
 
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...)"{{{
@@ -2253,7 +2262,7 @@ function! neocomplcache#smart_close_popup()"{{{
 endfunction
 "}}}
 function! neocomplcache#close_popup()"{{{
-  let s:skip_next_complete = 1
+  call neocomplcache#skip_next_complete()
   let s:cur_keyword_str = ''
   let s:complete_words = []
 
@@ -2261,7 +2270,7 @@ function! neocomplcache#close_popup()"{{{
 endfunction
 "}}}
 function! neocomplcache#cancel_popup()"{{{
-  let s:skip_next_complete = 1
+  call neocomplcache#skip_next_complete()
   let s:cur_keyword_str = ''
   let s:cur_keyword_pos = -1
   let s:complete_words = []
@@ -2397,7 +2406,6 @@ function! s:on_insert_leave()"{{{
   let s:cur_keyword_str = ''
   let s:complete_words = []
   let s:is_text_mode = 0
-  let s:skip_next_complete = 0
   let s:is_prefetch = 0
   let s:cur_keyword_pos = -1
 
@@ -2407,14 +2415,18 @@ function! s:on_insert_leave()"{{{
         \ neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
      let [&l:foldmethod, &l:foldexpr] = neocomplcache.foldinfo
   endif
+  let neocomplcache.skip_next_complete = 0
 endfunction"}}}
 function! s:on_insert_enter()"{{{
+  let neocomplcache = s:get_current_neocomplcache()
+
   " Save foldinfo.
   if &l:foldmethod ==# 'expr'
-    let neocomplcache = s:get_current_neocomplcache()
     let neocomplcache.foldinfo = [&l:foldmethod, &l:foldexpr]
     setlocal foldmethod=manual foldexpr=0
   endif
+
+  let neocomplcache.skip_next_complete = 0
 endfunction"}}}
 function! s:on_complete_done()"{{{
   " Get cursor word.
@@ -2696,6 +2708,7 @@ function! s:get_current_neocomplcache()"{{{
   if !exists('b:neocomplcache')
     let b:neocomplcache = {
           \ 'lock' : 0,
+          \ 'skip_next_complete' : 0,
           \ 'filetype' : '',
           \ 'context_filetype' : '',
           \ 'context_filetype_range' :
@@ -2826,7 +2839,8 @@ function! s:is_skip_auto_complete(cur_text)"{{{
           \ . string([cur_word, old_cur_word, completion_length])
   endif
 
-  if !neocomplcache#is_eskk_enabled() && !s:skip_next_complete
+  let neocomplcache = s:get_current_neocomplcache()
+  if !neocomplcache#is_eskk_enabled() && !neocomplcache.skip_next_complete
         \ && old_cur_word != ''
         \ && len(cur_word) > completion_length
         \ && stridx(cur_word, old_cur_word) == 0
