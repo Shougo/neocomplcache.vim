@@ -48,20 +48,20 @@ endfunction"}}}
 function! s:source.get_keyword_pos(cur_text)"{{{
   let filetype = neocomplcache#get_context_filetype()
   if filetype ==# 'vimshell' || filetype ==# 'unite'
-        \ || a:cur_text =~ '//'
-    return -1
-  endif
-
-  if neocomplcache#is_auto_complete()
-        \ && a:cur_text =~ '\*$\|\.\.\+$\|/c\%[ygdrive/]$'
-    " Skip filename completion.
     return -1
   endif
 
   " Filename pattern.
   let pattern = neocomplcache#get_keyword_pattern_end('filename')
-  let [cur_keyword_pos, _] =
+  let [cur_keyword_pos, cur_keyword_str] =
         \ neocomplcache#match_word(a:cur_text, pattern)
+  if cur_keyword_str =~ '//' ||
+        \ (neocomplcache#is_auto_complete() &&
+        \   cur_keyword_str =~# '\*\|\.\.\+$\|/c\%[ygdrive/]$')
+    " Not filename pattern.
+    return -1
+  endif
+
   if neocomplcache#is_sources_complete() && cur_keyword_pos < 0
     let cur_keyword_pos = len(a:cur_text)
   endif

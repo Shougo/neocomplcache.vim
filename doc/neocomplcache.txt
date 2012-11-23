@@ -1465,6 +1465,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-11-24
 - Added todo section.
+- Improved filename pattern in filename_complete.
 
 2012-11-17
 - Supported require_relative in filename_complete.
