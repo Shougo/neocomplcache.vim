@@ -1396,6 +1396,13 @@ source code's complete function, and find out the omni pattern).
 	let g:neocomplcache_omni_functions.xquery = 'xquerycomplete#CompleteXQuery'
 <
 
+Q: Does not indent when I input "else" in ruby filetype.
+
+A: Neocomplcache popup completion window automatically. But if popup window is
+visible, Vim cannot indent text. So you must choose "close popup window
+manually by <C-y> or <C-e> mappings" or "close popup window by <CR> user
+mappings".
+
 Q: <CR> mapping conflicts with |SuperTab| or |endwise| plugins.
 
 A: Please try below settings.
