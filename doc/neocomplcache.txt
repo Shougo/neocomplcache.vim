@@ -36,6 +36,7 @@ Sources			|neocomplcache-sources|
   User sources		  |neocomplcache-user-sources|
 Create source		|neocomplcache-create-source|
 FAQ			|neocomplcache-faq|
+TODO			|neocomplcache-todo|
 Changelog		|neocomplcache-changelog|
 
 ==============================================================================
@@ -1453,7 +1454,17 @@ your Vim initialization.
 	call neocomplcache#initialize()
 <
 ==============================================================================
+TODO						*neocomplcache-todo*
+
+Change "set paste" warning message behavior.
+
+Improve cache behavior in current buffer.
+
+==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-11-24
+- Added todo section.
 
 2012-11-17
 - Supported require_relative in filename_complete.
