@@ -127,26 +127,27 @@ COMMANDS 					*neocomplcache-commands*
 		[bufname] automatically.
 
 :NeoComplCacheCachingSyntax [filetype]		*:NeoComplCacheCachingSyntax*
-		Caching [filetype] syntax file.
-		Select current buffer filetype when [filetype] omitted.
+		Caches [filetype] syntax file.
+		Selects current buffer filetype when [filetype] is omitted.
 
 :NeoComplCacheCachingDictionary [filetype]
 					*:NeoComplCacheCachingDictionary*
-		Caching [filetype] dictionary file.
-		Select current buffer filetype when [filetype] omitted.
+		Caches [filetype] dictionary file.
+		Selects current buffer filetype when [filetype] is omitted.
 
 :NeoComplCacheCachingTags		*:NeoComplCacheCachingTags*
-		Caching tags file in current buffer.
+		Caches tags file in current buffer.
 
 :NeoComplCacheCachingInclude [bufname]		*:NeoComplCacheCachingInclude*
-		Caching [bufname] include file.
-		Select current buffer name when [bufname] omitted.
+		Caches [bufname] include file.
+		Selects current buffer name when [bufname] is omitted.
 
 :NeoComplCachePrintSource [bufname]		*:NeoComplCachePrintSource*
-		Output [bufname] buffer's cache in current buffer.
-		This command is for debug.
-		Select current buffer when [bufname] omitted.
-		For a command for debugging, a user will not need to use it mainly.
+		Outputs [bufname] buffer's cache in current buffer.
+		This command is for debugging.
+		Selects current buffer when [bufname] is omitted.
+		For a command for debugging, a user will not need to use it
+		mainly.
 
 :NeoComplCacheOutputKeyword [bufname]		*:NeoComplCacheOutputKeyword*
 		Write the keyword which cacheed [bufname] buffer in current
@@ -1398,10 +1399,10 @@ source code's complete function, and find out the omni pattern).
 
 Q: Does not indent when I input "else" in ruby filetype.
 
-A: Neocomplcache popup completion window automatically. But if popup window is
-visible, Vim cannot indent text. So you must choose "close popup window
-manually by <C-y> or <C-e> mappings" or "close popup window by <CR> user
-mappings".
+A: Neocomplcache pops up a completion window automatically, but if the popup
+window is already visible, Vim cannot indent text. So you must choose "close
+popup window manually by <C-y> or <C-e> mappings" or "close popup window by
+<CR> user mappings".
 
 Q: <CR> mapping conflicts with |SuperTab| or |endwise| plugins.
 
