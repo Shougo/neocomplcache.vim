@@ -1447,6 +1447,13 @@ heavy, so disabled by default.
 	endif
 	let g:neocomplcache_force_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 <
+Q: Candidates are not found in heavy completion(neco-look, etc).
+
+A: It may be caused by skip completion.
+
+
+A:
+
 Q: I want to disable skip completion.
 
 A:
