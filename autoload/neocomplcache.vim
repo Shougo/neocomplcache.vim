@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2012.
+" Last Modified: 27 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1640,11 +1640,17 @@ function! neocomplcache#complete_check()"{{{
   if g:neocomplcache_enable_debug
     echomsg split(reltimestr(reltime(s:start_time)))[0]
   endif
-  return (!neocomplcache#is_prefetch() && complete_check())
+  let ret = (!neocomplcache#is_prefetch() && complete_check())
         \ || (neocomplcache#is_auto_complete()
         \     && has('reltime') && g:neocomplcache_skip_auto_completion_time != ''
         \     && split(reltimestr(reltime(s:start_time)))[0] >
         \          g:neocomplcache_skip_auto_completion_time)
+  if ret
+    redraw
+    echo 'Skipped.'
+  endif
+
+  return ret
 endfunction"}}}
 function! neocomplcache#check_invalid_omnifunc(omnifunc)"{{{
   return a:omnifunc == '' || (a:omnifunc !~ '#' && !exists('*' . a:omnifunc))

@@ -1477,6 +1477,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-11-27
+- Added skip message in skip completion.
+
 2012-11-24
 - Added todo section.
 - Improved filename pattern in filename_complete.
