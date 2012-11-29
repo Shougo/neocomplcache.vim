@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Nov 2012.
+" Last Modified: 29 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -683,6 +683,16 @@ function! neocomplcache#enable() "{{{
         " \ <C-x><C-u><C-p>
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
         \ <C-x><C-o><C-p>
+
+  " Detect set paste.
+  if &paste
+    redir => output
+    99verbose set paste
+    redir END
+    call neocomplcache#print_error(output)
+    call neocomplcache#print_error(
+          \ 'Detected set paste! Disabled neocomplcache.')
+  endif
 endfunction"}}}
 
 function! neocomplcache#disable()"{{{
@@ -945,17 +955,6 @@ function! s:check_in_do_auto_complete()"{{{
     call neocomplcache#print_error(
           \ 'Detected enabled AutoComplPop! Disabled neocomplcache.')
     NeoComplCacheLock
-    return 1
-  endif
-
-  " Detect set paste.
-  if &paste
-    redir => output
-      99verbose set paste
-    redir END
-    call neocomplcache#print_error(output)
-    call neocomplcache#print_error(
-          \ 'Detected set paste! Disabled neocomplcache.')
     return 1
   endif
 endfunction"}}}

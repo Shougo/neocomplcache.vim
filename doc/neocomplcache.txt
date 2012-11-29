@@ -1478,6 +1478,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-11-29
+- Improved detect paste behavior.
+
 2012-11-27
 - Added skip message in skip completion.
 
