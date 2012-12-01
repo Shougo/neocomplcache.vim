@@ -925,7 +925,7 @@ function! s:do_auto_complete(event) "{{{
 endfunction"}}}
 function! s:check_in_do_auto_complete() "{{{
   if (&buftype !~ 'nofile\|nowrite' && b:changedtick == s:changedtick)
-        \ || neocomplcache#is_locked()
+        \ || neocomplcache#is_locked() || &paste
     return 1
   endif
 
