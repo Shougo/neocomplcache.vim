@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Nov 2012.
+" Last Modified: 29 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! s:source.initialize()"{{{
           \ call s:check_recache()
     autocmd InsertEnter,InsertLeave *
           \ call s:caching_current_buffer(
-          \          line('.') - 1, line('.') + 1, 1)
+          \          line('.') - 1, line('.') + 1)
   augroup END"}}}
 
   " Set rank.
@@ -114,9 +114,9 @@ endfunction"}}}
 
 function! neocomplcache#sources#buffer_complete#caching_current_line()"{{{
   " Current line caching.
-  return s:caching_current_buffer(line('.') - 1, line('.') + 1, 1)
+  return s:caching_current_buffer(line('.') - 1, line('.') + 1)
 endfunction"}}}
-function! s:caching_current_buffer(start, end, is_auto)"{{{
+function! s:caching_current_buffer(start, end)"{{{
   " Current line caching.
 
   if !s:exists_current_source()
@@ -151,10 +151,6 @@ function! s:caching_current_buffer(start, end, is_auto)"{{{
         " Append list.
         let keywords[key][match_str] =
               \ { 'word' : match_str, 'menu' : menu, 'rank' : 0 }
-        if a:is_auto
-          " Save line number.
-          let keywords[key][match_str].line = a:start
-        endif
       endif
     endif"}}}
 
@@ -223,7 +219,7 @@ function! s:word_caching(srcname)"{{{
         \ || getbufvar(a:srcname, '&buftype') =~ 'nofile'
     if a:srcname == bufnr('%')
       " Make buffer cache.
-      call s:caching_current_buffer(1, min([1000, line('$')]), 0)
+      call s:caching_current_buffer(1, min([1000, line('$')]))
     endif
 
     return
@@ -296,21 +292,6 @@ function! s:check_cache()"{{{
       call remove(s:buffer_sources, key)
     endif
   endfor
-
-  if !s:exists_current_source()
-    return
-  endif
-
-  let bufnumber = bufnr('%')
-  let source = s:buffer_sources[bufnumber]
-
-  " Check current line caching.
-  for cache in values(source.keyword_cache)
-    call filter(cache, "!has_key(v:val, 'line')
-          \ || stridx(getline(v:val.line), v:val.word) >= 0
-          \ || search('\\<'.neocomplcache#util#escape_pattern(
-          \     v:val.word).'\\>', 'wn', 0, 300) > 0")
-  endfor
 endfunction"}}}
 function! s:check_recache()"{{{
   if !s:exists_current_source()
@@ -325,7 +306,7 @@ function! s:check_recache()"{{{
   " Check buffer access time.
   if source.cached_time > 0 &&
         \ (source.cached_time < release_accessd_time
-        \  || (abs(source.end_line - line('$')) * 10)/source.end_line > 1)
+        \  || (neocomplcache#util#has_vimproc() && line('$') != source.end_line))
     " Buffer recache.
     call s:word_caching(bufnr('%'))
   endif
@@ -365,7 +346,7 @@ function! neocomplcache#sources#buffer_complete#caching_buffer(name)"{{{
 
   " Word recaching.
   call s:word_caching(number)
-  call s:caching_current_buffer(1, line('$'), 0)
+  call s:caching_current_buffer(1, line('$'))
 endfunction"}}}
 function! neocomplcache#sources#buffer_complete#print_source(name)"{{{
   if a:name == ''
