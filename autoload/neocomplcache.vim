@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Dec 2012.
+" Last Modified: 02 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2395,6 +2395,7 @@ function! s:on_insert_enter() "{{{
   if &l:foldmethod ==# 'expr'
     let neocomplcache.foldinfo = [&l:foldmethod, &l:foldexpr]
     setlocal foldmethod=manual foldexpr=0
+    normal! zv
   endif
 
   let neocomplcache.skip_next_complete = 0

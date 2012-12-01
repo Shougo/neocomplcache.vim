@@ -1478,6 +1478,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2012-12-02
+- Open folds in InsertEnter.
+
 2012-12-01
 - Improved making cache behavior(testing).
 
