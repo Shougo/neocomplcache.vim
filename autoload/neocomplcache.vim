@@ -764,9 +764,12 @@ function! neocomplcache#manual_complete(findstart, base) "{{{
       let s:complete_words = []
       let s:is_prefetch = 0
       let s:complete_results = {}
-      return (g:neocomplcache_enable_prefetch
-            \ || g:neocomplcache_enable_insert_char_pre) ?
-            \ -1 : -3
+
+      let neocomplcache = s:get_current_neocomplcache()
+      let cur_keyword_pos = (g:neocomplcache_enable_prefetch ||
+            \ g:neocomplcache_enable_insert_char_pre ||
+            \ s:get_current_neocomplcache().skipped) ?  -1 : -3
+      let neocomplcache.skipped = 0
     endif
 
     return cur_keyword_pos
@@ -859,6 +862,7 @@ function! s:do_auto_complete(event) "{{{
   endif
 
   let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.skipped = 0
 
   let s:old_cur_text = cur_text
 
@@ -1645,6 +1649,9 @@ function! neocomplcache#complete_check() "{{{
         \     && split(reltimestr(reltime(s:start_time)))[0] >
         \          g:neocomplcache_skip_auto_completion_time)
   if ret
+    let neocomplcache = s:get_current_neocomplcache()
+    let neocomplcache.skipped = 1
+
     redraw
     echo 'Skipped.'
   endif
@@ -2689,6 +2696,7 @@ function! s:get_current_neocomplcache() "{{{
           \ 'update_time_save' : &updatetime,
           \ 'foldinfo' : [],
           \ 'lock_sources' : {},
+          \ 'skipped' : 0,
           \}
   endif
 
