@@ -1481,6 +1481,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-12-02
 - Open folds in InsertEnter.
 - Fixed "skipped" behavior.
+- Fixed completion problem in InsertCharPre.
 
 2012-12-01
 - Improved making cache behavior(testing).

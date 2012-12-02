@@ -845,6 +845,10 @@ function! s:do_auto_complete(event) "{{{
     return
   endif
 
+  let neocomplcache = s:get_current_neocomplcache()
+  let neocomplcache.skipped = 0
+  let neocomplcache.event = a:event
+
   let cur_text = s:get_cur_text()
   if g:neocomplcache_enable_debug
     echomsg 'cur_text = ' . cur_text
@@ -860,9 +864,6 @@ function! s:do_auto_complete(event) "{{{
     let s:complete_words = []
     return
   endif
-
-  let neocomplcache = s:get_current_neocomplcache()
-  let neocomplcache.skipped = 0
 
   let s:old_cur_text = cur_text
 
@@ -2489,6 +2490,11 @@ function! s:get_cur_text() "{{{
     let cur_keyword_str = ''
   endif
 
+  let neocomplcache = s:get_current_neocomplcache()
+  if neocomplcache.event ==# 'InsertCharPre'
+    let cur_keyword_str .= v:char
+  endif
+
   let filetype = neocomplcache#get_context_filetype()
   let wildcard = get(g:neocomplcache_wildcard_characters, filetype,
         \ get(g:neocomplcache_wildcard_characters, '_', '*'))
@@ -2697,6 +2703,7 @@ function! s:get_current_neocomplcache() "{{{
           \ 'foldinfo' : [],
           \ 'lock_sources' : {},
           \ 'skipped' : 0,
+          \ 'event' : '',
           \}
   endif
 
