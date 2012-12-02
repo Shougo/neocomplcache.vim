@@ -1399,7 +1399,12 @@ source code's complete function, and find out the omni pattern).
 
 Q: Does not indent when I input "else" in ruby filetype.
 
-A: Neocomplcache pops up a completion window automatically, but if the popup
+A:
+
+In first, you must install "vim-ruby" from github to indent in neocomplcache.
+https://github.com/vim-ruby/vim-ruby
+
+Neocomplcache pops up a completion window automatically, but if the popup
 window is already visible, Vim cannot indent text. So you must choose "close
 popup window manually by <C-y> or <C-e> mappings" or "close popup window by
 <CR> user mappings".
