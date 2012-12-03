@@ -1401,7 +1401,7 @@ Q: Does not indent when I input "else" in ruby filetype.
 
 A:
 
-In first, you must install "vim-ruby" from github to indent in neocomplcache.
+You must install "vim-ruby" from github to indent in neocomplcache first.
 https://github.com/vim-ruby/vim-ruby
 
 Neocomplcache pops up a completion window automatically, but if the popup
