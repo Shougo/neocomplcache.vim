@@ -2406,7 +2406,9 @@ function! s:on_insert_enter() "{{{
   if &l:foldmethod ==# 'expr'
     let neocomplcache.foldinfo = [&l:foldmethod, &l:foldexpr]
     setlocal foldmethod=manual foldexpr=0
-    foldopen
+    if foldlevel('.') != 0
+      foldopen
+    endif
   endif
 
   let neocomplcache.skip_next_complete = 0
