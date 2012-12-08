@@ -1485,6 +1485,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2012-12-08
 - Added less support.
+- Fixed undo completion behavior.
 
 2012-12-03
 - Fixed opening folds' bug.

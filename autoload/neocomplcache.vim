@@ -2272,7 +2272,7 @@ function! neocomplcache#undo_completion() "{{{
   let old_keyword_str = s:cur_keyword_str
   let s:cur_keyword_str = cur_keyword_str
 
-  return (pumvisible() ? "\<C-e>" : '')
+  return (pumvisible() ? "\<C-y>" : '')
         \. repeat("\<BS>", len(cur_keyword_str)) . old_keyword_str
 endfunction"}}}
 
