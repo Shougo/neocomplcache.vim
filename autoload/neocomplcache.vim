@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Dec 2012.
+" Last Modified: 08 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -242,7 +242,7 @@ function! neocomplcache#enable() "{{{
         \'\|\h[[:alnum:]_-]*="\%([^"]*"\?\)\?\|\h[[:alnum:]_:-]*')
   call neocomplcache#util#set_default_dictionary(
         \'g:neocomplcache_keyword_patterns',
-        \'css,stylus,scss',
+        \'css,stylus,scss,less',
         \'[@#.]\?[[:alpha:]_:-][[:alnum:]_:-]*')
   call neocomplcache#util#set_default_dictionary(
         \'g:neocomplcache_keyword_patterns',
@@ -374,7 +374,7 @@ function! neocomplcache#enable() "{{{
         \ 'html,xml', 'xhtml')
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_same_filetype_lists',
-        \ 'html,xhtml', 'css,stylus')
+        \ 'html,xhtml', 'css,stylus,less')
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_same_filetype_lists',
         \ 'css', 'scss')
@@ -384,6 +384,9 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_same_filetype_lists',
         \ 'stylus', 'css')
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_same_filetype_lists',
+        \ 'less', 'css')
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_same_filetype_lists',
         \ 'xhtml', 'html,xml')
