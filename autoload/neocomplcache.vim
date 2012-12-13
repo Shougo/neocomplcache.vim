@@ -1004,8 +1004,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str) "{{{
         \ && (g:neocomplcache_fuzzy_completion_start_length
         \          <= keyword_len && keyword_len < 20)
     let pattern = keyword_len >= 8 ?
-          \ '\0\\w*\\W\\?' :
-          \ '\\%(\0\\|\U\0\E\\l*\\|\0\\w*\\W\\)'
+          \ '\0\\w*' : '\\%(\0\\w*\\|\U\0\E\\l*\\)'
 
     let start = g:neocomplcache_fuzzy_completion_start_length
     if start <= 1
