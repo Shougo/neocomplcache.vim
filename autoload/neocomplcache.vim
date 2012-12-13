@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Dec 2012.
+" Last Modified: 13 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,6 +39,7 @@ function! s:initialize_variables() "{{{
   let s:plugin_sources = {}
   let s:ftplugin_sources = {}
   let s:loaded_ftplugin_sources = {}
+  let s:loaded_source_files = {}
   let s:use_sources = {}
   let s:filetype_frequencies = {}
   let s:loaded_all_sources = 0
@@ -55,7 +56,8 @@ endif
 
 function! neocomplcache#initialize() "{{{
   call neocomplcache#enable()
-  call s:initialize_sources([''])
+  call s:initialize_sources(get(g:neocomplcache_sources_list,
+        \ neocomplcache#get_context_filetype(), ['_']))
 endfunction"}}}
 
 function! neocomplcache#enable() "{{{
@@ -2702,12 +2704,14 @@ function! neocomplcache#get_current_neocomplcache() "{{{
 endfunction"}}}
 function! s:initialize_sources(source_names) "{{{
   " Initialize sources table.
+  if s:loaded_all_sources
+    return
+  endif
 
   for name in a:source_names
     if has_key(s:complfunc_sources, name)
             \ || has_key(s:ftplugin_sources, name)
             \ || has_key(s:plugin_sources, name)
-            \ || s:loaded_all_sources
       continue
     endif
 
@@ -2715,10 +2719,14 @@ function! s:initialize_sources(source_names) "{{{
     for source_name in map(split(globpath(&runtimepath,
           \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
           \ "fnamemodify(v:val, ':t:r')")
+      if has_key(s:loaded_source_files, source_name)
+        continue
+      endif
+
+      let s:loaded_source_files[source_name] = 1
+
       let source = neocomplcache#sources#{source_name}#define()
-      if empty(source) || has_key(s:complfunc_sources, source.name)
-            \ || has_key(s:ftplugin_sources, source.name)
-            \ || has_key(s:plugin_sources, source.name)
+      if empty(source)
         " Ignore.
         continue
       endif
@@ -2751,7 +2759,7 @@ function! s:initialize_sources(source_names) "{{{
       endif
     endfor
 
-    if name == ''
+    if name == '_'
       let s:loaded_all_sources = 1
     endif
   endfor
