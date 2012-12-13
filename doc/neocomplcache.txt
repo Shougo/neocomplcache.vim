@@ -1486,6 +1486,7 @@ CHANGELOG					*neocomplcache-changelog*
 2012-12-13
 - Fixed initialization.
 - Improved fuzzy search behavior.
+- Improved skip next complete behavior.
 
 2012-12-08
 - Added less support.

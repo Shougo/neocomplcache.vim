@@ -2377,7 +2377,6 @@ function! s:on_insert_leave() "{{{
         \ neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
      let [&l:foldmethod, &l:foldexpr] = neocomplcache.foldinfo
   endif
-  let neocomplcache.skip_next_complete = 0
 endfunction"}}}
 function! s:on_insert_enter() "{{{
   let neocomplcache = neocomplcache#get_current_neocomplcache()
@@ -2390,8 +2389,6 @@ function! s:on_insert_enter() "{{{
       foldopen
     endif
   endif
-
-  let neocomplcache.skip_next_complete = 0
 endfunction"}}}
 function! s:on_complete_done() "{{{
   " Get cursor word.
