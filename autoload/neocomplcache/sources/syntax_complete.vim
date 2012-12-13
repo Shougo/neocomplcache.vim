@@ -37,7 +37,7 @@ let s:source = {
       \ 'kind' : 'plugin',
       \}
 
-function! s:source.initialize()"{{{
+function! s:source.initialize() "{{{
   " Set rank.
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_source_rank', 'syntax_complete', 7)
@@ -54,11 +54,11 @@ function! s:source.initialize()"{{{
   call s:caching()
 endfunction"}}}
 
-function! s:source.finalize()"{{{
+function! s:source.finalize() "{{{
   delcommand NeoComplCacheCachingSyntax
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str) "{{{
   if neocomplcache#within_comment()
     return []
   endif
@@ -82,11 +82,11 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   return list
 endfunction"}}}
 
-function! neocomplcache#sources#syntax_complete#define()"{{{
+function! neocomplcache#sources#syntax_complete#define() "{{{
   return s:source
 endfunction"}}}
 
-function! s:caching()"{{{
+function! s:caching() "{{{
   if &filetype == '' || &filetype ==# 'vim'
     return
   endif
@@ -111,7 +111,7 @@ function! s:caching()"{{{
   endfor
 endfunction"}}}
 
-function! neocomplcache#sources#syntax_complete#recaching(filetype)"{{{
+function! neocomplcache#sources#syntax_complete#recaching(filetype) "{{{
   if a:filetype == ''
     let filetype = &filetype
   else
@@ -122,7 +122,7 @@ function! neocomplcache#sources#syntax_complete#recaching(filetype)"{{{
   let s:syntax_list[filetype] = s:caching_from_syn(filetype)
 endfunction"}}}
 
-function! s:caching_from_syn(filetype)"{{{
+function! s:caching_from_syn(filetype) "{{{
   call neocomplcache#print_caching(
         \ 'Caching syntax "' . a:filetype . '"... please wait.')
 
@@ -207,12 +207,12 @@ function! s:caching_from_syn(filetype)"{{{
   return keyword_lists
 endfunction"}}}
 
-" LengthOrder."{{{
+" LengthOrder. "{{{
 function! s:compare_length(i1, i2)
   return a:i1.word < a:i2.word ? 1 : a:i1.word == a:i2.word ? 0 : -1
 endfunction"}}}
 
-function! s:substitute_candidate(candidate)"{{{
+function! s:substitute_candidate(candidate) "{{{
   let candidate = a:candidate
 
   " Collection.
@@ -237,7 +237,7 @@ function! s:substitute_candidate(candidate)"{{{
   return candidate
 endfunction"}}}
 
-function! s:split_pattern(keyword_pattern)"{{{
+function! s:split_pattern(keyword_pattern) "{{{
   let original_pattern = a:keyword_pattern
   let result_patterns = []
   let analyzing_patterns = [ '' ]
@@ -294,7 +294,7 @@ function! s:split_pattern(keyword_pattern)"{{{
   return result_patterns
 endfunction"}}}
 
-function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
+function! s:match_pair(string, start_pattern, end_pattern, start_cnt) "{{{
   let end = -1
   let start_pattern = '\%(' . a:start_pattern . '\)'
   let end_pattern = '\%(' . a:end_pattern . '\)'
@@ -329,7 +329,7 @@ function! s:match_pair(string, start_pattern, end_pattern, start_cnt)"{{{
   endif
 endfunction"}}}
 
-" Global options definition."{{{
+" Global options definition. "{{{
 if !exists('g:neocomplcache_min_syntax_length')
   let g:neocomplcache_min_syntax_length = 4
 endif

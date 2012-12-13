@@ -32,14 +32,14 @@ let s:source = {
       \ 'kind' : 'plugin',
       \}
 
-function! s:source.initialize()"{{{
+function! s:source.initialize() "{{{
   " Initialize.
 endfunction"}}}
 
-function! s:source.finalize()"{{{
+function! s:source.finalize() "{{{
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str) "{{{
   " Get current abbrev list.
   let abbrev_list = ''
   redir => abbrev_list
@@ -62,7 +62,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   return neocomplcache#keyword_filter(list, a:cur_keyword_str)
 endfunction"}}}
 
-function! neocomplcache#sources#abbrev_complete#define()"{{{
+function! neocomplcache#sources#abbrev_complete#define() "{{{
   return s:source
 endfunction"}}}
 

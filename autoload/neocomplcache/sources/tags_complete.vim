@@ -38,7 +38,7 @@ let s:source = {
       \ 'kind' : 'plugin',
       \}
 
-function! s:source.initialize()"{{{
+function! s:source.initialize() "{{{
   let g:neocomplcache_tags_caching_limit_file_size =
         \ get(g:, 'neocomplcache_tags_caching_limit_file_size', 500000)
 
@@ -48,15 +48,15 @@ function! s:source.initialize()"{{{
   endif
 endfunction"}}}
 
-function! s:source.finalize()"{{{
+function! s:source.finalize() "{{{
   delcommand NeoComplCacheCachingTags
 endfunction"}}}
 
-function! neocomplcache#sources#tags_complete#define()"{{{
+function! neocomplcache#sources#tags_complete#define() "{{{
   return s:source
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str) "{{{
   if !has_key(s:async_tags_list, bufnr('%'))
         \ && !has_key(s:tags_list, bufnr('%'))
     call neocomplcache#sources#tags_complete#caching_tags(0)
@@ -78,7 +78,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   return neocomplcache#keyword_filter(keyword_list, a:cur_keyword_str)
 endfunction"}}}
 
-function! s:initialize_tags(filename)"{{{
+function! s:initialize_tags(filename) "{{{
   " Initialize tags list.
   let ft = &filetype
   if ft == ''
@@ -91,7 +91,7 @@ function! s:initialize_tags(filename)"{{{
         \              'tags_cache', a:filename, ft, 'T', 0)
         \ }
 endfunction"}}}
-function! neocomplcache#sources#tags_complete#caching_tags(force)"{{{
+function! neocomplcache#sources#tags_complete#caching_tags(force) "{{{
   let bufnumber = bufnr('%')
 
   let s:async_tags_list[bufnumber] = []

@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Global options definition."{{{
+" Global options definition. "{{{
 if !exists('g:neocomplcache_include_patterns')
   let g:neocomplcache_include_patterns = {}
 endif
@@ -47,12 +47,12 @@ let s:source = {
       \ 'kind' : 'complfunc',
       \}
 
-function! s:source.initialize()"{{{
+function! s:source.initialize() "{{{
   " Initialize.
   call neocomplcache#set_completion_length(
         \ s:source.name, g:neocomplcache_auto_completion_start_length)
 
-  " Initialize filename include expr."{{{
+  " Initialize filename include expr. "{{{
   let g:neocomplcache_filename_include_exprs =
         \ get(g:, 'neocomplcache_filename_include_exprs', {})
   call neocomplcache#util#set_default_dictionary(
@@ -65,7 +65,7 @@ function! s:source.initialize()"{{{
         \ 'fnamemodify(substitute(v:fname, "/", ".", "g"), ":r")')
   "}}}
 
-  " Initialize filename include extensions."{{{
+  " Initialize filename include extensions. "{{{
   let g:neocomplcache_filename_include_exts =
         \ get(g:, 'neocomplcache_filename_include_exts', {})
   call neocomplcache#util#set_default_dictionary(
@@ -87,10 +87,10 @@ function! s:source.initialize()"{{{
         \ 'g:neocomplcache_source_rank',
         \ s:source.name, 10)
 endfunction"}}}
-function! s:source.finalize()"{{{
+function! s:source.finalize() "{{{
 endfunction"}}}
 
-function! s:source.get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text) "{{{
   let filetype = neocomplcache#get_context_filetype()
 
   " Not Filename pattern.
@@ -134,11 +134,11 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   return cur_keyword_pos
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   return s:get_include_files(a:cur_keyword_str)
 endfunction"}}}
 
-function! s:get_include_files(cur_keyword_str)"{{{
+function! s:get_include_files(cur_keyword_str) "{{{
   let filetype = neocomplcache#get_context_filetype()
 
   let path = neocomplcache#util#substitute_path_separator(
@@ -221,7 +221,7 @@ function! s:get_include_files(cur_keyword_str)"{{{
         \ + neocomplcache#keyword_filter(file_list, a:cur_keyword_str)
 endfunction"}}}
 
-function! s:get_default_include_files(filetype)"{{{
+function! s:get_default_include_files(filetype) "{{{
   let files = []
 
   if a:filetype ==# 'python' || a:filetype ==# 'python3'
@@ -231,7 +231,7 @@ function! s:get_default_include_files(filetype)"{{{
   return map(files, "{ 'word' : v:val, 'menu' : '[FI]' }")
 endfunction"}}}
 
-function! neocomplcache#sources#filename_include#define()"{{{
+function! neocomplcache#sources#filename_include#define() "{{{
   return s:source
 endfunction"}}}
 

@@ -61,7 +61,7 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
         \ a:cache_dir, a:key, a:async_cache_dictionary,
         \ a:keyword_list_dictionary[a:key])
 endfunction"}}}
-function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
+function! neocomplcache#cache#load_from_cache(cache_dir, filename) "{{{
   try
     return eval(get(neocomplcache#cache#readfile(
           \ a:cache_dir, a:filename), 0, '[]'))
@@ -75,7 +75,7 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename)"{{{
     return []
   endtry
 endfunction"}}}
-function! neocomplcache#cache#load_from_cache_old(cache_dir, filename)"{{{
+function! neocomplcache#cache#load_from_cache_old(cache_dir, filename) "{{{
   try
     return map(map(neocomplcache#cache#readfile(a:cache_dir, a:filename),
           \ 'split(v:val, "|||", 1)'), '{
@@ -88,7 +88,7 @@ function! neocomplcache#cache#load_from_cache_old(cache_dir, filename)"{{{
     return []
   endtry
 endfunction"}}}
-function! neocomplcache#cache#index_load_from_cache(cache_dir, filename)"{{{
+function! neocomplcache#cache#index_load_from_cache(cache_dir, filename) "{{{
   let keyword_lists = {}
 
   let completion_length = 2
@@ -102,7 +102,7 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename)"{{{
 
   return keyword_lists
 endfunction"}}}
-function! neocomplcache#cache#list2index(list, dictionary)"{{{
+function! neocomplcache#cache#list2index(list, dictionary) "{{{
   let completion_length = 2
   for keyword in a:list
     let key = tolower(keyword.word[: completion_length-1])
@@ -115,11 +115,11 @@ function! neocomplcache#cache#list2index(list, dictionary)"{{{
   return a:dictionary
 endfunction"}}}
 
-function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list)"{{{
+function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list) "{{{
   call neocomplcache#cache#writefile(
         \ a:cache_dir, a:filename, [string(a:keyword_list)])
 endfunction"}}}
-function! neocomplcache#cache#save_cache_old(cache_dir, filename, keyword_list)"{{{
+function! neocomplcache#cache#save_cache_old(cache_dir, filename, keyword_list) "{{{
   " Create dictionary key.
   for keyword in a:keyword_list
     if !has_key(keyword, 'abbr')
@@ -145,19 +145,19 @@ function! neocomplcache#cache#save_cache_old(cache_dir, filename, keyword_list)"
 endfunction"}}}
 
 " Cache helper.
-function! neocomplcache#cache#getfilename(cache_dir, filename)"{{{
+function! neocomplcache#cache#getfilename(cache_dir, filename) "{{{
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.getfilename(cache_dir, a:filename)
 endfunction"}}}
-function! neocomplcache#cache#filereadable(cache_dir, filename)"{{{
+function! neocomplcache#cache#filereadable(cache_dir, filename) "{{{
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.filereadable(cache_dir, a:filename)
 endfunction"}}}
-function! neocomplcache#cache#readfile(cache_dir, filename)"{{{
+function! neocomplcache#cache#readfile(cache_dir, filename) "{{{
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.readfile(cache_dir, a:filename)
 endfunction"}}}
-function! neocomplcache#cache#writefile(cache_dir, filename, list)"{{{
+function! neocomplcache#cache#writefile(cache_dir, filename, list) "{{{
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.writefile(cache_dir, a:filename, a:list)
 endfunction"}}}
@@ -166,7 +166,7 @@ function! neocomplcache#cache#encode_name(cache_dir, filename)
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.getfilename(cache_dir, a:filename)
 endfunction
-function! neocomplcache#cache#check_old_cache(cache_dir, filename)"{{{
+function! neocomplcache#cache#check_old_cache(cache_dir, filename) "{{{
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return  s:Cache.check_old_cache(cache_dir, a:filename)
 endfunction"}}}
@@ -175,7 +175,7 @@ let s:sdir = neocomplcache#util#substitute_path_separator(
       \ fnamemodify(expand('<sfile>'), ':p:h'))
 
 " Async test.
-function! neocomplcache#cache#test_async()"{{{
+function! neocomplcache#cache#test_async() "{{{
   if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
     return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   endif
@@ -203,7 +203,7 @@ function! neocomplcache#cache#test_async()"{{{
   return s:async_load(argv, 'test_cache', filename)
 endfunction"}}}
 
-function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark)"{{{
+function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark) "{{{
   if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
     return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   endif
@@ -228,7 +228,7 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
         \ ]
   return s:async_load(argv, a:cache_dir, a:filename)
 endfunction"}}}
-function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype, mark, is_create_tags)"{{{
+function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype, mark, is_create_tags) "{{{
   if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
     return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   endif
@@ -287,7 +287,7 @@ function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype
         \ ]
   return s:async_load(argv, a:cache_dir, a:filename)
 endfunction"}}}
-function! s:async_load(argv, cache_dir, filename)"{{{
+function! s:async_load(argv, cache_dir, filename) "{{{
   " if 0
   if neocomplcache#has_vimproc()
     let paths = vimproc#get_command_name(v:progname, $PATH, -1)

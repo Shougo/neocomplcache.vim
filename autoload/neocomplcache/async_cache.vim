@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:main(argv)"{{{
+function! s:main(argv) "{{{
   " args: funcname, outputname filename pattern_file_name mark minlen maxfilename
   let [funcname, outputname, filename, pattern_file_name, mark, minlen, maxfilename, fileencoding]
         \ = a:argv
@@ -65,7 +65,7 @@ function! s:main(argv)"{{{
   call writefile([string(keyword_list)], outputname)
 endfunction"}}}
 
-function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
+function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding) "{{{
   if !filereadable(a:filename)
     " File not found.
     return []
@@ -84,9 +84,9 @@ function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilenam
   let dup_check = {}
   let keyword_pattern2 = '^\%('.pattern.'\m\)'
 
-  for line in lines"{{{
+  for line in lines "{{{
     let match = match(line, pattern)
-    while match >= 0"{{{
+    while match >= 0 "{{{
       let match_str = matchstr(line, keyword_pattern2, match)
 
       if !has_key(dup_check, match_str) && len(match_str) >= a:minlen
@@ -103,7 +103,7 @@ function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilenam
   return keyword_list
 endfunction"}}}
 
-function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)"{{{
+function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding) "{{{
   let menu = '[' . a:mark . '] ' . s:strwidthpart(
         \ fnamemodify(a:filename, ':t'), a:maxfilename)
 
@@ -145,7 +145,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
           \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
   endif
 
-  for line in tags_list"{{{
+  for line in tags_list "{{{
     let tag = split(substitute(line, "\<CR>", '', 'g'), '\t', 1)
 
     " Add keywords.
@@ -221,7 +221,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   return keyword_lists
 endfunction"}}}
 
-function! s:truncate(str, width)"{{{
+function! s:truncate(str, width) "{{{
   " Original function is from mattn.
   " http://github.com/mattn/googlereader-vim/tree/master
 
@@ -244,7 +244,7 @@ function! s:truncate(str, width)"{{{
   return ret
 endfunction"}}}
 
-function! s:strwidthpart(str, width)"{{{
+function! s:strwidthpart(str, width) "{{{
   let ret = a:str
   let width = s:wcswidth(a:str)
   while width > a:width
@@ -266,14 +266,14 @@ endfunction
 
 if v:version >= 703
   " Use builtin function.
-  function! s:wcswidth(str)"{{{
+  function! s:wcswidth(str) "{{{
     return strdisplaywidth(a:str)
   endfunction"}}}
-  function! s:wcwidth(str)"{{{
+  function! s:wcwidth(str) "{{{
     return strwidth(a:str)
   endfunction"}}}
 else
-  function! s:wcswidth(str)"{{{
+  function! s:wcswidth(str) "{{{
     if a:str =~# '^[\x00-\x7f]*$'
       return strlen(a:str)
     end
@@ -293,7 +293,7 @@ else
   endfunction"}}}
 
   " UTF-8 only.
-  function! s:wcwidth(ucs)"{{{
+  function! s:wcwidth(ucs) "{{{
     let ucs = a:ucs
     if (ucs >= 0x1100
           \  && (ucs <= 0x115f
@@ -326,7 +326,7 @@ if argc() == 8 &&
 
   qall!
 else
-  function! neocomplcache#async_cache#main(argv)"{{{
+  function! neocomplcache#async_cache#main(argv) "{{{
     call s:main(a:argv)
   endfunction"}}}
 endif

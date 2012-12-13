@@ -37,14 +37,14 @@ let s:source = {
       \ 'description' : 'candidates from include files',
       \ 'hooks' : {},
       \}
-function! s:source.hooks.on_init(args, context)"{{{
+function! s:source.hooks.on_init(args, context) "{{{
   " From neocomplcache include files.
   let a:context.source__include_files =
         \ neocomplcache#sources#include_complete#get_include_files(bufnr('%'))
   let a:context.source__path = &path
 endfunction"}}}
 
-function! s:source.gather_candidates(args, context)"{{{
+function! s:source.gather_candidates(args, context) "{{{
   let files = map(copy(a:context.source__include_files), '{
         \ "word" : neocomplcache#util#substitute_path_separator(v:val),
         \ "abbr" : neocomplcache#util#substitute_path_separator(v:val),

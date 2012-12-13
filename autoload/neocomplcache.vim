@@ -65,7 +65,7 @@ function! neocomplcache#enable() "{{{
     return
   endif
 
-  " Auto commands."{{{
+  " Auto commands. "{{{
   augroup neocomplcache
     autocmd!
     autocmd InsertEnter * call s:on_insert_enter()
@@ -99,7 +99,7 @@ function! neocomplcache#enable() "{{{
 
   call s:initialize_variables()
 
-  " Initialize keyword patterns."{{{
+  " Initialize keyword patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_keyword_patterns', {})
   call neocomplcache#util#set_default_dictionary(
@@ -324,7 +324,7 @@ function! neocomplcache#enable() "{{{
         \'\h\w*')
   "}}}
 
-  " Initialize next keyword patterns."{{{
+  " Initialize next keyword patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_next_keyword_patterns', {})
   call neocomplcache#util#set_default_dictionary(
@@ -347,7 +347,7 @@ function! neocomplcache#enable() "{{{
         \'[[:alnum:]_:-]*>\|[^"]*"')
   "}}}
 
-  " Initialize same file type lists."{{{
+  " Initialize same file type lists. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_same_filetype_lists', {})
   call neocomplcache#util#set_default_dictionary(
@@ -462,7 +462,7 @@ function! neocomplcache#enable() "{{{
         \ 'int-php', 'php')
   "}}}
 
-  " Initialize context filetype lists."{{{
+  " Initialize context filetype lists. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_context_filetype_lists', {})
   call neocomplcache#util#set_default_dictionary(
@@ -541,7 +541,7 @@ function! neocomplcache#enable() "{{{
         \])
   "}}}
 
-  " Initialize delimiter patterns."{{{
+  " Initialize delimiter patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_delimiter_patterns', {})
   call neocomplcache#util#set_default_dictionary(
@@ -575,7 +575,7 @@ function! neocomplcache#enable() "{{{
         \ 'perl6', ['\.', '::'])
   "}}}
 
-  " Initialize ctags arguments."{{{
+  " Initialize ctags arguments. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_ctags_arguments_list', {})
   call neocomplcache#util#set_default_dictionary(
@@ -607,7 +607,7 @@ function! neocomplcache#enable() "{{{
         \   '__attribute_pure__,__attribute_warn_unused_result__,__attribute__+')
   "}}}
 
-  " Initialize text mode filetypes."{{{
+  " Initialize text mode filetypes. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_text_mode_filetypes', {})
   call neocomplcache#util#set_default_dictionary(
@@ -615,7 +615,7 @@ function! neocomplcache#enable() "{{{
         \ 'text,help,tex,gitcommit,vcs-commit', 1)
   "}}}
 
-  " Initialize tags filter patterns."{{{
+  " Initialize tags filter patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_tags_filter_patterns', {})
   call neocomplcache#util#set_default_dictionary(
@@ -623,7 +623,7 @@ function! neocomplcache#enable() "{{{
         \'v:val.word !~ ''^[~_]''')
   "}}}
 
-  " Initialize force omni completion pattern."{{{
+  " Initialize force omni completion pattern. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_force_omni_patterns', {})
   call neocomplcache#util#set_default_dictionary(
@@ -635,7 +635,7 @@ function! neocomplcache#enable() "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_ignore_composite_filetype_lists', {})
 
-  " Add commands."{{{
+  " Add commands. "{{{
   command! -nargs=? Neco call s:display_neco(<q-args>)
   command! -nargs=1 NeoComplCacheAutoCompletionLength
         \ call s:set_auto_completion_length(<args>)
@@ -650,7 +650,7 @@ function! neocomplcache#enable() "{{{
     let g:neocomplcache_min_keyword_length = 1
   endif
 
-  " Initialize omni function list."{{{
+  " Initialize omni function list. "{{{
   if !exists('g:neocomplcache_omni_functions')
     let g:neocomplcache_omni_functions = {}
   endif
@@ -946,7 +946,7 @@ function! s:check_in_do_auto_complete() "{{{
   endif
 endfunction"}}}
 
-" Source helper."{{{
+" Source helper. "{{{
 function! neocomplcache#available_complfuncs() "{{{
   return s:complfunc_sources
 endfunction"}}}
@@ -1019,7 +1019,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str) "{{{
             \   pattern, 'g') . keyword_escape[13:]
     endif
   else
-    " Underbar completion."{{{
+    " Underbar completion. "{{{
     if g:neocomplcache_enable_underbar_completion
           \ && keyword_escape =~ '[^_]_\|^_'
       let keyword_escape = substitute(keyword_escape,
@@ -1031,7 +1031,7 @@ function! neocomplcache#keyword_escape(cur_keyword_str) "{{{
             \ '[^-]\zs-', '[^-]*-', 'g')
     endif
     "}}}
-    " Camel case completion."{{{
+    " Camel case completion. "{{{
     if g:neocomplcache_enable_camel_case_completion
           \ && keyword_escape =~ '\u\?\U*'
       let keyword_escape =
@@ -1238,7 +1238,7 @@ function! neocomplcache#add_dictionaries(dictionaries) "{{{
   return ret
 endfunction"}}}
 
-" Rank order."{{{
+" Rank order. "{{{
 function! neocomplcache#compare_rank(i1, i2)
   let diff = get(a:i2, 'rank', 0) - get(a:i1, 'rank', 0)
   if !diff
@@ -1246,15 +1246,15 @@ function! neocomplcache#compare_rank(i1, i2)
   endif
   return diff
 endfunction"}}}
-" Word order."{{{
+" Word order. "{{{
 function! neocomplcache#compare_word(i1, i2)
   return (a:i1.word ># a:i2.word) ? 1 : -1
 endfunction"}}}
-" Nothing order."{{{
+" Nothing order. "{{{
 function! neocomplcache#compare_nothing(i1, i2)
   return 0
 endfunction"}}}
-" Human order."{{{
+" Human order. "{{{
 function! neocomplcache#compare_human(i1, i2)
   let words_1 = map(split(a:i1.word, '\D\zs\ze\d'),
         \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
@@ -1274,12 +1274,12 @@ function! neocomplcache#compare_human(i1, i2)
   return words_1_len - words_2_len
 endfunction"}}}
 
-" Source rank order."{{{
+" Source rank order. "{{{
 function! s:compare_source_rank(i1, i2)
   return neocomplcache#get_source_rank(a:i2[0]) -
         \ neocomplcache#get_source_rank(a:i1[0])
 endfunction"}}}
-" Pos order."{{{
+" Pos order. "{{{
 function! s:compare_pos(i1, i2)
   return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
 endfunction"}}}
@@ -1860,7 +1860,7 @@ function! s:set_complete_results_pos(cur_text, ...) "{{{
     call filter(sources, '!neocomplcache#is_plugin_locked(v:key)')
   endif
 
-  " Try source completion."{{{
+  " Try source completion. "{{{
   let complete_results = {}
   for [source_name, source] in items(sources)
     if source.kind ==# 'plugin'
@@ -1992,7 +1992,7 @@ function! neocomplcache#filetype_complete(arglead, cmdline, cursorpos) "{{{
 endfunction"}}}
 "}}}
 
-" Command functions."{{{
+" Command functions. "{{{
 function! neocomplcache#toggle_lock() "{{{
   if !neocomplcache#is_enabled()
     call neocomplcache#enable()
@@ -2215,7 +2215,7 @@ function! s:set_auto_completion_length(len) "{{{
 endfunction"}}}
 "}}}
 
-" Key mapping functions."{{{
+" Key mapping functions. "{{{
 function! neocomplcache#smart_close_popup() "{{{
   return g:neocomplcache_enable_auto_select ?
         \ neocomplcache#cancel_popup() : neocomplcache#close_popup()
@@ -2349,7 +2349,7 @@ function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_
 endfunction"}}}
 "}}}
 
-" Event functions."{{{
+" Event functions. "{{{
 function! s:on_moved_i() "{{{
   " Get cursor word.
   let cur_text = s:get_cur_text()
@@ -2465,7 +2465,7 @@ function! s:clear_result()
 endfunction
 "}}}
 
-" Internal helper functions."{{{
+" Internal helper functions. "{{{
 function! s:get_cur_text() "{{{
   let cur_text =
         \ (mode() ==# 'i' ? (col('.')-1) : col('.')) >= len(getline('.')) ?

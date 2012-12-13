@@ -37,8 +37,8 @@ let s:source = {
       \ 'kind' : 'complfunc',
       \}
 
-function! s:source.initialize()"{{{
-  augroup neocomplcache"{{{
+function! s:source.initialize() "{{{
+  augroup neocomplcache "{{{
     " Caching events
     autocmd CursorHold * call s:caching_current_buffer(line('.')-10, line('.')+10)
     autocmd InsertEnter,InsertLeave *
@@ -53,7 +53,7 @@ function! s:source.initialize()"{{{
   " Set completion length.
   call neocomplcache#set_completion_length('member_complete', 0)
 
-  " Initialize member prefix patterns."{{{
+  " Initialize member prefix patterns. "{{{
   if !exists('g:neocomplcache_member_prefix_patterns')
     let g:neocomplcache_member_prefix_patterns = {}
   endif
@@ -71,7 +71,7 @@ function! s:source.initialize()"{{{
         \ 'lua', '\.\|:')
   "}}}
 
-  " Initialize member patterns."{{{
+  " Initialize member patterns. "{{{
   if !exists('g:neocomplcache_member_patterns')
     let g:neocomplcache_member_patterns = {}
   endif
@@ -80,13 +80,13 @@ function! s:source.initialize()"{{{
         \'default', '\h\w*\%(()\|\[\h\w*\]\)\?')
   "}}}
 
-  " Initialize script variables."{{{
+  " Initialize script variables. "{{{
   let s:member_sources = {}
   "}}}
 endfunction
 "}}}
 
-function! s:source.get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text) "{{{
   " Check member prefix pattern.
   let filetype = neocomplcache#get_context_filetype()
   if !has_key(g:neocomplcache_member_prefix_patterns, filetype)
@@ -101,7 +101,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   return cur_keyword_pos
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   " Check member prefix pattern.
   let filetype = neocomplcache#get_context_filetype()
   if !has_key(g:neocomplcache_member_prefix_patterns, filetype)
@@ -121,19 +121,19 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
         \ copy(s:get_member_list(cur_text, var_name)), a:cur_keyword_str)
 endfunction"}}}
 
-function! neocomplcache#sources#member_complete#define()"{{{
+function! neocomplcache#sources#member_complete#define() "{{{
   return s:source
 endfunction"}}}
 
-function! neocomplcache#sources#member_complete#caching_current_line()"{{{
+function! neocomplcache#sources#member_complete#caching_current_line() "{{{
   " Current line caching.
   return s:caching_current_buffer(line('.')-1, line('.')+1)
 endfunction"}}}
-function! neocomplcache#sources#member_complete#caching_current_buffer()"{{{
+function! neocomplcache#sources#member_complete#caching_current_buffer() "{{{
   " Current line caching.
   return s:caching_current_buffer(1, line('$'))
 endfunction"}}}
-function! s:caching_current_buffer(start, end)"{{{
+function! s:caching_current_buffer(start, end) "{{{
   " Current line caching.
 
   if !has_key(s:member_sources, bufnr('%'))
@@ -160,7 +160,7 @@ function! s:caching_current_buffer(start, end)"{{{
   for line in getline(a:start, a:end)
     let match = match(line, keyword_pattern)
 
-    while match >= 0"{{{
+    while match >= 0 "{{{
       let match_str = matchstr(line, keyword_pattern2, match)
 
       " Next match.
@@ -187,7 +187,7 @@ function! s:caching_current_buffer(start, end)"{{{
   endfor
 endfunction"}}}
 
-function! s:get_member_list(cur_text, var_name)"{{{
+function! s:get_member_list(cur_text, var_name) "{{{
   let keyword_list = []
   for [key, source] in filter(s:get_sources_list(),
         \ 'has_key(v:val[1].member_cache, a:var_name)')
@@ -198,7 +198,7 @@ function! s:get_member_list(cur_text, var_name)"{{{
   return keyword_list
 endfunction"}}}
 
-function! s:get_sources_list()"{{{
+function! s:get_sources_list() "{{{
   let sources_list = []
 
   let filetypes_dict = {}
@@ -219,7 +219,7 @@ function! s:get_sources_list()"{{{
   return sources_list
 endfunction"}}}
 
-function! s:initialize_source(srcname)"{{{
+function! s:initialize_source(srcname) "{{{
   let path = fnamemodify(bufname(a:srcname), ':p')
   let filename = fnamemodify(path, ':t')
   if filename == ''
@@ -242,7 +242,7 @@ function! s:initialize_source(srcname)"{{{
         \}
 endfunction"}}}
 
-function! s:get_member_pattern(filetype)"{{{
+function! s:get_member_pattern(filetype) "{{{
   return has_key(g:neocomplcache_member_patterns, a:filetype) ?
         \ g:neocomplcache_member_patterns[a:filetype] :
         \ g:neocomplcache_member_patterns['default']

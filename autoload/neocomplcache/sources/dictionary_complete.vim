@@ -33,7 +33,7 @@ if !exists('s:dictionary_list')
   let s:async_dictionary_list = {}
 endif
 
-function! neocomplcache#sources#dictionary_complete#define()"{{{
+function! neocomplcache#sources#dictionary_complete#define() "{{{
   return s:source
 endfunction"}}}
 
@@ -42,8 +42,8 @@ let s:source = {
       \ 'kind' : 'plugin',
       \}
 
-function! s:source.initialize()"{{{
-  " Initialize dictionary."{{{
+function! s:source.initialize() "{{{
+  " Initialize dictionary. "{{{
   if !exists('g:neocomplcache_dictionary_filetype_lists')
     let g:neocomplcache_dictionary_filetype_lists = {}
   endif
@@ -52,7 +52,7 @@ function! s:source.initialize()"{{{
   endif
   "}}}
 
-  " Initialize dictionary completion pattern."{{{
+  " Initialize dictionary completion pattern. "{{{
   if !exists('g:neocomplcache_dictionary_patterns')
     let g:neocomplcache_dictionary_patterns = {}
   endif
@@ -74,11 +74,11 @@ function! s:source.initialize()"{{{
   call s:caching()
 endfunction"}}}
 
-function! s:source.finalize()"{{{
+function! s:source.finalize() "{{{
   delcommand NeoComplCacheCachingDictionary
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str)"{{{
+function! s:source.get_keyword_list(cur_keyword_str) "{{{
   let list = []
 
   let filetype = neocomplcache#is_text_mode() ?
@@ -100,7 +100,7 @@ function! s:source.get_keyword_list(cur_keyword_str)"{{{
   return list
 endfunction"}}}
 
-function! s:caching()"{{{
+function! s:caching() "{{{
   if !bufloaded(bufnr('%'))
     return
   endif
@@ -129,7 +129,7 @@ function! s:caching_dictionary(filetype)
 
   call neocomplcache#sources#dictionary_complete#recaching(filetype)
 endfunction
-function! neocomplcache#sources#dictionary_complete#recaching(filetype)"{{{
+function! neocomplcache#sources#dictionary_complete#recaching(filetype) "{{{
   let filetype = a:filetype
   if filetype == ''
     let filetype = neocomplcache#get_context_filetype(1)

@@ -11,7 +11,7 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Add commands."{{{
+" Add commands. "{{{
 command! -nargs=? -complete=file -bar
       \ NeoComplCacheCachingBuffer
       \ call neocomplcache#sources#buffer_complete#caching_buffer(<q-args>)

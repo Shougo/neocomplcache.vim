@@ -30,34 +30,34 @@ set cpo&vim
 let s:V = vital#of('neocomplcache')
 let s:List = vital#of('neocomplcache').import('Data.List')
 
-function! neocomplcache#util#truncate_smart(...)"{{{
+function! neocomplcache#util#truncate_smart(...) "{{{
   return call(s:V.truncate_smart, a:000)
 endfunction"}}}
 
-function! neocomplcache#util#truncate(...)"{{{
+function! neocomplcache#util#truncate(...) "{{{
   return call(s:V.truncate, a:000)
 endfunction"}}}
 
-function! neocomplcache#util#strchars(...)"{{{
+function! neocomplcache#util#strchars(...) "{{{
   return call(s:V.strchars, a:000)
 endfunction"}}}
-function! neocomplcache#util#wcswidth(...)"{{{
+function! neocomplcache#util#wcswidth(...) "{{{
   return call(s:V.wcswidth, a:000)
 endfunction"}}}
-function! neocomplcache#util#strwidthpart(...)"{{{
+function! neocomplcache#util#strwidthpart(...) "{{{
   return call(s:V.strwidthpart, a:000)
 endfunction"}}}
-function! neocomplcache#util#strwidthpart_reverse(...)"{{{
+function! neocomplcache#util#strwidthpart_reverse(...) "{{{
   return call(s:V.strwidthpart_reverse, a:000)
 endfunction"}}}
 
-function! neocomplcache#util#substitute_path_separator(...)"{{{
+function! neocomplcache#util#substitute_path_separator(...) "{{{
   return call(s:V.substitute_path_separator, a:000)
 endfunction"}}}
-function! neocomplcache#util#mb_strlen(...)"{{{
+function! neocomplcache#util#mb_strlen(...) "{{{
   return call(s:V.strchars, a:000)
 endfunction"}}}
-function! neocomplcache#util#uniq(list)"{{{
+function! neocomplcache#util#uniq(list) "{{{
   let dict = {}
   for item in a:list
     if !has_key(dict, item)
@@ -67,32 +67,32 @@ function! neocomplcache#util#uniq(list)"{{{
 
   return values(dict)
 endfunction"}}}
-function! neocomplcache#util#system(...)"{{{
+function! neocomplcache#util#system(...) "{{{
   return call(s:V.system, a:000)
 endfunction"}}}
-function! neocomplcache#util#has_vimproc(...)"{{{
+function! neocomplcache#util#has_vimproc(...) "{{{
   return call(s:V.has_vimproc, a:000)
 endfunction"}}}
-function! neocomplcache#util#is_windows(...)"{{{
+function! neocomplcache#util#is_windows(...) "{{{
   return call(s:V.is_windows, a:000)
 endfunction"}}}
-function! neocomplcache#util#is_mac(...)"{{{
+function! neocomplcache#util#is_mac(...) "{{{
   return call(s:V.is_mac, a:000)
 endfunction"}}}
-function! neocomplcache#util#get_last_status(...)"{{{
+function! neocomplcache#util#get_last_status(...) "{{{
   return call(s:V.get_last_status, a:000)
 endfunction"}}}
-function! neocomplcache#util#escape_pattern(...)"{{{
+function! neocomplcache#util#escape_pattern(...) "{{{
   return call(s:V.escape_pattern, a:000)
 endfunction"}}}
-function! neocomplcache#util#iconv(...)"{{{
+function! neocomplcache#util#iconv(...) "{{{
   return call(s:V.iconv, a:000)
 endfunction"}}}
-function! neocomplcache#util#uniq(...)"{{{
+function! neocomplcache#util#uniq(...) "{{{
   return call(s:List.uniq, a:000)
 endfunction"}}}
 
-function! neocomplcache#util#glob(pattern, ...)"{{{
+function! neocomplcache#util#glob(pattern, ...) "{{{
   if a:pattern =~ "'"
     " Use glob('*').
     let cwd = getcwd()
@@ -125,7 +125,7 @@ function! neocomplcache#util#glob(pattern, ...)"{{{
     return split(neocomplcache#util#substitute_path_separator(glob(glob)), '\n')
   endif
 endfunction"}}}
-function! neocomplcache#util#expand(path)"{{{
+function! neocomplcache#util#expand(path) "{{{
   return expand(escape(a:path, '*?[]"={}'), 1)
 endfunction"}}}
 
@@ -137,11 +137,11 @@ function! neocomplcache#util#set_default(var, val, ...)  "{{{
           \ {alternate_var} : a:val
   endif
 endfunction"}}}
-function! neocomplcache#util#set_dictionary_helper(...)"{{{
+function! neocomplcache#util#set_dictionary_helper(...) "{{{
   return call(s:V.set_dictionary_helper, a:000)
 endfunction"}}}
 
-function! neocomplcache#util#set_default_dictionary(variable, keys, value)"{{{
+function! neocomplcache#util#set_default_dictionary(variable, keys, value) "{{{
   if !exists('s:disable_dictionaries')
     let s:disable_dictionaries = {}
   endif
@@ -152,7 +152,7 @@ function! neocomplcache#util#set_default_dictionary(variable, keys, value)"{{{
 
   call neocomplcache#util#set_dictionary_helper({a:variable}, a:keys, a:value)
 endfunction"}}}
-function! neocomplcache#util#disable_default_dictionary(variable)"{{{
+function! neocomplcache#util#disable_default_dictionary(variable) "{{{
   if !exists('s:disable_dictionaries')
     let s:disable_dictionaries = {}
   endif

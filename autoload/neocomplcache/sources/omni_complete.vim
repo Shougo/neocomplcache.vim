@@ -35,8 +35,8 @@ let s:source = {
 
 let s:List = vital#of('neocomplcache').import('Data.List')
 
-function! s:source.initialize()"{{{
-  " Initialize omni completion pattern."{{{
+function! s:source.initialize() "{{{
+  " Initialize omni completion pattern. "{{{
   if !exists('g:neocomplcache_omni_patterns')
     let g:neocomplcache_omni_patterns = {}
   endif
@@ -104,10 +104,10 @@ function! s:source.initialize()"{{{
         \ 'g:neocomplcache_source_rank',
         \ 'omni_complete', 300)
 endfunction"}}}
-function! s:source.finalize()"{{{
+function! s:source.finalize() "{{{
 endfunction"}}}
 
-function! s:source.get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text) "{{{
   let syn_name = neocomplcache#get_syn_name(1)
   if syn_name ==# 'Comment' || syn_name ==# 'String'
     " Skip omni_complete in string literal.
@@ -121,17 +121,17 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   return s:get_cur_keyword_pos(s:complete_results)
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   return s:get_complete_words(
         \ s:set_complete_results_words(s:complete_results),
         \ a:cur_keyword_pos, a:cur_keyword_str)
 endfunction"}}}
 
-function! neocomplcache#sources#omni_complete#define()"{{{
+function! neocomplcache#sources#omni_complete#define() "{{{
   return s:source
 endfunction"}}}
 
-function! s:get_omni_funcs(filetype)"{{{
+function! s:get_omni_funcs(filetype) "{{{
   let funcs = []
   for ft in insert(split(a:filetype, '\.'), '_')
     if has_key(g:neocomplcache_omni_functions, ft)
@@ -167,7 +167,7 @@ function! s:get_omni_funcs(filetype)"{{{
 
   return s:List.uniq(funcs)
 endfunction"}}}
-function! s:get_omni_list(list)"{{{
+function! s:get_omni_list(list) "{{{
   let omni_list = []
 
   " Convert string list.
@@ -188,8 +188,8 @@ function! s:get_omni_list(list)"{{{
   return omni_list
 endfunction"}}}
 
-function! s:set_complete_results_pos(funcs, cur_text)"{{{
-  " Try omnifunc completion."{{{
+function! s:set_complete_results_pos(funcs, cur_text) "{{{
+  " Try omnifunc completion. "{{{
   let complete_results = {}
   for [omnifunc, pattern] in a:funcs
     if neocomplcache#is_auto_complete()
@@ -231,7 +231,7 @@ function! s:set_complete_results_pos(funcs, cur_text)"{{{
 
   return complete_results
 endfunction"}}}
-function! s:set_complete_results_words(complete_results)"{{{
+function! s:set_complete_results_words(complete_results) "{{{
   " Try source completion.
   for [omnifunc, result] in items(a:complete_results)
     if neocomplcache#complete_check()
@@ -272,7 +272,7 @@ function! s:set_complete_results_words(complete_results)"{{{
 
   return a:complete_results
 endfunction"}}}
-function! s:get_cur_keyword_pos(complete_results)"{{{
+function! s:get_cur_keyword_pos(complete_results) "{{{
   if empty(a:complete_results)
     return -1
   endif

@@ -72,7 +72,7 @@ else
         \ call neocomplcache#set_file_type(<q-args>)
 endif
 
-" Warning if using obsolute mappings."{{{
+" Warning if using obsolute mappings. "{{{
 silent! inoremap <unique> <Plug>(neocomplcache_snippets_expand)
       \ <C-o>:echoerr <SID>print_snippets_complete_error()<CR>
 silent! snoremap <unique> <Plug>(neocomplcache_snippets_expand)
@@ -95,7 +95,7 @@ function! s:print_snippets_complete_error()
       \ .' "https://github.com/Shougo/neocomplcache-snippets-complete"'
 endfunction"}}}
 
-" Global options definition."{{{
+" Global options definition. "{{{
 let g:neocomplcache_max_list =
       \ get(g:, 'neocomplcache_max_list', 100)
 let g:neocomplcache_max_keyword_width =
