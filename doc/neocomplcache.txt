@@ -960,7 +960,7 @@ neocomplcache#disable_default_dictionary({variable-name})
 KEY MAPPINGS 					*neocomplcache-key-mappings*
 
 neocomplcache#start_manual_complete([{sources}])
-						*neocomplcache#start_manual_complete()*
+				*neocomplcache#start_manual_complete()*
 		Use this function on inoremap <expr>.  The keymapping call the
 		completion of neocomplcache.  When you rearrange the completion
 		of the Vim standard, you use it.
@@ -969,7 +969,8 @@ neocomplcache#start_manual_complete([{sources}])
 >
 		inoremap <expr><Tab>  neocomplcache#start_manual_complete()
 <
-neocomplcache#manual_filename_complete()	*neocomplcache#manual_filename_complete()*
+neocomplcache#manual_filename_complete()
+				*neocomplcache#manual_filename_complete()*
 		Use this function on inoremap <expr>.  The keymapping call
 		the file name completion of neocomplcache.  When you
 		rearrange the file name completion of the Vim standard, you
@@ -977,49 +978,59 @@ neocomplcache#manual_filename_complete()	*neocomplcache#manual_filename_complete
 >
 		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#manual_omni_complete()		*neocomplcache#manual_omni_complete()*
+neocomplcache#manual_omni_complete()
+				*neocomplcache#manual_omni_complete()*
 		Use this function on inoremap <expr>.  The keymapping call
 		the omni completion of neocomplcache.  When you rearrange
 		the omni completion of the Vim standard, you use it.
 >
 		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
 <
-neocomplcache#close_popup()			*neocomplcache#close_popup()*
+neocomplcache#close_popup()
+				*neocomplcache#close_popup()*
 		Inset candidate and close popup menu for neocomplcache.
 >
 		inoremap <expr><C-y>  neocomplcache#close_popup()
 <
-neocomplcache#cancel_popup()			*neocomplcache#cancel_popup()*
+neocomplcache#cancel_popup()
+				*neocomplcache#cancel_popup()*
 		cancel completion menu for neocomplcache.
 >
 		inoremap <expr><C-e>  neocomplcache#cancel_popup()
 <
-neocomplcache#smart_close_popup()		*neocomplcache#smart_close_popup()*
+neocomplcache#smart_close_popup()
+				*neocomplcache#smart_close_popup()*
 		Inset candidate and close popup menu for neocomplcache.
 		Unlike|neocomplcache#close_popup()|, this function changes
 		behavior by|g:neocomplcache_enable_auto_select|smart.
 		Note: This mapping is conflicted with |SuperTab| or |endwise|
 		plugins.
 
-neocomplcache#undo_completion()			*neocomplcache#undo_completion()*
+neocomplcache#undo_completion()
+				*neocomplcache#undo_completion()*
 		Use this function on inoremap <expr>.  Undo inputted
 		candidate.  Because there is not mechanism to cancel
 		candidate in Vim, it will be convenient when it inflects.
 >
 		inoremap <expr><C-g>     neocomplcache#undo_completion()
 <
-neocomplcache#complete_common_string()		*neocomplcache#complete_common_string()*
+neocomplcache#complete_common_string()
+				*neocomplcache#complete_common_string()*
 		Use this function on inoremap <expr>.  Complete common
 		string in candidates.  It will be convenient when candidates
 		have long common string.
 >
 		inoremap <expr><C-l>     neocomplcache#complete_common_string()
 <
-<Plug>(neocomplcache_start_unite_complete)		*<Plug>(neocomplcache_start_unite_complete)*
+<Plug>(neocomplcache_start_unite_complete)
+				*<Plug>(neocomplcache_start_unite_complete)*
 		Start completion with |unite|.
 		Note: Required unite.vim Latest ver.3.0 or above.
+		Note: In unite interface, uses partial match instead of head
+		match.
 
-<Plug>(neocomplcache_start_unite_quick_match)		*<Plug>(neocomplcache_start_quick_match)*
+<Plug>(neocomplcache_start_unite_quick_match)
+				*<Plug>(neocomplcache_start_quick_match)*
 		Start completion with |unite| and start quick match mode.
 		Note: Required unite.vim Latest ver.3.0 or above.
 
@@ -1482,6 +1493,9 @@ Improve cache behavior in current buffer.
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2012-12-14
+- Use partial match in <Plug>(neocomplcache_start_unite_complete).
 
 2012-12-13
 - Fixed initialization.

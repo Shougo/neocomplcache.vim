@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Dec 2012.
+" Last Modified: 14 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -826,6 +826,11 @@ function! neocomplcache#sources_manual_complete(findstart, base) "{{{
   return complete_words
 endfunction"}}}
 
+function! neocomplcache#unite_complete(findstart, base) "{{{
+  " Dummy.
+  return a:findstart ? -1 : []
+endfunction"}}}
+
 function! neocomplcache#auto_complete(findstart, base) "{{{
   return neocomplcache#manual_complete(a:findstart, a:base)
 endfunction"}}}
@@ -1059,7 +1064,8 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str) "{{{
           \ delimiter, '*' . delimiter, 'g')
   endfor
 
-  if cur_keyword_str == ''
+  if cur_keyword_str == '' ||
+        \ &l:completefunc ==# 'neocomplcache#unite_complete'
     return a:list
   elseif neocomplcache#check_match_filter(cur_keyword_str)
     " Match filter.
@@ -1170,7 +1176,8 @@ function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str) "{{{
   let completion_length = 2
   if len(a:cur_keyword_str) < completion_length ||
         \ neocomplcache#check_completion_length_match(
-        \         a:cur_keyword_str, completion_length)
+        \         a:cur_keyword_str, completion_length) ||
+        \ &l:completefunc ==# 'neocomplcache#unite_complete'
     return neocomplcache#keyword_filter(
           \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
   endif
