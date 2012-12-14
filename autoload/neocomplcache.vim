@@ -737,7 +737,7 @@ function! neocomplcache#manual_complete(findstart, base) "{{{
       call s:clear_result()
       let &l:completefunc = 'neocomplcache#manual_complete'
 
-      return (g:neocomplcache_enable_prefetch
+      return (neocomplcache#is_prefetch()
             \ || g:neocomplcache_enable_insert_char_pre) ?
             \ -1 : -3
     endif
@@ -756,7 +756,7 @@ function! neocomplcache#manual_complete(findstart, base) "{{{
       call s:clear_result()
 
       let neocomplcache = neocomplcache#get_current_neocomplcache()
-      let cur_keyword_pos = (g:neocomplcache_enable_prefetch ||
+      let cur_keyword_pos = (neocomplcache#is_prefetch() ||
             \ g:neocomplcache_enable_insert_char_pre ||
             \ neocomplcache#get_current_neocomplcache().skipped) ?  -1 : -3
       let neocomplcache.skipped = 0
@@ -917,7 +917,7 @@ function! s:do_auto_complete(event) "{{{
   "       \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
 endfunction"}}}
 function! s:check_in_do_auto_complete() "{{{
-  if neocomplcache#is_locked() || &paste
+  if neocomplcache#is_locked()
     return 1
   endif
 
@@ -1402,7 +1402,7 @@ function! neocomplcache#is_enabled() "{{{
 endfunction"}}}
 function! neocomplcache#is_locked(...) "{{{
   let bufnr = a:0 > 0 ? a:1 : bufnr('%')
-  return !s:is_enabled
+  return !s:is_enabled || &paste
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#get_current_neocomplcache().lock
         \ || (g:neocomplcache_lock_buffer_name_pattern != '' &&
@@ -1451,8 +1451,8 @@ function! neocomplcache#is_win() "{{{
   return neocomplcache#is_windows()
 endfunction"}}}
 function! neocomplcache#is_prefetch() "{{{
-  return g:neocomplcache_enable_prefetch
-        \ || &l:formatoptions =~# 'a'
+  return !neocomplcache#is_locked() &&
+        \ (g:neocomplcache_enable_prefetch || &l:formatoptions =~# 'a')
 endfunction"}}}
 function! neocomplcache#is_omni_complete(cur_text) "{{{
   " Check eskk complete length.
