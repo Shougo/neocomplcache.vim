@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2012.
+" Last Modified: 15 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2380,21 +2380,29 @@ function! s:on_insert_leave() "{{{
   let neocomplcache.old_cur_text = ''
 
   " Restore foldinfo.
-  if !empty(neocomplcache.foldinfo) &&
-        \ neocomplcache.foldinfo != [&l:foldmethod, &l:foldexpr]
-     let [&l:foldmethod, &l:foldexpr] = neocomplcache.foldinfo
-  endif
+  for winnr in filter(range(1, winnr('$')),
+        \ "!empty(getwinvar(v:val, 'neocomplcache_foldinfo'))")
+    let neocomplcache_foldinfo =
+          \ getwinvar(winnr, 'neocomplcache_foldinfo')
+    call setwinvar(winnr, '&foldmethod', neocomplcache_foldinfo.foldmethod)
+    call setwinvar(winnr, '&foldexpr', neocomplcache_foldinfo.foldexpr)
+    call setwinvar(winnr, 'neocomplcache_foldinfo', {})
+  endfor
 endfunction"}}}
 function! s:on_insert_enter() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
   " Save foldinfo.
-  if &l:foldmethod ==# 'expr'
-    let neocomplcache.foldinfo = [&l:foldmethod, &l:foldexpr]
-    setlocal foldmethod=manual foldexpr=0
-    if foldlevel('.') != 0
-      foldopen
-    endif
+  for winnr in filter(range(1, winnr('$')),
+        \ "getwinvar(v:val, '&foldmethod') ==# 'expr'")
+    call setwinvar(winnr, 'neocomplcache_foldinfo', {
+          \ 'foldmethod' : getwinvar(winnr, '&foldmethod'),
+          \ 'foldexpr'   : getwinvar(winnr, '&foldexpr')
+          \ })
+    call setwinvar(winnr, '&foldmethod', 'manual')
+    call setwinvar(winnr, '&foldexpr', 0)
+  endfor
+
+  if &l:foldmethod ==# 'expr' && foldlevel('.') != 0
+    foldopen
   endif
 endfunction"}}}
 function! s:on_complete_done() "{{{
