@@ -2380,25 +2380,32 @@ function! s:on_insert_leave() "{{{
   let neocomplcache.old_cur_text = ''
 
   " Restore foldinfo.
-  for winnr in filter(range(1, winnr('$')),
-        \ "!empty(getwinvar(v:val, 'neocomplcache_foldinfo'))")
-    let neocomplcache_foldinfo =
-          \ getwinvar(winnr, 'neocomplcache_foldinfo')
-    call setwinvar(winnr, '&foldmethod', neocomplcache_foldinfo.foldmethod)
-    call setwinvar(winnr, '&foldexpr', neocomplcache_foldinfo.foldexpr)
-    call setwinvar(winnr, 'neocomplcache_foldinfo', {})
+  for tabnr in range(1, tabpagenr('$'))
+    for winnr in filter(range(1, tabpagewinnr(tabnr, '$')),
+          \ "!empty(gettabwinvar(tabnr, v:val, 'neocomplcache_foldinfo'))")
+      let neocomplcache_foldinfo =
+            \ gettabwinvar(tabnr, winnr, 'neocomplcache_foldinfo')
+      call settabwinvar(tabnr, winnr, '&foldmethod',
+            \ neocomplcache_foldinfo.foldmethod)
+      call settabwinvar(tabnr, winnr, '&foldexpr',
+            \ neocomplcache_foldinfo.foldexpr)
+      call settabwinvar(tabnr, winnr,
+            \ 'neocomplcache_foldinfo', {})
+    endfor
   endfor
 endfunction"}}}
 function! s:on_insert_enter() "{{{
   " Save foldinfo.
-  for winnr in filter(range(1, winnr('$')),
-        \ "getwinvar(v:val, '&foldmethod') ==# 'expr'")
-    call setwinvar(winnr, 'neocomplcache_foldinfo', {
-          \ 'foldmethod' : getwinvar(winnr, '&foldmethod'),
-          \ 'foldexpr'   : getwinvar(winnr, '&foldexpr')
-          \ })
-    call setwinvar(winnr, '&foldmethod', 'manual')
-    call setwinvar(winnr, '&foldexpr', 0)
+  for tabnr in range(1, tabpagenr('$'))
+    for winnr in filter(range(1, tabpagewinnr(tabnr, '$')),
+          \ "gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr'")
+      call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
+            \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
+            \ 'foldexpr'   : gettabwinvar(tabnr, winnr, '&foldexpr')
+            \ })
+      call settabwinvar(tabnr, winnr, '&foldmethod', 'manual')
+      call settabwinvar(tabnr, winnr, '&foldexpr', 0)
+    endfor
   endfor
 
   if &l:foldmethod ==# 'expr' && foldlevel('.') != 0
