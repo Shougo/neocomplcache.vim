@@ -2828,6 +2828,8 @@ function! s:is_skip_auto_complete(cur_text) "{{{
   if a:cur_text == ''
         \ || a:cur_text == neocomplcache.old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
+        \ || (&l:formatoptions =~# '[tc]' &&
+        \     neocomplcache#util#wcswidth(a:cur_text) >= &l:textwidth)
     return 1
   endif
 
