@@ -2399,7 +2399,8 @@ function! s:on_insert_enter() "{{{
   " Save foldinfo.
   for tabnr in range(1, tabpagenr('$'))
     for winnr in filter(range(1, tabpagewinnr(tabnr, '$')),
-          \ "gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr'")
+          \ "gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' &&
+          \  gettabwinvar(tabnr, v:val, '&modifiable')")
       call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
             \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
             \ 'foldexpr'   : gettabwinvar(tabnr, winnr, '&foldexpr')
