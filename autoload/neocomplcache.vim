@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Dec 2012.
+" Last Modified: 27 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2401,10 +2401,16 @@ function! s:on_insert_enter() "{{{
   " Save foldinfo.
   " Note: settabwinvar() in insert mode has bug.
   " for tabnr in range(1, tabpagenr('$'))
-  for tabnr in [tabpagenr()]
-    for winnr in filter(range(1, tabpagewinnr(tabnr, '$')),
-          \ "gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' &&
+  for tabnr in filter([tabpagenr()],
+        \ "index(tabpagebuflist(v:val), bufnr('%')) >= 0")
+    let winnrs = range(1, tabpagewinnr(tabnr, '$'))
+    if tabnr == tabpagenr()
+      call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
+    endif
+    call filter(winnrs, "
+          \  gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' &&
           \  gettabwinvar(tabnr, v:val, '&modifiable')")
+    for winnr in winnrs
       call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
             \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
             \ 'foldexpr'   : gettabwinvar(tabnr, winnr, '&foldexpr')
