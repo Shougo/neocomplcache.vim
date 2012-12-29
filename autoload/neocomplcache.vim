@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2012.
+" Last Modified: 29 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -904,6 +904,8 @@ function! s:do_auto_complete(event) "{{{
       return
     endif
   endif
+
+  call s:save_foldinfo()
 
   " Set options.
   set completeopt-=menu
@@ -2397,8 +2399,7 @@ function! s:on_insert_leave() "{{{
     endfor
   endfor
 endfunction"}}}
-function! s:on_insert_enter() "{{{
-  " Save foldinfo.
+function! s:save_foldinfo() "{{{
   " Note: settabwinvar() in insert mode has bug.
   " for tabnr in range(1, tabpagenr('$'))
   for tabnr in filter([tabpagenr()],
@@ -2419,7 +2420,8 @@ function! s:on_insert_enter() "{{{
       call settabwinvar(tabnr, winnr, '&foldexpr', 0)
     endfor
   endfor
-
+endfunction"}}}
+function! s:on_insert_enter() "{{{
   if &l:foldmethod ==# 'expr' && foldlevel('.') != 0
     foldopen
   endif
