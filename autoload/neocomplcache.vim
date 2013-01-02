@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jan 2013.
+" Last Modified: 02 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2004,11 +2004,6 @@ endfunction"}}}
 
 " Command functions. "{{{
 function! neocomplcache#toggle_lock() "{{{
-  if !neocomplcache#is_enabled()
-    call neocomplcache#enable()
-    return
-  endif
-
   if neocomplcache#get_current_neocomplcache().lock
     echo 'neocomplcache is unlocked!'
     call neocomplcache#unlock()
@@ -2018,18 +2013,10 @@ function! neocomplcache#toggle_lock() "{{{
   endif
 endfunction"}}}
 function! neocomplcache#lock() "{{{
-  if !neocomplcache#is_enabled()
-    return
-  endif
-
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   let neocomplcache.lock = 1
 endfunction"}}}
 function! neocomplcache#unlock() "{{{
-  if !neocomplcache#is_enabled()
-    return
-  endif
-
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   let neocomplcache.lock = 0
 endfunction"}}}

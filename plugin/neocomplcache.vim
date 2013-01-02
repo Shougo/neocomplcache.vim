@@ -190,7 +190,6 @@ let g:neocomplcache_enable_debug =
       \ get(g:, 'neocomplcache_enable_debug', 0)
 if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
   augroup neocomplcache
-    autocmd!
     " Enable startup.
     autocmd InsertEnter * call neocomplcache#enable()
   augroup END
