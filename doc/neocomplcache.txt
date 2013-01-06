@@ -1494,6 +1494,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-01-06
+- Supported sass omni completion.
+
 2013-01-04
 - Fixed buffer cache.
 
