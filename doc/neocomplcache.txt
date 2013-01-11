@@ -1486,7 +1486,7 @@ your Vim initialization.
 <
 Q: neocomplcache conflicts when multibyte input in GVim.
 
-A: Because Vim multibyte IME integration is imcomplete.
+A: Because Vim multibyte IME integration is incomplete.
 If you set |g:neocomplcache_lock_iminsert| is non-zero, it may be fixed.
 
 ==============================================================================
