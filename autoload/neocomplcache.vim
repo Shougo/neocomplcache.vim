@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jan 2013.
+" Last Modified: 16 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -692,10 +692,9 @@ function! neocomplcache#lazy_initialize() "{{{
     let s:is_enabled = 0
   elseif s:lazy_progress == 1
     call s:initialize_others()
-  elseif s:lazy_progress == 2
+  else
     call s:initialize_sources(get(g:neocomplcache_sources_list,
           \ neocomplcache#get_context_filetype(), ['_']))
-  else
     call s:initialize_autocmds()
     let s:is_enabled = 1
   endif
