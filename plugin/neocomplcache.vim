@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jan 2013.
+" Last Modified: 15 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -188,10 +188,11 @@ let g:neocomplcache_temporary_dir =
       \ get(g:, 'neocomplcache_temporary_dir', expand('~/.neocon'))
 let g:neocomplcache_enable_debug =
       \ get(g:, 'neocomplcache_enable_debug', 0)
-if exists('g:neocomplcache_enable_at_startup') && g:neocomplcache_enable_at_startup
+if get(g:, 'neocomplcache_enable_at_startup', 0)
   augroup neocomplcache
     " Enable startup.
-    autocmd InsertEnter * call neocomplcache#enable()
+    autocmd CursorHold,CursorMovedI
+          \ * call neocomplcache#lazy_initialize()
   augroup END
 endif"}}}
 

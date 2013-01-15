@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jan 2013.
+" Last Modified: 15 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ set cpo&vim
 
 scriptencoding utf-8
 
-function! s:initialize_variables() "{{{
+function! s:initialize_script_variables() "{{{
   let s:is_enabled = 1
   let s:complfunc_sources = {}
   let s:plugin_sources = {}
@@ -49,23 +49,7 @@ function! s:initialize_variables() "{{{
   endif
 endfunction"}}}
 
-if !exists('s:is_enabled')
-  call s:initialize_variables()
-  let s:is_enabled = 0
-endif
-
-function! neocomplcache#initialize() "{{{
-  call neocomplcache#enable()
-  call s:initialize_sources(get(g:neocomplcache_sources_list,
-        \ neocomplcache#get_context_filetype(), ['_']))
-endfunction"}}}
-
-function! neocomplcache#enable() "{{{
-  if neocomplcache#is_enabled()
-    return
-  endif
-
-  " Auto commands. "{{{
+function! s:initialize_autocmds() "{{{
   augroup neocomplcache
     autocmd!
     autocmd InsertEnter * call s:on_insert_enter()
@@ -95,10 +79,9 @@ function! neocomplcache#enable() "{{{
     autocmd neocomplcache CompleteDone *
           \ call s:on_complete_done()
   endif
-  "}}}
+endfunction"}}}
 
-  call s:initialize_variables()
-
+function! s:initialize_others() "{{{
   " Initialize keyword patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_keyword_patterns', {})
@@ -673,7 +656,7 @@ function! neocomplcache#enable() "{{{
         \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
   inoremap <silent> <Plug>(neocomplcache_start_auto_complete_no_select)
         \ <C-x><C-u><C-p>
-        " \ <C-x><C-u><C-p>
+  " \ <C-x><C-u><C-p>
   inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
         \ <C-x><C-o><C-p>
 
@@ -686,6 +669,48 @@ function! neocomplcache#enable() "{{{
     call neocomplcache#print_error(
           \ 'Detected set paste! Disabled neocomplcache.')
   endif
+endfunction"}}}
+
+if !exists('s:is_enabled')
+  call s:initialize_script_variables()
+  let s:is_enabled = 0
+endif
+
+function! neocomplcache#initialize() "{{{
+  call neocomplcache#enable()
+  call s:initialize_sources(get(g:neocomplcache_sources_list,
+        \ neocomplcache#get_context_filetype(), ['_']))
+endfunction"}}}
+
+function! neocomplcache#lazy_initialize() "{{{
+  if !exists('s:lazy_progress')
+    let s:lazy_progress = 0
+  endif
+  
+  if s:lazy_progress == 0
+    call s:initialize_script_variables()
+    let s:is_enabled = 0
+  elseif s:lazy_progress == 1
+    call s:initialize_others()
+  elseif s:lazy_progress == 2
+    call s:initialize_sources(get(g:neocomplcache_sources_list,
+          \ neocomplcache#get_context_filetype(), ['_']))
+  else
+    call s:initialize_autocmds()
+    let s:is_enabled = 1
+  endif
+
+  let s:lazy_progress += 1
+endfunction"}}}
+
+function! neocomplcache#enable() "{{{
+  if neocomplcache#is_enabled()
+    return
+  endif
+
+  call s:initialize_script_variables()
+  call s:initialize_others()
+  call s:initialize_autocmds()
 endfunction"}}}
 
 function! neocomplcache#disable() "{{{
