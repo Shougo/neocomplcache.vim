@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jan 2013.
+" Last Modified: 17 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,6 +43,7 @@ function! s:initialize_script_variables() "{{{
   let s:use_sources = {}
   let s:filetype_frequencies = {}
   let s:loaded_all_sources = 0
+  let s:runtimepath_save = ''
 
   if has('reltime')
     let s:start_time = reltime()
@@ -2747,7 +2748,7 @@ function! neocomplcache#get_current_neocomplcache() "{{{
 endfunction"}}}
 function! s:initialize_sources(source_names) "{{{
   " Initialize sources table.
-  if s:loaded_all_sources
+  if s:loaded_all_sources && &runtimepath ==# s:runtimepath_save
     return
   endif
 
@@ -2804,6 +2805,7 @@ function! s:initialize_sources(source_names) "{{{
 
     if name == '_'
       let s:loaded_all_sources = 1
+      let s:runtimepath_save = &runtimepath
     endif
   endfor
 endfunction"}}}
