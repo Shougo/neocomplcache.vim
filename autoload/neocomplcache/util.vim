@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Oct 2012.
+" Last Modified: 19 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -158,6 +158,27 @@ function! neocomplcache#util#disable_default_dictionary(variable) "{{{
   endif
 
   let s:disable_dictionaries[a:variable] = 1
+endfunction"}}}
+
+function! neocomplcache#util#split_rtp(...) "{{{
+  let rtp = a:0 ? a:1 : &runtimepath
+  if type(rtp) == type([])
+    return rtp
+  endif
+
+  if rtp !~ '\\'
+    return split(rtp, ',')
+  endif
+
+  let split = split(rtp, '\\\@<!\%(\\\\\)*\zs,')
+  return map(split,'substitute(v:val, ''\\\([\\,]\)'', "\\1", "g")')
+endfunction"}}}
+function! neocomplcache#util#join_rtp(list) "{{{
+  return join(map(copy(a:list), 's:escape(v:val)'), ',')
+endfunction"}}}
+" Escape a path for runtimepath.
+function! s:escape(path)"{{{
+  return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
 endfunction"}}}
 
 let &cpo = s:save_cpo
