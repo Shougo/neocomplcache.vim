@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jan 2013.
+" Last Modified: 20 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -304,9 +304,8 @@ function! s:check_recache() "{{{
   let source = s:buffer_sources[bufnr('%')]
 
   " Check buffer access time.
-  if source.cached_time > 0 &&
-        \ (source.cached_time < release_accessd_time
-        \  || (neocomplcache#util#has_vimproc() && line('$') != source.end_line))
+  if (source.cached_time > 0 && source.cached_time < release_accessd_time)
+        \  || (neocomplcache#util#has_vimproc() && line('$') != source.end_line)
     " Buffer recache.
     call s:word_caching(bufnr('%'))
   endif

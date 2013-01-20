@@ -1499,6 +1499,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-01-20
+- Improved recache behavior.
+
 2013-01-19
 - Improved source initialization.
 
