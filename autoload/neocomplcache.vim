@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jan 2013.
+" Last Modified: 20 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2397,7 +2397,7 @@ function! s:on_insert_leave() "{{{
   " Restore foldinfo.
   " Note: settabwinvar() in insert mode has bug before 7.3.768.
   for tabnr in (v:version > 703 || (v:version == 703 && has('patch768')) ?
-        \ [tabpagenr()] : range(1, tabpagenr('$')))
+        \ range(1, tabpagenr('$')) : [tabpagenr()])
     for winnr in filter(range(1, tabpagewinnr(tabnr, '$')),
           \ "!empty(gettabwinvar(tabnr, v:val, 'neocomplcache_foldinfo'))")
       let neocomplcache_foldinfo =
@@ -2414,8 +2414,8 @@ endfunction"}}}
 function! s:save_foldinfo() "{{{
   " Restore foldinfo.
   " Note: settabwinvar() in insert mode has bug before 7.3.768.
-  for tabnr in (v:version > 703 || (v:version == 703 && has('patch768')) ?
-        \ [tabpagenr()] : range(1, tabpagenr('$')))
+  for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
+        \ range(1, tabpagenr('$')) : [tabpagenr()]), 
         \ "index(tabpagebuflist(v:val), bufnr('%')) >= 0")
     let winnrs = range(1, tabpagewinnr(tabnr, '$'))
     if tabnr == tabpagenr()
