@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2013.
+" Last Modified: 24 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2415,14 +2415,15 @@ function! s:save_foldinfo() "{{{
   " Restore foldinfo.
   " Note: settabwinvar() in insert mode has bug before 7.3.768.
   for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
-        \ range(1, tabpagenr('$')) : [tabpagenr()]), 
+        \ range(1, tabpagenr('$')) : [tabpagenr()]),
         \ "index(tabpagebuflist(v:val), bufnr('%')) >= 0")
     let winnrs = range(1, tabpagewinnr(tabnr, '$'))
     if tabnr == tabpagenr()
       call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
     endif
     call filter(winnrs, "
-          \  gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' &&
+          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
+          \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
           \  gettabwinvar(tabnr, v:val, '&modifiable')")
     for winnr in winnrs
       call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
