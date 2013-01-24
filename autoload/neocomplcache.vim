@@ -687,16 +687,16 @@ function! neocomplcache#lazy_initialize() "{{{
   if !exists('s:lazy_progress')
     let s:lazy_progress = 0
   endif
-  
+
   if s:lazy_progress == 0
     call s:initialize_script_variables()
     let s:is_enabled = 0
   elseif s:lazy_progress == 1
     call s:initialize_others()
   else
+    call s:initialize_autocmds()
     call s:initialize_sources(get(g:neocomplcache_sources_list,
           \ neocomplcache#get_context_filetype(), ['_']))
-    call s:initialize_autocmds()
     let s:is_enabled = 1
   endif
 
@@ -709,8 +709,8 @@ function! neocomplcache#enable() "{{{
   endif
 
   call s:initialize_script_variables()
-  call s:initialize_others()
   call s:initialize_autocmds()
+  call s:initialize_others()
 endfunction"}}}
 
 function! neocomplcache#disable() "{{{

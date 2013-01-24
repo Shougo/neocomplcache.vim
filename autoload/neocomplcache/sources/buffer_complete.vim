@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2013.
+" Last Modified: 24 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -295,6 +295,7 @@ function! s:check_cache() "{{{
 endfunction"}}}
 function! s:check_recache() "{{{
   if !s:exists_current_source()
+    call s:word_caching(bufnr('%'))
     return
   endif
 
@@ -307,6 +308,10 @@ function! s:check_recache() "{{{
   if (source.cached_time > 0 && source.cached_time < release_accessd_time)
         \  || (neocomplcache#util#has_vimproc() && line('$') != source.end_line)
     " Buffer recache.
+    if g:neocomplcache_enable_debug
+      echomsg 'Caching buffer: ' . bufname('%')
+    endif
+
     call s:word_caching(bufnr('%'))
   endif
 endfunction"}}}
