@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jan 2013.
+" Last Modified: 27 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2862,7 +2862,7 @@ function! s:is_skip_auto_complete(cur_text) "{{{
         \ || a:cur_text == neocomplcache.old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
         \ || (&l:formatoptions =~# '[tc]' && &l:textwidth > 0
-        \     && neocomplcache#util#wcswidth(a:cur_text) >= &l:textwidth)
+        \     && neocomplcache#util#wcswidth(a:cur_text)+2 >= &l:textwidth)
     return 1
   endif
 
