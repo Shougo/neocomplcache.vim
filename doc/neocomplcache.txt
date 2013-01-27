@@ -1499,6 +1499,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-01-27
+- Fixed for formatoptions.
+
 2013-01-24
 - Fixed autocmd initialization.
 

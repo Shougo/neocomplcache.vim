@@ -938,10 +938,9 @@ function! s:do_auto_complete(event) "{{{
   set completeopt+=menuone
 
   " Start auto complete.
-  call feedkeys("\<Plug>(neocomplcache_start_auto_complete)")
-  " call feedkeys(g:neocomplcache_enable_auto_select ?
-  "       \ "\<Plug>(neocomplcache_start_auto_complete)":
-  "       \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
+  call feedkeys(&l:formatoptions !~ 'a' ?
+        \ "\<Plug>(neocomplcache_start_auto_complete)":
+        \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
 endfunction"}}}
 function! s:check_in_do_auto_complete() "{{{
   if neocomplcache#is_locked()
@@ -2862,7 +2861,7 @@ function! s:is_skip_auto_complete(cur_text) "{{{
         \ || a:cur_text == neocomplcache.old_cur_text
         \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
         \ || (&l:formatoptions =~# '[tc]' && &l:textwidth > 0
-        \     && neocomplcache#util#wcswidth(a:cur_text)+2 >= &l:textwidth)
+        \     && neocomplcache#util#wcswidth(a:cur_text) >= &l:textwidth)
     return 1
   endif
 
