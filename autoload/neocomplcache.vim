@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jan 2013.
+" Last Modified: 02 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2411,7 +2411,7 @@ function! s:on_insert_leave() "{{{
   endfor
 endfunction"}}}
 function! s:save_foldinfo() "{{{
-  " Restore foldinfo.
+  " Save foldinfo.
   " Note: settabwinvar() in insert mode has bug before 7.3.768.
   for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
         \ range(1, tabpagenr('$')) : [tabpagenr()]),
@@ -2421,9 +2421,14 @@ function! s:save_foldinfo() "{{{
       call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
     endif
     call filter(winnrs, "
-          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
-          \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
-          \  gettabwinvar(tabnr, v:val, '&modifiable')")
+          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' &&
+          \  gettabwinvar(tabnr, v:val, '&modifiable'))")
+
+    " Note: for foldmethod=expr or syntax.
+    " call filter(winnrs, "
+          " \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
+          " \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
+          " \  gettabwinvar(tabnr, v:val, '&modifiable')")
     for winnr in winnrs
       call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
             \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
