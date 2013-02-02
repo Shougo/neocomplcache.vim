@@ -2420,15 +2420,12 @@ function! s:save_foldinfo() "{{{
     if tabnr == tabpagenr()
       call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
     endif
-    call filter(winnrs, "
-          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' &&
-          \  gettabwinvar(tabnr, v:val, '&modifiable'))")
 
     " Note: for foldmethod=expr or syntax.
-    " call filter(winnrs, "
-          " \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
-          " \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
-          " \  gettabwinvar(tabnr, v:val, '&modifiable')")
+    call filter(winnrs, "
+          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
+          \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
+          \  gettabwinvar(tabnr, v:val, '&modifiable')")
     for winnr in winnrs
       call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
             \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
