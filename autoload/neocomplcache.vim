@@ -2867,10 +2867,11 @@ function! s:is_skip_auto_complete(cur_text) "{{{
     return 1
   endif
 
-  if neocomplcache.skip_next_complete
-    let neocomplcache.skip_next_complete = 0
-    return 1
+  if !neocomplcache.skip_next_complete
+    return 0
   endif
+
+  let neocomplcache.skip_next_complete = 1
 
   " Check delimiter pattern.
   let is_delimiter = 0
