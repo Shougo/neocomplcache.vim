@@ -1497,6 +1497,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-02-09
+- Improved skip complete behavior.
+
 2013-01-27
 - Fixed for formatoptions.
 

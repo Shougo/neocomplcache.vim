@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Feb 2013.
+" Last Modified: 09 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2867,11 +2867,10 @@ function! s:is_skip_auto_complete(cur_text) "{{{
     return 1
   endif
 
-  if !neocomplcache.skip_next_complete
-    return 0
+  if neocomplcache.skip_next_complete
+    let neocomplcache.skip_next_complete = 0
+    return 1
   endif
-
-  let neocomplcache.skip_next_complete = 0
 
   " Check delimiter pattern.
   let is_delimiter = 0
