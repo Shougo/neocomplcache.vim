@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2013.
+" Last Modified: 11 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -870,6 +870,7 @@ function! s:do_auto_complete(event) "{{{
   let neocomplcache.event = a:event
 
   let cur_text = s:get_cur_text()
+
   if g:neocomplcache_enable_debug
     echomsg 'cur_text = ' . cur_text
   endif
@@ -2243,10 +2244,9 @@ function! neocomplcache#smart_close_popup() "{{{
 endfunction
 "}}}
 function! neocomplcache#close_popup() "{{{
-  call neocomplcache#skip_next_complete()
-
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   let neocomplcache.cur_keyword_str = ''
+  let neocomplcache.skip_next_complete = 2
   let neocomplcache.complete_words = []
 
   return pumvisible() ? "\<C-y>" : ''
@@ -2871,8 +2871,6 @@ function! s:is_skip_auto_complete(cur_text) "{{{
     return 0
   endif
 
-  let neocomplcache.skip_next_complete = 0
-
   " Check delimiter pattern.
   let is_delimiter = 0
   let filetype = neocomplcache#get_context_filetype()
@@ -2885,18 +2883,16 @@ function! s:is_skip_auto_complete(cur_text) "{{{
     endif
   endfor
 
-  if !is_delimiter
-    let neocomplcache.cur_text = ''
-    let neocomplcache.old_cur_text = ''
-
-    if g:neocomplcache_enable_debug
-      echomsg 'Skipped.'
-    endif
-
-    return 1
+  if is_delimiter && neocomplcache.skip_next_complete == 2
+    let neocomplcache.skip_next_complete = 0
+    return 0
   endif
 
-  return 0
+  let neocomplcache.skip_next_complete = 0
+  let neocomplcache.cur_text = ''
+  let neocomplcache.old_cur_text = ''
+
+  return 1
 endfunction"}}}
 "}}}
 
