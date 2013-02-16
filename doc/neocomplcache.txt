@@ -1501,6 +1501,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2013-02-16
 - Fixed neocomplcache#complete_common_string().
+- Improved for caching buffer.
 
 2013-02-11
 - Fixed skip behavior.
