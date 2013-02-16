@@ -111,6 +111,10 @@ function! neocomplcache#sources#buffer_complete#define() "{{{
   return s:source
 endfunction"}}}
 
+function! neocomplcache#sources#buffer_complete#get_frequencies() "{{{
+  " Current line caching.
+  return get(get(s:buffer_sources, bufnr('%'), {}), 'frequencies', {})
+endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_current_line() "{{{
   " Current line caching.
   return s:caching_current_buffer(
@@ -152,6 +156,7 @@ function! s:caching_current_buffer(start, end) "{{{
         " Append list.
         let keywords[key][match_str] =
               \ { 'word' : match_str, 'menu' : menu, 'rank' : 0 }
+        let source.frequencies[match_str] = 10
       endif
     endif"}}}
 
@@ -199,6 +204,7 @@ function! s:initialize_source(srcname) "{{{
 
   let s:buffer_sources[a:srcname] = {
         \ 'keyword_cache' : {},
+        \ 'frequencies' : {},
         \ 'name' : filename, 'filetype' : ft,
         \ 'keyword_pattern' : keyword_pattern,
         \ 'end_line' : len(buflines),
