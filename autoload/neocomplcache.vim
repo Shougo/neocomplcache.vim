@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2013.
+" Last Modified: 16 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2298,9 +2298,16 @@ function! neocomplcache#complete_common_string() "{{{
     let &ignorecase = g:neocomplcache_enable_ignore_case
   endif
 
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let complete_words = neocomplcache#keyword_filter(
-        \ copy(neocomplcache.complete_words), cur_keyword_str)
+  let is_fuzzy = g:neocomplcache_enable_fuzzy_completion
+
+  try
+    let g:neocomplcache_enable_fuzzy_completion = 0
+    let neocomplcache = neocomplcache#get_current_neocomplcache()
+    let complete_words = neocomplcache#keyword_filter(
+          \ copy(neocomplcache.complete_words), cur_keyword_str)
+  finally
+    let g:neocomplcache_enable_fuzzy_completion = is_fuzzy
+  endtry
 
   if empty(complete_words)
     let &ignorecase = ignorecase_save
