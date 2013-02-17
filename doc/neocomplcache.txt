@@ -928,7 +928,7 @@ g:neocomplcache_enable_auto_close_preview
 		If it is non-zero, neocomplcache will close preview window
 		automatically.
 
-		Default value is 1.
+		Default value is 0.
 
 ------------------------------------------------------------------------------
 FUNCTIONS 					*neocomplcache-functions*
