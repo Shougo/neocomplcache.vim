@@ -923,6 +923,13 @@ g:neocomplcache_skip_auto_completion_time
 		Default value is "0.3".
 		{only available when compiled with the |+reltime| feature}
 
+g:neocomplcache_enable_auto_close_preview
+				*g:neocomplcache_enable_auto_close_preview*
+		If it is non-zero, neocomplcache will close preview window
+		automatically.
+
+		Default value is 1.
+
 ------------------------------------------------------------------------------
 FUNCTIONS 					*neocomplcache-functions*
 
@@ -1498,6 +1505,9 @@ Improve cache behavior in current buffer.
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2013-02-17
+- Added g:neocomplcache_enable_auto_close_preview.
 
 2013-02-16
 - Fixed neocomplcache#complete_common_string().

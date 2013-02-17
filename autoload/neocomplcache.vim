@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Feb 2013.
+" Last Modified: 17 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -2398,6 +2398,11 @@ function! s:on_moved_i() "{{{
       call neocomplcache#sources#member_complete#caching_current_line()
     endif
   endif
+
+  if g:neocomplcache_enable_auto_close_preview
+    " Close preview window.
+    pclose!
+  endif
 endfunction"}}}
 function! s:on_insert_leave() "{{{
   let neocomplcache = neocomplcache#get_current_neocomplcache()
@@ -2421,6 +2426,11 @@ function! s:on_insert_leave() "{{{
             \ 'neocomplcache_foldinfo', {})
     endfor
   endfor
+
+  if g:neocomplcache_enable_auto_close_preview
+    " Close preview window.
+    pclose!
+  endif
 endfunction"}}}
 function! s:save_foldinfo() "{{{
   " Save foldinfo.

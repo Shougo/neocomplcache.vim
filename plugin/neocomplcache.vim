@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jan 2013.
+" Last Modified: 17 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -162,6 +162,8 @@ let g:neocomplcache_wildcard_characters =
       \ '_' : '*' })
 let g:neocomplcache_skip_auto_completion_time =
       \ get(g:, 'neocomplcache_skip_auto_completion_time', '0.3')
+let g:neocomplcache_enable_auto_close_preview =
+      \ get(g:, 'neocomplcache_enable_auto_close_preview', 0)
 
 let g:neocomplcache_sources_list =
       \ get(g:, 'neocomplcache_sources_list', {})
