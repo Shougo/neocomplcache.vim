@@ -1506,6 +1506,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-02-22
+- Improved filename pattern.
+
 2013-02-17
 - Added g:neocomplcache_enable_auto_close_preview.
 
