@@ -1660,7 +1660,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Use fnameescape().
 
 2012-10-27
-- Fixed documentaion for neosnippet.
+- Fixed documentation for neosnippet.
 - Improved documentation.
 - Improved skip.
 - Added neocomplcache#compare_human compare function.
