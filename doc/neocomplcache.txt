@@ -1217,7 +1217,7 @@ suffix of complete candidates in popup menu declaration.
     snippets_complete(neosnippet)
                                -> [Snip] (none or one placeholder) or
                                   <Snip> (contains multiple placeholders,
-                                          you must jump)
+                                  `Snip` (contains evaluation)
     vim_complete               -> [vim] type
     omni_complete              -> [O]
     tags_complete              -> [T]
