@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Feb 2013.
+" Last Modified: 24 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,6 +38,8 @@ let s:source = {
       \}
 
 function! s:source.initialize() "{{{
+  let s:buffer_sources = {}
+
   augroup neocomplcache "{{{
     " Caching events
     autocmd CursorHold *

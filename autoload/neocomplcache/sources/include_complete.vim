@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2012.
+" Last Modified: 24 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,63 +27,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-if !exists('s:include_info')
-  let s:include_info = {}
-  let s:include_cache = {}
-  let s:cache_accessed_time = {}
-  let s:async_include_cache = {}
-  let s:cached_pattern = {}
-
-  " Initialize include pattern. "{{{
-  let g:neocomplcache_include_patterns =
-        \ get(g:, 'neocomplcache_include_patterns', {})
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_patterns',
-        \ 'java,haskell', '^\s*\<import')
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_patterns',
-        \ 'cs', '^\s*\<using')
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_patterns',
-        \ 'ruby', '^\s*\<\%(load\|require\|require_relative\)\>')
-  "}}}
-  " Initialize expr pattern. "{{{
-  call neocomplcache#util#set_default(
-        \ 'g:neocomplcache_include_exprs', {})
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_exprs',
-        \ 'haskell,cs',
-        \ "substitute(v:fname, '\\.', '/', 'g')")
-  "}}}
-  " Initialize path pattern. "{{{
-  call neocomplcache#util#set_default(
-        \ 'g:neocomplcache_include_paths', {})
-  "}}}
-  " Initialize include suffixes. "{{{
-  call neocomplcache#util#set_default(
-        \ 'g:neocomplcache_include_suffixes', {})
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_suffixes',
-        \ 'haskell', '.hs')
-  "}}}
-  " Initialize include functions. "{{{
-  call neocomplcache#util#set_default(
-        \ 'g:neocomplcache_include_functions', {})
-  " call neocomplcache#util#set_default_dictionary(
-  "       \ 'g:neocomplcache_include_functions', 'vim',
-  "       \ 'neocomplcache#sources#include_complete#analyze_vim_include_files')
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_include_functions', 'ruby',
-        \ 'neocomplcache#sources#include_complete#analyze_ruby_include_files')
-  "}}}
-endif
-
 let s:source = {
       \ 'name' : 'include_complete',
       \ 'kind' : 'plugin',
       \}
 
 function! s:source.initialize() "{{{
+  call s:initialize_variables()
+
   " Set rank.
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_source_rank', 'include_complete', 8)
@@ -479,6 +430,61 @@ function! neocomplcache#sources#include_complete#analyze_ruby_include_files(line
 
   return include_files
 endfunction"}}}
+
+function! s:initialize_variables() "{{{
+  let s:include_info = {}
+  let s:include_cache = {}
+  let s:cache_accessed_time = {}
+  let s:async_include_cache = {}
+  let s:cached_pattern = {}
+
+  " Initialize include pattern. "{{{
+  let g:neocomplcache_include_patterns =
+        \ get(g:, 'neocomplcache_include_patterns', {})
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_patterns',
+        \ 'java,haskell', '^\s*\<import')
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_patterns',
+        \ 'cs', '^\s*\<using')
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_patterns',
+        \ 'ruby', '^\s*\<\%(load\|require\|require_relative\)\>')
+  "}}}
+  " Initialize expr pattern. "{{{
+  call neocomplcache#util#set_default(
+        \ 'g:neocomplcache_include_exprs', {})
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_exprs',
+        \ 'haskell,cs',
+        \ "substitute(v:fname, '\\.', '/', 'g')")
+  "}}}
+  " Initialize path pattern. "{{{
+  call neocomplcache#util#set_default(
+        \ 'g:neocomplcache_include_paths', {})
+  "}}}
+  " Initialize include suffixes. "{{{
+  call neocomplcache#util#set_default(
+        \ 'g:neocomplcache_include_suffixes', {})
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_suffixes',
+        \ 'haskell', '.hs')
+  "}}}
+  " Initialize include functions. "{{{
+  call neocomplcache#util#set_default(
+        \ 'g:neocomplcache_include_functions', {})
+  " call neocomplcache#util#set_default_dictionary(
+  "       \ 'g:neocomplcache_include_functions', 'vim',
+  "       \ 'neocomplcache#sources#include_complete#analyze_vim_include_files')
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_functions', 'ruby',
+        \ 'neocomplcache#sources#include_complete#analyze_ruby_include_files')
+  "}}}
+endfunction"}}}
+
+if !exists('s:include_info')
+  call s:initialize_variables()
+endif
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

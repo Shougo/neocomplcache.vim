@@ -1506,6 +1506,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-02-24
+- Improved initialization.
+
 2013-02-22
 - Improved filename pattern.
 
