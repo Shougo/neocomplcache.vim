@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2013.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,6 +71,8 @@ else
   command! -nargs=1 -bar NeoComplCacheSetFileType
         \ call neocomplcache#set_file_type(<q-args>)
 endif
+command! -nargs=0 -bar NeoComplCacheClean
+      \ call neocomplcache#clean()
 
 " Warning if using obsolute mappings. "{{{
 silent! inoremap <unique> <Plug>(neocomplcache_snippets_expand)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2013.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,6 +31,7 @@ let s:source = {
       \ 'name' : 'omni_complete',
       \ 'kind' : 'complfunc',
       \ 'compare_func' : 'neocomplcache#compare_nothing',
+      \ 'mark' : '[O]',
       \}
 
 let s:List = vital#of('neocomplcache').import('Data.List')
@@ -172,15 +173,8 @@ function! s:get_omni_list(list) "{{{
 
   " Convert string list.
   for val in deepcopy(a:list)
-    if type(val) == type('')
-      let dict = { 'word' : val, 'menu' : '[O]' }
-    else
-      let dict = val
-      let dict.menu = has_key(dict, 'menu') ?
-            \ '[O] ' . dict.menu : '[O]'
-    endif
-
-    call add(omni_list, dict)
+    call add(omni_list, (type(val) == type('') ?
+          \ { 'word' : val } : val))
 
     unlet val
   endfor

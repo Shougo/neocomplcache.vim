@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Feb 2013.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1733,6 +1733,8 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
   let len_words = 0
   for [source_name, result] in sort(items(a:complete_results),
         \ 's:compare_source_rank')
+    let source = sources[source_name]
+
     let result.complete_words = deepcopy(result.complete_words)
     if result.cur_keyword_pos > a:cur_keyword_pos
       let prefix = a:cur_keyword_str[: result.cur_keyword_pos
@@ -1742,6 +1744,13 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
         let keyword.word = prefix . keyword.word
       endfor
     endif
+
+    for keyword in result.complete_words
+      if !has_key(keyword, 'menu') && has_key(source, 'mark')
+        " Set default menu.
+        let keyword.menu = source.mark
+      endif
+    endfor
 
     for keyword in filter(copy(result.complete_words),
           \ 'has_key(frequencies, v:val.word)')
@@ -2033,6 +2042,17 @@ endfunction"}}}
 "}}}
 
 " Command functions. "{{{
+function! neocomplcache#clean() "{{{
+  " Delete cache files.
+  for directory in filter(neocomplcache#util#glob(
+        \ g:neocomplcache_temporary_dir.'/*'), 'isdirectory(v:val)')
+    for filename in neocomplcache#util#glob(directory.'/*')
+      call delete(filename)
+    endfor
+  endfor
+
+  echo 'Cleaned cache files in: ' . g:neocomplcache_temporary_dir
+endfunction"}}}
 function! neocomplcache#toggle_lock() "{{{
   if neocomplcache#get_current_neocomplcache().lock
     echo 'neocomplcache is unlocked!'

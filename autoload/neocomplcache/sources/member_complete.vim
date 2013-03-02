@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: member_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Dec 2012.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,6 +35,7 @@ endif
 let s:source = {
       \ 'name' : 'member_complete',
       \ 'kind' : 'complfunc',
+      \ 'menu' : '[M]',
       \}
 
 function! s:source.initialize() "{{{
@@ -147,7 +148,6 @@ function! s:caching_current_buffer(start, end) "{{{
   endif
 
   let source = s:member_sources[bufnr('%')]
-  let menu = '[M] member'
   let keyword_pattern =
         \ '\%(' . s:get_member_pattern(filetype) . '\%('
         \ . g:neocomplcache_member_prefix_patterns[filetype]
@@ -178,7 +178,7 @@ function! s:caching_current_buffer(start, end) "{{{
         endif
         if !has_key(source.member_cache[var_name], member_name)
           let source.member_cache[var_name][member_name] =
-                \ { 'word' : member_name, 'menu' : menu }
+                \ { 'word' : member_name }
         endif
 
         let match_str = matchstr(var_name, keyword_pattern2)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_include.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2012.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,6 +45,7 @@ endif
 let s:source = {
       \ 'name' : 'filename_include',
       \ 'kind' : 'complfunc',
+      \ 'mark' : '[FI]',
       \}
 
 function! s:source.initialize() "{{{
@@ -186,7 +187,7 @@ function! s:get_include_files(cur_keyword_str) "{{{
     for word in split(
           \ neocomplcache#util#substitute_path_separator(
           \   glob(glob)), '\n')
-      let dict = { 'word' : word, 'menu' : '[FI]' }
+      let dict = { 'word' : word }
 
       call add(isdirectory(word) ? dir_list : file_list, dict)
 
@@ -228,7 +229,7 @@ function! s:get_default_include_files(filetype) "{{{
     let files = ['sys']
   endif
 
-  return map(files, "{ 'word' : v:val, 'menu' : '[FI]' }")
+  return map(files, "{ 'word' : v:val }")
 endfunction"}}}
 
 function! neocomplcache#sources#filename_include#define() "{{{

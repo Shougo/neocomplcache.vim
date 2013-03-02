@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2012.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,7 @@ set cpo&vim
 let s:source = {
       \ 'name' : 'filename_complete',
       \ 'kind' : 'complfunc',
+      \ 'mark' : '[F]',
       \}
 
 function! s:source.initialize() "{{{
@@ -162,7 +163,6 @@ function! s:get_glob_files(cur_keyword_str, path) "{{{
     call add(isdirectory(dict.word) ?
           \ dir_list : file_list, dict)
 
-    let dict.menu = '[F]'
     let dict.orig = dict.word
 
     if len_env != 0 && dict.word[: len_env-1] == env_ev

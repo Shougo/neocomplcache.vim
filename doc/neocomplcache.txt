@@ -163,6 +163,9 @@ COMMANDS 					*neocomplcache-commands*
 		Note: You can get current filetype by
 		|neocomplcache#get_context_filetype()|
 
+:NeoComplCacheClean 				*:NeoComplCacheClean*
+		Clean cache files in |g:neocomplcache_temporary_dir|.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*neocomplcache-variables*
 
@@ -1508,6 +1511,8 @@ CHANGELOG					*neocomplcache-changelog*
 
 2013-03-02
 - Ver.8.0 development is started.
+- Optimised memory.
+- Added :NeoComplCacheClean command.
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.2:

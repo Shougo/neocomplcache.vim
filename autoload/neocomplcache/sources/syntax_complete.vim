@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2012.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,6 +35,7 @@ endif
 let s:source = {
       \ 'name' : 'syntax_complete',
       \ 'kind' : 'plugin',
+      \ 'mark' : '[S]',
       \}
 
 function! s:source.initialize() "{{{
@@ -139,7 +140,6 @@ function! s:caching_from_syn(filetype) "{{{
   let keyword_pattern = neocomplcache#get_keyword_pattern(a:filetype)
 
   let dup_check = {}
-  let menu = '[S] '
 
   let filetype_pattern = substitute(a:filetype, '\W', '\\A', 'g') . '\u'
 
@@ -148,7 +148,6 @@ function! s:caching_from_syn(filetype) "{{{
     if line =~ '^\h\w\+'
       " Change syntax group name.
       let group_name = matchstr(line, '^\S\+')
-      let menu = printf('[S] %.'.g:neocomplcache_max_menu_width.'s', group_name)
       let line = substitute(line, '^\S\s*xxx', '', '')
     endif
 
@@ -179,7 +178,7 @@ function! s:caching_from_syn(filetype) "{{{
       if len(match_str) >= g:neocomplcache_min_syntax_length
             \ && !has_key(dup_check, match_str)
             \&& match_str =~ '^[[:print:]]\+$'
-        let keyword = { 'word' : match_str, 'menu' : menu }
+        let keyword = { 'word' : match_str }
 
         let key = tolower(keyword.word[: completion_length-1])
         if !has_key(keyword_lists, key)

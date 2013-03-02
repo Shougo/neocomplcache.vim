@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Nov 2012.
+" Last Modified: 02 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -182,16 +182,19 @@ function! neocomplcache#sources#vim_complete#helper#autocmd_args(cur_text, cur_k
   elseif len(args) == 4
     if args[2] ==# 'FileType'
       " Filetype completion.
-      let list += neocomplcache#sources#vim_complete#helper#filetype(a:cur_text, a:cur_keyword_str)
+      let list += neocomplcache#sources#vim_complete#helper#filetype(
+            \ a:cur_text, a:cur_keyword_str)
     endif
 
-    let list += neocomplcache#sources#vim_complete#helper#command(args[3], a:cur_keyword_str)
-    let list += s:make_completion_list(['nested'], '[V] autocmd', '')
+    let list += neocomplcache#sources#vim_complete#helper#command(
+          \ args[3], a:cur_keyword_str)
+    let list += s:make_completion_list(['nested'], '')
   else
     let command = args[3] =~ '^*' ?
           \ join(args[4:]) : join(args[3:])
-    let list += neocomplcache#sources#vim_complete#helper#command(command, a:cur_keyword_str)
-    let list += s:make_completion_list(['nested'], '[V] autocmd', '')
+    let list += neocomplcache#sources#vim_complete#helper#command(
+          \ command, a:cur_keyword_str)
+    let list += s:make_completion_list(['nested'], '')
   endif
 
   return list
@@ -208,8 +211,10 @@ function! neocomplcache#sources#vim_complete#helper#buffer(cur_text, cur_keyword
   return []
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#colorscheme_args(cur_text, cur_keyword_str) "{{{
-  return s:make_completion_list(filter(map(split(globpath(&runtimepath, 'colors/*.vim'), '\n'),
-        \'fnamemodify(v:val, ":t:r")'), 'stridx(v:val, a:cur_keyword_str) == 0'), '[vim] colorscheme', '')
+  return s:make_completion_list(filter(map(split(
+        \ globpath(&runtimepath, 'colors/*.vim'), '\n'),
+        \ 'fnamemodify(v:val, ":t:r")'),
+        \ 'stridx(v:val, a:cur_keyword_str) == 0'), '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keyword_str) "{{{
   if a:cur_text == '' ||
@@ -242,10 +247,6 @@ function! neocomplcache#sources#vim_complete#helper#command(cur_text, cur_keywor
           \ s:internal_candidates_list.commands, a:cur_keyword_str)
           \ + neocomplcache#dictionary_filter(
           \ s:global_candidates_list.commands, a:cur_keyword_str)
-
-    if a:cur_keyword_str =~# '^en\%[d]'
-      let list += s:get_endlist()
-    endif
   else
     " Commands args.
     let command = neocomplcache#sources#vim_complete#get_command(a:cur_text)
@@ -288,8 +289,7 @@ function! neocomplcache#sources#vim_complete#helper#custom(command_name, cur_tex
 
   return s:make_completion_list(split(
         \ call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]),
-        \ '\n'), '[vim] custom', '')
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '\n'), '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur_text, cur_keyword_str) "{{{
   if !has_key(g:neocomplcache_vim_completefuncs, a:command_name)
@@ -298,8 +298,7 @@ function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur
 
   return s:make_completion_list(
         \ call(g:neocomplcache_vim_completefuncs[a:command_name],
-        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]),
-        \ '[vim] customlist', '')
+        \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_str) "{{{
   " Check dup.
@@ -313,7 +312,7 @@ function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_st
   let ret = []
   let paths = map(split(&cdpath, ','), 'substitute(v:val, "\\\\", "/", "g")')
   for keyword in keys(check)
-    let dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : '[vim] directory', }
+    let dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/' }
     " Path search.
     for path in paths
       if path != '' && neocomplcache#head_match(dict.word, path . '/')
@@ -366,8 +365,7 @@ function! neocomplcache#sources#vim_complete#helper#filetype(cur_text, cur_keywo
           \ split(globpath(&runtimepath, 'syntax/*.vim'), '\n') +
           \ split(globpath(&runtimepath, 'indent/*.vim'), '\n') +
           \ split(globpath(&runtimepath, 'ftplugin/*.vim'), '\n')
-          \ , "matchstr(fnamemodify(v:val, ':t:r'), '^[[:alnum:]-]*')"),
-          \ '[vim] filetype', ''))
+          \ , "matchstr(fnamemodify(v:val, ':t:r'), '^[[:alnum:]-]*')"), ''))
   endif
 
   return neocomplcache#dictionary_filter(
@@ -519,8 +517,8 @@ function! neocomplcache#sources#vim_complete#helper#var(cur_text, cur_keyword_st
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#expand(cur_text, cur_keyword_str) "{{{
   return s:make_completion_list(
-        \ ['<cfile>', '<afile>', '<abuf>', '<amatch>', '<sfile>', '<cword>', '<cWORD>', '<client>'],
-        \ '[vim] expand', '')
+        \ ['<cfile>', '<afile>', '<abuf>', '<amatch>',
+        \  '<sfile>', '<cword>', '<cWORD>', '<client>'], '')
 endfunction"}}}
 
 function! s:get_local_variables() "{{{
@@ -613,7 +611,6 @@ function! s:caching_from_dict(dict_name, kind) "{{{
     return []
   endif
 
-  let menu_pattern = '[vim] '.a:dict_name[: -2]
   let keyword_pattern =
         \'^\%(-\h\w*\%(=\%(\h\w*\|[01*?+%]\)\?\)\?'.
         \'\|<\h[[:alnum:]_-]*>\?\|\h[[:alnum:]_:#\[]*\%([!\]]\+\|()\?\)\?\)'
@@ -622,7 +619,7 @@ function! s:caching_from_dict(dict_name, kind) "{{{
     call add(keyword_list, {
           \ 'word' : substitute(matchstr(
           \       line, keyword_pattern), '[\[\]]', '', 'g'),
-          \ 'menu' : menu_pattern, 'kind' : a:kind, 'abbr' : line
+          \ 'kind' : a:kind, 'abbr' : line
           \})
   endfor
 
@@ -705,7 +702,6 @@ function! s:get_cmdlist() "{{{
         \ 'var', 'custom', 'customlist' ]
   let command_prototypes = {}
   let command_completions = {}
-  let menu_pattern = '[vim] command'
   for line in split(redir, '\n')[1:]
     let word = matchstr(line, '\a\w*')
 
@@ -744,7 +740,7 @@ function! s:get_cmdlist() "{{{
 
     call add(keyword_list, {
           \ 'word' : word, 'abbr' : word . prototype,
-          \ 'description' : word . prototype, 'menu' : menu_pattern, 'kind' : 'c'
+          \ 'description' : word . prototype, 'kind' : 'c'
           \})
   endfor
   let s:global_candidates_list.command_prototypes = command_prototypes
@@ -754,10 +750,10 @@ function! s:get_cmdlist() "{{{
 endfunction"}}}
 function! s:get_variablelist(dict, prefix) "{{{
   let kind_dict = ['0', '""', '()', '[]', '{}', '.']
-  return values(map(copy(a:dict), '{
-        \ "word" : a:prefix.v:key, "menu" : "[vim] variable",
-        \ "kind" : kind_dict[type(v:val)],
-        \}'))
+  return values(map(copy(a:dict), "{
+        \ 'word' : a:prefix.v:key,
+        \ 'kind' : kind_dict[type(v:val)],
+        \}"))
 endfunction"}}}
 function! s:get_functionlist() "{{{
   " Get function list.
@@ -767,7 +763,6 @@ function! s:get_functionlist() "{{{
 
   let keyword_dict = {}
   let function_prototypes = {}
-  let menu_pattern = '[vim] function'
   for line in split(redir, '\n')
     let line = line[9:]
     if line =~ '^<SNR>'
@@ -779,7 +774,7 @@ function! s:get_functionlist() "{{{
     if word != ''
       let keyword_dict[word] = {
             \ 'word' : word, 'abbr' : line,
-            \ 'description' : line, 'menu' : menu_pattern,
+            \ 'description' : line,
             \}
 
       let function_prototypes[word] = orig_line[len(word):]
@@ -797,9 +792,8 @@ function! s:get_augrouplist() "{{{
   redir END
 
   let keyword_list = []
-  let menu_pattern = '[vim] augroup'
   for group in split(redir . ' END', '\s\|\n')
-    call add(keyword_list, { 'word' : group, 'menu' : menu_pattern})
+    call add(keyword_list, { 'word' : group })
   endfor
   return keyword_list
 endfunction"}}}
@@ -810,13 +804,12 @@ function! s:get_mappinglist() "{{{
   redir END
 
   let keyword_list = []
-  let menu_pattern = '[vim] mapping'
   for line in split(redir, '\n')
     let map = matchstr(line, '^\a*\s*\zs\S\+')
     if map !~ '^<' || map =~ '^<SNR>'
       continue
     endif
-    call add(keyword_list, { 'word' : map, 'menu' : menu_pattern })
+    call add(keyword_list, { 'word' : map })
   endfor
   return keyword_list
 endfunction"}}}
@@ -824,109 +817,40 @@ function! s:get_envlist() "{{{
   " Get environment variable list.
 
   let keyword_list = []
-  let menu_pattern = '[vim] environment'
   for line in split(system('set'), '\n')
     let word = '$' . toupper(matchstr(line, '^\h\w*'))
-    call add(keyword_list, { 'word' : word, 'menu' : menu_pattern, 'kind' : 'e' })
+    call add(keyword_list, { 'word' : word, 'kind' : 'e' })
   endfor
   return keyword_list
 endfunction"}}}
-function! s:get_endlist() "{{{
-  " Get end command list.
-
-  let keyword_dict = {}
-  let menu_pattern = '[vim] end'
-  let line_num = line('.') - 1
-  let end_line = (line('.') < 100) ? line('.') - 100 : 1
-  let cnt = {
-        \ 'endfor' : 0, 'endfunction' : 0, 'endtry' : 0, 
-        \ 'endwhile' : 0, 'endif' : 0
-        \}
-  let word = ''
-
-  while line_num >= end_line
-    let line = getline(line_num)
-
-    if line =~ '\<endfo\%[r]\>'
-      let cnt['endfor'] -= 1
-    elseif line =~ '\<endf\%[nction]\>'
-      let cnt['endfunction'] -= 1
-    elseif line =~ '\<endt\%[ry]\>'
-      let cnt['endtry'] -= 1
-    elseif line =~ '\<endw\%[hile]\>'
-      let cnt['endwhile'] -= 1
-    elseif line =~ '\<en\%[dif]\>'
-      let cnt['endif'] -= 1
-
-    elseif line =~ '\<for\>'
-      let cnt['endfor'] += 1
-      if cnt['endfor'] > 0
-        let word = 'endfor'
-        break
-      endif
-    elseif line =~ '\<fu\%[nction]!\?\s\+'
-      let cnt['endfunction'] += 1
-      if cnt['endfunction'] > 0
-        let word = 'endfunction'
-      endif
-      break
-    elseif line =~ '\<try\>'
-      let cnt['endtry'] += 1
-      if cnt['endtry'] > 0
-        let word = 'endtry'
-        break
-      endif
-    elseif line =~ '\<wh\%[ile]\>'
-      let cnt['endwhile'] += 1
-      if cnt['endwhile'] > 0
-        let word = 'endwhile'
-        break
-      endif
-    elseif line =~ '\<if\>'
-      let cnt['endif'] += 1
-      if cnt['endif'] > 0
-        let word = 'endif'
-        break
-      endif
-    endif
-
-    let line_num -= 1
-  endwhile
-
-  return (word == '')? [] : [{'word' : word, 'menu' : menu_pattern, 'kind' : 'c'}]
-endfunction"}}}
-function! s:make_completion_list(list, menu_pattern, kind) "{{{
+function! s:make_completion_list(list, kind) "{{{
   let list = []
   for item in a:list
-    call add(list, { 'word' : item, 'menu' : a:menu_pattern, 'kind' : a:kind })
-  endfor 
+    call add(list, { 'word' : item, 'kind' : a:kind })
+  endfor
 
   return list
 endfunction"}}}
 function! s:analyze_function_line(line, keyword_dict, prototype) "{{{
-  let menu_pattern = '[vim] function'
-
   " Get script function.
   let line = substitute(matchstr(a:line, '\<fu\%[nction]!\?\s\+\zs.*)'), '".*$', '', '')
   let orig_line = line
   let word = matchstr(line, '^\h[[:alnum:]_:#.]*()\?')
   if word != '' && !has_key(a:keyword_dict, word) 
     let a:keyword_dict[word] = {
-          \ 'word' : word, 'abbr' : line, 'menu' : menu_pattern, 'kind' : 'f'
+          \ 'word' : word, 'abbr' : line, 'kind' : 'f'
           \}
     let a:prototype[word] = orig_line[len(word):]
   endif
 endfunction"}}}
 function! s:analyze_variable_line(line, keyword_dict) "{{{
-  let menu_pattern = '[vim] variable'
-
   if a:line =~ '\<\%(let\|for\)\s\+\a[[:alnum:]_:]*'
     " let var = pattern.
     let word = matchstr(a:line, '\<\%(let\|for\)\s\+\zs\a[[:alnum:]_:]*')
     let expression = matchstr(a:line, '\<let\s\+\a[[:alnum:]_:]*\s*=\s*\zs.*$')
     if !has_key(a:keyword_dict, word) 
       let a:keyword_dict[word] = {
-            \ 'word' : word, 'menu' : menu_pattern,
+            \ 'word' : word,
             \ 'kind' : s:get_variable_type(expression)
             \}
     elseif expression != '' && a:keyword_dict[word].kind == ''
@@ -947,7 +871,7 @@ function! s:analyze_variable_line(line, keyword_dict) "{{{
 
         if !has_key(a:keyword_dict, word) 
           let a:keyword_dict[word] = {
-                \ 'word' : word, 'menu' : menu_pattern,
+                \ 'word' : word,
                 \ 'kind' : s:get_variable_type(expression)
                 \}
         elseif expression != '' && a:keyword_dict[word].kind == ''
@@ -962,7 +886,7 @@ function! s:analyze_variable_line(line, keyword_dict) "{{{
       for arg in split(matchstr(a:line, '^[^(]*(\zs[^)]*'), '\s*,\s*')
         let word = 'a:' . (arg == '...' ?  '000' : arg)
         let a:keyword_dict[word] = {
-              \ 'word' : word, 'menu' : menu_pattern,
+              \ 'word' : word,
               \ 'kind' : (arg == '...' ?  '[]' : '')
               \}
 
@@ -972,7 +896,7 @@ function! s:analyze_variable_line(line, keyword_dict) "{{{
         for arg in range(5)
           let word = 'a:' . arg
           let a:keyword_dict[word] = {
-                \ 'word' : word, 'menu' : menu_pattern,
+                \ 'word' : word,
                 \ 'kind' : (arg == 0 ?  '0' : '')
                 \}
         endfor
@@ -980,7 +904,6 @@ function! s:analyze_variable_line(line, keyword_dict) "{{{
     endif
 endfunction"}}}
 function! s:analyze_dictionary_variable_line(line, keyword_dict, var_name) "{{{
-  let menu_pattern = '[vim] dictionary'
   let var_pattern = a:var_name.'\.\h\w*\%(()\?\)\?'
   let let_pattern = '\<let\s\+'.a:var_name.'\.\h\w*'
   let call_pattern = '\<call\s\+'.a:var_name.'\.\h\w*()\?'
@@ -997,8 +920,8 @@ function! s:analyze_dictionary_variable_line(line, keyword_dict, var_name) "{{{
     let kind = s:get_variable_type(matchstr(a:line, a:var_name.'\.\h\w*\zs.*$'))
   endif
 
-  if !has_key(a:keyword_dict, word) 
-    let a:keyword_dict[word] = { 'word' : word, 'menu' : menu_pattern,  'kind' : kind }
+  if !has_key(a:keyword_dict, word)
+    let a:keyword_dict[word] = { 'word' : word, 'kind' : kind }
   elseif kind != '' && a:keyword_dict[word].kind == ''
     " Update kind.
     let a:keyword_dict[word].kind = kind
