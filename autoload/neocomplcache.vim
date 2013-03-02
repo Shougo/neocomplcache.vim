@@ -2046,7 +2046,8 @@ function! neocomplcache#clean() "{{{
   " Delete cache files.
   for directory in filter(neocomplcache#util#glob(
         \ g:neocomplcache_temporary_dir.'/*'), 'isdirectory(v:val)')
-    for filename in neocomplcache#util#glob(directory.'/*')
+    for filename in filter(neocomplcache#util#glob(directory.'/*'),
+          \ '!isdirectory(v:val)')
       call delete(filename)
     endfor
   endfor
