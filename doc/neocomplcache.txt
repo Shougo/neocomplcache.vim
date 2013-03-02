@@ -1,6 +1,6 @@
 *neocomplcache.txt*	Ultimate auto completion system for Vim
 
-Version: 7.2
+Version: 8.0
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -1506,6 +1506,12 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-03-02
+- Ver.8.0 development is started.
+
+------------------------------------------------------------------------------
+ChangeLog neocomplcache 7.2:
+
 2013-02-24
 - Improved initialization.
 
@@ -1816,208 +1822,6 @@ CHANGELOG					*neocomplcache-changelog*
 2012-09-03
 - Supported scss.
 - Ver.7.2 development is started.
-
-------------------------------------------------------------------------------
-ChangeLog neocomplcache 7.1:
-
-2012-08-29
-- Improved initialization.
-
-2012-08-28
-- Improved refresh behavior.
-- Fixed neocomplcache#complete_common_string().
-
-2012-08-25
-- Deleted obsolete changelog.
-
-2012-08-24
-- Added FAQ item.
-- Set refresh always.
-- Change g:neocomplcache_enable_prefetch default value.
-
-2012-08-23
-- Fixed customlist completion problem.
-- Added FAQ item.
-
-2012-08-22
-- Added :NeoComplCacheSetFileType command.
-- Improved command-completion.
-- Improved FAQ section.
-- Improved context filetype.
-- Updated features dict.
-- Fixed g:neocomplcache_disable_auto_complete problem.
-
-2012-08-21
-- Updated vital.
-
-2012-08-18
-- Improved for iconv().
-
-2012-08-14
-- Fixed for vimshell.
-
-2012-08-11
-- Improved documentation.
-
-2012-08-07
-- Improved a bit.
-- Fixed omni patterns for c and cpp.
-
-2012-08-06
-- Improved remove next keyword.
-- Improved set context filetype.
-
-2012-08-03
-- Improved omni_complete.
-- Added _ omnifunc.
-- Deleted completefunc_complete source.
-- Updated vital.
-
-2012-08-02
-- Fixed for g:neocomplcache_enable_insert_char_pre.
-- Fixed omni_complete for composite filetype.
-- Fixed dictionary_complete caching timing.
-
-2012-08-01
-- Fixed filename_complete.
-
-2012-07-27
-- Added FAQ section.
-- Fixed skip filename patterns.
-
-2012-07-26
-- Fixed for g:neocomplcache_enable_insert_char_pre.
-- Improved omni_complete source.
-
-2012-07-24
-- Fixed complete done error.
-
-2012-07-23
-- Added FAQ.
-
-2012-07-22
-- Updated examples.
-
-2012-07-19
-- Added FAQ section(I tired...).
-
-2012-07-17
-- Improved python interface check.
-
-2012-07-15
-- Fixed omni_complete.
-- Fixed marker.
-
-2012-07-11
-- Check complete position.
-- Fixed omni_complete error.
-- Improved learning for Vim 7.3.598.
-
-2012-07-08
-- Improved omni_complete.
-
-2012-07-06
-- Improved buffer source.
-- Supported python3.
-
-2012-07-02
-- Improved word caching behavior.
-
-2012-06-28
-- Fixed neocomplcache#is_plugin_locked() error.
-
-2012-06-25
-- Ignore document tags in tags_complete.
-
-2012-06-23
-- Improved error message.
-- Improved filename escape.
-- Fixed cache behavior.
-
-2012-06-21
-- Improved check_cache_list().
-- Added g:neocomplcache_tags_caching_limit_file_size variable.
-
-2012-06-10
-- Improved same filetype for plaintex.
-
-2012-06-07
-- Fixed for tags_complete.
-
-2012-06-06
-- Fixed for fuzzyfinder.
-
-2012-06-05
-- Added g:neocomplcache_use_vimproc option.
-
-2012-06-01
-- Improved asynchronous cache behavior.
-
-2012-05-31
-- Improved MacOS check.
-- Fixed for css omni_complete.
-
-2012-05-30
-- Fixed for MacVim check.
-
-2012-05-28
-- Fixed for MacVim.
-
-2012-05-26
-- Fixed omni_complete for rubycomplete.
-- Fixed for eskk conversion check.
-- Improved check lock.
-- Improved for omni_complete.
-
-2012-05-24
-- Changed filename_complete default rank.
-- Improved auto complete behavior.
-
-2012-05-23
-- Improved sort behavior.
-- Fixed omni_complete sort.
-
-2012-05-22
-- Added word order function.
-
-2012-05-21
-- Fixed warning mappings.
-- Silent mapping.
-- Improved g:neocomplcache_source_rank documentaion.
-
-2012-05-20
-- Fixed g:neocomplcache_enable_prefetch initialization.
-- Added neocomplcache#complete_check().
-- Improved complete_check timing.
-
-2012-05-19
-- Fixed for eskk error.
-- Supported Vim 7.3.519 feature.
-- Improved error catch behavior.
-- Deleted fileencoding.
-- Supported wildcard import in include_complete.
-- Fixed filename_complete.
-
-2012-05-18
-- Fixed filename completion.
-
-2012-05-14
-- Deleted debug message.
-- Fixed error in Vim 7.2.
-
-2012-05-11
-- Improved buffer cache behavior.
-- Fixed include filename completion.
-
-2012-05-09
-- Refactored cache.vim.
-- Fixed tags_complete problem.
-- Improved asynchronous cache.
-- Improved cache timing.
-
-2012-05-08
-- Fixed cd problem.
-- Ver.7.1 development is started.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
