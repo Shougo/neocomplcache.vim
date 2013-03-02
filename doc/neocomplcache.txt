@@ -1202,14 +1202,10 @@ omni_complete.vim				*omni_complete*
 		neocomplcache will give priority it.
 		Note: This source is not supported wildcard.
 
-abbrev_complete.vim				*abbrev_complete*
-		This source collects candidates from abbrev.
-
 
 suffix of complete candidates in popup menu declaration.
 (This will be good for user to know where candidate from and what it is.)
 
-    abbrev_complete            -> [A]
     filename_complete          -> [F] {filename}
     filename_include           -> [FI] {filename}
     dictionary_complete        -> [D] {words}
@@ -1217,10 +1213,7 @@ suffix of complete candidates in popup menu declaration.
     buffer_complete            -> [B] {buffername}
     syntax_complete            -> [S] {syntax-keyword}
     include_complete           -> [I]
-    snippets_complete(neosnippet)
-                               -> [Snip] (none or one placeholder) or
-                                  <Snip> (contains multiple placeholders,
-                                  `Snip` (contains evaluation)
+    neosnippet                 -> [neosnip]
     vim_complete               -> [vim] type
     omni_complete              -> [O]
     tags_complete              -> [T]
@@ -1513,6 +1506,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Ver.8.0 development is started.
 - Optimised memory.
 - Added :NeoComplCacheClean command.
+- Deleted abbrev_complete source.
 
 ------------------------------------------------------------------------------
 ChangeLog neocomplcache 7.2:
