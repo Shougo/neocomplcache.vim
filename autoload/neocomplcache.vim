@@ -2544,8 +2544,9 @@ function! s:remove_next_keyword(source_name, list) "{{{
     return a:list
   endif
 
-  let next_keyword_str = substitute(escape(next_keyword_str,
-        \ '~" \.^$*[]'), "'", "''", 'g').'$'
+  let next_keyword_str = substitute(
+        \ substitute(escape(next_keyword_str,
+        \ '~" \.^$*[]'), "'", "''", 'g'), ')$', '', '').'$'
 
   " No ignorecase.
   let ignorecase_save = &ignorecase
@@ -2553,6 +2554,10 @@ function! s:remove_next_keyword(source_name, list) "{{{
 
   for r in a:list
     if r.word =~ next_keyword_str
+      if !has_key(r, 'abbr')
+        let r.abbr = r.word
+      endif
+
       let r.word = r.word[:match(r.word, next_keyword_str)-1]
     endif
   endfor

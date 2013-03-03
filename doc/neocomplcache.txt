@@ -1505,6 +1505,7 @@ CHANGELOG					*neocomplcache-changelog*
 2013-03-03
 - Supported string cache.
 - Improved cache behavior.
+- Improved remove next keyword behavior.
 
 2013-03-02
 - Ver.8.0 development is started.
