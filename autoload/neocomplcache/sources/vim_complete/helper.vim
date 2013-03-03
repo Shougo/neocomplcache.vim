@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2013.
+" Last Modified: 03 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -301,30 +301,8 @@ function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur
         \ [a:cur_keyword_str, getline('.'), len(a:cur_text)]), '')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_str) "{{{
-  " Check dup.
-  let check = {}
-  for keyword in filter(split(substitute(globpath(&cdpath, a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 'isdirectory(v:val)')
-    if !has_key(check, keyword) && keyword =~ '/'
-      let check[keyword] = keyword
-    endif
-  endfor
-
-  let ret = []
-  let paths = map(split(&cdpath, ','), 'substitute(v:val, "\\\\", "/", "g")')
-  for keyword in keys(check)
-    let dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/' }
-    " Path search.
-    for path in paths
-      if path != '' && neocomplcache#head_match(dict.word, path . '/')
-        let dict.word = dict.word[len(path)+1 : ]
-        break
-      endif
-    endfor
-
-    call add(ret, dict)
-  endfor
-
-  return ret
+  return filter(neocomplcache#sources#filename_complete#get_complete_words(
+        \ a:cur_keyword_str, '.'), 'isdirectory(v:val)')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#environment(cur_text, cur_keyword_str) "{{{
   " Caching.
@@ -356,7 +334,8 @@ function! neocomplcache#sources#vim_complete#helper#feature(cur_text, cur_keywor
   return s:internal_candidates_list.features
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#file(cur_text, cur_keyword_str) "{{{
-  return []
+  return neocomplcache#sources#filename_complete#get_complete_words(
+        \ a:cur_keyword_str, '.')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#filetype(cur_text, cur_keyword_str) "{{{
   if !has_key(s:internal_candidates_list, 'filetypes')

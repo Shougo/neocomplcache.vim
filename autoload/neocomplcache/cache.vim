@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 03 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,11 +61,20 @@ function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary
         \ a:cache_dir, a:key, a:async_cache_dictionary,
         \ a:keyword_list_dictionary[a:key])
 endfunction"}}}
-function! neocomplcache#cache#load_from_cache(cache_dir, filename) "{{{
+function! neocomplcache#cache#load_from_cache(cache_dir, filename, ...) "{{{
+  let is_string = get(a:000, 0, 0)
+
   try
-    return eval(get(neocomplcache#cache#readfile(
+    let list = eval(get(neocomplcache#cache#readfile(
           \ a:cache_dir, a:filename), 0, '[]'))
+    if !empty(list) && is_string && type(list[0]) != type('')
+      " Type check.
+      throw 'Type error'
+    endif
+
+    return list
   catch
+    " Delete old cache file.
     let cache_name =
           \ neocomplcache#cache#encode_name(a:cache_dir, a:filename)
     if filereadable(cache_name)
@@ -75,24 +84,13 @@ function! neocomplcache#cache#load_from_cache(cache_dir, filename) "{{{
     return []
   endtry
 endfunction"}}}
-function! neocomplcache#cache#load_from_cache_old(cache_dir, filename) "{{{
-  try
-    return map(map(neocomplcache#cache#readfile(a:cache_dir, a:filename),
-          \ 'split(v:val, "|||", 1)'), '{
-          \   "word" : v:val[0],
-          \   "abbr" : v:val[1],
-          \   "menu" : v:val[2],
-          \   "kind" : v:val[3],
-          \}')
-  catch /^Vim\%((\a\+)\)\=:E684:/
-    return []
-  endtry
-endfunction"}}}
-function! neocomplcache#cache#index_load_from_cache(cache_dir, filename) "{{{
+function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, ...) "{{{
+  let is_string = get(a:000, 0, 0)
   let keyword_lists = {}
 
   let completion_length = 2
-  for keyword in neocomplcache#cache#load_from_cache(a:cache_dir, a:filename)
+  for keyword in neocomplcache#cache#load_from_cache(
+        \ a:cache_dir, a:filename, is_string)
     let key = tolower(keyword.word[: completion_length-1])
     if !has_key(keyword_lists, key)
       let keyword_lists[key] = []

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2013.
+" Last Modified: 03 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1092,20 +1092,24 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str) "{{{
   endfor
 
   if cur_keyword_str == '' ||
-        \ &l:completefunc ==# 'neocomplcache#unite_complete'
+        \ &l:completefunc ==# 'neocomplcache#unite_complete' ||
+        \ empty(a:list)
     return a:list
   elseif neocomplcache#check_match_filter(cur_keyword_str)
     " Match filter.
-    let expr = printf('v:val.word =~ %s',
-          \ string('^' . neocomplcache#keyword_escape(cur_keyword_str)))
+    let word = type(a:list[0]) == type('') ? 'v:val' : 'v:val.word'
+
+    let expr = printf('%s =~ %s',
+          \ word, string('^' .
+          \ neocomplcache#keyword_escape(cur_keyword_str)))
     if neocomplcache#is_auto_complete()
       " Don't complete cursor word.
-      let expr .= ' && v:val.word !=? a:cur_keyword_str'
+      let expr .= printf(' && %s !=? a:cur_keyword_str', word)
     endif
 
     " Check head character.
     if cur_keyword_str[0] != '\' && cur_keyword_str[0] != '.'
-      let expr = 'v:val.word[0] == ' .
+      let expr = word.'[0] == ' .
             \ string(cur_keyword_str[0]) .' && ' . expr
     endif
 
@@ -1136,17 +1140,19 @@ function! neocomplcache#check_completion_length_match(cur_keyword_str, completio
         \'[^\\]\*\|\\+\|\\%(\|\\|'
 endfunction"}}}
 function! neocomplcache#head_filter(list, cur_keyword_str) "{{{
+  let word = type(a:list[0]) == type('') ? 'v:val' : 'v:val.word'
+
   if &ignorecase
-   let expr = printf('!stridx(tolower(v:val.word), %s)',
-          \ string(tolower(a:cur_keyword_str)))
+   let expr = printf('!stridx(tolower(%s), %s)',
+          \ word, string(tolower(a:cur_keyword_str)))
   else
-    let expr = printf('!stridx(v:val.word, %s)',
-          \ string(a:cur_keyword_str))
+    let expr = printf('!stridx(%s, %s)',
+          \ word, string(a:cur_keyword_str))
   endif
 
   if neocomplcache#is_auto_complete()
     " Don't complete cursor word.
-    let expr .= ' && v:val.word !=? a:cur_keyword_str'
+    let expr .= printf(' && %s !=? a:cur_keyword_str', word)
   endif
 
   return filter(a:list, expr)
@@ -1735,7 +1741,16 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
         \ 's:compare_source_rank')
     let source = sources[source_name]
 
-    let result.complete_words = deepcopy(result.complete_words)
+    if empty(result.complete_words)
+      " Skip.
+      continue
+    endif
+
+    let result.complete_words =
+          \ type(result.complete_words[0]) == type('') ?
+          \ map(copy(result.complete_words), "{'word': v:val}") :
+          \ deepcopy(result.complete_words)
+
     if result.cur_keyword_pos > a:cur_keyword_pos
       let prefix = a:cur_keyword_str[: result.cur_keyword_pos
             \                            - a:cur_keyword_pos - 1]
