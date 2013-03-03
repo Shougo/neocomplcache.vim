@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: async_cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2013.
+" Last Modified: 03 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ function! s:main(argv) "{{{
 
   if funcname ==# 'load_from_file'
     let keyword_list = s:load_from_file(
-          \ filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
+          \ filename, pattern_file_name, mark, minlen, maxfilename, fileencoding, 1)
   else
     let keyword_list = s:load_from_tags(
           \ filename, pattern_file_name, mark, minlen, maxfilename, fileencoding)
@@ -48,7 +48,7 @@ function! s:main(argv) "{{{
   call writefile([string(keyword_list)], outputname)
 endfunction"}}}
 
-function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding) "{{{
+function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding, is_string) "{{{
   if !filereadable(a:filename)
     " File not found.
     return []
@@ -72,12 +72,15 @@ function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilenam
 
       if !has_key(dup_check, match_str) && len(match_str) >= a:minlen
         " Append list.
-        call add(keyword_list, { 'word' : match_str })
+        call add(keyword_list, (a:is_string ?
+              \ match_str : { 'word' : match_str }))
 
         let dup_check[match_str] = 1
       endif
 
-      let match = match(line, pattern, match + len(match_str))
+      let match += len(match_str)
+
+      let match = match(line, pattern, match)
     endwhile"}}}
   endfor"}}}
 
@@ -119,7 +122,7 @@ function! s:load_from_tags(filename, pattern_file_name, mark, minlen, maxfilenam
   if empty(tags_list)
     " File caching.
     return s:load_from_file(a:filename, a:pattern_file_name,
-          \ a:mark, a:minlen, a:maxfilename, a:fileencoding)
+          \ a:mark, a:minlen, a:maxfilename, a:fileencoding, 0)
   endif
 
   for line in tags_list "{{{

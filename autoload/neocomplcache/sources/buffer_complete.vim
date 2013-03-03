@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2013.
+" Last Modified: 03 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -98,7 +98,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   let keyword_list = []
   for [key, source] in s:get_sources_list()
     call neocomplcache#cache#check_cache_list('buffer_cache',
-          \ source.path, s:async_dictionary_list, source.keyword_cache)
+          \ source.path, s:async_dictionary_list, source.keyword_cache, 1)
 
     let keyword_list += neocomplcache#dictionary_filter(
           \ source.keyword_cache, a:cur_keyword_str)
@@ -155,7 +155,7 @@ function! s:caching_current_buffer(start, end) "{{{
       endif
       if !has_key(keywords[key], match_str)
         " Append list.
-        let keywords[key][match_str] = { 'word' : match_str }
+        let keywords[key][match_str] = match_str
         let source.frequencies[match_str] = 10
       endif
     endif"}}}
@@ -284,7 +284,7 @@ function! s:check_source() "{{{
 
   let source = s:buffer_sources[bufnumber]
   call neocomplcache#cache#check_cache_list('buffer_cache',
-        \ source.path, s:async_dictionary_list, source.keyword_cache)
+        \ source.path, s:async_dictionary_list, source.keyword_cache, 1)
 endfunction"}}}
 function! s:check_cache() "{{{
   let release_accessd_time =

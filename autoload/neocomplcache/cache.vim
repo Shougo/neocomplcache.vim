@@ -30,21 +30,23 @@ set cpo&vim
 let s:Cache = vital#of('neocomplcache').import('System.Cache')
 
 " Cache loader.
-function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dictionary, index_keyword_list) "{{{
+function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dictionary, index_keyword_list, ...) "{{{
   if !has_key(a:async_cache_dictionary, a:key)
     return
   endif
+
+  let is_string = get(a:000, 0, 0)
 
   let keyword_list = []
   let cache_list = a:async_cache_dictionary[a:key]
   for cache in cache_list
     if filereadable(cache.cachename)
-      let keyword_list +=
-            \ neocomplcache#cache#load_from_cache(a:cache_dir, cache.filename)
+      let keyword_list += neocomplcache#cache#load_from_cache(
+            \ a:cache_dir, cache.filename, is_string)
     endif
   endfor
 
-  call neocomplcache#cache#list2index(keyword_list, a:index_keyword_list)
+  call neocomplcache#cache#list2index(keyword_list, a:index_keyword_list, is_string)
   call filter(cache_list, '!filereadable(v:val.cachename)')
 
   if empty(cache_list)
@@ -52,14 +54,16 @@ function! neocomplcache#cache#check_cache_list(cache_dir, key, async_cache_dicti
     call remove(a:async_cache_dictionary, a:key)
   endif
 endfunction"}}}
-function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary) "{{{
+function! neocomplcache#cache#check_cache(cache_dir, key, async_cache_dictionary, keyword_list_dictionary, ...) "{{{
+  let is_string = get(a:000, 0, 0)
+
   " Caching.
   if !has_key(a:keyword_list_dictionary, a:key)
     let a:keyword_list_dictionary[a:key] = {}
   endif
   return neocomplcache#cache#check_cache_list(
         \ a:cache_dir, a:key, a:async_cache_dictionary,
-        \ a:keyword_list_dictionary[a:key])
+        \ a:keyword_list_dictionary[a:key], is_string)
 endfunction"}}}
 function! neocomplcache#cache#load_from_cache(cache_dir, filename, ...) "{{{
   let is_string = get(a:000, 0, 0)
@@ -100,14 +104,16 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, ...) "{
 
   return keyword_lists
 endfunction"}}}
-function! neocomplcache#cache#list2index(list, dictionary) "{{{
+function! neocomplcache#cache#list2index(list, dictionary, is_string) "{{{
   let completion_length = 2
   for keyword in a:list
-    let key = tolower(keyword.word[: completion_length-1])
+    let word = a:is_string ? keyword : keyword.word
+
+    let key = tolower(word[: completion_length-1])
     if !has_key(a:dictionary, key)
       let a:dictionary[key] = {}
     endif
-    let a:dictionary[key][keyword.word] = keyword
+    let a:dictionary[key][word] = keyword
   endfor
 
   return a:dictionary
