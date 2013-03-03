@@ -95,7 +95,8 @@ function! neocomplcache#cache#index_load_from_cache(cache_dir, filename, ...) "{
   let completion_length = 2
   for keyword in neocomplcache#cache#load_from_cache(
         \ a:cache_dir, a:filename, is_string)
-    let key = tolower(keyword.word[: completion_length-1])
+    let key = tolower(
+          \ (is_string ? keyword : keyword.word)[: completion_length-1])
     if !has_key(keyword_lists, key)
       let keyword_lists[key] = []
     endif
