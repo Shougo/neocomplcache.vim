@@ -460,7 +460,8 @@ g:neocomplcache_omni_patterns		*g:neocomplcache_omni_patterns*
 		This dictionary records keyword patterns used in
 		|omni_complete|.  This is appointed in regular expression
 		every file type or 'omnifunc' name.  If this pattern is not
-		defined, neocomplcache does not call 'omnifunc'.
+		defined or empty pattern, neocomplcache does not call
+		'omnifunc'.
 		Note: ruby and php omnifunc are disabled, because they are too
 		slow.
 		Note: Partial omnifunc has problem when neocomplcache call(Ex:
@@ -484,8 +485,8 @@ g:neocomplcache_force_omni_patterns
 					*g:neocomplcache_force_omni_patterns*
 		This dictionary records keyword patterns to Omni completion.
 		This is appointed in regular expression every file type.
-		If this pattern is not defined, neocomplcache does not call
-		'omnifunc'.
+		If this pattern is not defined or empty pattern, neocomplcache
+		does not call 'omnifunc'.
 		Note: If it is a set, neocomplcache will call 'omnifunc' or
 		|g:neocomplcache_omni_functions| directly.  So almost
 		neocomplcache features are disabled.  But all Omni completion
@@ -1501,6 +1502,9 @@ Improve cache behavior in current buffer.
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2013-03-06
+- Fixed search patterns behavior.
 
 2013-03-03
 - Supported string cache.

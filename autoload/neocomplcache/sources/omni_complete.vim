@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2013.
+" Last Modified: 06 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -150,9 +150,9 @@ function! s:get_omni_funcs(filetype) "{{{
         continue
       endif
 
-      if has_key(g:neocomplcache_omni_patterns, omnifunc)
+      if get(g:neocomplcache_omni_patterns, omnifunc, '') != ''
         let pattern = g:neocomplcache_omni_patterns[omnifunc]
-      elseif has_key(g:neocomplcache_omni_patterns, ft)
+      elseif get(g:neocomplcache_omni_patterns, ft, '') != ''
         let pattern = g:neocomplcache_omni_patterns[ft]
       else
         let pattern = ''
