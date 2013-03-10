@@ -429,7 +429,7 @@ g:neocomplcache_temporary_dir		*g:neocomplcache_temporary_dir*
 		buffer_complete.vim stores cache of the keyword in this
 		'buffer_cache' sub directory.
 
-		Default value is '~/.neocon'.
+		Default value is '~/.neocomplcache'.
 
 g:neocomplcache_keyword_patterns
 					*g:neocomplcache_keyword_patterns*
@@ -1502,6 +1502,9 @@ Improve cache behavior in current buffer.
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2013-03-10
+- Changed g:neocomplcache_temporary_dir default value.
 
 2013-03-06
 - Fixed search patterns behavior.
