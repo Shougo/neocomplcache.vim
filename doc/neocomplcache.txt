@@ -1503,6 +1503,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-03-16
+- Fixed g:neocomplcache_same_filetype_lists error.
+
 2013-03-10
 - Changed g:neocomplcache_temporary_dir default value.
 

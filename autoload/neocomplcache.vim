@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2013.
+" Last Modified: 16 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1569,7 +1569,8 @@ function! neocomplcache#get_source_filetypes(filetype) "{{{
 
   let filetypes = [filetype, '_']
   if filetype =~ '\.'
-    if has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
+    if exists('g:neocomplcache_ignore_composite_filetype_lists')
+          \ && has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
       let filetypes = [g:neocomplcache_ignore_composite_filetype_lists[filetype]]
     else
       " Set composite filetype.
@@ -1577,15 +1578,17 @@ function! neocomplcache#get_source_filetypes(filetype) "{{{
     endif
   endif
 
-  for ft in filetypes
-    for same_ft in split(get(g:neocomplcache_same_filetype_lists, ft,
-          \ get(g:neocomplcache_same_filetype_lists, '_', '')), ',')
-      if same_ft != '' && index(filetypes, same_ft) < 0
-        " Add same filetype.
-        call add(filetypes, same_ft)
-      endif
+  if exists('g:neocomplcache_same_filetype_lists')
+    for ft in filetypes
+      for same_ft in split(get(g:neocomplcache_same_filetype_lists, ft,
+            \ get(g:neocomplcache_same_filetype_lists, '_', '')), ',')
+        if same_ft != '' && index(filetypes, same_ft) < 0
+          " Add same filetype.
+          call add(filetypes, same_ft)
+        endif
+      endfor
     endfor
-  endfor
+  endif
 
   return neocomplcache#util#uniq(filetypes)
 endfunction"}}}
