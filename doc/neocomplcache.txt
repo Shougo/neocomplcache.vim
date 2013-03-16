@@ -845,8 +845,8 @@ g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
 		syntax_complete : 7
 		include_complete : 8
 		snippets_complete : 8
-		vim_complete : 300
-		omni_complete : 300
+		vim_complete : 100
+		omni_complete : 50
 		other plugin sources : 5
 		other completefunc sources : 10
 		other ftplugin sources : 100
@@ -1505,6 +1505,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2013-03-16
 - Fixed g:neocomplcache_same_filetype_lists error.
+- Changed default rank in omni_complete.
 
 2013-03-10
 - Changed g:neocomplcache_temporary_dir default value.
