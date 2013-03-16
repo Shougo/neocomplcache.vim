@@ -1280,8 +1280,8 @@ endfunction"}}}
 
 " Rank order. "{{{
 function! neocomplcache#compare_rank(i1, i2)
-  return (get(a:i2, 'rank', 0) - get(a:i1, 'rank', 0))
-        \ || ((a:i1.word ># a:i2.word) ? 1 : -1)
+  let diff = (get(a:i2, 'rank', 0) - get(a:i1, 'rank', 0))
+  return (diff != 0) ? diff : (a:i1.word ># a:i2.word) ? 1 : -1
 endfunction"}}}
 " Word order. "{{{
 function! neocomplcache#compare_word(i1, i2)
