@@ -1507,6 +1507,7 @@ CHANGELOG					*neocomplcache-changelog*
 - Fixed g:neocomplcache_same_filetype_lists error.
 - Changed default rank in omni_complete.
 - Improved compare_rank.
+- Changed filename_complete behavior.
 
 2013-03-10
 - Changed g:neocomplcache_temporary_dir default value.

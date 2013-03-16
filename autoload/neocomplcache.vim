@@ -94,8 +94,8 @@ function! s:initialize_others() "{{{
         \ 'g:neocomplcache_keyword_patterns',
         \'filename',
         \ neocomplcache#util#is_windows() ?
-        \'\%(\a\+:/\)\?\%([/[:alnum:]()$+_\~.\x80-\xff-]\|[^[:print:]]\|\\[ ;*?[]"={}'']\)\+' :
-        \'\%([/\[\][:alnum:]()$+_\~.-]\|[^[:print:]]\|\\[ ;*?[]"={}'']\)\+')
+        \'\%(\a\+:/\)\?\%([/[:alnum:]()$+_~.\x80-\xff-]\|[^[:print:]]\|\\[ ;*?[]"={}'']\)\+' :
+        \'\%([/\[\][:alnum:]()$+_~.-]\|[^[:print:]]\|\\[ ;*?[]"={}'']\)\+')
   call neocomplcache#util#set_default_dictionary(
         \'g:neocomplcache_keyword_patterns',
         \'lisp,scheme,clojure,int-gosh,int-clisp,int-clj',
@@ -1418,7 +1418,8 @@ function! neocomplcache#match_word(cur_text, ...) "{{{
   let cur_keyword_pos = s:match_wildcard(
         \ a:cur_text, pattern, match(a:cur_text, pattern))
 
-  let cur_keyword_str = a:cur_text[cur_keyword_pos :]
+  let cur_keyword_str = (cur_keyword_pos >=0) ?
+        \ a:cur_text[cur_keyword_pos :] : ''
 
   return [cur_keyword_pos, cur_keyword_str]
 endfunction"}}}
