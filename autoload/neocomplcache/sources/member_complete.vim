@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: member_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2013.
+" Last Modified: 23 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -118,8 +118,17 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
     return []
   endif
 
-  return neocomplcache#keyword_filter(
+  let candidates = neocomplcache#keyword_filter(
         \ copy(s:get_member_list(cur_text, var_name)), a:cur_keyword_str)
+  if len(a:cur_keyword_str) < g:neocomplcache_auto_completion_start_length
+    " Set refresh.
+    let candidates = map(candidates, "{
+          \ 'word' : v:val,
+          \ 'neocomplcache__refresh' : 1,
+          \ }")
+  endif
+
+  return candidates
 endfunction"}}}
 
 function! neocomplcache#sources#member_complete#define() "{{{

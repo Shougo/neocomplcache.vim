@@ -1504,6 +1504,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-03-23
+- Fixed member_complete behavior.
+
 2013-03-22
 - Improved rank behavior.
 
