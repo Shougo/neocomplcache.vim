@@ -800,7 +800,8 @@ function! neocomplcache#manual_complete(findstart, base) "{{{
 
       if (g:neocomplcache_enable_cursor_hold_i
             \      || v:version > 703 || v:version == 703 && has('patch561'))
-            \ && (!empty(filter(copy(neocomplcache.complete_words),
+            \ && (len(a:base) < g:neocomplcache_auto_completion_start_length
+            \   || !empty(filter(copy(neocomplcache.complete_words),
             \          "get(v:val, 'neocomplcache__refresh', 0)"))
             \   || len(neocomplcache.complete_words) >= g:neocomplcache_max_list)
         " Note: If Vim is less than 7.3.561, it have broken register "." problem.

@@ -118,17 +118,8 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
     return []
   endif
 
-  let candidates = neocomplcache#keyword_filter(
+  return neocomplcache#keyword_filter(
         \ copy(s:get_member_list(cur_text, var_name)), a:cur_keyword_str)
-  if len(a:cur_keyword_str) < g:neocomplcache_auto_completion_start_length
-    " Set refresh.
-    let candidates = map(candidates, "{
-          \ 'word' : v:val,
-          \ 'neocomplcache__refresh' : 1,
-          \ }")
-  endif
-
-  return candidates
 endfunction"}}}
 
 function! neocomplcache#sources#member_complete#define() "{{{
