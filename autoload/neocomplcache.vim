@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2013.
+" Last Modified: 24 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -490,6 +490,8 @@ function! s:initialize_others() "{{{
         \  'start' : '^\s*py\%[thon\]3\? <<\s*\(\h\w*\)', 'end' : '^\1'},
         \ {'filetype' : 'ruby',
         \  'start' : '^\s*rub\%[y\] <<\s*\(\h\w*\)', 'end' : '^\1'},
+        \ {'filetype' : 'lua',
+        \  'start' : '^\s*lua <<\s*\(\h\w*\)', 'end' : '^\1'},
         \])
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_context_filetype_lists',
