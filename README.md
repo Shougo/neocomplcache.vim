@@ -27,10 +27,10 @@ script from Mr.thinca.
 
 http://gist.github.com/422503
 
-Snippets feature(snippets\_complete source) was splitted from Ver.7.
-If you used it, please install snippets\_complete source manually.
+Snippets feature(snippets\_complete source) was split from Ver.7.
+If you used it, please install neosnippet source manually.
 
-https://github.com/Shougo/neocomplcache-snippets-complete
+https://github.com/Shougo/neosnippet
 
 Screen shots
 ============
@@ -83,8 +83,6 @@ endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 " Plugin key-mappings.
-imap <C-k>     <Plug>(neocomplcache_snippets_expand)
-smap <C-k>     <Plug>(neocomplcache_snippets_expand)
 inoremap <expr><C-g>     neocomplcache#undo_completion()
 inoremap <expr><C-l>     neocomplcache#complete_common_string()
 
