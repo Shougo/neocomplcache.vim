@@ -57,6 +57,7 @@ INSTALL						*neocomplcache-install*
 let g:neocomplcache_enable_at_startup = 1
 in your .vimrc.
 
+*neocomplcache-RECOMMENDATION*
 						*neocomplcache-asyncronous*
 With neocomplcache Ver.6.0 or later, when you have |vimproc| installed,
 neocomplcache creates caches asynchronously.
