@@ -27,7 +27,7 @@ script from Mr.thinca.
 
 http://gist.github.com/422503
 
-Snippets feature(snippets\_complete source) was splitted from Ver.7.
+Snippets feature(snippets\_complete source) was split from Ver.7.
 If you used it, please install snippets\_complete source manually.
 
 https://github.com/Shougo/neocomplcache-snippets-complete
