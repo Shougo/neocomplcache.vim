@@ -1325,6 +1325,7 @@ A: The default compare function is rank order.  It sorts rank order and
 alphabetical order.  If you select candidates, the candidate's rank will be
 high.  To change compare function, you can change
 |g:neocomplcache_compare_function| value.
+Note: To use rank feature, your Vim's version must be 7.3.549 or above.
 >
 	let g:neocomplcache_compare_function = 'neocomplcache#compare_word'
 <
