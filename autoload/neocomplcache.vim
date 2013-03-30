@@ -1867,19 +1867,25 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
     if a:cur_keyword_str =~ '^\l\+$'
       for keyword in convert_candidates
         let keyword.word = tolower(keyword.word)
-        let keyword.abbr = tolower(keyword.abbr)
+        if has_key(keyword, 'abbr')
+          let keyword.abbr = tolower(keyword.abbr)
+        endif
       endfor
     elseif a:cur_keyword_str =~ '^\u\+$'
       for keyword in convert_candidates
         let keyword.word = toupper(keyword.word)
-        let keyword.abbr = toupper(keyword.abbr)
+        if has_key(keyword, 'abbr')
+          let keyword.abbr = toupper(keyword.abbr)
+        endif
       endfor
     elseif a:cur_keyword_str =~ '^\u\l\+$'
       for keyword in convert_candidates
         let keyword.word = toupper(keyword.word[0]).
               \ tolower(keyword.word[1:])
-        let keyword.abbr = toupper(keyword.abbr[0]).
-              \ tolower(keyword.abbr[1:])
+        if has_key(keyword, 'abbr')
+          let keyword.abbr = toupper(keyword.abbr[0]).
+                \ tolower(keyword.abbr[1:])
+        endif
       endfor
     endif
   endif"}}}
