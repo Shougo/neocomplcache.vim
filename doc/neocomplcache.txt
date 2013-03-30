@@ -1507,6 +1507,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2013-03-23
 - Fixed refresh behavior.
+- Fixed completion error in vim_complete.
 
 2013-03-22
 - Improved rank behavior.

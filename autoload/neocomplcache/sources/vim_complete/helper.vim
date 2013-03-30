@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2013.
+" Last Modified: 30 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -302,7 +302,7 @@ function! neocomplcache#sources#vim_complete#helper#customlist(command_name, cur
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#dir(cur_text, cur_keyword_str) "{{{
   return filter(neocomplcache#sources#filename_complete#get_complete_words(
-        \ a:cur_keyword_str, '.'), 'isdirectory(v:val)')
+        \ a:cur_keyword_str, '.'), 'isdirectory(v:val.word)')
 endfunction"}}}
 function! neocomplcache#sources#vim_complete#helper#environment(cur_text, cur_keyword_str) "{{{
   " Caching.
