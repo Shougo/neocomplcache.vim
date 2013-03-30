@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Mar 2013.
+" Last Modified: 30 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1802,8 +1802,6 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
   endif
 
   " Check dup and set icase.
-  let dup_check = {}
-  let words = []
   let icase = g:neocomplcache_enable_ignore_case &&
         \!(g:neocomplcache_enable_smart_case && a:cur_keyword_str =~ '\u')
         \ && !neocomplcache#is_text_mode()
@@ -1813,20 +1811,8 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
       call remove(keyword, 'kind')
     endif
 
-    if keyword.word != ''
-          \&& (!has_key(dup_check, keyword.word)
-          \    || (has_key(keyword, 'dup') && keyword.dup))
-      let dup_check[keyword.word] = 1
-
-      let keyword.icase = icase
-      if !has_key(keyword, 'abbr')
-        let keyword.abbr = keyword.word
-      endif
-
-      call add(words, keyword)
-    endif
+    let keyword.icase = icase
   endfor
-  let complete_words = words
 
   " Delimiter check. "{{{
   let filetype = neocomplcache#get_context_filetype()
@@ -1846,8 +1832,10 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
         let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
         let keyword.word = join(split_list[ : delim_cnt], delimiter_sub)
         let keyword.abbr = join(
-              \ split(keyword.abbr, delimiter.'\ze.', 1)[ : delim_cnt],
+              \ split(get(keyword, 'abbr', keyword.word),
+              \             delimiter.'\ze.', 1)[ : delim_cnt],
               \ delimiter_sub)
+        echomsg keyword.abbr
 
         if g:neocomplcache_max_keyword_width >= 0
               \ && len(keyword.abbr) > g:neocomplcache_max_keyword_width
@@ -1901,18 +1889,13 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
     let abbr_pattern = printf('%%.%ds..%%s',
           \ g:neocomplcache_max_keyword_width-15)
     for keyword in complete_words
-      if len(keyword.abbr) > g:neocomplcache_max_keyword_width
-        if keyword.abbr =~ '[^[:print:]]'
-          " Multibyte string.
-          let len = neocomplcache#util#wcswidth(keyword.abbr)
+      let abbr = get(keyword, 'abbr', keyword.word)
+      if len(abbr) > g:neocomplcache_max_keyword_width
+        let len = neocomplcache#util#wcswidth(abbr)
 
-          if len > g:neocomplcache_max_keyword_width
-            let keyword.abbr = neocomplcache#util#truncate(
-                  \ keyword.abbr, g:neocomplcache_max_keyword_width - 2) . '..'
-          endif
-        else
-          let keyword.abbr = printf(abbr_pattern,
-                \ keyword.abbr, keyword.abbr[-13:])
+        if len > g:neocomplcache_max_keyword_width
+          let keyword.abbr = neocomplcache#util#truncate(
+                \ abbr, g:neocomplcache_max_keyword_width - 2) . '..'
         endif
       endif
     endfor
