@@ -1517,6 +1517,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-04-07
+- Deleted debug message.
+
 2013-03-30
 - Improved complete words behavior.
 

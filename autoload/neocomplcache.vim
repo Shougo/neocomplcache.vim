@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Mar 2013.
+" Last Modified: 07 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1835,7 +1835,6 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
               \ split(get(keyword, 'abbr', keyword.word),
               \             delimiter.'\ze.', 1)[ : delim_cnt],
               \ delimiter_sub)
-        echomsg keyword.abbr
 
         if g:neocomplcache_max_keyword_width >= 0
               \ && len(keyword.abbr) > g:neocomplcache_max_keyword_width
