@@ -1511,6 +1511,8 @@ https://github.com/Shougo/neocomplcache/issues/368
 A: I think you use 'foldmethod' is "expr" or "syntax". It is too heavy to use
 neocomplcache(or other auto completion). You should change 'foldmethod'
 option.
+Note: In current version, neocomplcache does not restore 'foldmethod'. Because
+it is too heavy.
 
 ==============================================================================
 TODO						*neocomplcache-todo*
