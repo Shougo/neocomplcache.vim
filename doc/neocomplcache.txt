@@ -1505,11 +1505,12 @@ Q: neocomplcache conflicts when multibyte input in GVim.
 A: Because Vim multibyte IME integration is incomplete.
 If you set |g:neocomplcache_lock_iminsert| is non-zero, it may be fixed.
 
-Q: Freeze for a while and close opened folding when I begin to insert
+Q: Freeze for a while and close opened folding when I begin to insert.
 https://github.com/Shougo/neocomplcache/issues/368
 
-A: I think you use 'foldmethod' is "expr". It is too heavy to use
-neocomplcache. You should change 'foldmethod' option.
+A: I think you use 'foldmethod' is "expr" or "syntax". It is too heavy to use
+neocomplcache(or other auto completion). You should change 'foldmethod'
+option.
 
 ==============================================================================
 TODO						*neocomplcache-todo*
