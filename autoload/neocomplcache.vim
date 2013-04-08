@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Apr 2013.
+" Last Modified: 08 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -710,6 +710,9 @@ function! neocomplcache#enable() "{{{
     return
   endif
 
+  command! -nargs=0 -bar NeoComplCacheDisable
+        \ call neocomplcache#disable()
+
   call s:initialize_script_variables()
   call s:initialize_autocmds()
   call s:initialize_others()
@@ -733,8 +736,6 @@ function! neocomplcache#disable() "{{{
   augroup END
 
   delcommand NeoComplCacheDisable
-  delcommand Neco
-  delcommand NeoComplCacheAutoCompletionLength
 
   for source in values(neocomplcache#available_sources())
     if !has_key(source, 'finalize') || !source.loaded

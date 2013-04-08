@@ -1522,6 +1522,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-04-08
+- Fixed neocomplcache initialization.
+
 2013-04-07
 - Deleted debug message.
 
