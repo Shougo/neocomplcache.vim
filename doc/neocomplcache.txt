@@ -1527,6 +1527,7 @@ CHANGELOG					*neocomplcache-changelog*
 2013-04-08
 - Fixed neocomplcache initialization.
 - Disabled restore of foldinfo.
+- Improved restore of window position.
 
 2013-04-07
 - Deleted debug message.

@@ -1925,7 +1925,7 @@ function! s:set_complete_results_pos(cur_text, ...) "{{{
       " Plugin default keyword position.
       let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
     else
-      let pos = getpos('.')
+      let pos = winsaveview()
 
       try
         let cur_keyword_pos = source.get_keyword_pos(a:cur_text)
@@ -1938,8 +1938,8 @@ function! s:set_complete_results_pos(cur_text, ...) "{{{
               \ 'Source name is ' . source_name)
         return complete_results
       finally
-        if getpos('.') != pos
-          call setpos('.', pos)
+        if winsaveview() != pos
+          call winrestview(pos)
         endif
       endtry
     endif
@@ -1986,7 +1986,7 @@ function! s:set_complete_results_words(complete_results) "{{{
       let &ignorecase = g:neocomplcache_enable_ignore_case
     endif
 
-    let pos = getpos('.')
+    let pos = winsaveview()
 
     try
       let words = result.source.kind ==# 'plugin' ?
@@ -2007,8 +2007,8 @@ function! s:set_complete_results_words(complete_results) "{{{
       endif
       return
     finally
-      if getpos('.') != pos
-        call setpos('.', pos)
+      if winsaveview() != pos
+        call winrestview(pos)
       endif
     endtry
 
