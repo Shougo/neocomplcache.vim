@@ -2449,10 +2449,11 @@ function! s:on_insert_leave() "{{{
           \ "!empty(gettabwinvar(tabnr, v:val, 'neocomplcache_foldinfo'))")
       let neocomplcache_foldinfo =
             \ gettabwinvar(tabnr, winnr, 'neocomplcache_foldinfo')
-      call settabwinvar(tabnr, winnr, '&foldmethod',
-            \ neocomplcache_foldinfo.foldmethod)
-      call settabwinvar(tabnr, winnr, '&foldexpr',
-            \ neocomplcache_foldinfo.foldexpr)
+      " Note: To disabled restore foldinfo is too heavy.
+      " call settabwinvar(tabnr, winnr, '&foldmethod',
+      "       \ neocomplcache_foldinfo.foldmethod)
+      " call settabwinvar(tabnr, winnr, '&foldexpr',
+      "       \ neocomplcache_foldinfo.foldexpr)
       call settabwinvar(tabnr, winnr,
             \ 'neocomplcache_foldinfo', {})
     endfor
