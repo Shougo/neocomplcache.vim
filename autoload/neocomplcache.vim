@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Apr 2013.
+" Last Modified: 09 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1034,49 +1034,7 @@ function! s:keyword_escape(cur_keyword_str)
 endfunction
 function! neocomplcache#keyword_escape(cur_keyword_str) "{{{
   " Fuzzy completion.
-  let keyword_len = len(a:cur_keyword_str)
   let keyword_escape = s:keyword_escape(a:cur_keyword_str)
-  if g:neocomplcache_enable_fuzzy_completion
-        \ && (g:neocomplcache_fuzzy_completion_start_length
-        \          <= keyword_len && keyword_len < 20)
-    let pattern = keyword_len >= 8 ?
-          \ '\0\\w*' : '\\%(\0\\w*\\|\U\0\E\\l*\\)'
-
-    let start = g:neocomplcache_fuzzy_completion_start_length
-    if start <= 1
-      let keyword_escape =
-            \ substitute(keyword_escape, '\w', pattern, 'g')
-    elseif keyword_len < 8
-      let keyword_escape = keyword_escape[: start - 2]
-            \ . substitute(keyword_escape[start-1 :], '\w', pattern, 'g')
-    else
-      let keyword_escape = keyword_escape[: 3] .
-            \ substitute(keyword_escape[4:12], '\w',
-            \   pattern, 'g') . keyword_escape[13:]
-    endif
-  else
-    " Underbar completion. "{{{
-    if g:neocomplcache_enable_underbar_completion
-          \ && keyword_escape =~ '[^_]_\|^_'
-      let keyword_escape = substitute(keyword_escape,
-            \ '\%(^\|[^_]\)\zs_', '[^_]*_', 'g')
-    endif
-    if g:neocomplcache_enable_underbar_completion
-          \ && '-' =~ '\k' && keyword_escape =~ '[^-]-'
-      let keyword_escape = substitute(keyword_escape,
-            \ '[^-]\zs-', '[^-]*-', 'g')
-    endif
-    "}}}
-    " Camel case completion. "{{{
-    if g:neocomplcache_enable_camel_case_completion
-          \ && keyword_escape =~ '\u\?\U*'
-      let keyword_escape =
-            \ substitute(keyword_escape,
-            \ '\u\?\zs\U*',
-            \ '\\%(\0\\l*\\|\U\0\E\\u*_\\?\\)', 'g')
-    endif
-    "}}}
-  endif
 
   call neocomplcache#print_debug(keyword_escape)
   return keyword_escape
@@ -1120,6 +1078,8 @@ function! neocomplcache#keyword_filter(list, cur_keyword_str) "{{{
     call neocomplcache#print_debug(expr)
 
     return filter(a:list, expr)
+  elseif neocomplcache#util#has_lua()
+    return neocomplcache#lua_filter(a:list, cur_keyword_str)
   else
     " Use fast filter.
     return neocomplcache#head_filter(a:list, cur_keyword_str)
@@ -1161,49 +1121,30 @@ function! neocomplcache#head_filter(list, cur_keyword_str) "{{{
 
   return filter(a:list, expr)
 endfunction"}}}
-function! neocomplcache#fuzzy_filter(list, cur_keyword_str) "{{{
-  let ret = []
+function! neocomplcache#lua_filter(list, cur_keyword_str) "{{{
+  lua << EOF
+    input = vim.eval('a:cur_keyword_str')
+    candidates = vim.eval('a:list')
+    if (vim.eval('&ignorecase') ~= 0) then
+      input = string.lower(input)
+      for i = #candidates-1, 0, -1 do
+        word = vim.type(candidates[i]) ~= 'dict' and
+          string.lower(candidates[i].word) or string.lower(candidates[i])
+        if (string.find(word, input, 1, true) == nil) and word ~= input then
+          candidates[i] = nil
+        end
+      end
+    else
+      for i = #candidates-1, 0, -1 do
+        if (string.find(candidates[i].word, input, 1, true) == nil)
+            and candidates[i].word ~= input then
+          candidates[i] = nil
+        end
+      end
+    end
+EOF
 
-  let cur_keyword_str = a:cur_keyword_str[2:]
-  let max_str2 = len(cur_keyword_str)
-  let len = len(a:cur_keyword_str)
-  let m = range(max_str2+1)
-  for keyword in filter(a:list, 'len(v:val.word) >= '.max_str2)
-    let str1 = keyword.word[2 : len-1]
-
-    let i = 0
-    while i <= max_str2+1
-      let m[i] = range(max_str2+1)
-
-      let i += 1
-    endwhile
-    let i = 0
-    while i <= max_str2+1
-      let m[i][0] = i
-      let m[0][i] = i
-
-      let i += 1
-    endwhile
-
-    let i = 1
-    let max = max_str2 + 1
-    while i < max
-      let j = 1
-      while j < max
-        let m[i][j] = min([m[i-1][j]+1, m[i][j-1]+1,
-              \ m[i-1][j-1]+(str1[i-1] != cur_keyword_str[j-1])])
-
-        let j += 1
-      endwhile
-
-      let i += 1
-    endwhile
-    if m[-1][-1] <= 2
-      call add(ret, keyword)
-    endif
-  endfor
-
-  return ret
+  return a:list
 endfunction"}}}
 function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str) "{{{
   if empty(a:dictionary)

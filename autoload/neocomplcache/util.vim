@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jan 2013.
+" Last Modified: 09 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -72,6 +72,9 @@ function! neocomplcache#util#system(...) "{{{
 endfunction"}}}
 function! neocomplcache#util#has_vimproc(...) "{{{
   return call(s:V.has_vimproc, a:000)
+endfunction"}}}
+function! neocomplcache#util#has_lua() "{{{
+  return has('lua')
 endfunction"}}}
 function! neocomplcache#util#is_windows(...) "{{{
   return call(s:V.is_windows, a:000)
