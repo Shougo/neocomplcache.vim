@@ -1136,8 +1136,9 @@ function! neocomplcache#lua_filter(list, cur_keyword_str) "{{{
       end
     else
       for i = #candidates-1, 0, -1 do
-        if (string.find(candidates[i].word, input, 1, true) == nil)
-            and candidates[i].word ~= input then
+        word = vim.type(candidates[i]) ~= 'dict' and
+          candidates[i].word or candidates[i]
+        if (string.find(word, input, 1, true) == nil) and word ~= input then
           candidates[i] = nil
         end
       end
