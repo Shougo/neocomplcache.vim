@@ -1123,12 +1123,13 @@ function! neocomplcache#head_filter(list, cur_keyword_str) "{{{
 endfunction"}}}
 function! neocomplcache#lua_filter(list, cur_keyword_str) "{{{
   lua << EOF
-    input = vim.eval('a:cur_keyword_str')
-    candidates = vim.eval('a:list')
+  do
+    local input = vim.eval('a:cur_keyword_str')
+    local candidates = vim.eval('a:list')
     if (vim.eval('&ignorecase') ~= 0) then
       input = string.lower(input)
       for i = #candidates-1, 0, -1 do
-        word = vim.type(candidates[i]) ~= 'dict' and
+        local word = vim.type(candidates[i]) ~= 'dict' and
           string.lower(candidates[i].word) or string.lower(candidates[i])
         if (string.find(word, input, 1, true) == nil) and word ~= input then
           candidates[i] = nil
@@ -1136,13 +1137,14 @@ function! neocomplcache#lua_filter(list, cur_keyword_str) "{{{
       end
     else
       for i = #candidates-1, 0, -1 do
-        word = vim.type(candidates[i]) ~= 'dict' and
+        local word = vim.type(candidates[i]) ~= 'dict' and
           candidates[i].word or candidates[i]
         if (string.find(word, input, 1, true) == nil) and word ~= input then
           candidates[i] = nil
         end
       end
     end
+  end
 EOF
 
   return a:list
