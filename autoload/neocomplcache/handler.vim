@@ -145,6 +145,163 @@ function! neocomplcache#handler#_restore_update_time() "{{{
   endif
 endfunction"}}}
 
+function! neocomplcache#handler#_do_auto_complete(event) "{{{
+  if s:check_in_do_auto_complete()
+    return
+  endif
+
+  let neocomplcache = neocomplcache#get_current_neocomplcache()
+  let neocomplcache.skipped = 0
+  let neocomplcache.event = a:event
+
+  let cur_text = neocomplcache#get_cur_text(1)
+
+  if g:neocomplcache_enable_debug
+    echomsg 'cur_text = ' . cur_text
+  endif
+
+  " Prevent infinity loop.
+  if s:is_skip_auto_complete(cur_text)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
+    call neocomplcache#_clear_result()
+    return
+  endif
+
+  let neocomplcache.old_cur_text = cur_text
+
+  if neocomplcache#is_omni_complete(cur_text)
+    call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
+    return
+  endif
+
+  " Check multibyte input or eskk.
+  if neocomplcache#is_eskk_enabled()
+        \ || neocomplcache#is_multibyte_input(cur_text)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
+    return
+  endif
+
+  " Check complete position.
+  let complete_results = neocomplcache#_set_complete_results_pos(cur_text)
+  if empty(complete_results)
+    if g:neocomplcache_enable_debug
+      echomsg 'Skipped.'
+    endif
+
+    return
+  endif
+
+  let &l:completefunc = 'neocomplcache#auto_complete'
+
+  if neocomplcache#is_prefetch()
+    " Do prefetch.
+    let neocomplcache.complete_results =
+          \ neocomplcache#get_complete_results(cur_text)
+
+    if empty(neocomplcache.complete_results)
+      if g:neocomplcache_enable_debug
+        echomsg 'Skipped.'
+      endif
+
+      " Skip completion.
+      let &l:completefunc = 'neocomplcache#manual_complete'
+      call neocomplcache#_clear_result()
+      return
+    endif
+  endif
+
+  call neocomplcache#handler#_save_foldinfo()
+
+  " Set options.
+  set completeopt-=menu
+  set completeopt-=longest
+  set completeopt+=menuone
+
+  " Start auto complete.
+  call feedkeys(&l:formatoptions !~ 'a' ?
+        \ "\<Plug>(neocomplcache_start_auto_complete)":
+        \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
+endfunction"}}}
+
+function! s:check_in_do_auto_complete() "{{{
+  if neocomplcache#is_locked()
+    return 1
+  endif
+
+  " Detect completefunc.
+  if &l:completefunc != 'neocomplcache#manual_complete'
+        \ && &l:completefunc != 'neocomplcache#auto_complete'
+    if g:neocomplcache_force_overwrite_completefunc
+          \ || &l:completefunc == ''
+          \ || &l:completefunc ==# 'neocomplcache#sources_manual_complete'
+      " Set completefunc.
+      let &l:completefunc = 'neocomplcache#manual_complete'
+    else
+      " Warning.
+      redir => output
+      99verbose setl completefunc
+      redir END
+      call neocomplcache#print_error(output)
+      call neocomplcache#print_error(
+            \ 'Another plugin set completefunc! Disabled neocomplcache.')
+      NeoComplCacheLock
+      return 1
+    endif
+  endif
+
+  " Detect AutoComplPop.
+  if exists('g:acp_enableAtStartup') && g:acp_enableAtStartup
+    call neocomplcache#print_error(
+          \ 'Detected enabled AutoComplPop! Disabled neocomplcache.')
+    NeoComplCacheLock
+    return 1
+  endif
+endfunction"}}}
+function! s:is_skip_auto_complete(cur_text) "{{{
+  let neocomplcache = neocomplcache#get_current_neocomplcache()
+
+  if a:cur_text =~ '^\s*$\|\s\+$'
+        \ || a:cur_text == neocomplcache.old_cur_text
+        \ || (g:neocomplcache_lock_iminsert && &l:iminsert)
+        \ || (&l:formatoptions =~# '[tc]' && &l:textwidth > 0
+        \     && neocomplcache#util#wcswidth(a:cur_text) >= &l:textwidth)
+    return 1
+  endif
+
+  if !neocomplcache.skip_next_complete
+    return 0
+  endif
+
+  " Check delimiter pattern.
+  let is_delimiter = 0
+  let filetype = neocomplcache#get_context_filetype()
+
+  for delimiter in ['/', '\.'] +
+        \ get(g:neocomplcache_delimiter_patterns, filetype, [])
+    if a:cur_text =~ delimiter . '$'
+      let is_delimiter = 1
+      break
+    endif
+  endfor
+
+  if is_delimiter && neocomplcache.skip_next_complete == 2
+    let neocomplcache.skip_next_complete = 0
+    return 0
+  endif
+
+  let neocomplcache.skip_next_complete = 0
+  let neocomplcache.cur_text = ''
+  let neocomplcache.old_cur_text = ''
+
+  return 1
+endfunction"}}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
