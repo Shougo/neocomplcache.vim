@@ -1524,6 +1524,9 @@ Improve cache behavior in current buffer.
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-04-11
+- Improved save foldinfo feature.
+
 2013-04-08
 - Fixed neocomplcache initialization.
 - Disabled restore of foldinfo.
