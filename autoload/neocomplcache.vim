@@ -53,9 +53,12 @@ endfunction"}}}
 function! s:initialize_autocmds() "{{{
   augroup neocomplcache
     autocmd!
-    autocmd InsertEnter * call s:on_insert_enter()
-    autocmd InsertLeave * call s:on_insert_leave()
-    autocmd CursorMovedI * call s:on_moved_i()
+    autocmd InsertEnter *
+          \ call neocomplcache#handler#_on_insert_enter()
+    autocmd InsertLeave *
+          \ call neocomplcache#handler#_on_insert_leave()
+    autocmd CursorMovedI *
+          \ call neocomplcache#handler#_on_moved_i()
   augroup END
 
   if g:neocomplcache_enable_insert_char_pre
@@ -67,9 +70,9 @@ function! s:initialize_autocmds() "{{{
       autocmd CursorHoldI *
             \ call s:do_auto_complete('CursorHoldI')
       autocmd InsertEnter *
-            \ call s:change_update_time()
+            \ call neocomplcache#handler#_change_update_time()
       autocmd InsertLeave *
-            \ call s:restore_update_time()
+            \ call neocomplcache#handler#_restore_update_time()
     augroup END
   else
     autocmd neocomplcache CursorMovedI *
@@ -78,7 +81,7 @@ function! s:initialize_autocmds() "{{{
 
   if (v:version > 703 || v:version == 703 && has('patch598'))
     autocmd neocomplcache CompleteDone *
-          \ call s:on_complete_done()
+          \ call neocomplcache#handler#_on_complete_done()
   endif
 endfunction"}}}
 
@@ -935,7 +938,7 @@ function! s:do_auto_complete(event) "{{{
     endif
   endif
 
-  call s:save_foldinfo()
+  call neocomplcache#handler#_save_foldinfo()
 
   " Set options.
   set completeopt-=menu
@@ -1731,7 +1734,7 @@ function! neocomplcache#get_cur_keyword_pos(complete_results) "{{{
   return cur_keyword_pos
 endfunction"}}}
 function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cur_keyword_str) "{{{
-  let frequencies = s:get_frequencies()
+  let frequencies = neocomplcache#_get_frequencies()
   if exists('*neocomplcache#sources#buffer_complete#get_frequencies')
     let frequencies = extend(copy(
           \ neocomplcache#sources#buffer_complete#get_frequencies()),
@@ -2413,123 +2416,6 @@ endfunction"}}}
 "}}}
 
 " Event functions. "{{{
-function! s:on_moved_i() "{{{
-  " Get cursor word.
-  let cur_text = s:get_cur_text()
-
-  " Make cache.
-  if cur_text =~ '^\s*$\|\s\+$'
-    if neocomplcache#is_enabled_source('buffer_complete')
-      " Caching current cache line.
-      call neocomplcache#sources#buffer_complete#caching_current_line()
-    endif
-    if neocomplcache#is_enabled_source('member_complete')
-      " Caching current cache line.
-      call neocomplcache#sources#member_complete#caching_current_line()
-    endif
-  endif
-
-  if g:neocomplcache_enable_auto_close_preview &&
-        \ bufname('%') !=# '[Command Line]'
-    " Close preview window.
-    pclose!
-  endif
-endfunction"}}}
-function! s:on_insert_leave() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  let neocomplcache.cur_text = ''
-  let neocomplcache.old_cur_text = ''
-
-  " Restore foldinfo.
-  " Note: settabwinvar() in insert mode has bug before 7.3.768.
-  for tabnr in (v:version > 703 || (v:version == 703 && has('patch768')) ?
-        \ range(1, tabpagenr('$')) : [tabpagenr()])
-    for winnr in filter(range(1, tabpagewinnr(tabnr, '$')),
-          \ "!empty(gettabwinvar(tabnr, v:val, 'neocomplcache_foldinfo'))")
-      let neocomplcache_foldinfo =
-            \ gettabwinvar(tabnr, winnr, 'neocomplcache_foldinfo')
-      " Note: To disabled restore foldinfo is too heavy.
-      " call settabwinvar(tabnr, winnr, '&foldmethod',
-      "       \ neocomplcache_foldinfo.foldmethod)
-      " call settabwinvar(tabnr, winnr, '&foldexpr',
-      "       \ neocomplcache_foldinfo.foldexpr)
-      call settabwinvar(tabnr, winnr,
-            \ 'neocomplcache_foldinfo', {})
-    endfor
-  endfor
-
-  if g:neocomplcache_enable_auto_close_preview &&
-        \ bufname('%') !=# '[Command Line]'
-    " Close preview window.
-    pclose!
-  endif
-endfunction"}}}
-function! s:save_foldinfo() "{{{
-  if line('$') < 1000
-    return
-  endif
-
-  " Save foldinfo.
-  " Note: settabwinvar() in insert mode has bug before 7.3.768.
-  for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
-        \ range(1, tabpagenr('$')) : [tabpagenr()]),
-        \ "index(tabpagebuflist(v:val), bufnr('%')) >= 0")
-    let winnrs = range(1, tabpagewinnr(tabnr, '$'))
-    if tabnr == tabpagenr()
-      call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
-    endif
-
-    " Note: for foldmethod=expr or syntax.
-    call filter(winnrs, "
-          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
-          \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
-          \  gettabwinvar(tabnr, v:val, '&modifiable')")
-    for winnr in winnrs
-      call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
-            \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
-            \ 'foldexpr'   : gettabwinvar(tabnr, winnr, '&foldexpr')
-            \ })
-      call settabwinvar(tabnr, winnr, '&foldmethod', 'manual')
-      call settabwinvar(tabnr, winnr, '&foldexpr', 0)
-    endfor
-  endfor
-endfunction"}}}
-function! s:on_insert_enter() "{{{
-  if &l:foldmethod ==# 'expr' && foldlevel('.') != 0
-    foldopen
-  endif
-endfunction"}}}
-function! s:on_complete_done() "{{{
-  " Get cursor word.
-  let [_, candidate] =
-        \ neocomplcache#match_word(s:get_cur_text())
-  if candidate == ''
-    return
-  endif
-
-  let frequencies = s:get_frequencies()
-  if !has_key(frequencies, candidate)
-    let frequencies[candidate] = 20
-  else
-    let frequencies[candidate] += 20
-  endif
-endfunction"}}}
-function! s:change_update_time() "{{{
-  if &updatetime > g:neocomplcache_cursor_hold_i_time
-    " Change updatetime.
-    let neocomplcache = neocomplcache#get_current_neocomplcache()
-    let neocomplcache.update_time_save = &updatetime
-    let &updatetime = g:neocomplcache_cursor_hold_i_time
-  endif
-endfunction"}}}
-function! s:restore_update_time() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  if &updatetime < neocomplcache.update_time_save
-    " Restore updatetime.
-    let &updatetime = neocomplcache.update_time_save
-  endif
-endfunction"}}}
 function! s:remove_next_keyword(source_name, list) "{{{
   " Remove next keyword.
   let pattern = '^\%(' .
@@ -2779,7 +2665,7 @@ function! s:unite_patterns(pattern_var, filetype) "{{{
 
   return join(keyword_patterns, '\m\|')
 endfunction"}}}
-function! s:get_frequencies() "{{{
+function! neocomplcache#_get_frequencies() "{{{
   let filetype = neocomplcache#get_context_filetype()
   if !has_key(s:filetype_frequencies, filetype)
     let s:filetype_frequencies[filetype] = {}
