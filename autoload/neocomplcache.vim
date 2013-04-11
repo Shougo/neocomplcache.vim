@@ -1046,50 +1046,6 @@ function! neocomplcache#head_filter(list, cur_keyword_str) "{{{
 
   return filter(a:list, expr)
 endfunction"}}}
-function! neocomplcache#fuzzy_filter(list, cur_keyword_str) "{{{
-  let ret = []
-
-  let cur_keyword_str = a:cur_keyword_str[2:]
-  let max_str2 = len(cur_keyword_str)
-  let len = len(a:cur_keyword_str)
-  let m = range(max_str2+1)
-  for keyword in filter(a:list, 'len(v:val.word) >= '.max_str2)
-    let str1 = keyword.word[2 : len-1]
-
-    let i = 0
-    while i <= max_str2+1
-      let m[i] = range(max_str2+1)
-
-      let i += 1
-    endwhile
-    let i = 0
-    while i <= max_str2+1
-      let m[i][0] = i
-      let m[0][i] = i
-
-      let i += 1
-    endwhile
-
-    let i = 1
-    let max = max_str2 + 1
-    while i < max
-      let j = 1
-      while j < max
-        let m[i][j] = min([m[i-1][j]+1, m[i][j-1]+1,
-              \ m[i-1][j-1]+(str1[i-1] != cur_keyword_str[j-1])])
-
-        let j += 1
-      endwhile
-
-      let i += 1
-    endwhile
-    if m[-1][-1] <= 2
-      call add(ret, keyword)
-    endif
-  endfor
-
-  return ret
-endfunction"}}}
 function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str) "{{{
   if empty(a:dictionary)
     return []
@@ -1438,9 +1394,6 @@ function! neocomplcache#print_error(string) "{{{
 endfunction"}}}
 function! neocomplcache#print_warning(string) "{{{
   echohl WarningMsg | echomsg a:string | echohl None
-endfunction"}}}
-function! neocomplcache#trunk_string(string, max) "{{{
-  return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
 function! neocomplcache#head_match(checkstr, headstr) "{{{
   let checkstr = &ignorecase ?
