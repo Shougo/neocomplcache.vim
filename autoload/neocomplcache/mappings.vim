@@ -27,6 +27,20 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! neocomplcache#mappings#define_default_mappings() "{{{
+  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)
+        \ unite#sources#neocomplcache#start_complete()
+  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_quick_match)
+        \ unite#sources#neocomplcache#start_quick_match()
+  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
+        \ <C-x><C-u><C-r>=neocomplcache#mappings#popup_post()<CR>
+  inoremap <silent> <Plug>(neocomplcache_start_auto_complete_no_select)
+        \ <C-x><C-u><C-p>
+  " \ <C-x><C-u><C-p>
+  inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
+        \ <C-x><C-o><C-p>
+endfunction"}}}
+
 function! neocomplcache#mappings#smart_close_popup() "{{{
   return g:neocomplcache_enable_auto_select ?
         \ neocomplcache#mappings#cancel_popup() :
@@ -49,6 +63,12 @@ function! neocomplcache#mappings#cancel_popup() "{{{
   return pumvisible() ? "\<C-e>" : ''
 endfunction
 "}}}
+
+function! neocomplcache#mappings#popup_post() "{{{
+  return  !pumvisible() ? "" :
+        \ g:neocomplcache_enable_auto_select ? "\<C-p>\<Down>" :
+        \ "\<C-p>"
+endfunction"}}}
 
 function! neocomplcache#mappings#undo_completion() "{{{
   if !exists(':NeoComplCacheDisable')
@@ -140,6 +160,7 @@ function! neocomplcache#start_manual_complete(...) "{{{
   " Start complete.
   return "\<C-x>\<C-u>\<C-p>"
 endfunction"}}}
+
 function! neocomplcache#mappings#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words) "{{{
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   let [neocomplcache.cur_keyword_pos,

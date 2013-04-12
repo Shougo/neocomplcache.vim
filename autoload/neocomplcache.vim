@@ -656,17 +656,7 @@ function! s:initialize_others() "{{{
   let &l:completefunc = 'neocomplcache#complete#manual_complete'
 
   " For auto complete keymappings.
-  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_complete)
-        \ unite#sources#neocomplcache#start_complete()
-  inoremap <expr><silent> <Plug>(neocomplcache_start_unite_quick_match)
-        \ unite#sources#neocomplcache#start_quick_match()
-  inoremap <silent> <Plug>(neocomplcache_start_auto_complete)
-        \ <C-x><C-u><C-r>=neocomplcache#popup_post()<CR>
-  inoremap <silent> <Plug>(neocomplcache_start_auto_complete_no_select)
-        \ <C-x><C-u><C-p>
-  " \ <C-x><C-u><C-p>
-  inoremap <silent> <Plug>(neocomplcache_start_omni_complete)
-        \ <C-x><C-o><C-p>
+  call neocomplcache#mappings#define_default_mappings()
 
   " Detect set paste.
   if &paste
@@ -2059,11 +2049,6 @@ function! s:remove_next_keyword(source_name, list) "{{{
   let &ignorecase = ignorecase_save
 
   return a:list
-endfunction"}}}
-function! neocomplcache#popup_post() "{{{
-  return  !pumvisible() ? "" :
-        \ g:neocomplcache_enable_auto_select ? "\<C-p>\<Down>" :
-        \ "\<C-p>"
 endfunction"}}}
 function! neocomplcache#_clear_result()
   let neocomplcache = neocomplcache#get_current_neocomplcache()
