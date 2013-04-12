@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: handler.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Apr 2013.
+" Last Modified: 12 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,7 +44,7 @@ function! neocomplcache#handler#_on_moved_i() "{{{
   endif
 
   if g:neocomplcache_enable_auto_close_preview &&
-        \ bufname('%') !=# '[Command Line]'
+        \ bufname('%') !=# '[Command Line]' && winnr('$') != 1
     " Close preview window.
     pclose!
   endif
@@ -197,7 +197,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
     return
   endif
 
-  let &l:completefunc = 'neocomplcache#auto_complete'
+  let &l:completefunc = 'neocomplcache#complete#auto_complete'
 
   if neocomplcache#is_prefetch()
     " Do prefetch.
@@ -210,7 +210,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
       endif
 
       " Skip completion.
-      let &l:completefunc = 'neocomplcache#manual_complete'
+      let &l:completefunc = 'neocomplcache#complete#manual_complete'
       call neocomplcache#_clear_result()
       return
     endif
@@ -235,13 +235,13 @@ function! s:check_in_do_auto_complete() "{{{
   endif
 
   " Detect completefunc.
-  if &l:completefunc != 'neocomplcache#manual_complete'
-        \ && &l:completefunc != 'neocomplcache#auto_complete'
+  if &l:completefunc != 'neocomplcache#complete#manual_complete'
+        \ && &l:completefunc != 'neocomplcache#complete#auto_complete'
     if g:neocomplcache_force_overwrite_completefunc
           \ || &l:completefunc == ''
-          \ || &l:completefunc ==# 'neocomplcache#sources_manual_complete'
+          \ || &l:completefunc ==# 'neocomplcache#complete#sources_manual_complete'
       " Set completefunc.
-      let &l:completefunc = 'neocomplcache#manual_complete'
+      let &l:completefunc = 'neocomplcache#complete#manual_complete'
     else
       " Warning.
       redir => output
