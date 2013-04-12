@@ -547,11 +547,7 @@ function! s:initialize_others() "{{{
 
   call neocomplcache#context_filetype#initialize()
 
-  " Add commands. "{{{
-  command! -nargs=? Neco call s:display_neco(<q-args>)
-  command! -nargs=1 NeoComplCacheAutoCompletionLength
-        \ call s:set_auto_completion_length(<args>)
-  "}}}
+  call neocomplcache#commands#initialize()
 
   " Must g:neocomplcache_auto_completion_start_length > 1.
   if g:neocomplcache_auto_completion_start_length < 1
@@ -966,34 +962,12 @@ function! s:compare_source_rank(i1, i2)
         \ neocomplcache#get_source_rank(a:i1[0])
 endfunction"}}}
 
-function! neocomplcache#rand(max) "{{{
-  if !has('reltime')
-    " Same value.
-    return 0
-  endif
-
-  let time = reltime()[1]
-  return (time < 0 ? -time : time)% (a:max + 1)
-endfunction"}}}
 function! neocomplcache#system(...) "{{{
   let V = vital#of('neocomplcache')
   return call(V.system, a:000)
 endfunction"}}}
-function! neocomplcache#has_vimproc(...) "{{{
-  " Initialize.
-  if !exists('g:neocomplcache_use_vimproc')
-    " Check vimproc.
-    try
-      call vimproc#version()
-      let exists_vimproc = 1
-    catch
-      let exists_vimproc = 0
-    endtry
-
-    let g:neocomplcache_use_vimproc = exists_vimproc
-  endif
-
-  return g:neocomplcache_use_vimproc
+function! neocomplcache#has_vimproc() "{{{
+  return neocomplcache#util#has_vimproc()
 endfunction"}}}
 
 function! neocomplcache#get_cur_text(...) "{{{
@@ -1671,228 +1645,6 @@ function! neocomplcache#filetype_complete(arglead, cmdline, cursorpos) "{{{
   endfor
 
   return sort(keys(ret))
-endfunction"}}}
-"}}}
-
-" Command functions. "{{{
-function! neocomplcache#clean() "{{{
-  " Delete cache files.
-  for directory in filter(neocomplcache#util#glob(
-        \ g:neocomplcache_temporary_dir.'/*'), 'isdirectory(v:val)')
-    for filename in filter(neocomplcache#util#glob(directory.'/*'),
-          \ '!isdirectory(v:val)')
-      call delete(filename)
-    endfor
-  endfor
-
-  echo 'Cleaned cache files in: ' . g:neocomplcache_temporary_dir
-endfunction"}}}
-function! neocomplcache#toggle_lock() "{{{
-  if neocomplcache#get_current_neocomplcache().lock
-    echo 'neocomplcache is unlocked!'
-    call neocomplcache#unlock()
-  else
-    echo 'neocomplcache is locked!'
-    call neocomplcache#lock()
-  endif
-endfunction"}}}
-function! neocomplcache#lock() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.lock = 1
-endfunction"}}}
-function! neocomplcache#unlock() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.lock = 0
-endfunction"}}}
-function! neocomplcache#lock_source(source_name) "{{{
-  if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning(
-          \ 'neocomplcache is disabled! This command is ignored.')
-    return
-  endif
-
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  let neocomplcache.lock_sources[a:source_name] = 1
-endfunction"}}}
-function! neocomplcache#unlock_source(source_name) "{{{
-  if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning(
-          \ 'neocomplcache is disabled! This command is ignored.')
-    return
-  endif
-
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  let neocomplcache.lock_sources[a:source_name] = 1
-endfunction"}}}
-function! s:display_neco(number) "{{{
-  let cmdheight_save = &cmdheight
-
-  let animation = [
-    \[
-        \[
-        \ "   A A",
-        \ "~(-'_'-)"
-        \],
-        \[
-        \ "      A A",
-        \ "   ~(-'_'-)",
-        \],
-        \[
-        \ "        A A",
-        \ "     ~(-'_'-)",
-        \],
-        \[
-        \ "          A A  ",
-        \ "       ~(-'_'-)",
-        \],
-        \[
-        \ "             A A",
-        \ "          ~(-^_^-)",
-        \],
-    \],
-    \[
-        \[
-        \ "   A A",
-        \ "~(-'_'-)",
-        \],
-        \[
-        \ "      A A",
-        \ "   ~(-'_'-)",
-        \],
-        \[
-        \ "        A A",
-        \ "     ~(-'_'-)",
-        \],
-        \[
-        \ "          A A  ",
-        \ "       ~(-'_'-)",
-        \],
-        \[
-        \ "             A A",
-        \ "          ~(-'_'-)",
-        \],
-        \[
-        \ "          A A  ",
-        \ "       ~(-'_'-)"
-        \],
-        \[
-        \ "        A A",
-        \ "     ~(-'_'-)"
-        \],
-        \[
-        \ "      A A",
-        \ "   ~(-'_'-)"
-        \],
-        \[
-        \ "   A A",
-        \ "~(-'_'-)"
-        \],
-    \],
-    \[
-        \[
-        \ "   A A",
-        \ "~(-'_'-)",
-        \],
-        \[
-        \ "        A A",
-        \ "     ~(-'_'-)",
-        \],
-        \[
-        \ "             A A",
-        \ "          ~(-'_'-)",
-        \],
-        \[
-        \ "                  A A",
-        \ "               ~(-'_'-)",
-        \],
-        \[
-        \ "                       A A",
-        \ "                    ~(-'_'-)",
-        \],
-        \["                           A A",
-        \ "                        ~(-'_'-)",
-        \],
-    \],
-    \[
-        \[
-        \ "",
-        \ "   A A",
-        \ "~(-'_'-)",
-        \],
-        \["      A A",
-        \ "   ~(-'_'-)",
-        \ "",
-        \],
-        \[
-        \ "",
-        \ "        A A",
-        \ "     ~(-'_'-)",
-        \],
-        \[
-        \ "          A A  ",
-        \ "       ~(-'_'-)",
-        \ "",
-        \],
-        \[
-        \ "",
-        \ "             A A",
-        \ "          ~(-^_^-)",
-        \],
-    \],
-    \[
-        \[
-        \ "   A A        A A",
-        \ "~(-'_'-)  -8(*'_'*)"
-        \],
-        \[
-        \ "     A A        A A",
-        \ "  ~(-'_'-)  -8(*'_'*)"
-        \],
-        \[
-        \ "       A A        A A",
-        \ "    ~(-'_'-)  -8(*'_'*)"
-        \],
-        \[
-        \ "     A A        A A",
-        \ "  ~(-'_'-)  -8(*'_'*)"
-        \],
-        \[
-        \ "   A A        A A",
-        \ "~(-'_'-)  -8(*'_'*)"
-        \],
-    \],
-    \[
-        \[
-        \ "  A\\_A\\",
-        \ "(=' .' ) ~w",
-        \ "(,(\")(\")",
-        \],
-    \],
-  \]
-
-  let number = (a:number != '') ? a:number : len(animation)
-  let anim = get(animation, number, animation[neocomplcache#rand(len(animation) - 1)])
-  let &cmdheight = len(anim[0])
-
-  for frame in anim
-    echo repeat("\n", &cmdheight-2)
-    redraw
-    echon join(frame, "\n")
-    sleep 300m
-  endfor
-  redraw
-
-  let &cmdheight = cmdheight_save
-endfunction"}}}
-function! neocomplcache#set_file_type(filetype) "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.filetype = a:filetype
-endfunction"}}}
-function! s:set_auto_completion_length(len) "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.completion_length = a:len
 endfunction"}}}
 "}}}
 

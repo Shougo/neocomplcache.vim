@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jan 2013.
+" Last Modified: 12 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -179,6 +179,23 @@ endfunction"}}}
 " Escape a path for runtimepath.
 function! s:escape(path)"{{{
   return substitute(a:path, ',\|\\,\@=', '\\\0', 'g')
+endfunction"}}}
+
+function! neocomplcache#util#has_vimproc() "{{{
+  " Initialize.
+  if !exists('g:neocomplcache_use_vimproc')
+    " Check vimproc.
+    try
+      call vimproc#version()
+      let exists_vimproc = 1
+    catch
+      let exists_vimproc = 0
+    endtry
+
+    let g:neocomplcache_use_vimproc = exists_vimproc
+  endif
+
+  return g:neocomplcache_use_vimproc
 endfunction"}}}
 
 let &cpo = s:save_cpo

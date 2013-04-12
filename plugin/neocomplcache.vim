@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Mar 2013.
+" Last Modified: 12 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,9 @@ if exists('g:loaded_neocomplcache')
 endif
 let g:loaded_neocomplcache = 1
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 if v:version < 702
   echohl Error
   echomsg 'neocomplcache does not work this version of Vim (' . v:version . ').'
@@ -47,32 +50,29 @@ elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
   finish
 endif
 
-let s:save_cpo = &cpo
-set cpo&vim
-
 command! -nargs=0 -bar NeoComplCacheEnable
       \ call neocomplcache#enable()
 command! -nargs=0 -bar NeoComplCacheDisable
       \ call neocomplcache#disable()
 command! -nargs=0 -bar NeoComplCacheLock
-      \ call neocomplcache#lock()
+      \ call neocomplcache#commands#_lock()
 command! -nargs=0 -bar NeoComplCacheUnlock
       \ call neocomplcache#unlock()
 command! -nargs=0 -bar NeoComplCacheToggle
-      \ call neocomplcache#toggle_lock()
+      \ call neocomplcache#commands#_toggle_lock()
 command! -nargs=1 -bar NeoComplCacheLockSource
-      \ call neocomplcache#lock_source(<q-args>)
+      \ call neocomplcache#commands#_lock_source(<q-args>)
 command! -nargs=1 -bar NeoComplCacheUnlockSource
-      \ call neocomplcache#unlock_source(<q-args>)
+      \ call neocomplcache#commands#_unlock_source(<q-args>)
 if v:version >= 703
   command! -nargs=1 -bar -complete=filetype NeoComplCacheSetFileType
-        \ call neocomplcache#set_file_type(<q-args>)
+        \ call neocomplcache#commands#_set_file_type(<q-args>)
 else
   command! -nargs=1 -bar NeoComplCacheSetFileType
-        \ call neocomplcache#set_file_type(<q-args>)
+        \ call neocomplcache#commands#_set_file_type(<q-args>)
 endif
 command! -nargs=0 -bar NeoComplCacheClean
-      \ call neocomplcache#clean()
+      \ call neocomplcache#commands#_clean()
 
 " Warning if using obsolute mappings. "{{{
 silent! inoremap <unique> <Plug>(neocomplcache_snippets_expand)
