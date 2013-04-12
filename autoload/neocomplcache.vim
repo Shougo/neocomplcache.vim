@@ -2100,7 +2100,7 @@ function! neocomplcache#unlock_source(source_name) "{{{
 
   let neocomplcache = neocomplcache#get_current_neocomplcache()
 
-  let neocomplcache.lock_sources[a:source_name] = 1
+  let neocomplcache.lock_sources[a:source_name] = 0
 endfunction"}}}
 function! s:display_neco(number) "{{{
   let cmdheight_save = &cmdheight
