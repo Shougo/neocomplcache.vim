@@ -59,6 +59,8 @@ function! s:initialize_autocmds() "{{{
           \ call neocomplcache#handler#_on_insert_leave()
     autocmd CursorMovedI *
           \ call neocomplcache#handler#_on_moved_i()
+    autocmd BufWritePost *
+          \ call neocomplcache#handler#_on_write_post()
   augroup END
 
   if g:neocomplcache_enable_insert_char_pre

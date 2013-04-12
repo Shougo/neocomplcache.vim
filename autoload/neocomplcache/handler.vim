@@ -78,36 +78,6 @@ function! neocomplcache#handler#_on_write_post() "{{{
     endfor
   endfor
 endfunction"}}}
-function! neocomplcache#handler#_save_foldinfo() "{{{
-  if line('$') < 1000
-    return
-  endif
-
-  " Save foldinfo.
-  " Note: settabwinvar() in insert mode has bug before 7.3.768.
-  for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
-        \ range(1, tabpagenr('$')) : [tabpagenr()]),
-        \ "index(tabpagebuflist(v:val), bufnr('%')) >= 0")
-    let winnrs = range(1, tabpagewinnr(tabnr, '$'))
-    if tabnr == tabpagenr()
-      call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
-    endif
-
-    " Note: for foldmethod=expr or syntax.
-    call filter(winnrs, "
-          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
-          \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
-          \  gettabwinvar(tabnr, v:val, '&modifiable')")
-    for winnr in winnrs
-      call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
-            \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
-            \ 'foldexpr'   : gettabwinvar(tabnr, winnr, '&foldexpr')
-            \ })
-      call settabwinvar(tabnr, winnr, '&foldmethod', 'manual')
-      call settabwinvar(tabnr, winnr, '&foldexpr', 0)
-    endfor
-  endfor
-endfunction"}}}
 function! neocomplcache#handler#_on_complete_done() "{{{
   " Get cursor word.
   let [_, candidate] = neocomplcache#match_word(
@@ -210,7 +180,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
     endif
   endif
 
-  call neocomplcache#handler#_save_foldinfo()
+  call s:save_foldinfo()
 
   " Set options.
   set completeopt-=menu
@@ -223,6 +193,36 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
         \ "\<Plug>(neocomplcache_start_auto_complete_no_select)")
 endfunction"}}}
 
+function! s:save_foldinfo() "{{{
+  if line('$') < 1000
+    return
+  endif
+
+  " Save foldinfo.
+  " Note: settabwinvar() in insert mode has bug before 7.3.768.
+  for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
+        \ range(1, tabpagenr('$')) : [tabpagenr()]),
+        \ "index(tabpagebuflist(v:val), bufnr('%')) >= 0")
+    let winnrs = range(1, tabpagewinnr(tabnr, '$'))
+    if tabnr == tabpagenr()
+      call filter(winnrs, "winbufnr(v:val) == bufnr('%')")
+    endif
+
+    " Note: for foldmethod=expr or syntax.
+    call filter(winnrs, "
+          \  (gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'expr' ||
+          \   gettabwinvar(tabnr, v:val, '&foldmethod') ==# 'syntax') &&
+          \  gettabwinvar(tabnr, v:val, '&modifiable')")
+    for winnr in winnrs
+      call settabwinvar(tabnr, winnr, 'neocomplcache_foldinfo', {
+            \ 'foldmethod' : gettabwinvar(tabnr, winnr, '&foldmethod'),
+            \ 'foldexpr'   : gettabwinvar(tabnr, winnr, '&foldexpr')
+            \ })
+      call settabwinvar(tabnr, winnr, '&foldmethod', 'manual')
+      call settabwinvar(tabnr, winnr, '&foldexpr', 0)
+    endfor
+  endfor
+endfunction"}}}
 function! s:check_in_do_auto_complete() "{{{
   if neocomplcache#is_locked()
     return 1
