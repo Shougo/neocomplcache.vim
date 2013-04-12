@@ -136,7 +136,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
 
   let neocomplcache.old_cur_text = cur_text
 
-  if neocomplcache#is_omni_complete(cur_text)
+  if neocomplcache#helper#is_omni_complete(cur_text)
     call feedkeys("\<Plug>(neocomplcache_start_omni_complete)")
     return
   endif
@@ -152,7 +152,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
   endif
 
   " Check complete position.
-  let complete_results = neocomplcache#_set_complete_results_pos(cur_text)
+  let complete_results = neocomplcache#complete#_set_results_pos(cur_text)
   if empty(complete_results)
     if g:neocomplcache_enable_debug
       echomsg 'Skipped.'
@@ -166,7 +166,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
   if neocomplcache#is_prefetch()
     " Do prefetch.
     let neocomplcache.complete_results =
-          \ neocomplcache#get_complete_results(cur_text)
+          \ neocomplcache#complete#_get_results(cur_text)
 
     if empty(neocomplcache.complete_results)
       if g:neocomplcache_enable_debug

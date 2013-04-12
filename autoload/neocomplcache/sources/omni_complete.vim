@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Apr 2013.
+" Last Modified: 12 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,7 +109,7 @@ function! s:source.finalize() "{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text) "{{{
-  let syn_name = neocomplcache#get_syn_name(1)
+  let syn_name = neocomplcache#helper#get_syn_name(1)
   if syn_name ==# 'Comment' || syn_name ==# 'String'
     " Skip omni_complete in string literal.
     return -1
