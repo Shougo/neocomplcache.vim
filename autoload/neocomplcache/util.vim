@@ -73,6 +73,11 @@ endfunction"}}}
 function! neocomplcache#util#has_vimproc(...) "{{{
   return call(s:V.has_vimproc, a:000)
 endfunction"}}}
+function! neocomplcache#util#has_lua() "{{{
+  " Note: Disabled if_lua feature if less than 7.3.885.
+  " Because if_lua has double free problem.
+  return has('lua') && (v:version > 703 || v:version == 703 && has('patch885'))
+endfunction"}}}
 function! neocomplcache#util#is_windows(...) "{{{
   return call(s:V.is_windows, a:000)
 endfunction"}}}
