@@ -774,7 +774,7 @@ function! neocomplcache#available_plugins() "{{{
   return s:plugin_sources
 endfunction"}}}
 function! neocomplcache#available_sources() "{{{
-  call s:set_context_filetype()
+  call neocomplcache#_set_context_filetype()
   return extend(extend(copy(s:complfunc_sources),
         \ s:ftplugin_sources), s:plugin_sources)
 endfunction"}}}
@@ -1347,7 +1347,7 @@ function! neocomplcache#get_context_filetype(...) "{{{
 
   if a:0 != 0 || mode() !=# 'i' ||
         \ neocomplcache.context_filetype == ''
-    call s:set_context_filetype()
+    call neocomplcache#_set_context_filetype()
   endif
 
   return neocomplcache.context_filetype
@@ -1361,7 +1361,7 @@ function! neocomplcache#get_context_filetype_range(...) "{{{
 
   if a:0 != 0 || mode() !=# 'i' ||
         \ neocomplcache.context_filetype == ''
-    call s:set_context_filetype()
+    call neocomplcache#_set_context_filetype()
   endif
 
   if neocomplcache.context_filetype ==# &filetype
@@ -1642,7 +1642,7 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
 endfunction"}}}
 function! neocomplcache#_set_complete_results_pos(cur_text, ...) "{{{
   " Set context filetype.
-  call s:set_context_filetype()
+  call neocomplcache#_set_context_filetype()
 
   let sources = copy(get(a:000, 0, neocomplcache#_get_sources_list()))
   if a:0 < 1
@@ -2004,138 +2004,24 @@ endfunction"}}}
 "}}}
 
 " Key mapping functions. "{{{
-function! neocomplcache#smart_close_popup() "{{{
-  return g:neocomplcache_enable_auto_select ?
-        \ neocomplcache#cancel_popup() : neocomplcache#close_popup()
+function! neocomplcache#smart_close_popup()
+  return neocomplcache#mappings#smart_close_popup()
 endfunction
-"}}}
-function! neocomplcache#close_popup() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.cur_keyword_str = ''
-  let neocomplcache.skip_next_complete = 2
-  let neocomplcache.complete_words = []
-
-  return pumvisible() ? "\<C-y>" : ''
+function! neocomplcache#close_popup()
+  return neocomplcache#mappings#close_popup()
 endfunction
-"}}}
-function! neocomplcache#cancel_popup() "{{{
-  call neocomplcache#skip_next_complete()
-  call neocomplcache#_clear_result()
-
-  return pumvisible() ? "\<C-e>" : ''
+function! neocomplcache#cancel_popup()
+  return neocomplcache#mappings#cancel_popup()
 endfunction
-"}}}
-
-function! neocomplcache#undo_completion() "{{{
-  if !exists(':NeoComplCacheDisable')
-    return ''
-  endif
-
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  " Get cursor word.
-  let [cur_keyword_pos, cur_keyword_str] =
-        \ neocomplcache#match_word(s:get_cur_text())
-  let old_keyword_str = neocomplcache.cur_keyword_str
-  let neocomplcache.cur_keyword_str = cur_keyword_str
-
-  return (!pumvisible() ? '' :
-        \ cur_keyword_str ==# old_keyword_str ? "\<C-e>" : "\<C-y>")
-        \. repeat("\<BS>", len(cur_keyword_str)) . old_keyword_str
-endfunction"}}}
-
-function! neocomplcache#complete_common_string() "{{{
-  if !exists(':NeoComplCacheDisable')
-    return ''
-  endif
-
-  " Save options.
-  let ignorecase_save = &ignorecase
-
-  " Get cursor word.
-  let [cur_keyword_pos, cur_keyword_str] =
-        \ neocomplcache#match_word(s:get_cur_text())
-
-  if neocomplcache#is_text_mode()
-    let &ignorecase = 1
-  elseif g:neocomplcache_enable_smart_case && cur_keyword_str =~ '\u'
-    let &ignorecase = 0
-  else
-    let &ignorecase = g:neocomplcache_enable_ignore_case
-  endif
-
-  let is_fuzzy = g:neocomplcache_enable_fuzzy_completion
-
-  try
-    let g:neocomplcache_enable_fuzzy_completion = 0
-    let neocomplcache = neocomplcache#get_current_neocomplcache()
-    let complete_words = neocomplcache#keyword_filter(
-          \ copy(neocomplcache.complete_words), cur_keyword_str)
-  finally
-    let g:neocomplcache_enable_fuzzy_completion = is_fuzzy
-  endtry
-
-  if empty(complete_words)
-    let &ignorecase = ignorecase_save
-
-    return ''
-  endif
-
-  let common_str = complete_words[0].word
-  for keyword in complete_words[1:]
-    while !neocomplcache#head_match(keyword.word, common_str)
-      let common_str = common_str[: -2]
-    endwhile
-  endfor
-  if &ignorecase
-    let common_str = tolower(common_str)
-  endif
-
-  let &ignorecase = ignorecase_save
-
-  if common_str == ''
-    return ''
-  endif
-
-  return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", len(cur_keyword_str)) . common_str
-endfunction"}}}
-
-" Wrapper functions.
-function! neocomplcache#manual_filename_complete() "{{{
-  return neocomplcache#start_manual_complete('filename_complete')
-endfunction"}}}
-function! neocomplcache#manual_omni_complete() "{{{
-  return neocomplcache#start_manual_complete('omni_complete')
-endfunction"}}}
-
-" Manual complete wrapper.
-function! neocomplcache#start_manual_complete(...) "{{{
-  if !neocomplcache#is_enabled()
-    return ''
-  endif
-
-  " Set context filetype.
-  call s:set_context_filetype()
-
-  " Set function.
-  let &l:completefunc = 'neocomplcache#complete#sources_manual_complete'
-
-  " Start complete.
-  return "\<C-x>\<C-u>\<C-p>"
-endfunction"}}}
-function! neocomplcache#start_manual_complete_list(cur_keyword_pos, cur_keyword_str, complete_words) "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let [neocomplcache.cur_keyword_pos,
-        \ neocomplcache.cur_keyword_str, neocomplcache.complete_words] =
-        \ [a:cur_keyword_pos, a:cur_keyword_str, a:complete_words]
-
-  " Set function.
-  let &l:completefunc = 'neocomplcache#complete#auto_complete'
-
-  " Start complete.
-  return "\<C-x>\<C-u>\<C-p>"
-endfunction"}}}
+function! neocomplcache#undo_completion()
+  return neocomplcache#mappings#undo_completion()
+endfunction
+function! neocomplcache#complete_common_string()
+  return neocomplcache#mappings#complete_common_string()
+endfunction
+function! neocomplcache#start_manual_complete(...)
+  return call('neocomplcache#mappings#start_manual_complete', a:000)
+endfunction
 "}}}
 
 " Event functions. "{{{
@@ -2231,7 +2117,7 @@ function! s:get_cur_text() "{{{
   " Save cur_text.
   return neocomplcache.cur_text
 endfunction"}}}
-function! s:set_context_filetype() "{{{
+function! neocomplcache#_set_context_filetype() "{{{
   let old_filetype = neocomplcache#get_current_neocomplcache().filetype
   if old_filetype == ''
     let old_filetype = &filetype

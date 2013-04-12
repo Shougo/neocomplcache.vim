@@ -980,23 +980,10 @@ neocomplcache#start_manual_complete([{sources}])
 >
 		inoremap <expr><Tab>  neocomplcache#start_manual_complete()
 <
-neocomplcache#manual_filename_complete()
 				*neocomplcache#manual_filename_complete()*
-		Use this function on inoremap <expr>.  The keymapping call
-		the file name completion of neocomplcache.  When you
-		rearrange the file name completion of the Vim standard, you
-		use it.
->
-		inoremap <expr><C-x><C-f>  neocomplcache#manual_filename_complete()
-<
-neocomplcache#manual_omni_complete()
 				*neocomplcache#manual_omni_complete()*
-		Use this function on inoremap <expr>.  The keymapping call
-		the omni completion of neocomplcache.  When you rearrange
-		the omni completion of the Vim standard, you use it.
->
-		inoremap <expr><C-j>  neocomplcache#manual_filename_complete()
-<
+		Note: These functions are obsolete.
+
 neocomplcache#close_popup()
 				*neocomplcache#close_popup()*
 		Inset candidate and close popup menu for neocomplcache.

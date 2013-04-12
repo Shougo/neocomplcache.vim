@@ -29,7 +29,7 @@ set cpo&vim
 
 function! neocomplcache#handler#_on_moved_i() "{{{
   " Get cursor word.
-  let cur_text = neocomplcache#get_cur_text()
+  let cur_text = neocomplcache#get_cur_text(1)
 
   " Make cache.
   if cur_text =~ '^\s*$\|\s\+$'
@@ -295,7 +295,7 @@ function! s:is_skip_auto_complete(cur_text) "{{{
 
   return 1
 endfunction"}}}
-function! s:close_preview_window()"{{{
+function! s:close_preview_window() "{{{
   if g:neocomplcache_enable_auto_close_preview &&
         \ bufname('%') !=# '[Command Line]' && winnr('$') != 1
     " Close preview window.
