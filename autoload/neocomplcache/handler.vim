@@ -43,11 +43,7 @@ function! neocomplcache#handler#_on_moved_i() "{{{
     endif
   endif
 
-  if g:neocomplcache_enable_auto_close_preview &&
-        \ bufname('%') !=# '[Command Line]' && winnr('$') != 1
-    " Close preview window.
-    pclose!
-  endif
+  call s:close_preview_window()
 endfunction"}}}
 function! neocomplcache#handler#_on_insert_enter() "{{{
   if &l:foldmethod ==# 'expr' && foldlevel('.') != 0
@@ -60,6 +56,11 @@ function! neocomplcache#handler#_on_insert_leave() "{{{
   let neocomplcache.cur_text = ''
   let neocomplcache.old_cur_text = ''
 
+  call s:close_preview_window()
+endfunction"}}}
+function! neocomplcache#handler#_on_write_post() "{{{
+  let neocomplcache = neocomplcache#get_current_neocomplcache()
+
   " Restore foldinfo.
   " Note: settabwinvar() in insert mode has bug before 7.3.768.
   for tabnr in (v:version > 703 || (v:version == 703 && has('patch768')) ?
@@ -68,21 +69,14 @@ function! neocomplcache#handler#_on_insert_leave() "{{{
           \ "!empty(gettabwinvar(tabnr, v:val, 'neocomplcache_foldinfo'))")
       let neocomplcache_foldinfo =
             \ gettabwinvar(tabnr, winnr, 'neocomplcache_foldinfo')
-      " Note: To disabled restore foldinfo is too heavy.
-      " call settabwinvar(tabnr, winnr, '&foldmethod',
-      "       \ neocomplcache_foldinfo.foldmethod)
-      " call settabwinvar(tabnr, winnr, '&foldexpr',
-      "       \ neocomplcache_foldinfo.foldexpr)
+      call settabwinvar(tabnr, winnr, '&foldmethod',
+            \ neocomplcache_foldinfo.foldmethod)
+      call settabwinvar(tabnr, winnr, '&foldexpr',
+            \ neocomplcache_foldinfo.foldexpr)
       call settabwinvar(tabnr, winnr,
             \ 'neocomplcache_foldinfo', {})
     endfor
   endfor
-
-  if g:neocomplcache_enable_auto_close_preview &&
-        \ bufname('%') !=# '[Command Line]'
-    " Close preview window.
-    pclose!
-  endif
 endfunction"}}}
 function! neocomplcache#handler#_save_foldinfo() "{{{
   if line('$') < 1000
@@ -300,6 +294,13 @@ function! s:is_skip_auto_complete(cur_text) "{{{
   let neocomplcache.old_cur_text = ''
 
   return 1
+endfunction"}}}
+function! s:close_preview_window()"{{{
+  if g:neocomplcache_enable_auto_close_preview &&
+        \ bufname('%') !=# '[Command Line]' && winnr('$') != 1
+    " Close preview window.
+    pclose!
+  endif
 endfunction"}}}
 
 let &cpo = s:save_cpo
