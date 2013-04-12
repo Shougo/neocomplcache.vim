@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#commands#initialize() "{{{
+function! neocomplcache#commands#_initialize() "{{{
   command! -nargs=? Neco call s:display_neco(<q-args>)
   command! -nargs=1 NeoComplCacheAutoCompletionLength
         \ call s:set_auto_completion_length(<args>)
