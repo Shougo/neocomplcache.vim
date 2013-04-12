@@ -451,87 +451,6 @@ function! s:initialize_others() "{{{
         \ 'int-php', 'php')
   "}}}
 
-  " Initialize context filetype lists. "{{{
-  call neocomplcache#util#set_default(
-        \ 'g:neocomplcache_context_filetype_lists', {})
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'c,cpp', [
-        \ {'filetype' : 'masm',
-        \  'start' : '_*asm_*\s\+\h\w*', 'end' : '$'},
-        \ {'filetype' : 'masm',
-        \  'start' : '_*asm_*\s*\%(\n\s*\)\?{', 'end' : '}'},
-        \ {'filetype' : 'gas',
-        \  'start' : '_*asm_*\s*\%(_*volatile_*\s*\)\?(', 'end' : ');'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'd', [
-        \ {'filetype' : 'masm',
-        \  'start' : 'asm\s*\%(\n\s*\)\?{', 'end' : '}'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'perl6', [
-        \ {'filetype' : 'pir', 'start' : 'Q:PIR\s*{', 'end' : '}'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'vimshell', [
-        \ {'filetype' : 'vim',
-        \  'start' : 'vexe \([''"]\)', 'end' : '\\\@<!\1'},
-        \ {'filetype' : 'vim', 'start' : ' :\w*', 'end' : '\n'},
-        \ {'filetype' : 'vim', 'start' : ' vexe\s\+', 'end' : '\n'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'eruby', [
-        \ {'filetype' : 'ruby', 'start' : '<%[=#]\?', 'end' : '%>'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'vim', [
-        \ {'filetype' : 'python',
-        \  'start' : '^\s*py\%[thon\]3\? <<\s*\(\h\w*\)', 'end' : '^\1'},
-        \ {'filetype' : 'ruby',
-        \  'start' : '^\s*rub\%[y\] <<\s*\(\h\w*\)', 'end' : '^\1'},
-        \ {'filetype' : 'lua',
-        \  'start' : '^\s*lua <<\s*\(\h\w*\)', 'end' : '^\1'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'html,xhtml', [
-        \ {'filetype' : 'javascript', 'start' :
-        \'<script\%( [^>]*\)\? type="text/javascript"\%( [^>]*\)\?>',
-        \  'end' : '</script>'},
-        \ {'filetype' : 'coffee', 'start' :
-        \'<script\%( [^>]*\)\? type="text/coffeescript"\%( [^>]*\)\?>',
-        \  'end' : '</script>'},
-        \ {'filetype' : 'css', 'start' :
-        \'<script\%( [^>]*\)\? type="text/css"\%( [^>]*\)\?>',
-        \  'end' : '</style>'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'python', [
-        \ {'filetype' : 'vim',
-        \  'start' : 'vim.command\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
-        \ {'filetype' : 'vim',
-        \  'start' : 'vim.eval\s*(\([''"]\)', 'end' : '\\\@<!\1\s*)'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'help', [
-        \ {'filetype' : 'vim', 'start' : '^>', 'end' : '^<'},
-        \])
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_context_filetype_lists',
-        \ 'nyaos,int-nyaos', [
-        \ {'filetype' : 'lua',
-        \  'start' : '\<lua_e\s\+\(["'']\)', 'end' : '^\1'},
-        \])
-  "}}}
-
   " Initialize delimiter patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_delimiter_patterns', {})
@@ -625,6 +544,8 @@ function! s:initialize_others() "{{{
   " Initialize ignore composite filetypes
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_ignore_composite_filetype_lists', {})
+
+  call neocomplcache#context_filetype#initialize()
 
   " Add commands. "{{{
   command! -nargs=? Neco call s:display_neco(<q-args>)
@@ -764,7 +685,7 @@ function! neocomplcache#available_plugins() "{{{
   return s:plugin_sources
 endfunction"}}}
 function! neocomplcache#available_sources() "{{{
-  call neocomplcache#_set_context_filetype()
+  call neocomplcache#context_filetype#set()
   return extend(extend(copy(s:complfunc_sources),
         \ s:ftplugin_sources), s:plugin_sources)
 endfunction"}}}
@@ -1044,10 +965,6 @@ function! s:compare_source_rank(i1, i2)
   return neocomplcache#get_source_rank(a:i2[0]) -
         \ neocomplcache#get_source_rank(a:i1[0])
 endfunction"}}}
-" Pos order. "{{{
-function! s:compare_pos(i1, i2)
-  return a:i1[0] == a:i2[0] ? a:i1[1] - a:i2[1] : a:i1[0] - a:i2[0]
-endfunction"}}}
 
 function! neocomplcache#rand(max) "{{{
   if !has('reltime')
@@ -1323,7 +1240,7 @@ function! neocomplcache#get_context_filetype(...) "{{{
 
   if a:0 != 0 || mode() !=# 'i' ||
         \ neocomplcache.context_filetype == ''
-    call neocomplcache#_set_context_filetype()
+    call neocomplcache#context_filetype#set()
   endif
 
   return neocomplcache.context_filetype
@@ -1337,7 +1254,7 @@ function! neocomplcache#get_context_filetype_range(...) "{{{
 
   if a:0 != 0 || mode() !=# 'i' ||
         \ neocomplcache.context_filetype == ''
-    call neocomplcache#_set_context_filetype()
+    call neocomplcache#context_filetype#set()
   endif
 
   if neocomplcache.context_filetype ==# &filetype
@@ -1618,7 +1535,7 @@ function! neocomplcache#get_complete_words(complete_results, cur_keyword_pos, cu
 endfunction"}}}
 function! neocomplcache#_set_complete_results_pos(cur_text, ...) "{{{
   " Set context filetype.
-  call neocomplcache#_set_context_filetype()
+  call neocomplcache#context_filetype#set()
 
   let sources = copy(get(a:000, 0, neocomplcache#_get_sources_list()))
   if a:0 < 1
@@ -2047,119 +1964,6 @@ endfunction
 "}}}
 
 " Internal helper functions. "{{{
-function! neocomplcache#_set_context_filetype() "{{{
-  let old_filetype = neocomplcache#get_current_neocomplcache().filetype
-  if old_filetype == ''
-    let old_filetype = &filetype
-  endif
-  if old_filetype == ''
-    let old_filetype = 'nothing'
-  endif
-
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  let dup_check = {}
-  while 1
-    let new_filetype = s:get_context_filetype(old_filetype)
-
-    " Check filetype root.
-    if get(dup_check, old_filetype, '') ==# new_filetype
-      let neocomplcache.context_filetype = old_filetype
-      break
-    endif
-
-    " Save old -> new filetype graph.
-    let dup_check[old_filetype] = new_filetype
-    let old_filetype = new_filetype
-  endwhile
-
-  " Set filetype plugins.
-  let s:loaded_ftplugin_sources = {}
-  for [source_name, source] in
-        \ items(filter(copy(neocomplcache#available_ftplugins()),
-        \ 'has_key(v:val.filetypes, neocomplcache.context_filetype)'))
-    let s:loaded_ftplugin_sources[source_name] = source
-
-    if !source.loaded
-      " Initialize.
-      if has_key(source, 'initialize')
-        try
-          call source.initialize()
-        catch
-          call neocomplcache#print_error(v:throwpoint)
-          call neocomplcache#print_error(v:exception)
-          call neocomplcache#print_error(
-                \ 'Error occured in source''s initialize()!')
-          call neocomplcache#print_error(
-                \ 'Source name is ' . source.name)
-        endtry
-      endif
-
-      let source.loaded = 1
-    endif
-  endfor
-
-  return neocomplcache.context_filetype
-endfunction"}}}
-function! s:get_context_filetype(filetype) "{{{
-  " Default.
-  let filetype = a:filetype
-  if filetype == ''
-    let filetype = 'nothing'
-  endif
-
-  " Default range.
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  let pos = [line('.'), col('.')]
-  for include in get(g:neocomplcache_context_filetype_lists, filetype, [])
-    let start_backward = searchpos(include.start, 'bneW')
-
-    " Check pos > start.
-    if start_backward[0] == 0 || s:compare_pos(start_backward, pos) > 0
-      continue
-    endif
-
-    let end_pattern = include.end
-    if end_pattern =~ '\\1'
-      let match_list = matchlist(getline(start_backward[0]), include.start)
-      let end_pattern = substitute(end_pattern, '\\1', '\=match_list[1]', 'g')
-    endif
-    let end_forward = searchpos(end_pattern, 'nW')
-    if end_forward[0] == 0
-      let end_forward = [line('$'), len(getline('$'))+1]
-    endif
-
-    " Check end > pos.
-    if s:compare_pos(pos, end_forward) > 0
-      continue
-    endif
-
-    let end_backward = searchpos(end_pattern, 'bnW')
-
-    " Check start <= end.
-    if s:compare_pos(start_backward, end_backward) < 0
-      continue
-    endif
-
-    if start_backward[1] == len(getline(start_backward[0]))
-      " Next line.
-      let start_backward[0] += 1
-      let start_backward[1] = 1
-    endif
-    if end_forward[1] == 1
-      " Previous line.
-      let end_forward[0] -= 1
-      let end_forward[1] = len(getline(end_forward[0]))
-    endif
-
-    let neocomplcache.context_filetype_range =
-          \ [ start_backward, end_forward ]
-    return include.filetype
-  endfor
-
-  return filetype
-endfunction"}}}
 function! s:unite_patterns(pattern_var, filetype) "{{{
   let keyword_patterns = []
   let dup_check = {}
@@ -2334,7 +2138,6 @@ function! neocomplcache#_get_sources_list(...) "{{{
 
   return neocomplcache.sources
 endfunction"}}}
-
 "}}}
 
 let &cpo = s:save_cpo
