@@ -1084,7 +1084,7 @@ function! neocomplcache#get_cur_text(...) "{{{
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   return (a:0 == 0 && mode() ==# 'i' &&
         \  neocomplcache.cur_text != '') ?
-        \ neocomplcache.cur_text : s:get_cur_text()
+        \ neocomplcache.cur_text : neocomplcache#helper#get_cur_text()
 endfunction"}}}
 function! neocomplcache#get_next_keyword() "{{{
   " Get next keyword.
@@ -1140,21 +1140,7 @@ function! neocomplcache#get_keyword_pattern_end(...) "{{{
   return '\%('.neocomplcache#get_keyword_pattern(filetype).'\m\)$'
 endfunction"}}}
 function! neocomplcache#match_word(cur_text, ...) "{{{
-  let pattern = a:0 >= 1 ? a:1 : neocomplcache#get_keyword_pattern_end()
-
-  " Check wildcard.
-  let cur_keyword_pos = s:match_wildcard(
-        \ a:cur_text, pattern, match(a:cur_text, pattern))
-
-  let cur_keyword_str = (cur_keyword_pos >=0) ?
-        \ a:cur_text[cur_keyword_pos :] : ''
-
-  return [cur_keyword_pos, cur_keyword_str]
-endfunction"}}}
-function! neocomplcache#match_wild_card(cur_keyword_str) "{{{
-  let index = stridx(a:cur_keyword_str, '*')
-  return !g:neocomplcache_enable_wildcard && index > 0 ?
-        \ a:cur_keyword_str : a:cur_keyword_str[: index]
+  return call('neocomplcache#helper#match_word', [a:cur_text] + a:000)
 endfunction"}}}
 function! neocomplcache#is_enabled() "{{{
   return s:is_enabled
@@ -1207,7 +1193,7 @@ function! neocomplcache#is_windows() "{{{
   return neocomplcache#util#is_windows()
 endfunction"}}}
 function! neocomplcache#is_win() "{{{
-  return neocomplcache#is_windows()
+  return neocomplcache#util#is_windows()
 endfunction"}}}
 function! neocomplcache#is_prefetch() "{{{
   return !neocomplcache#is_locked() &&
@@ -1415,10 +1401,10 @@ endfunction"}}}
 function! neocomplcache#check_invalid_omnifunc(omnifunc) "{{{
   return a:omnifunc == '' || (a:omnifunc !~ '#' && !exists('*' . a:omnifunc))
 endfunction"}}}
-function! neocomplcache#skip_next_complete()
+function! neocomplcache#skip_next_complete() "{{{
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   let neocomplcache.skip_next_complete = 1
-endfunction
+endfunction"}}}
 
 " For unite source.
 function! neocomplcache#get_complete_results(cur_text, ...) "{{{
@@ -2061,47 +2047,6 @@ endfunction
 "}}}
 
 " Internal helper functions. "{{{
-function! s:get_cur_text() "{{{
-  let cur_text =
-        \ (mode() ==# 'i' ? (col('.')-1) : col('.')) >= len(getline('.')) ?
-        \      getline('.') :
-        \      matchstr(getline('.'),
-        \         '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
-
-  if cur_text =~ '^.\{-}\ze\S\+$'
-    let cur_keyword_str = matchstr(cur_text, '\S\+$')
-    let cur_text = matchstr(cur_text, '^.\{-}\ze\S\+$')
-  else
-    let cur_keyword_str = ''
-  endif
-
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  if neocomplcache.event ==# 'InsertCharPre'
-    let cur_keyword_str .= v:char
-  endif
-
-  let filetype = neocomplcache#get_context_filetype()
-  let wildcard = get(g:neocomplcache_wildcard_characters, filetype,
-        \ get(g:neocomplcache_wildcard_characters, '_', '*'))
-  if g:neocomplcache_enable_wildcard &&
-        \ wildcard !=# '*' && len(wildcard) == 1
-    " Substitute wildcard character.
-    while 1
-      let index = stridx(cur_keyword_str, wildcard)
-      if index <= 0
-        break
-      endif
-
-      let cur_keyword_str = cur_keyword_str[: index-1]
-            \ . '*' . cur_keyword_str[index+1: ]
-    endwhile
-  endif
-
-  let neocomplcache.cur_text = cur_text . cur_keyword_str
-
-  " Save cur_text.
-  return neocomplcache.cur_text
-endfunction"}}}
 function! neocomplcache#_set_context_filetype() "{{{
   let old_filetype = neocomplcache#get_current_neocomplcache().filetype
   if old_filetype == ''
@@ -2214,19 +2159,6 @@ function! s:get_context_filetype(filetype) "{{{
   endfor
 
   return filetype
-endfunction"}}}
-function! s:match_wildcard(cur_text, pattern, cur_keyword_pos) "{{{
-  let cur_keyword_pos = a:cur_keyword_pos
-  while cur_keyword_pos > 1 && a:cur_text[cur_keyword_pos - 1] == '*'
-    let left_text = a:cur_text[: cur_keyword_pos - 2]
-    if left_text == '' || left_text !~ a:pattern
-      break
-    endif
-
-    let cur_keyword_pos = match(left_text, a:pattern)
-  endwhile
-
-  return cur_keyword_pos
 endfunction"}}}
 function! s:unite_patterns(pattern_var, filetype) "{{{
   let keyword_patterns = []
