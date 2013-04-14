@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: handler.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 14 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -194,10 +194,6 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
 endfunction"}}}
 
 function! s:save_foldinfo() "{{{
-  if line('$') < 1000
-    return
-  endif
-
   " Save foldinfo.
   " Note: settabwinvar() in insert mode has bug before 7.3.768.
   for tabnr in filter((v:version > 703 || (v:version == 703 && has('patch768')) ?
