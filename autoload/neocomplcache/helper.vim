@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 14 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -269,6 +269,38 @@ function! neocomplcache#helper#filetype_complete(arglead, cmdline, cursorpos) "{
   endfor
 
   return sort(keys(ret))
+endfunction"}}}
+
+function! neocomplcache#helper#unite_patterns(pattern_var, filetype) "{{{
+  let keyword_patterns = []
+  let dup_check = {}
+
+  " Composite filetype.
+  for ft in split(a:filetype, '\.')
+    if has_key(a:pattern_var, ft) && !has_key(dup_check, ft)
+      let dup_check[ft] = 1
+      call add(keyword_patterns, a:pattern_var[ft])
+    endif
+
+    " Same filetype.
+    if has_key(g:neocomplcache_same_filetype_lists, ft)
+      for ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
+        if has_key(a:pattern_var, ft) && !has_key(dup_check, ft)
+          let dup_check[ft] = 1
+          call add(keyword_patterns, a:pattern_var[ft])
+        endif
+      endfor
+    endif
+  endfor
+
+  if empty(keyword_patterns)
+    let default = get(a:pattern_var, '_', get(a:pattern_var, 'default', ''))
+    if default != ''
+      call add(keyword_patterns, default)
+    endif
+  endif
+
+  return join(keyword_patterns, '\m\|')
 endfunction"}}}
 
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos) "{{{

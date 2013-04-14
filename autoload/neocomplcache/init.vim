@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 14 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#init#_initialize_variables() "{{{
+function! neocomplcache#init#_variables() "{{{
   " Initialize keyword patterns. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_keyword_patterns', {})
@@ -499,6 +499,30 @@ function! neocomplcache#init#_initialize_variables() "{{{
     let g:neocomplcache_omni_functions = {}
   endif
   "}}}
+endfunction"}}}
+
+function! neocomplcache#init#_current_neocomplcache() "{{{
+  let b:neocomplcache = {
+        \ 'lock' : 0,
+        \ 'skip_next_complete' : 0,
+        \ 'filetype' : '',
+        \ 'context_filetype' : '',
+        \ 'context_filetype_range' :
+        \    [[1, 1], [line('$'), len(getline('$'))+1]],
+        \ 'completion_length' : -1,
+        \ 'update_time_save' : &updatetime,
+        \ 'foldinfo' : [],
+        \ 'lock_sources' : {},
+        \ 'skipped' : 0,
+        \ 'event' : '',
+        \ 'cur_text' : '',
+        \ 'old_cur_text' : '',
+        \ 'cur_keyword_str' : '',
+        \ 'cur_keyword_pos' : -1,
+        \ 'complete_words' : [],
+        \ 'complete_results' : {},
+        \ 'start_time' : reltime(),
+        \}
 endfunction"}}}
 
 let &cpo = s:save_cpo

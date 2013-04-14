@@ -84,7 +84,7 @@ function! s:initialize_autocmds() "{{{
 endfunction"}}}
 
 function! s:initialize_others() "{{{
-  call neocomplcache#init#_initialize_variables()
+  call neocomplcache#init#_variables()
 
   call neocomplcache#context_filetype#initialize()
 
@@ -191,6 +191,14 @@ function! neocomplcache#disable() "{{{
             \ 'Source name is ' . source.name)
     endtry
   endfor
+endfunction"}}}
+
+function! neocomplcache#get_current_neocomplcache() "{{{
+  if !exists('b:neocomplcache')
+    call neocomplcache#init#_current_neocomplcache()
+  endif
+
+  return b:neocomplcache
 endfunction"}}}
 
 " Source helper. "{{{
@@ -363,11 +371,13 @@ endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...) "{{{
   let filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
 
-  return s:unite_patterns(g:neocomplcache_keyword_patterns, filetype)
+  return neocomplcache#helper#unite_patterns(
+        \ g:neocomplcache_keyword_patterns, filetype)
 endfunction"}}}
 function! neocomplcache#get_next_keyword_pattern(...) "{{{
   let filetype = a:0 != 0? a:000[0] : neocomplcache#get_context_filetype()
-  let next_pattern = s:unite_patterns(g:neocomplcache_next_keyword_patterns, filetype)
+  let next_pattern = neocomplcache#helper#unite_patterns(
+        \ g:neocomplcache_next_keyword_patterns, filetype)
 
   return (next_pattern == '' ? '' : next_pattern.'\m\|')
         \ . neocomplcache#get_keyword_pattern(filetype)
@@ -594,37 +604,6 @@ endfunction
 "}}}
 
 " Internal helper functions. "{{{
-function! s:unite_patterns(pattern_var, filetype) "{{{
-  let keyword_patterns = []
-  let dup_check = {}
-
-  " Composite filetype.
-  for ft in split(a:filetype, '\.')
-    if has_key(a:pattern_var, ft) && !has_key(dup_check, ft)
-      let dup_check[ft] = 1
-      call add(keyword_patterns, a:pattern_var[ft])
-    endif
-
-    " Same filetype.
-    if has_key(g:neocomplcache_same_filetype_lists, ft)
-      for ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
-        if has_key(a:pattern_var, ft) && !has_key(dup_check, ft)
-          let dup_check[ft] = 1
-          call add(keyword_patterns, a:pattern_var[ft])
-        endif
-      endfor
-    endif
-  endfor
-
-  if empty(keyword_patterns)
-    let default = get(a:pattern_var, '_', get(a:pattern_var, 'default', ''))
-    if default != ''
-      call add(keyword_patterns, default)
-    endif
-  endif
-
-  return join(keyword_patterns, '\m\|')
-endfunction"}}}
 function! neocomplcache#_get_frequencies() "{{{
   let filetype = neocomplcache#get_context_filetype()
   if !has_key(s:filetype_frequencies, filetype)
@@ -634,33 +613,6 @@ function! neocomplcache#_get_frequencies() "{{{
   let frequencies = s:filetype_frequencies[filetype]
 
   return frequencies
-endfunction"}}}
-function! neocomplcache#get_current_neocomplcache() "{{{
-  if !exists('b:neocomplcache')
-    let b:neocomplcache = {
-          \ 'lock' : 0,
-          \ 'skip_next_complete' : 0,
-          \ 'filetype' : '',
-          \ 'context_filetype' : '',
-          \ 'context_filetype_range' :
-          \    [[1, 1], [line('$'), len(getline('$'))+1]],
-          \ 'completion_length' : -1,
-          \ 'update_time_save' : &updatetime,
-          \ 'foldinfo' : [],
-          \ 'lock_sources' : {},
-          \ 'skipped' : 0,
-          \ 'event' : '',
-          \ 'cur_text' : '',
-          \ 'old_cur_text' : '',
-          \ 'cur_keyword_str' : '',
-          \ 'cur_keyword_pos' : -1,
-          \ 'complete_words' : [],
-          \ 'complete_results' : {},
-          \ 'start_time' : reltime(),
-          \}
-  endif
-
-  return b:neocomplcache
 endfunction"}}}
 function! neocomplcache#_initialize_sources(source_names) "{{{
   " Initialize sources table.
