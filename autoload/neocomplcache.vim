@@ -46,72 +46,6 @@ function! s:initialize_script_variables() "{{{
   let s:runtimepath_save = ''
 endfunction"}}}
 
-function! s:initialize_autocmds() "{{{
-  augroup neocomplcache
-    autocmd!
-    autocmd InsertEnter *
-          \ call neocomplcache#handler#_on_insert_enter()
-    autocmd InsertLeave *
-          \ call neocomplcache#handler#_on_insert_leave()
-    autocmd CursorMovedI *
-          \ call neocomplcache#handler#_on_moved_i()
-    autocmd BufWritePost *
-          \ call neocomplcache#handler#_on_write_post()
-  augroup END
-
-  if g:neocomplcache_enable_insert_char_pre
-        \ && (v:version > 703 || v:version == 703 && has('patch418'))
-    autocmd neocomplcache InsertCharPre *
-          \ call neocomplcache#handler#_do_auto_complete('InsertCharPre')
-  elseif g:neocomplcache_enable_cursor_hold_i
-    augroup neocomplcache
-      autocmd CursorHoldI *
-            \ call neocomplcache#handler#_do_auto_complete('CursorHoldI')
-      autocmd InsertEnter *
-            \ call neocomplcache#handler#_change_update_time()
-      autocmd InsertLeave *
-            \ call neocomplcache#handler#_restore_update_time()
-    augroup END
-  else
-    autocmd neocomplcache CursorMovedI *
-          \ call neocomplcache#handler#_do_auto_complete('CursorMovedI')
-  endif
-
-  if (v:version > 703 || v:version == 703 && has('patch598'))
-    autocmd neocomplcache CompleteDone *
-          \ call neocomplcache#handler#_on_complete_done()
-  endif
-endfunction"}}}
-
-function! s:initialize_others() "{{{
-  call neocomplcache#init#_variables()
-
-  call neocomplcache#context_filetype#initialize()
-
-  call neocomplcache#commands#_initialize()
-
-  " Save options.
-  let s:completefunc_save = &completefunc
-  let s:completeopt_save = &completeopt
-
-  " Set completefunc.
-  let &completefunc = 'neocomplcache#complete#manual_complete'
-  let &l:completefunc = 'neocomplcache#complete#manual_complete'
-
-  " For auto complete keymappings.
-  call neocomplcache#mappings#define_default_mappings()
-
-  " Detect set paste.
-  if &paste
-    redir => output
-    99verbose set paste
-    redir END
-    call neocomplcache#print_error(output)
-    call neocomplcache#print_error(
-          \ 'Detected set paste! Disabled neocomplcache.')
-  endif
-endfunction"}}}
-
 if !exists('s:is_enabled')
   call s:initialize_script_variables()
   let s:is_enabled = 0
@@ -132,9 +66,9 @@ function! neocomplcache#lazy_initialize() "{{{
     call s:initialize_script_variables()
     let s:is_enabled = 0
   elseif s:lazy_progress == 1
-    call s:initialize_others()
+    call neocomplcache#init#_others()
   else
-    call s:initialize_autocmds()
+    call neocomplcache#init#_autocmds()
     call neocomplcache#_initialize_sources(get(g:neocomplcache_sources_list,
           \ neocomplcache#get_context_filetype(), ['_']))
     let s:is_enabled = 1
@@ -152,8 +86,8 @@ function! neocomplcache#enable() "{{{
         \ call neocomplcache#disable()
 
   call s:initialize_script_variables()
-  call s:initialize_autocmds()
-  call s:initialize_others()
+  call neocomplcache#init#_autocmds()
+  call neocomplcache#init#_others()
 endfunction"}}}
 
 function! neocomplcache#disable() "{{{
