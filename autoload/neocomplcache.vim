@@ -35,10 +35,7 @@ scriptencoding utf-8
 
 function! s:initialize_script_variables() "{{{
   let s:is_enabled = 1
-  let s:complfunc_sources = {}
-  let s:plugin_sources = {}
-  let s:ftplugin_sources = {}
-  let s:loaded_ftplugin_sources = {}
+  let s:sources = {}
   let s:loaded_source_files = {}
   let s:use_sources = {}
   let s:filetype_frequencies = {}
@@ -99,10 +96,6 @@ function! neocomplcache#disable() "{{{
 
   let s:is_enabled = 0
 
-  " Restore options.
-  let &completefunc = s:completefunc_save
-  let &completeopt = s:completeopt_save
-
   augroup neocomplcache
     autocmd!
   augroup END
@@ -137,12 +130,10 @@ endfunction"}}}
 
 " Source helper. "{{{
 function! neocomplcache#available_ftplugins() "{{{
-  return s:ftplugin_sources
+  return filter(neocomplcache#available_sources(), "v:val.kind ==# 'ftplugin'")
 endfunction"}}}
 function! neocomplcache#available_sources() "{{{
-  call neocomplcache#context_filetype#set()
-  return extend(extend(copy(s:complfunc_sources),
-        \ s:ftplugin_sources), s:plugin_sources)
+  return copy(s:sources)
 endfunction"}}}
 function! neocomplcache#is_enabled_source(source_name) "{{{
   return neocomplcache#helper#is_enabled_source(a:source_name)
@@ -272,15 +263,15 @@ function! neocomplcache#get_next_keyword() "{{{
 
   return matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], pattern)[1:]
 endfunction"}}}
-function! neocomplcache#get_completion_length(plugin_name) "{{{
+function! neocomplcache#get_completion_length(source_name) "{{{
   if neocomplcache#is_auto_complete()
         \ && neocomplcache#get_current_neocomplcache().completion_length >= 0
     return neocomplcache#get_current_neocomplcache().completion_length
   elseif has_key(g:neocomplcache_source_completion_length,
-        \ a:plugin_name)
-    return g:neocomplcache_source_completion_length[a:plugin_name]
-  elseif has_key(s:ftplugin_sources, a:plugin_name)
-        \ || has_key(s:complfunc_sources, a:plugin_name)
+        \ a:source_name)
+    return g:neocomplcache_source_completion_length[a:source_name]
+  elseif has_key(s:sources, a:source_name) &&
+        \ s:sources[a:source_name].kind !=# 'plugin'
     return 0
   elseif neocomplcache#is_auto_complete()
     return g:neocomplcache_auto_completion_start_length
@@ -288,14 +279,14 @@ function! neocomplcache#get_completion_length(plugin_name) "{{{
     return g:neocomplcache_manual_completion_start_length
   endif
 endfunction"}}}
-function! neocomplcache#set_completion_length(plugin_name, length) "{{{
-  if !has_key(g:neocomplcache_source_completion_length, a:plugin_name)
-    let g:neocomplcache_source_completion_length[a:plugin_name] = a:length
+function! neocomplcache#set_completion_length(source_name, length) "{{{
+  if !has_key(g:neocomplcache_source_completion_length, a:source_name)
+    let g:neocomplcache_source_completion_length[a:source_name] = a:length
   endif
 endfunction"}}}
-function! neocomplcache#get_auto_completion_length(plugin_name) "{{{
-  if has_key(g:neocomplcache_source_completion_length, a:plugin_name)
-    return g:neocomplcache_source_completion_length[a:plugin_name]
+function! neocomplcache#get_auto_completion_length(source_name) "{{{
+  if has_key(g:neocomplcache_source_completion_length, a:source_name)
+    return g:neocomplcache_source_completion_length[a:source_name]
   elseif g:neocomplcache_enable_fuzzy_completion
     return 1
   else
@@ -454,19 +445,18 @@ function! neocomplcache#get_context_filetype_range(...) "{{{
 
   return neocomplcache.context_filetype_range
 endfunction"}}}
-function! neocomplcache#get_source_rank(plugin_name) "{{{
-  if has_key(g:neocomplcache_source_rank, a:plugin_name)
-    return g:neocomplcache_source_rank[a:plugin_name]
-  elseif has_key(s:complfunc_sources, a:plugin_name)
-    return 10
-  elseif has_key(s:ftplugin_sources, a:plugin_name)
-    return 100
-  elseif has_key(s:plugin_sources, a:plugin_name)
-    return 5
-  else
+function! neocomplcache#get_source_rank(name) "{{{
+  if has_key(g:neocomplcache_source_rank, a:name)
+    return g:neocomplcache_source_rank[a:name]
+  elseif !has_key(s:sources, a:name)
     " unknown.
     return 1
   endif
+
+  let kind = s:sources[a:name].kind
+  return kind ==# 'complfunc' ? 10 :
+        \ kind ==# 'ftplugin' ? 100 :
+        \                       5
 endfunction"}}}
 function! neocomplcache#print_debug(expr) "{{{
   if g:neocomplcache_enable_debug
@@ -560,9 +550,7 @@ function! neocomplcache#_initialize_sources(source_names) "{{{
         \ 'index(runtimepath_save, v:val) < 0'))
 
   for name in a:source_names
-    if has_key(s:complfunc_sources, name)
-            \ || has_key(s:ftplugin_sources, name)
-            \ || has_key(s:plugin_sources, name)
+    if has_key(s:sources, name)
       continue
     endif
 
@@ -582,18 +570,8 @@ function! neocomplcache#_initialize_sources(source_names) "{{{
         continue
       endif
 
-      if source.kind ==# 'complfunc'
-        let s:complfunc_sources[source_name] = source
-        let source.loaded = 1
-      elseif source.kind ==# 'ftplugin'
-        let s:ftplugin_sources[source_name] = source
-
-        " Clear loaded flag.
-        let s:ftplugin_sources[source_name].loaded = 0
-      elseif source.kind ==# 'plugin'
-        let s:plugin_sources[source_name] = source
-        let source.loaded = 1
-      endif
+      let s:sources[source_name] = source
+      let source.loaded = 1
 
       if (source.kind ==# 'complfunc' || source.kind ==# 'plugin')
             \ && has_key(source, 'initialize')

@@ -28,6 +28,16 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 function! neocomplcache#variables#_initialize() "{{{
+  let s:is_enabled = 1
+  let s:complfunc_sources = {}
+  let s:plugin_sources = {}
+  let s:ftplugin_sources = {}
+  let s:loaded_ftplugin_sources = {}
+  let s:loaded_source_files = {}
+  let s:use_sources = {}
+  let s:filetype_frequencies = {}
+  let s:loaded_all_sources = 0
+  let s:runtimepath_save = ''
 endfunction"}}}
 
 let &cpo = s:save_cpo
