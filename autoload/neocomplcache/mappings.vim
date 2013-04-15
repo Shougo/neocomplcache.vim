@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 15 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -146,13 +146,13 @@ function! neocomplcache#mappings#complete_common_string() "{{{
 endfunction"}}}
 
 " Manual complete wrapper.
-function! neocomplcache#start_manual_complete(...) "{{{
+function! neocomplcache#mappings#start_manual_complete(...) "{{{
   if !neocomplcache#is_enabled()
     return ''
   endif
 
   " Set context filetype.
-  call neocomplcache#_set_context_filetype()
+  call neocomplcache#context_filetype#set()
 
   " Set function.
   let &l:completefunc = 'neocomplcache#complete#sources_manual_complete'
