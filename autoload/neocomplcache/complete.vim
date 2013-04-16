@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 16 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -174,7 +174,7 @@ function! neocomplcache#complete#_get_cur_keyword_pos(complete_results) "{{{
 endfunction"}}}
 
 function! neocomplcache#complete#_get_words(complete_results, cur_keyword_pos, cur_keyword_str) "{{{
-  let frequencies = neocomplcache#_get_frequencies()
+  let frequencies = neocomplcache#variables#get_frequencies()
   if exists('*neocomplcache#sources#buffer_complete#get_frequencies')
     let frequencies = extend(copy(
           \ neocomplcache#sources#buffer_complete#get_frequencies()),
