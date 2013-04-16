@@ -27,6 +27,78 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+if !exists('s:is_enabled')
+  let s:is_enabled = 0
+endif
+
+function! neocomplcache#init#lazy() "{{{
+  if !exists('s:lazy_progress')
+    let s:lazy_progress = 0
+  endif
+
+  if s:lazy_progress == 0
+    call neocomplcache#init#_others()
+    let s:is_enabled = 0
+  elseif s:lazy_progress == 1
+    call neocomplcache#init#_sources(get(g:neocomplcache_sources_list,
+          \ neocomplcache#get_context_filetype(), ['_']))
+  else
+    call neocomplcache#init#_autocmds()
+    let s:is_enabled = 1
+  endif
+
+  let s:lazy_progress += 1
+endfunction"}}}
+
+function! neocomplcache#init#enable() "{{{
+  if neocomplcache#is_enabled()
+    return
+  endif
+
+  call neocomplcache#init#_autocmds()
+  call neocomplcache#init#_others()
+
+  call neocomplcache#init#_sources(get(g:neocomplcache_sources_list,
+        \ neocomplcache#get_context_filetype(), ['_']))
+endfunction"}}}
+
+function! neocomplcache#init#disable() "{{{
+  if !neocomplcache#is_enabled()
+    call neocomplcache#print_warning(
+          \ 'neocomplcache is disabled! This command is ignored.')
+    return
+  endif
+
+  let s:is_enabled = 0
+
+  augroup neocomplcache
+    autocmd!
+  augroup END
+
+  delcommand NeoComplCacheDisable
+
+  for source in values(neocomplcache#available_sources())
+    if !has_key(source, 'finalize') || !source.loaded
+      continue
+    endif
+
+    try
+      call source.finalize()
+    catch
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      call neocomplcache#print_error(
+            \ 'Error occured in source''s finalize()!')
+      call neocomplcache#print_error(
+            \ 'Source name is ' . source.name)
+    endtry
+  endfor
+endfunction"}}}
+
+function! neocomplcache#init#is_enabled() "{{{
+  return s:is_enabled
+endfunction"}}}
+
 function! neocomplcache#init#_autocmds() "{{{
   augroup neocomplcache
     autocmd!
@@ -91,6 +163,9 @@ function! neocomplcache#init#_others() "{{{
     call neocomplcache#print_error(
           \ 'Detected set paste! Disabled neocomplcache.')
   endif
+
+  command! -nargs=0 -bar NeoComplCacheDisable
+        \ call neocomplcache#init#disable()
 endfunction"}}}
 
 function! neocomplcache#init#_variables() "{{{

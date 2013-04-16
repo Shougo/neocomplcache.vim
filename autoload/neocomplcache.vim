@@ -33,88 +33,8 @@ set cpo&vim
 
 scriptencoding utf-8
 
-function! s:initialize_script_variables() "{{{
-  let s:is_enabled = 1
-  let s:loaded_source_files = {}
-  let s:loaded_all_sources = 0
-  let s:runtimepath_save = ''
-endfunction"}}}
-
-if !exists('s:is_enabled')
-  call s:initialize_script_variables()
-  let s:is_enabled = 0
-endif
-
 function! neocomplcache#initialize() "{{{
-  call neocomplcache#enable()
-  call neocomplcache#init#_sources(get(g:neocomplcache_sources_list,
-        \ neocomplcache#get_context_filetype(), ['_']))
-endfunction"}}}
-
-function! neocomplcache#lazy_initialize() "{{{
-  if !exists('s:lazy_progress')
-    let s:lazy_progress = 0
-  endif
-
-  if s:lazy_progress == 0
-    call s:initialize_script_variables()
-    let s:is_enabled = 0
-  elseif s:lazy_progress == 1
-    call neocomplcache#init#_others()
-  else
-    call neocomplcache#init#_autocmds()
-    call neocomplcache#init#_sources(get(g:neocomplcache_sources_list,
-          \ neocomplcache#get_context_filetype(), ['_']))
-    let s:is_enabled = 1
-  endif
-
-  let s:lazy_progress += 1
-endfunction"}}}
-
-function! neocomplcache#enable() "{{{
-  if neocomplcache#is_enabled()
-    return
-  endif
-
-  command! -nargs=0 -bar NeoComplCacheDisable
-        \ call neocomplcache#disable()
-
-  call s:initialize_script_variables()
-  call neocomplcache#init#_autocmds()
-  call neocomplcache#init#_others()
-endfunction"}}}
-
-function! neocomplcache#disable() "{{{
-  if !neocomplcache#is_enabled()
-    call neocomplcache#print_warning(
-          \ 'neocomplcache is disabled! This command is ignored.')
-    return
-  endif
-
-  let s:is_enabled = 0
-
-  augroup neocomplcache
-    autocmd!
-  augroup END
-
-  delcommand NeoComplCacheDisable
-
-  for source in values(neocomplcache#available_sources())
-    if !has_key(source, 'finalize') || !source.loaded
-      continue
-    endif
-
-    try
-      call source.finalize()
-    catch
-      call neocomplcache#print_error(v:throwpoint)
-      call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error(
-            \ 'Error occured in source''s finalize()!')
-      call neocomplcache#print_error(
-            \ 'Source name is ' . source.name)
-    endtry
-  endfor
+  return neocomplcache#init#enable()
 endfunction"}}}
 
 function! neocomplcache#get_current_neocomplcache() "{{{
@@ -314,11 +234,11 @@ function! neocomplcache#match_word(...) "{{{
   return call('neocomplcache#helper#match_word', a:000)
 endfunction"}}}
 function! neocomplcache#is_enabled() "{{{
-  return s:is_enabled
+  return neocomplcache#init#is_enabled()
 endfunction"}}}
 function! neocomplcache#is_locked(...) "{{{
   let bufnr = a:0 > 0 ? a:1 : bufnr('%')
-  return !s:is_enabled || &paste
+  return !neocomplcache#is_enabled() || &paste
         \ || g:neocomplcache_disable_auto_complete
         \ || neocomplcache#get_current_neocomplcache().lock
         \ || (g:neocomplcache_lock_buffer_name_pattern != '' &&

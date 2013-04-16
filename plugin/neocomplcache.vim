@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 16 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,9 +51,9 @@ elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
 endif
 
 command! -nargs=0 -bar NeoComplCacheEnable
-      \ call neocomplcache#enable()
+      \ call neocomplcache#init#enable()
 command! -nargs=0 -bar NeoComplCacheDisable
-      \ call neocomplcache#disable()
+      \ call neocomplcache#init#disable()
 command! -nargs=0 -bar NeoComplCacheLock
       \ call neocomplcache#commands#_lock()
 command! -nargs=0 -bar NeoComplCacheUnlock
@@ -196,7 +196,7 @@ if get(g:, 'neocomplcache_enable_at_startup', 0)
   augroup neocomplcache
     " Enable startup.
     autocmd CursorHold,CursorMovedI
-          \ * call neocomplcache#lazy_initialize()
+          \ * call neocomplcache#init#lazy()
   augroup END
 endif"}}}
 
