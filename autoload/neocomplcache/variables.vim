@@ -54,6 +54,13 @@ function! neocomplcache#variables#get_frequencies() "{{{
   return frequencies
 endfunction"}}}
 
+function! neocomplcache#variables#get_sources() "{{{
+  if !exists('s:sources')
+    let s:sources = {}
+  endif
+  return s:sources
+endfunction"}}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

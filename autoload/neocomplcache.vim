@@ -35,9 +35,7 @@ scriptencoding utf-8
 
 function! s:initialize_script_variables() "{{{
   let s:is_enabled = 1
-  let s:sources = {}
   let s:loaded_source_files = {}
-  let s:use_sources = {}
   let s:loaded_all_sources = 0
   let s:runtimepath_save = ''
 endfunction"}}}
@@ -49,7 +47,7 @@ endif
 
 function! neocomplcache#initialize() "{{{
   call neocomplcache#enable()
-  call neocomplcache#_initialize_sources(get(g:neocomplcache_sources_list,
+  call neocomplcache#init#_sources(get(g:neocomplcache_sources_list,
         \ neocomplcache#get_context_filetype(), ['_']))
 endfunction"}}}
 
@@ -65,7 +63,7 @@ function! neocomplcache#lazy_initialize() "{{{
     call neocomplcache#init#_others()
   else
     call neocomplcache#init#_autocmds()
-    call neocomplcache#_initialize_sources(get(g:neocomplcache_sources_list,
+    call neocomplcache#init#_sources(get(g:neocomplcache_sources_list,
           \ neocomplcache#get_context_filetype(), ['_']))
     let s:is_enabled = 1
   endif
@@ -132,7 +130,7 @@ function! neocomplcache#available_ftplugins() "{{{
   return filter(neocomplcache#available_sources(), "v:val.kind ==# 'ftplugin'")
 endfunction"}}}
 function! neocomplcache#available_sources() "{{{
-  return copy(s:sources)
+  return copy(neocomplcache#variables#get_sources())
 endfunction"}}}
 function! neocomplcache#is_enabled_source(source_name) "{{{
   return neocomplcache#helper#is_enabled_source(a:source_name)
@@ -263,14 +261,15 @@ function! neocomplcache#get_next_keyword() "{{{
   return matchstr('a'.getline('.')[len(neocomplcache#get_cur_text()) :], pattern)[1:]
 endfunction"}}}
 function! neocomplcache#get_completion_length(source_name) "{{{
+  let sources = neocomplcache#variables#get_sources()
   if neocomplcache#is_auto_complete()
         \ && neocomplcache#get_current_neocomplcache().completion_length >= 0
     return neocomplcache#get_current_neocomplcache().completion_length
   elseif has_key(g:neocomplcache_source_completion_length,
         \ a:source_name)
     return g:neocomplcache_source_completion_length[a:source_name]
-  elseif has_key(s:sources, a:source_name) &&
-        \ s:sources[a:source_name].kind !=# 'plugin'
+  elseif has_key(sources, a:source_name) &&
+        \ sources[a:source_name].kind !=# 'plugin'
     return 0
   elseif neocomplcache#is_auto_complete()
     return g:neocomplcache_auto_completion_start_length
@@ -445,14 +444,15 @@ function! neocomplcache#get_context_filetype_range(...) "{{{
   return neocomplcache.context_filetype_range
 endfunction"}}}
 function! neocomplcache#get_source_rank(name) "{{{
+  let sources = neocomplcache#variables#get_sources()
   if has_key(g:neocomplcache_source_rank, a:name)
     return g:neocomplcache_source_rank[a:name]
-  elseif !has_key(s:sources, a:name)
+  elseif !has_key(sources, a:name)
     " unknown.
     return 1
   endif
 
-  let kind = s:sources[a:name].kind
+  let kind = sources[a:name].kind
   return kind ==# 'complfunc' ? 10 :
         \ kind ==# 'ftplugin' ? 100 :
         \                       5
@@ -527,62 +527,6 @@ endfunction
 "}}}
 
 " Internal helper functions. "{{{
-function! neocomplcache#_initialize_sources(source_names) "{{{
-  " Initialize sources table.
-  if s:loaded_all_sources && &runtimepath ==# s:runtimepath_save
-    return
-  endif
-
-  let runtimepath_save = neocomplcache#util#split_rtp(s:runtimepath_save)
-  let runtimepath = neocomplcache#util#join_rtp(
-        \ filter(neocomplcache#util#split_rtp(),
-        \ 'index(runtimepath_save, v:val) < 0'))
-
-  for name in a:source_names
-    if has_key(s:sources, name)
-      continue
-    endif
-
-    " Search autoload.
-    for source_name in map(split(globpath(runtimepath,
-          \ 'autoload/neocomplcache/sources/*.vim'), '\n'),
-          \ "fnamemodify(v:val, ':t:r')")
-      if has_key(s:loaded_source_files, source_name)
-        continue
-      endif
-
-      let s:loaded_source_files[source_name] = 1
-
-      let source = neocomplcache#sources#{source_name}#define()
-      if empty(source)
-        " Ignore.
-        continue
-      endif
-
-      let s:sources[source_name] = source
-      let source.loaded = 1
-
-      if (source.kind ==# 'complfunc' || source.kind ==# 'plugin')
-            \ && has_key(source, 'initialize')
-        try
-          call source.initialize()
-        catch
-          call neocomplcache#print_error(v:throwpoint)
-          call neocomplcache#print_error(v:exception)
-          call neocomplcache#print_error(
-                \ 'Error occured in source''s initialize()!')
-          call neocomplcache#print_error(
-                \ 'Source name is ' . source.name)
-        endtry
-      endif
-    endfor
-
-    if name == '_'
-      let s:loaded_all_sources = 1
-      let s:runtimepath_save = &runtimepath
-    endif
-  endfor
-endfunction"}}}
 function! neocomplcache#_get_sources_list(...) "{{{
   let filetype = neocomplcache#get_context_filetype()
 
@@ -594,7 +538,7 @@ function! neocomplcache#_get_sources_list(...) "{{{
   let disabled_sources = get(
         \ g:neocomplcache_disabled_sources_list, filetype,
         \   get(g:neocomplcache_disabled_sources_list, '_', []))
-  call neocomplcache#_initialize_sources(source_names)
+  call neocomplcache#init#_sources(source_names)
 
   let all_sources = neocomplcache#available_sources()
   let sources = {}
