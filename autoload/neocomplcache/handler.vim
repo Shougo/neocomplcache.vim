@@ -130,7 +130,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
       echomsg 'Skipped.'
     endif
 
-    call neocomplcache#_clear_result()
+    call neocomplcache#helper#clear_result()
     return
   endif
 
@@ -175,7 +175,7 @@ function! neocomplcache#handler#_do_auto_complete(event) "{{{
 
       " Skip completion.
       let &l:completefunc = 'neocomplcache#complete#manual_complete'
-      call neocomplcache#_clear_result()
+      call neocomplcache#helper#clear_result()
       return
     endif
   endif

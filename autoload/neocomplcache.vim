@@ -319,14 +319,7 @@ function! neocomplcache#get_source_filetypes(filetype) "{{{
   return neocomplcache#helper#get_source_filetypes(a:filetype)
 endfunction"}}}
 function! neocomplcache#get_sources_list(dictionary, filetype) "{{{
-  let list = []
-  for filetype in neocomplcache#get_source_filetypes(a:filetype)
-    if has_key(a:dictionary, filetype)
-      call add(list, a:dictionary[filetype])
-    endif
-  endfor
-
-  return list
+  return neocomplcache#helper#ftdictionary2list(a:dictionary, a:filetype)
 endfunction"}}}
 function! neocomplcache#escape_match(str) "{{{
   return escape(a:str, '~"*\.^$[]')
@@ -397,10 +390,6 @@ endfunction"}}}
 function! neocomplcache#check_invalid_omnifunc(omnifunc) "{{{
   return a:omnifunc == '' || (a:omnifunc !~ '#' && !exists('*' . a:omnifunc))
 endfunction"}}}
-function! neocomplcache#skip_next_complete() "{{{
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.skip_next_complete = 1
-endfunction"}}}
 
 function! neocomplcache#set_dictionary_helper(variable, keys, value) "{{{
   return neocomplcache#util#set_dictionary_helper(
@@ -433,59 +422,6 @@ endfunction
 function! neocomplcache#start_manual_complete(...)
   return call('neocomplcache#mappings#start_manual_complete', a:000)
 endfunction
-"}}}
-
-" Event functions. "{{{
-function! neocomplcache#_clear_result()
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-
-  let neocomplcache.cur_keyword_str = ''
-  let neocomplcache.complete_words = []
-  let neocomplcache.complete_results = {}
-  let neocomplcache.cur_keyword_pos = -1
-endfunction
-"}}}
-
-" Internal helper functions. "{{{
-function! neocomplcache#_get_sources_list(...) "{{{
-  let filetype = neocomplcache#get_context_filetype()
-
-  let source_names = exists('b:neocomplcache_sources_list') ?
-        \ b:neocomplcache_sources_list :
-        \ get(a:000, 0,
-        \   get(g:neocomplcache_sources_list, filetype,
-        \     get(g:neocomplcache_sources_list, '_', ['_'])))
-  let disabled_sources = get(
-        \ g:neocomplcache_disabled_sources_list, filetype,
-        \   get(g:neocomplcache_disabled_sources_list, '_', []))
-  call neocomplcache#init#_sources(source_names)
-
-  let all_sources = neocomplcache#available_sources()
-  let sources = {}
-  for source_name in source_names
-    if source_name ==# '_'
-      " All sources.
-      let sources = all_sources
-      break
-    endif
-
-    if !has_key(all_sources, source_name)
-      call neocomplcache#print_warning(printf(
-            \ 'Invalid source name "%s" is given.', source_name))
-      continue
-    endif
-
-    let sources[source_name] = all_sources[source_name]
-  endfor
-
-  let neocomplcache = neocomplcache#get_current_neocomplcache()
-  let neocomplcache.sources = filter(sources, "
-        \ index(disabled_sources, v:val.name) < 0 &&
-        \   (v:val.kind !=# 'ftplugin' ||
-        \    get(v:val.filetypes, neocomplcache.context_filetype, 0))")
-
-  return neocomplcache.sources
-endfunction"}}}
 "}}}
 
 let &cpo = s:save_cpo
