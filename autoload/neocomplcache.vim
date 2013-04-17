@@ -185,19 +185,19 @@ function! neocomplcache#get_next_keyword() "{{{
 endfunction"}}}
 function! neocomplcache#get_completion_length(source_name) "{{{
   let sources = neocomplcache#variables#get_sources()
+  if !has_key(sources, a:source_name)
+    " Unknown.
+    return -1
+  endif
+
   if neocomplcache#is_auto_complete()
         \ && neocomplcache#get_current_neocomplcache().completion_length >= 0
     return neocomplcache#get_current_neocomplcache().completion_length
   elseif has_key(g:neocomplcache_source_completion_length,
         \ a:source_name)
     return g:neocomplcache_source_completion_length[a:source_name]
-  elseif has_key(sources, a:source_name) &&
-        \ sources[a:source_name].kind !=# 'plugin'
-    return 0
-  elseif neocomplcache#is_auto_complete()
-    return g:neocomplcache_auto_completion_start_length
   else
-    return g:neocomplcache_manual_completion_start_length
+    return sources[a:source_name].required_pattern_length
   endif
 endfunction"}}}
 function! neocomplcache#set_completion_length(source_name, length) "{{{
@@ -368,10 +368,8 @@ function! neocomplcache#get_source_rank(name) "{{{
     return 1
   endif
 
-  let kind = sources[a:name].kind
-  return kind ==# 'complfunc' ? 10 :
-        \ kind ==# 'ftplugin' ? 100 :
-        \                       5
+  " Used default rank.
+  return sources[a:name].rank
 endfunction"}}}
 function! neocomplcache#print_debug(expr) "{{{
   if g:neocomplcache_enable_debug

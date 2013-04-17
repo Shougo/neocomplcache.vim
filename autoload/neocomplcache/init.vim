@@ -732,6 +732,18 @@ function! neocomplcache#init#_source(source) "{{{
     let source.kind = 'manual'
   endif
 
+  if !has_key(source, 'rank')
+    " Set default rank.
+    let source.rank = (source.kind ==# 'keyword') ? 5 :
+          \ empty(source.filetypes) ? 10 : 100
+  endif
+
+  if !has_key(source, 'required_pattern_length')
+    " Set required_pattern_length.
+    let source.required_pattern_length = (source.kind ==# 'keyword') ?
+          \ g:neocomplcache_auto_completion_start_length : 0
+  endif
+
   return source
 endfunction"}}}
 
