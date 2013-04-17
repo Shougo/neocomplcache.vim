@@ -138,7 +138,7 @@ function! neocomplcache#context_filetype#set() "{{{
   " Initialize sources.
   for source in filter(values(neocomplcache#variables#get_sources()),
         \ '!v:val.loaded && (empty(v:val.filetypes)
-        \   || has_key(v:val.filetypes, neocomplcache.context_filetype) >= 0)')
+        \   || get(v:val.filetypes, neocomplcache.context_filetype, 0) >= 0)')
     if has_key(source, 'initialize')
       try
         call source.initialize()

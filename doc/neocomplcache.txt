@@ -1260,7 +1260,47 @@ source.  Each return value can be a list so you can return an empty list to
 avoid adding undesirable sources.  To add your own sources dynamically, you
 can use |neocomplcache#define_source()|.
 
-Todo
+------------------------------------------------------------------------------
+SOURCE ATTRIBUTES			*neocomplcache-source-attributes*
+
+					*neocomplcache-source-attribute-name*
+name			String		(Required)
+			The name of a source.  It must consist of the
+			following characters:
+			- a-z
+			- 0-9
+			- _
+			- /
+			- - (Not head)
+
+					*neocomplcache-source-attribute-kind*
+kind			String			(Optional)
+			Source kind.
+			Following values are available.
+			"manual"  : This source decides complete position
+			            manually.
+			            Note: "complfunc" or "ftplugin" are old
+				    values.
+			"keyword" : This source decides complete position by
+			           |g:neocomplcache_keyword_patterns|.
+			            Note: "plugin" is old value.
+
+				*neocomplcache-source-attribute-filetypes*
+filetypes		Dictionary		(Optional)
+			Available filetype dictionary.
+
+			For example:
+>
+			let source = {
+			      \ 'name' : 'test',
+			      \ 'kind' : 'manual',
+			      \ 'filetypes' : { 'vim' : 1, 'html' : 1 },
+			      \}
+<
+			The source is available in vim and html filetypes.
+
+			If you omit it, this source available in all
+			filetypes.
 
 ==============================================================================
 FAQ						*neocomplcache-faq*
