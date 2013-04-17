@@ -149,7 +149,6 @@ function! neocomplcache#init#_others() "{{{
 
   " Set completefunc.
   let &completefunc = 'neocomplcache#complete#manual_complete'
-  let &l:completefunc = 'neocomplcache#complete#manual_complete'
 
   " For auto complete keymappings.
   call neocomplcache#mappings#define_default_mappings()
