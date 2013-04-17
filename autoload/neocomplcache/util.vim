@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Apr 2013.
+" Last Modified: 17 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -212,6 +212,10 @@ function! neocomplcache#util#dup_filter(list) "{{{
   endfor
 
   return values(dict)
+endfunction"}}}
+
+function! neocomplcache#util#convert2list(expr) "{{{
+  return type(a:expr) ==# type([]) ? a:expr : [a:expr]
 endfunction"}}}
 
 let &cpo = s:save_cpo

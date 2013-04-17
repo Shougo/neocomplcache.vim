@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2013.
+" Last Modified: 17 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -364,7 +364,7 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Try source completion. "{{{
   let complete_results = {}
   for [source_name, source] in items(sources)
-    if source.kind ==# 'plugin'
+    if source.kind ==# 'keyword'
       " Plugin default keyword position.
       let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
     else
@@ -432,7 +432,7 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
     let pos = winsaveview()
 
     try
-      let words = result.source.kind ==# 'plugin' ?
+      let words = result.source.kind ==# 'keyword' ?
             \ result.source.get_keyword_list(result.cur_keyword_str) :
             \ result.source.get_complete_words(
             \   result.cur_keyword_pos, result.cur_keyword_str)
@@ -441,7 +441,7 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error(
             \ 'Source name is ' . source_name)
-      if result.source.kind ==# 'plugin'
+      if result.source.kind ==# 'keyword'
         call neocomplcache#print_error(
               \ 'Error occured in source''s get_keyword_list()!')
       else

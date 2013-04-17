@@ -1254,6 +1254,12 @@ CREATE SOURCE					*neocomplcache-create-source*
 In this clause, I comment on a method to make source of neocomplcache.  The
 ability of neocomplcache will spread by creating source by yourself.
 
+The files in autoload/neocomplcache/sources are automatically loaded and it
+calls neocomplcache#sources#{source_name}#define() whose return value is the
+source.  Each return value can be a list so you can return an empty list to
+avoid adding undesirable sources.  To add your own sources dynamically, you
+can use |neocomplcache#define_source()|.
+
 Todo
 
 ==============================================================================

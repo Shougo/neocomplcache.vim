@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: context_filetype.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 17 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -135,30 +135,24 @@ function! neocomplcache#context_filetype#set() "{{{
     let old_filetype = new_filetype
   endwhile
 
-  " Set filetype plugins.
-  let s:loaded_ftplugin_sources = {}
-  for [source_name, source] in
-        \ items(filter(copy(neocomplcache#available_ftplugins()),
-        \ 'has_key(v:val.filetypes, neocomplcache.context_filetype)'))
-    let s:loaded_ftplugin_sources[source_name] = source
-
-    if !source.loaded
-      " Initialize.
-      if has_key(source, 'initialize')
-        try
-          call source.initialize()
-        catch
-          call neocomplcache#print_error(v:throwpoint)
-          call neocomplcache#print_error(v:exception)
-          call neocomplcache#print_error(
-                \ 'Error occured in source''s initialize()!')
-          call neocomplcache#print_error(
-                \ 'Source name is ' . source.name)
-        endtry
-      endif
-
-      let source.loaded = 1
+  " Initialize sources.
+  for source in filter(values(neocomplcache#variables#get_sources()),
+        \ '!v:val.loaded && (empty(v:val.filetypes)
+        \   || has_key(v:val.filetypes, neocomplcache.context_filetype) >= 0)')
+    if has_key(source, 'initialize')
+      try
+        call source.initialize()
+      catch
+        call neocomplcache#print_error(v:throwpoint)
+        call neocomplcache#print_error(v:exception)
+        call neocomplcache#print_error(
+              \ 'Error occured in source''s initialize()!')
+        call neocomplcache#print_error(
+              \ 'Source name is ' . source.name)
+      endtry
     endif
+
+    let source.loaded = 1
   endfor
 
   return neocomplcache.context_filetype
