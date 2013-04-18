@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dictionary_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2013.
+" Last Modified: 18 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,6 +40,7 @@ endfunction"}}}
 let s:source = {
       \ 'name' : 'dictionary_complete',
       \ 'kind' : 'plugin',
+      \ 'mark' : '[D]',
       \}
 
 function! s:source.initialize() "{{{

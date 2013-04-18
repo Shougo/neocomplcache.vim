@@ -135,26 +135,6 @@ function! neocomplcache#context_filetype#set() "{{{
     let old_filetype = new_filetype
   endwhile
 
-  " Initialize sources.
-  for source in filter(values(neocomplcache#variables#get_sources()),
-        \ '!v:val.loaded && (empty(v:val.filetypes)
-        \   || get(v:val.filetypes, neocomplcache.context_filetype, 0))')
-    if has_key(source, 'initialize')
-      try
-        call source.initialize()
-      catch
-        call neocomplcache#print_error(v:throwpoint)
-        call neocomplcache#print_error(v:exception)
-        call neocomplcache#print_error(
-              \ 'Error occured in source''s initialize()!')
-        call neocomplcache#print_error(
-              \ 'Source name is ' . source.name)
-      endtry
-    endif
-
-    let source.loaded = 1
-  endfor
-
   return neocomplcache.context_filetype
 endfunction"}}}
 function! neocomplcache#context_filetype#get(filetype) "{{{

@@ -1556,6 +1556,10 @@ option.
 Note: In current version, neocomplcache does not restore 'foldmethod'. Because
 it is too heavy.
 
+Q: I want to use Pydiction with neocomplcache.
+A: You should set |g:neocomplcache_dictionary_filetype_lists|.
+neocomplcache can load Pydiction dictionary file.
+
 ==============================================================================
 TODO						*neocomplcache-todo*
 
