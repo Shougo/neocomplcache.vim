@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2013.
+" Last Modified: 18 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -356,7 +356,8 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Set context filetype.
   call neocomplcache#context_filetype#set()
 
-  let sources = copy(get(a:000, 0, neocomplcache#helper#get_sources_list()))
+  let sources = filter(copy(get(a:000, 0,
+        \ neocomplcache#helper#get_sources_list())), 'v:val.loaded')
   if a:0 < 1
     call filter(sources, '!neocomplcache#is_plugin_locked(v:key)')
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: context_filetype.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2013.
+" Last Modified: 18 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -138,7 +138,7 @@ function! neocomplcache#context_filetype#set() "{{{
   " Initialize sources.
   for source in filter(values(neocomplcache#variables#get_sources()),
         \ '!v:val.loaded && (empty(v:val.filetypes)
-        \   || get(v:val.filetypes, neocomplcache.context_filetype, 0) >= 0)')
+        \   || get(v:val.filetypes, neocomplcache.context_filetype, 0))')
     if has_key(source, 'initialize')
       try
         call source.initialize()
