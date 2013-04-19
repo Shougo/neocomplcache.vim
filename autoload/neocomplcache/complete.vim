@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Apr 2013.
+" Last Modified: 19 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -359,8 +359,7 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Initialize sources.
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   for source in filter(values(neocomplcache#variables#get_sources()),
-        \ '!v:val.loaded && (empty(v:val.filetypes)
-        \   || get(v:val.filetypes, neocomplcache.context_filetype, 0))')
+        \ '!v:val.loaded && (get(v:val.filetypes, neocomplcache.context_filetype, 0))')
     if has_key(source, 'initialize')
       try
         call source.initialize()

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2013.
+" Last Modified: 19 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -741,6 +741,22 @@ function! neocomplcache#init#_source(source) "{{{
     " Set required_pattern_length.
     let source.required_pattern_length = (source.kind ==# 'keyword') ?
           \ g:neocomplcache_auto_completion_start_length : 0
+  endif
+
+  " Initialize sources.
+  if empty(source.filetypes) && has_key(source, 'initialize')
+    try
+      call source.initialize()
+    catch
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      call neocomplcache#print_error(
+            \ 'Error occured in source''s initialize()!')
+      call neocomplcache#print_error(
+            \ 'Source name is ' . source.name)
+    endtry
+
+    let source.loaded = 1
   endif
 
   return source
