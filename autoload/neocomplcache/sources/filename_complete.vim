@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Apr 2013.
+" Last Modified: 19 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,21 +103,6 @@ function! s:get_glob_files(cur_keyword_str, path) "{{{
     if a:path == ''
       let files = neocomplcache#util#glob(glob)
     else
-      try
-        let globs = globpath(path, glob)
-      catch
-        return []
-      endtry
-      let files = split(substitute(globs, '\\', '/', 'g'), '\n')
-    endif
-
-    if empty(files)
-      " Add '*' to a delimiter.
-      let cur_keyword_str =
-            \ substitute(cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-      let glob = (cur_keyword_str !~ '\*$') ?
-            \ cur_keyword_str . '*' : cur_keyword_str
-
       try
         let globs = globpath(path, glob)
       catch
