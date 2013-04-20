@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_include.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2013.
+" Last Modified: 20 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,6 +46,7 @@ let s:source = {
       \ 'name' : 'filename_include',
       \ 'kind' : 'complfunc',
       \ 'mark' : '[FI]',
+      \ 'rank' : 10,
       \}
 
 function! s:source.initialize() "{{{
@@ -82,11 +83,6 @@ function! s:source.initialize() "{{{
         \ 'g:neocomplcache_filename_include_exts',
         \ 'java', ['java'])
   "}}}
-
-  " Set rank.
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_source_rank',
-        \ s:source.name, 10)
 endfunction"}}}
 function! s:source.finalize() "{{{
 endfunction"}}}

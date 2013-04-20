@@ -1302,6 +1302,18 @@ filetypes		Dictionary		(Optional)
 			If you omit it, this source available in all
 			filetypes.
 
+
+					*neocomplcache-source-attribute-rank*
+rank			Number		(Optional)
+			Source priority.
+			Note: You can set source priority by
+			|g:neocomplcache_source_rank|, but it is obsolete way.
+
+			If you omit it, it is set below value.
+			If kind attribute is "keyword" : 5
+			If filetype attribute is empty : 10
+			Else : 100
+
 ==============================================================================
 FAQ						*neocomplcache-faq*
 

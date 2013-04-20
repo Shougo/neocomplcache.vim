@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2013.
+" Last Modified: 20 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,6 +36,7 @@ let s:source = {
       \ 'name' : 'buffer_complete',
       \ 'kind' : 'complfunc',
       \ 'mark' : '[B]',
+      \ 'rank' : 5,
       \}
 
 function! s:source.initialize() "{{{
@@ -50,11 +51,6 @@ function! s:source.initialize() "{{{
     autocmd InsertEnter,InsertLeave *
           \ call neocomplcache#sources#buffer_complete#caching_current_line()
   augroup END"}}}
-
-  " Set rank.
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_source_rank',
-        \ 'buffer_complete', 5)
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/buffer_cache')
