@@ -49,7 +49,8 @@ function! s:source.initialize() "{{{
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/include_cache')
-    call mkdir(neocomplcache#get_temporary_directory() . '/include_cache', 'p')
+    call mkdir(neocomplcache#get_temporary_directory()
+          \ . '/include_cache', 'p')
   endif
 
   if neocomplcache#exists_echodoc()
@@ -59,7 +60,7 @@ endfunction"}}}
 
 function! s:source.finalize() "{{{
   delcommand NeoComplCacheCachingInclude
-  
+
   if neocomplcache#exists_echodoc()
     call echodoc#unregister('include_complete')
   endif
