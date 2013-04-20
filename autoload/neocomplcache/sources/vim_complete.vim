@@ -29,7 +29,7 @@ set cpo&vim
 
 let s:source = {
       \ 'name' : 'vim_complete',
-      \ 'kind' : 'ftplugin',
+      \ 'kind' : 'manual',
       \ 'filetypes' : { 'vim' : 1, },
       \ 'mark' : '[vim]',
       \ 'rank' : 300,

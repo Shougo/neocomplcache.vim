@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: tags_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2012.
+" Last Modified: 20 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,7 +35,7 @@ endif
 
 let s:source = {
       \ 'name' : 'tags_complete',
-      \ 'kind' : 'plugin',
+      \ 'kind' : 'keyword',
       \}
 
 function! s:source.initialize() "{{{

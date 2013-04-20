@@ -29,7 +29,7 @@ set cpo&vim
 
 let s:source = {
       \ 'name' : 'omni_complete',
-      \ 'kind' : 'complfunc',
+      \ 'kind' : 'manual',
       \ 'compare_func' : 'neocomplcache#compare_nothing',
       \ 'mark' : '[O]',
       \ 'rank' : 50,

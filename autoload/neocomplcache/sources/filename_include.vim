@@ -44,7 +44,7 @@ endif
 
 let s:source = {
       \ 'name' : 'filename_include',
-      \ 'kind' : 'complfunc',
+      \ 'kind' : 'manual',
       \ 'mark' : '[FI]',
       \ 'rank' : 10,
       \}

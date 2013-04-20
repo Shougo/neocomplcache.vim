@@ -34,7 +34,7 @@ endif
 
 let s:source = {
       \ 'name' : 'member_complete',
-      \ 'kind' : 'complfunc',
+      \ 'kind' : 'manual',
       \ 'mark' : '[M]',
       \ 'rank' : 5,
       \}

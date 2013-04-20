@@ -29,7 +29,7 @@ set cpo&vim
 
 let s:source = {
       \ 'name' : 'filename_complete',
-      \ 'kind' : 'complfunc',
+      \ 'kind' : 'manual',
       \ 'mark' : '[F]',
       \ 'rank' : 3,
       \}

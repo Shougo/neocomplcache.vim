@@ -34,7 +34,7 @@ endif
 
 let s:source = {
       \ 'name' : 'buffer_complete',
-      \ 'kind' : 'complfunc',
+      \ 'kind' : 'manual',
       \ 'mark' : '[B]',
       \ 'rank' : 5,
       \}

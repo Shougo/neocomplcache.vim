@@ -29,7 +29,7 @@ set cpo&vim
 
 let s:source = {
       \ 'name' : 'include_complete',
-      \ 'kind' : 'plugin',
+      \ 'kind' : 'keyword',
       \ 'rank' : 8,
       \}
 

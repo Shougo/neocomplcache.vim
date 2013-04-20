@@ -34,7 +34,7 @@ endif
 
 let s:source = {
       \ 'name' : 'syntax_complete',
-      \ 'kind' : 'plugin',
+      \ 'kind' : 'keyword',
       \ 'mark' : '[S]',
       \ 'rank' : 7,
       \}

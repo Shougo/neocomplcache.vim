@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2013.
+" Last Modified: 20 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -348,7 +348,7 @@ function! neocomplcache#helper#get_sources_list(...) "{{{
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   let neocomplcache.sources = filter(sources, "
         \ index(disabled_sources, v:val.name) < 0 &&
-        \   (v:val.kind !=# 'ftplugin' ||
+        \   (empty(v:val.filetypes) ||
         \    get(v:val.filetypes, neocomplcache.context_filetype, 0))")
 
   return neocomplcache.sources

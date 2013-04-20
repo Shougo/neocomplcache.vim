@@ -1464,7 +1464,7 @@ source code's complete function, and find out the omni pattern).
 	" R (plugin: vim-R-plugin)
 	let g:neocomplcache_omni_patterns.r = '[[:alnum:].\\]\+'
 	let g:neocomplcache_omni_functions.r = 'rcomplete#CompleteR'
-	" XQuery (plugin: XQuery-indentomnicompleteftplugin)
+	" XQuery (plugin: XQuery-indentomnicomplete)
 	let g:neocomplcache_omni_patterns.xquery = '\k\|:\|\-\|&'
 	let g:neocomplcache_omni_functions.xquery = 'xquerycomplete#CompleteXQuery'
 <

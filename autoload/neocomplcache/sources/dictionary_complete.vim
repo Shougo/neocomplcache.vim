@@ -39,7 +39,7 @@ endfunction"}}}
 
 let s:source = {
       \ 'name' : 'dictionary_complete',
-      \ 'kind' : 'plugin',
+      \ 'kind' : 'keyword',
       \ 'mark' : '[D]',
       \ 'rank' : 4,
       \}
