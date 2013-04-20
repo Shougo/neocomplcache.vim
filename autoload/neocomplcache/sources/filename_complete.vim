@@ -32,12 +32,11 @@ let s:source = {
       \ 'kind' : 'manual',
       \ 'mark' : '[F]',
       \ 'rank' : 3,
+      \ 'required_pattern_length' :
+      \        g:neocomplcache_auto_completion_start_length,
       \}
 
 function! s:source.initialize() "{{{
-  " Initialize.
-  call neocomplcache#set_completion_length(
-        \ 'filename_complete', g:neocomplcache_auto_completion_start_length)
 endfunction"}}}
 function! s:source.finalize() "{{{
 endfunction"}}}

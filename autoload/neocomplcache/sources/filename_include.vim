@@ -47,12 +47,12 @@ let s:source = {
       \ 'kind' : 'manual',
       \ 'mark' : '[FI]',
       \ 'rank' : 10,
+      \ 'required_pattern_length' :
+      \        g:neocomplcache_auto_completion_start_length,
       \}
 
 function! s:source.initialize() "{{{
   " Initialize.
-  call neocomplcache#set_completion_length(
-        \ s:source.name, g:neocomplcache_auto_completion_start_length)
 
   " Initialize filename include expr. "{{{
   let g:neocomplcache_filename_include_exprs =

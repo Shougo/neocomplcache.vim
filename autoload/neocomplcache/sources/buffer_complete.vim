@@ -37,6 +37,8 @@ let s:source = {
       \ 'kind' : 'manual',
       \ 'mark' : '[B]',
       \ 'rank' : 5,
+      \ 'required_pattern_length' :
+      \     g:neocomplcache_auto_completion_start_length,
       \}
 
 function! s:source.initialize() "{{{
@@ -64,9 +66,6 @@ function! s:source.initialize() "{{{
   let s:disable_caching_list = {}
   let s:async_dictionary_list = {}
   "}}}
-
-  call neocomplcache#set_completion_length('buffer_complete',
-        \ g:neocomplcache_auto_completion_start_length)
 
   call s:check_source()
 endfunction

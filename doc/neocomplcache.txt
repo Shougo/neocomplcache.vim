@@ -1314,6 +1314,16 @@ rank			Number		(Optional)
 			If filetype attribute is empty : 10
 			Else : 100
 
+			*neocomplcache-source-attribute-required_pattern_length*
+required_pattern_length
+			Number		(Optional)
+			Required pattern length fror completion.
+
+			If you omit it, it is set below value.
+			If kind attribute is "keyword" :
+			    |g:neocomplcache_auto_completion_start_length|
+			Else : 0
+
 ==============================================================================
 FAQ						*neocomplcache-faq*
 

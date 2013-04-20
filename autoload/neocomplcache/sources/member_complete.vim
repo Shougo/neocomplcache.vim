@@ -37,6 +37,7 @@ let s:source = {
       \ 'kind' : 'manual',
       \ 'mark' : '[M]',
       \ 'rank' : 5,
+      \ 'required_pattern_length' : 0,
       \}
 
 function! s:source.initialize() "{{{
@@ -46,9 +47,6 @@ function! s:source.initialize() "{{{
     autocmd InsertEnter,InsertLeave *
           \ call neocomplcache#sources#member_complete#caching_current_line()
   augroup END"}}}
-
-  " Set completion length.
-  call neocomplcache#set_completion_length('member_complete', 0)
 
   " Initialize member prefix patterns. "{{{
   if !exists('g:neocomplcache_member_prefix_patterns')
