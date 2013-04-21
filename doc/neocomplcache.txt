@@ -1323,6 +1323,30 @@ required_pattern_length
 			    |g:neocomplcache_auto_completion_start_length|
 			Else : 0
 
+					*neocomplcache-source-attribute-hooks*
+hooks			Dictionary		(Optional)
+			You may put hook functions in this dictionary
+			in which the key is the position to hook and
+			and the value is the reference to the function
+			to be called.  The following hook functions are
+			defined:
+
+				*neocomplcache-source-attribute-hooks-on_init*
+			on_init
+			Called when initializing the source.
+			This function takes {context} as its parameters.
+				*neocomplcache-source-attribute-initialize*
+			Note initialize() attribute is obsolete interface for
+			initialization.
+
+				*neocomplcache-source-attribute-hooks-on_final*
+			on_final
+			Called after executing |:NeoComplCacheDisable|.
+			This function takes {context} as its parameters.
+				*neocomplcache-source-attribute-finalize*
+			Note finalize() attribute is obsolete interface for
+			finalization.
+
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES			*neocomplcache-candidate-attributes*
 

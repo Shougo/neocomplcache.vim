@@ -358,20 +358,9 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Initialize sources.
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   for source in filter(values(neocomplcache#variables#get_sources()),
-        \ '!v:val.loaded && (get(v:val.filetypes, neocomplcache.context_filetype, 0))')
-    if has_key(source, 'initialize')
-      try
-        call source.initialize()
-      catch
-        call neocomplcache#print_error(v:throwpoint)
-        call neocomplcache#print_error(v:exception)
-        call neocomplcache#print_error(
-              \ 'Error occured in source''s initialize()!')
-        call neocomplcache#print_error(
-              \ 'Source name is ' . source.name)
-      endtry
-    endif
-
+        \ '!v:val.loaded && (get(v:val.filetypes,
+        \             neocomplcache.context_filetype, 0))')
+    call neocomplcache#helper#call_hook(source, 'on_init', {})
     let source.loaded = 1
   endfor
 

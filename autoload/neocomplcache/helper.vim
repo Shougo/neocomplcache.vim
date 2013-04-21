@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 21 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -361,6 +361,30 @@ function! neocomplcache#helper#clear_result() "{{{
   let neocomplcache.complete_words = []
   let neocomplcache.complete_results = {}
   let neocomplcache.cur_keyword_pos = -1
+endfunction"}}}
+
+function! neocomplcache#helper#call_hook(sources, hook_name, context) "{{{
+  for source in neocomplcache#util#convert2list(a:sources)
+    try
+      if !has_key(source.hooks, a:hook_name)
+        if a:hook_name ==# 'on_init' && has_key(source, 'initialize')
+          call source.initialize()
+        elseif a:hook_name ==# 'on_final' && has_key(source, 'finalize')
+          call source.finalize()
+        endif
+      else
+        call call(source.hooks[a:hook_name],
+              \ [source.args, source.unite__context], source.hooks)
+      endif
+    catch
+      call unite#print_error(v:throwpoint)
+      call unite#print_error(v:exception)
+      call unite#print_error(
+            \ '[unite.vim] Error occured in calling hook "' . a:hook_name . '"!')
+      call unite#print_error(
+            \ '[unite.vim] Source name is ' . source.name)
+    endtry
+  endfor
 endfunction"}}}
 
 function! s:match_wildcard(cur_text, pattern, cur_keyword_pos) "{{{

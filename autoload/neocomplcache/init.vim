@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Apr 2013.
+" Last Modified: 21 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -77,22 +77,9 @@ function! neocomplcache#init#disable() "{{{
 
   delcommand NeoComplCacheDisable
 
-  for source in values(neocomplcache#available_sources())
-    if !has_key(source, 'finalize') || !source.loaded
-      continue
-    endif
-
-    try
-      call source.finalize()
-    catch
-      call neocomplcache#print_error(v:throwpoint)
-      call neocomplcache#print_error(v:exception)
-      call neocomplcache#print_error(
-            \ 'Error occured in source''s finalize()!')
-      call neocomplcache#print_error(
-            \ 'Source name is ' . source.name)
-    endtry
-  endfor
+  call neocomplcache#helper#call_hook(filter(values(
+        \ neocomplcache#variables#get_sources()), 'v:val.loaded'),
+        \ 'on_final', {})
 endfunction"}}}
 
 function! neocomplcache#init#is_enabled() "{{{
