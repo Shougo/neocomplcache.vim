@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Apr 2013.
+" Last Modified: 21 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -335,16 +335,15 @@ function! neocomplcache#complete#_get_words(complete_results, cur_keyword_pos, c
 
   if g:neocomplcache_max_keyword_width >= 0 "{{{
     " Abbr check.
-    let abbr_pattern = printf('%%.%ds..%%s',
-          \ g:neocomplcache_max_keyword_width-15)
     for keyword in complete_words
       let abbr = get(keyword, 'abbr', keyword.word)
       if len(abbr) > g:neocomplcache_max_keyword_width
         let len = neocomplcache#util#wcswidth(abbr)
 
         if len > g:neocomplcache_max_keyword_width
-          let keyword.abbr = neocomplcache#util#truncate(
-                \ abbr, g:neocomplcache_max_keyword_width - 2) . '..'
+          let keyword.abbr = neocomplcache#util#truncate_smart(
+                \ abbr, g:neocomplcache_max_keyword_width,
+                \ g:neocomplcache_max_keyword_width/2, '..')
         endif
       endif
     endfor

@@ -195,7 +195,7 @@ g:neocomplcache_max_keyword_width
 		displayed in a pop-up menu.  The case beyond this value is
 		cut down properly.
 
-		Default value is 50.
+		Default value is 80.
 
 					*g:neocomplcache_max_menu_width*
 g:neocomplcache_max_menu_width
