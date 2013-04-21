@@ -35,6 +35,8 @@ Examples		|neocomplcache-examples|
 Sources			|neocomplcache-sources|
   User sources		  |neocomplcache-user-sources|
 Create source		|neocomplcache-create-source|
+  Source attributes       |neocomplcache-source-attributes|
+  Candidate attributes   |neocomplcache-candidate-attributes|
 FAQ			|neocomplcache-faq|
 TODO			|neocomplcache-todo|
 Changelog		|neocomplcache-changelog|
@@ -1320,6 +1322,45 @@ required_pattern_length
 			If kind attribute is "keyword" :
 			    |g:neocomplcache_auto_completion_start_length|
 			Else : 0
+
+------------------------------------------------------------------------------
+CANDIDATE ATTRIBUTES			*neocomplcache-candidate-attributes*
+
+				*neocomplcache-candidate-attribute-name*
+word			String		(Required)
+			The completion word of a candidate. It is used for
+			matching inputs.
+
+				*neocomplcache-candidate-attribute-abbr*
+abbr			String		(Optional)
+			The abbreviation of a candidate. It is displayed in
+			popup window. It is omitted by
+			|g:neocomplcache_max_keyword_width|.
+
+				*neocomplcache-candidate-attribute-kind*
+kind			String		(Optional)
+			The kind of a candidate. It is displayed in popup
+			window.
+
+				*neocomplcache-candidate-attribute-menu*
+menu			String		(Optional)
+			The menu information of a candidate. It is displayed
+			in popup window.
+
+				*neocomplcache-candidate-attribute-info*
+info			String		(Optional)
+			The preview information of a candidate. If
+			'completeopt' contains "preview", it will be displayed
+			in |preview-window|.
+
+				*neocomplcache-candidate-attribute-rank*
+rank			Number		(Optional)
+			The completion priority.
+
+		*neocomplcache-candidate-attribute-neocomplcache__refresh*
+neocomplcache__refresh	Number		(Optional)
+			If it is non-zero, neocomplcache refresh
+			automatically.
 
 ==============================================================================
 FAQ						*neocomplcache-faq*
