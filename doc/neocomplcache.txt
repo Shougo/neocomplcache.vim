@@ -942,7 +942,7 @@ g:neocomplcache_enable_auto_close_preview
 		If it is non-zero, neocomplcache will close preview window
 		automatically.
 
-		Default value is 0.
+		Default value is 1.
 
 ------------------------------------------------------------------------------
 FUNCTIONS 					*neocomplcache-functions*
@@ -1587,6 +1587,9 @@ TODO						*neocomplcache-todo*
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2013-04-21
+- Changed g:neocomplcache_enable_auto_close_preview default value.
 
 2013-04-11
 - Improved save foldinfo feature.
