@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2013.
+" Last Modified: 22 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -358,7 +358,8 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Initialize sources.
   let neocomplcache = neocomplcache#get_current_neocomplcache()
   for source in filter(values(neocomplcache#variables#get_sources()),
-        \ '!v:val.loaded && (get(v:val.filetypes,
+        \ '!v:val.loaded && (empty(v:val.filetypes) ||
+        \       get(v:val.filetypes,
         \             neocomplcache.context_filetype, 0))')
     call neocomplcache#helper#call_hook(source, 'on_init', {})
     let source.loaded = 1
@@ -373,36 +374,41 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Try source completion. "{{{
   let complete_results = {}
   for [source_name, source] in items(sources)
-    if source.kind ==# 'keyword'
-      " Plugin default keyword position.
-      let [cur_keyword_pos, cur_keyword_str] = neocomplcache#match_word(a:cur_text)
-    else
-      let pos = winsaveview()
+    let context = source.neocomplcache__context
+    let context.input = a:cur_text
+    let context.complete_pos = -1
+    let context.complete_str = ''
 
-      try
-        let cur_keyword_pos = source.get_keyword_pos(a:cur_text)
-      catch
-        call neocomplcache#print_error(v:throwpoint)
-        call neocomplcache#print_error(v:exception)
-        call neocomplcache#print_error(
-              \ 'Error occured in source''s get_keyword_pos()!')
-        call neocomplcache#print_error(
-              \ 'Source name is ' . source_name)
-        return complete_results
-      finally
-        if winsaveview() != pos
-          call winrestview(pos)
-        endif
-      endtry
-    endif
+    let pos = winsaveview()
 
-    if cur_keyword_pos < 0
+    try
+      let complete_pos =
+            \ has_key(source, 'get_keyword_pos') ?
+            \ source.get_keyword_pos(context.input) :
+            \ has_key(source, 'get_complete_position') ?
+            \ source.get_complete_position(context) :
+            \ neocomplcache#match_word(a:cur_text)[0]
+    catch
+      call neocomplcache#print_error(v:throwpoint)
+      call neocomplcache#print_error(v:exception)
+      call neocomplcache#print_error(
+            \ 'Error occured in source''s get_complete_position()!')
+      call neocomplcache#print_error(
+            \ 'Source name is ' . source_name)
+      return complete_results
+    finally
+      if winsaveview() != pos
+        call winrestview(pos)
+      endif
+    endtry
+
+    if complete_pos < 0
       continue
     endif
 
-    let cur_keyword_str = a:cur_text[cur_keyword_pos :]
+    let complete_str = context.input[complete_pos :]
     if neocomplcache#is_auto_complete() &&
-          \ neocomplcache#util#mb_strlen(cur_keyword_str)
+          \ neocomplcache#util#mb_strlen(complete_str)
           \     < neocomplcache#get_completion_length(source_name)
       " Skip.
       continue
@@ -410,10 +416,12 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
 
     let complete_results[source_name] = {
           \ 'complete_words' : [],
-          \ 'cur_keyword_pos' : cur_keyword_pos,
-          \ 'cur_keyword_str' : cur_keyword_str,
+          \ 'cur_keyword_pos' : complete_pos,
+          \ 'cur_keyword_str' : complete_str,
           \ 'source' : source,
           \}
+    let context.complete_pos = complete_pos
+    let context.complete_str = complete_str
   endfor
   "}}}
 
@@ -440,23 +448,23 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
 
     let pos = winsaveview()
 
+    let context = result.source.neocomplcache__context
+    let source = result.source
+
     try
-      let words = result.source.kind ==# 'keyword' ?
-            \ result.source.get_keyword_list(result.cur_keyword_str) :
-            \ result.source.get_complete_words(
-            \   result.cur_keyword_pos, result.cur_keyword_str)
+      let words = has_key(source, 'get_keyword_list') ?
+            \ source.get_keyword_list(context.complete_pos) :
+            \  has_key(source, 'get_complete_words') ?
+            \ source.get_complete_words(
+            \   context.complete_pos, context.complete_str) :
+            \ source.gather_candidates(context)
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error(
             \ 'Source name is ' . source_name)
-      if result.source.kind ==# 'keyword'
-        call neocomplcache#print_error(
-              \ 'Error occured in source''s get_keyword_list()!')
-      else
-        call neocomplcache#print_error(
-              \ 'Error occured in source''s get_complete_words()!')
-      endif
+      call neocomplcache#print_error(
+            \ 'Error occured in source''s gather_candidates()!')
       return
     finally
       if winsaveview() != pos

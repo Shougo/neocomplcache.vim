@@ -631,6 +631,11 @@ endfunction"}}}
 
 function! neocomplcache#init#_current_neocomplcache() "{{{
   let b:neocomplcache = {
+        \ 'context' : {
+        \      'input' : '',
+        \      'complete_pos' : -1,
+        \      'complete_str' : '',
+        \ },
         \ 'lock' : 0,
         \ 'skip_next_complete' : 0,
         \ 'filetype' : '',
@@ -707,6 +712,7 @@ function! neocomplcache#init#_source(source) "{{{
   let default_source = {
         \ 'filetypes' : {},
         \ 'hooks' : {},
+        \ 'neocomplcache__context' : neocomplcache#get_context(),
         \ }
 
   let source = extend(default_source, a:source)
@@ -736,6 +742,7 @@ function! neocomplcache#init#_source(source) "{{{
           \ g:neocomplcache_auto_completion_start_length : 0
   endif
 
+  " Note: This routine is for compatibility of old sources implementation.
   " Initialize sources.
   if empty(source.filetypes) && has_key(source, 'initialize')
     try

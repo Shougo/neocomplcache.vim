@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2013.
+" Last Modified: 22 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -374,7 +374,8 @@ function! neocomplcache#helper#call_hook(sources, hook_name, context) "{{{
         endif
       else
         call call(source.hooks[a:hook_name],
-              \ [source.args, source.unite__context], source.hooks)
+              \ [extend(source.neocomplcache__context, a:context)],
+              \ source.hooks)
       endif
     catch
       call unite#print_error(v:throwpoint)
