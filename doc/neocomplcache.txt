@@ -37,6 +37,7 @@ Sources			|neocomplcache-sources|
 Create source		|neocomplcache-create-source|
   Source attributes       |neocomplcache-source-attributes|
   Candidate attributes   |neocomplcache-candidate-attributes|
+FILTERS			|neocomplcache-filters|
 FAQ			|neocomplcache-faq|
 TODO			|neocomplcache-todo|
 Changelog		|neocomplcache-changelog|
@@ -1347,6 +1348,49 @@ hooks			Dictionary		(Optional)
 			Note finalize() attribute is obsolete interface for
 			finalization.
 
+			*neocomplcache-source-attribute-get_complete_position*
+get_complete_position	Function	(Optional)
+			This function takes {context} as its
+			parameter and returns complete position in current
+			line.
+			Here, {context} is the context information when the
+			source is called(|neocomplcache-notation-{context}|).
+			If you omit it, neocomplcache will use the position
+			using |g:neocomplcache_keyword_patterns|.
+			Note get_keyword_pos() is obsolete interface for
+			get complete position.
+
+			*neocomplcache-source-attribute-gather_candidates*
+gather_candidates	Function	(Required)
+			This function is called in gathering candidates.  If
+			you enabled fuzzy completion by
+			|g:neocomplcache_enable_fuzzy_completion| , this
+			function is called whenever the input string is
+			changed.  This function takes {context} as its
+			parameter and returns a list of {candidate}.
+			Here, {context} is the context information when the
+			source is called(|neocomplcache-notation-{context}|).
+			Note get_complete_words() and get_keyword_list() are
+			obsolete interface for gather candidates.
+			In obsolete interface, |neocomplcache-filters| feature
+			is disabled for compatibility. You should use new
+			interface.
+
+{context}				*neocomplcache-notation-{context}*
+			A dictionary to give context information.
+			The followings are the primary information.
+			The global context information can be acquired
+			by |neocomplcache#get_context()|.
+
+			input			(String)
+				The input string of current line.
+
+			complete_pos		(Number)
+				The complete position of current source.
+
+			complete_str		(String)
+				The complete string of current source.
+
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES			*neocomplcache-candidate-attributes*
 
@@ -1385,6 +1429,13 @@ rank			Number		(Optional)
 neocomplcache__refresh	Number		(Optional)
 			If it is non-zero, neocomplcache refresh
 			automatically.
+
+CONTEXT						*neocomplcache-context*
+
+==============================================================================
+FILTERS						*neocomplcache-filters*
+
+Todo
 
 ==============================================================================
 FAQ						*neocomplcache-faq*
