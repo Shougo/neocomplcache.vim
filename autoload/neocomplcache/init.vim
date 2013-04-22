@@ -713,9 +713,14 @@ function! neocomplcache#init#_source(source) "{{{
 
   let source.loaded = 0
   " Source kind convertion.
-  if source.kind ==# 'plugin'
+  if source.kind ==# 'plugin' ||
+        \ (!has_key(source, 'gather_candidates') &&
+        \  !has_key(source, 'get_complete_words'))
     let source.kind = 'keyword'
   elseif source.kind ==# 'ftplugin' || source.kind ==# 'complfunc'
+    " For compatibility.
+    let source.kind = 'manual'
+  else
     let source.kind = 'manual'
   endif
 
