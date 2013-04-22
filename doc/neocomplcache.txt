@@ -1655,6 +1655,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2013-04-21
 - Changed g:neocomplcache_enable_auto_close_preview default value.
+- Fixed initialization problem using neocomplcache#initialize().
 
 2013-04-11
 - Improved save foldinfo feature.
