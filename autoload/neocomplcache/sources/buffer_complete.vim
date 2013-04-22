@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 22 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,9 +39,10 @@ let s:source = {
       \ 'rank' : 5,
       \ 'required_pattern_length' :
       \     g:neocomplcache_auto_completion_start_length,
+      \ 'hooks' : {},
       \}
 
-function! s:source.initialize() "{{{
+function! s:source.hooks.on_init(context) "{{{
   let s:buffer_sources = {}
 
   augroup neocomplcache "{{{
@@ -71,7 +72,7 @@ function! s:source.initialize() "{{{
 endfunction
 "}}}
 
-function! s:source.finalize() "{{{
+function! s:source.hooks.on_final(context) "{{{
   delcommand NeoComplCacheCachingBuffer
   delcommand NeoComplCachePrintSource
   delcommand NeoComplCacheOutputKeyword
@@ -81,13 +82,7 @@ function! s:source.finalize() "{{{
   let s:buffer_sources = {}
 endfunction"}}}
 
-function! s:source.get_keyword_pos(cur_text) "{{{
-  let [cur_keyword_pos, _] = neocomplcache#match_word(a:cur_text)
-
-  return cur_keyword_pos
-endfunction"}}}
-
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
+function! s:source.gather_candidates(context) "{{{
   call s:check_source()
 
   let keyword_list = []
@@ -96,7 +91,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
           \ source.path, s:async_dictionary_list, source.keyword_cache, 1)
 
     let keyword_list += neocomplcache#dictionary_filter(
-          \ source.keyword_cache, a:cur_keyword_str)
+          \ source.keyword_cache, a:context.complete_str)
     if key == bufnr('%')
       let source.accessed_time = localtime()
     endif

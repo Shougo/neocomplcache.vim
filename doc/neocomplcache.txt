@@ -1391,6 +1391,11 @@ gather_candidates	Function	(Required)
 			complete_str		(String)
 				The complete string of current source.
 
+			source__{name}		(Unknown)	(Optional)
+				Additional source information.
+				Note: Recommend sources save
+				variables instead of s: variables.
+
 ------------------------------------------------------------------------------
 CANDIDATE ATTRIBUTES			*neocomplcache-candidate-attributes*
 
