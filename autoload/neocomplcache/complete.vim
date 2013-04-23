@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2013.
+" Last Modified: 23 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -387,7 +387,7 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
             \ source.get_keyword_pos(context.input) :
             \ has_key(source, 'get_complete_position') ?
             \ source.get_complete_position(context) :
-            \ neocomplcache#match_word(a:cur_text)[0]
+            \ neocomplcache#match_word(context.input)[0]
     catch
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
@@ -453,7 +453,7 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
 
     try
       let words = has_key(source, 'get_keyword_list') ?
-            \ source.get_keyword_list(context.complete_pos) :
+            \ source.get_keyword_list(context.complete_str) :
             \  has_key(source, 'get_complete_words') ?
             \ source.get_complete_words(
             \   context.complete_pos, context.complete_str) :
