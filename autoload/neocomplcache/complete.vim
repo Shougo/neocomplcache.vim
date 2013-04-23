@@ -448,8 +448,8 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
 
     let pos = winsaveview()
 
-    let context = result.source.neocomplcache__context
     let source = result.source
+    let context = source.neocomplcache__context
 
     try
       let words = has_key(source, 'get_keyword_list') ?

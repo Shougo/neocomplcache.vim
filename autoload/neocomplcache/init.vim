@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2013.
+" Last Modified: 23 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -712,7 +712,7 @@ function! neocomplcache#init#_source(source) "{{{
   let default_source = {
         \ 'filetypes' : {},
         \ 'hooks' : {},
-        \ 'neocomplcache__context' : neocomplcache#get_context(),
+        \ 'neocomplcache__context' : copy(neocomplcache#get_context()),
         \ }
 
   let source = extend(default_source, a:source)
