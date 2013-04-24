@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -155,25 +155,24 @@ function! neocomplcache#complete#_get_results(cur_text, ...) "{{{
   call neocomplcache#complete#_set_results_words(complete_results)
 
   return filter(complete_results,
-        \ '!empty(v:val.complete_words)')
+        \ '!empty(v:val.neocomplcache__context.candidates)')
 endfunction"}}}
 
-function! neocomplcache#complete#_get_cur_keyword_pos(complete_results) "{{{
-  if empty(a:complete_results)
+function! neocomplcache#complete#_get_cur_keyword_pos(sources) "{{{
+  if empty(a:sources)
     return -1
   endif
 
-  let cur_keyword_pos = col('.')
-  for result in values(a:complete_results)
-    if cur_keyword_pos > result.cur_keyword_pos
-      let cur_keyword_pos = result.cur_keyword_pos
-    endif
+  let complete_pos = col('.')
+  for source in a:sources
+    let complete_pos = min([complete_pos,
+          \ source.neocomplcache__context.complete_pos])
   endfor
 
-  return cur_keyword_pos
+  return complete_pos
 endfunction"}}}
 
-function! neocomplcache#complete#_get_words(complete_results, cur_keyword_pos, cur_keyword_str) "{{{
+function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keyword_str) "{{{
   let frequencies = neocomplcache#variables#get_frequencies()
   if exists('*neocomplcache#sources#buffer_complete#get_frequencies')
     let frequencies = extend(copy(
@@ -181,55 +180,47 @@ function! neocomplcache#complete#_get_words(complete_results, cur_keyword_pos, c
           \ frequencies)
   endif
 
-  let sources = neocomplcache#available_sources()
-
   " Append prefix.
   let complete_words = []
   let len_words = 0
-  for [source_name, result] in sort(items(a:complete_results),
-        \ 's:compare_source_rank')
-    let source = sources[source_name]
+  for source in sort(filter(copy(a:sources),
+        \ '!empty(v:val.neocomplcache__context.candidates)'),
+        \  's:compare_source_rank')
+    let context = source.neocomplcache__context
+    let words =
+          \ type(context.candidates[0]) == type('') ?
+          \ map(copy(context.candidates), "{'word': v:val}") :
+          \ deepcopy(context.candidates)
 
-    if empty(result.complete_words)
-      " Skip.
-      continue
-    endif
-
-    let result.complete_words =
-          \ type(result.complete_words[0]) == type('') ?
-          \ map(copy(result.complete_words), "{'word': v:val}") :
-          \ deepcopy(result.complete_words)
-
-    if result.cur_keyword_pos > a:cur_keyword_pos
-      let prefix = a:cur_keyword_str[: result.cur_keyword_pos
+    if context.complete_pos > a:cur_keyword_pos
+      let prefix = a:cur_keyword_str[: context.complete_pos
             \                            - a:cur_keyword_pos - 1]
 
-      for keyword in result.complete_words
+      for keyword in words
         let keyword.word = prefix . keyword.word
       endfor
     endif
 
-    for keyword in result.complete_words
+    for keyword in words
       if !has_key(keyword, 'menu') && has_key(source, 'mark')
         " Set default menu.
         let keyword.menu = source.mark
       endif
     endfor
 
-    for keyword in filter(copy(result.complete_words),
+    for keyword in filter(copy(words),
           \ 'has_key(frequencies, v:val.word)')
       let keyword.rank = frequencies[keyword.word]
     endfor
 
-    let compare_func = get(sources[source_name], 'compare_func',
+    let compare_func = get(source, 'compare_func',
           \ g:neocomplcache_compare_function)
     if compare_func !=# 'neocomplcache#compare_nothing'
-      call sort(result.complete_words, compare_func)
+      call sort(words, compare_func)
     endif
 
-    let complete_words += s:remove_next_keyword(
-          \ source_name, result.complete_words)
-    let len_words += len(result.complete_words)
+    let complete_words += s:remove_next_keyword(source.name, words)
+    let len_words += len(words)
 
     if g:neocomplcache_max_list > 0
           \ && len_words > g:neocomplcache_max_list
@@ -372,12 +363,13 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   endif
 
   " Try source completion. "{{{
-  let complete_results = {}
-  for [source_name, source] in items(sources)
+  let complete_sources = []
+  for source in values(sources)
     let context = source.neocomplcache__context
     let context.input = a:cur_text
     let context.complete_pos = -1
     let context.complete_str = ''
+    let context.candidates = []
 
     let pos = winsaveview()
 
@@ -394,7 +386,7 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
       call neocomplcache#print_error(
             \ 'Error occured in source''s get_complete_position()!')
       call neocomplcache#print_error(
-            \ 'Source name is ' . source_name)
+            \ 'Source name is ' . source.name)
       return complete_results
     finally
       if winsaveview() != pos
@@ -409,27 +401,22 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
     let complete_str = context.input[complete_pos :]
     if neocomplcache#is_auto_complete() &&
           \ neocomplcache#util#mb_strlen(complete_str)
-          \     < neocomplcache#get_completion_length(source_name)
+          \     < neocomplcache#get_completion_length(source.name)
       " Skip.
       continue
     endif
 
-    let complete_results[source_name] = {
-          \ 'complete_words' : [],
-          \ 'cur_keyword_pos' : complete_pos,
-          \ 'cur_keyword_str' : complete_str,
-          \ 'source' : source,
-          \}
     let context.complete_pos = complete_pos
     let context.complete_str = complete_str
+    call add(complete_sources, source)
   endfor
   "}}}
 
-  return complete_results
+  return complete_sources
 endfunction"}}}
-function! neocomplcache#complete#_set_results_words(complete_results) "{{{
+function! neocomplcache#complete#_set_results_words(sources) "{{{
   " Try source completion.
-  for [source_name, result] in items(a:complete_results)
+  for source in a:sources
     if neocomplcache#complete_check()
       return
     endif
@@ -448,11 +435,10 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
 
     let pos = winsaveview()
 
-    let source = result.source
     let context = source.neocomplcache__context
 
     try
-      let words = has_key(source, 'get_keyword_list') ?
+      let context.candidates = has_key(source, 'get_keyword_list') ?
             \ source.get_keyword_list(context.complete_str) :
             \  has_key(source, 'get_complete_words') ?
             \ source.get_complete_words(
@@ -462,7 +448,7 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error(
-            \ 'Source name is ' . source_name)
+            \ 'Source name is ' . source.name)
       call neocomplcache#print_error(
             \ 'Error occured in source''s gather_candidates()!')
       return
@@ -473,12 +459,10 @@ function! neocomplcache#complete#_set_results_words(complete_results) "{{{
     endtry
 
     if g:neocomplcache_enable_debug
-      echomsg source_name
+      echomsg source.name
     endif
 
     let &ignorecase = ignorecase_save
-
-    let result.complete_words = words
   endfor
 endfunction"}}}
 
@@ -520,8 +504,8 @@ endfunction"}}}
 
 " Source rank order. "{{{
 function! s:compare_source_rank(i1, i2)
-  return neocomplcache#get_source_rank(a:i2[0]) -
-        \ neocomplcache#get_source_rank(a:i1[0])
+  return neocomplcache#get_source_rank(a:i2.name) -
+        \ neocomplcache#get_source_rank(a:i1.name)
 endfunction"}}}
 
 let &cpo = s:save_cpo
