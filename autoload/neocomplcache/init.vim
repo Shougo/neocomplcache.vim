@@ -651,9 +651,9 @@ function! neocomplcache#init#_current_neocomplcache() "{{{
         \ 'event' : '',
         \ 'cur_text' : '',
         \ 'old_cur_text' : '',
-        \ 'cur_keyword_str' : '',
-        \ 'cur_keyword_pos' : -1,
-        \ 'complete_words' : [],
+        \ 'complete_str' : '',
+        \ 'complete_pos' : -1,
+        \ 'candidates' : [],
         \ 'complete_results' : {},
         \ 'start_time' : reltime(),
         \}

@@ -76,7 +76,7 @@ function! s:source.finalize() "{{{
   delcommand NeoComplCacheCachingDictionary
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str) "{{{
+function! s:source.get_keyword_list(complete_str) "{{{
   let list = []
 
   let filetype = neocomplcache#is_text_mode() ?
@@ -91,7 +91,7 @@ function! s:source.get_keyword_list(cur_keyword_str) "{{{
           \ s:async_dictionary_list, s:dictionary_list, 1)
 
     for dict in neocomplcache#get_sources_list(s:dictionary_list, ft)
-      let list += neocomplcache#dictionary_filter(dict, a:cur_keyword_str)
+      let list += neocomplcache#dictionary_filter(dict, a:complete_str)
     endfor
   endfor
 

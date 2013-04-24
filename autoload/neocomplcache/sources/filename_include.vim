@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_include.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -112,30 +112,30 @@ function! s:source.get_keyword_pos(cur_text) "{{{
   endif
 
   let match_end = matchend(a:cur_text, pattern)
-  let cur_keyword_str = matchstr(a:cur_text[match_end :], '\f\+')
+  let complete_str = matchstr(a:cur_text[match_end :], '\f\+')
 
   let expr = get(g:neocomplcache_include_exprs, filetype,
         \ getbufvar(bufnr('%'), '&includeexpr'))
   if expr != ''
     let cur_text =
           \ substitute(eval(substitute(expr,
-          \ 'v:fname', string(cur_keyword_str), 'g')),
+          \ 'v:fname', string(complete_str), 'g')),
           \  '\.\w*$', '', '')
   endif
 
-  let cur_keyword_pos = len(a:cur_text) - len(cur_keyword_str)
-  if neocomplcache#is_sources_complete() && cur_keyword_pos < 0
-    let cur_keyword_pos = len(a:cur_text)
+  let complete_pos = len(a:cur_text) - len(complete_str)
+  if neocomplcache#is_sources_complete() && complete_pos < 0
+    let complete_pos = len(a:cur_text)
   endif
 
-  return cur_keyword_pos
+  return complete_pos
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
-  return s:get_include_files(a:cur_keyword_str)
+function! s:source.get_complete_words(complete_pos, complete_str) "{{{
+  return s:get_include_files(a:complete_str)
 endfunction"}}}
 
-function! s:get_include_files(cur_keyword_str) "{{{
+function! s:get_include_files(complete_str) "{{{
   let filetype = neocomplcache#get_context_filetype()
 
   let path = neocomplcache#util#substitute_path_separator(
@@ -157,16 +157,16 @@ function! s:get_include_files(cur_keyword_str) "{{{
   endif
 
   let match_end = matchend(line, pattern)
-  let cur_keyword_str = matchstr(line[match_end :], '\f\+')
+  let complete_str = matchstr(line[match_end :], '\f\+')
   if expr != ''
-    let cur_keyword_str =
+    let complete_str =
           \ substitute(eval(substitute(expr,
-          \ 'v:fname', string(cur_keyword_str), 'g')), '\.\w*$', '', '')
+          \ 'v:fname', string(complete_str), 'g')), '\.\w*$', '', '')
   endif
 
   " Path search.
-  let glob = (cur_keyword_str !~ '\*$')?
-        \ cur_keyword_str . '*' : cur_keyword_str
+  let glob = (complete_str !~ '\*$')?
+        \ complete_str . '*' : complete_str
   let cwd = getcwd()
   let bufdirectory = neocomplcache#util#substitute_path_separator(
         \ fnamemodify(expand('%'), ':p:h'))
@@ -214,8 +214,8 @@ function! s:get_include_files(cur_keyword_str) "{{{
   endfor
   execute 'lcd' fnameescape(cwd)
 
-  return neocomplcache#keyword_filter(dir_list, a:cur_keyword_str)
-        \ + neocomplcache#keyword_filter(file_list, a:cur_keyword_str)
+  return neocomplcache#keyword_filter(dir_list, a:complete_str)
+        \ + neocomplcache#keyword_filter(file_list, a:complete_str)
 endfunction"}}}
 
 function! s:get_default_include_files(filetype) "{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filters.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,8 +27,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#filters#keyword_filter(list, cur_keyword_str) "{{{
-  let cur_keyword_str = a:cur_keyword_str
+function! neocomplcache#filters#keyword_filter(list, complete_str) "{{{
+  let complete_str = a:complete_str
 
   if g:neocomplcache_enable_debug
     echomsg len(a:list)
@@ -37,65 +37,65 @@ function! neocomplcache#filters#keyword_filter(list, cur_keyword_str) "{{{
   " Delimiter check.
   let filetype = neocomplcache#get_context_filetype()
   for delimiter in get(g:neocomplcache_delimiter_patterns, filetype, [])
-    let cur_keyword_str = substitute(cur_keyword_str,
+    let complete_str = substitute(complete_str,
           \ delimiter, '*' . delimiter, 'g')
   endfor
 
-  if cur_keyword_str == '' ||
+  if complete_str == '' ||
         \ &l:completefunc ==# 'neocomplcache#complete#unite_complete' ||
         \ empty(a:list)
     return a:list
-  elseif neocomplcache#check_match_filter(cur_keyword_str)
+  elseif neocomplcache#check_match_filter(complete_str)
     " Match filter.
     let word = type(a:list[0]) == type('') ? 'v:val' : 'v:val.word'
 
     let expr = printf('%s =~ %s',
           \ word, string('^' .
-          \ neocomplcache#keyword_escape(cur_keyword_str)))
+          \ neocomplcache#keyword_escape(complete_str)))
     if neocomplcache#is_auto_complete()
       " Don't complete cursor word.
-      let expr .= printf(' && %s !=? a:cur_keyword_str', word)
+      let expr .= printf(' && %s !=? a:complete_str', word)
     endif
 
     " Check head character.
-    if cur_keyword_str[0] != '\' && cur_keyword_str[0] != '.'
+    if complete_str[0] != '\' && complete_str[0] != '.'
       let expr = word.'[0] == ' .
-            \ string(cur_keyword_str[0]) .' && ' . expr
+            \ string(complete_str[0]) .' && ' . expr
     endif
 
     call neocomplcache#print_debug(expr)
 
     return filter(a:list, expr)
   elseif neocomplcache#util#has_lua()
-    return s:lua_filter(a:list, cur_keyword_str)
+    return s:lua_filter(a:list, complete_str)
   else
     " Use fast filter.
-    return s:head_filter(a:list, cur_keyword_str)
+    return s:head_filter(a:list, complete_str)
   endif
 endfunction"}}}
 
-function! s:head_filter(list, cur_keyword_str) "{{{
+function! s:head_filter(list, complete_str) "{{{
   let word = type(a:list[0]) == type('') ? 'v:val' : 'v:val.word'
 
   if &ignorecase
    let expr = printf('!stridx(tolower(%s), %s)',
-          \ word, string(tolower(a:cur_keyword_str)))
+          \ word, string(tolower(a:complete_str)))
   else
     let expr = printf('!stridx(%s, %s)',
-          \ word, string(a:cur_keyword_str))
+          \ word, string(a:complete_str))
   endif
 
   if neocomplcache#is_auto_complete()
     " Don't complete cursor word.
-    let expr .= printf(' && %s !=? a:cur_keyword_str', word)
+    let expr .= printf(' && %s !=? a:complete_str', word)
   endif
 
   return filter(a:list, expr)
 endfunction"}}}
-function! s:lua_filter(list, cur_keyword_str) "{{{
+function! s:lua_filter(list, complete_str) "{{{
   lua << EOF
   do
-    local input = vim.eval('a:cur_keyword_str')
+    local input = vim.eval('a:complete_str')
     local candidates = vim.eval('a:list')
     if (vim.eval('&ignorecase') ~= 0) then
       input = string.lower(input)
@@ -121,21 +121,21 @@ EOF
   return a:list
 endfunction"}}}
 
-function! neocomplcache#filters#dictionary_filter(dictionary, cur_keyword_str) "{{{
+function! neocomplcache#filters#dictionary_filter(dictionary, complete_str) "{{{
   if empty(a:dictionary)
     return []
   endif
 
   let completion_length = 2
-  if len(a:cur_keyword_str) < completion_length ||
+  if len(a:complete_str) < completion_length ||
         \ neocomplcache#check_completion_length_match(
-        \         a:cur_keyword_str, completion_length) ||
+        \         a:complete_str, completion_length) ||
         \ &l:completefunc ==# 'neocomplcache#cunite_complete'
     return neocomplcache#keyword_filter(
-          \ neocomplcache#unpack_dictionary(a:dictionary), a:cur_keyword_str)
+          \ neocomplcache#unpack_dictionary(a:dictionary), a:complete_str)
   endif
 
-  let key = tolower(a:cur_keyword_str[: completion_length-1])
+  let key = tolower(a:complete_str[: completion_length-1])
 
   if !has_key(a:dictionary, key)
     return []
@@ -150,10 +150,10 @@ function! neocomplcache#filters#dictionary_filter(dictionary, cur_keyword_str) "
     let list = copy(list)
   endif
 
-  return (len(a:cur_keyword_str) == completion_length && &ignorecase
+  return (len(a:complete_str) == completion_length && &ignorecase
         \ && !neocomplcache#check_completion_length_match(
-        \   a:cur_keyword_str, completion_length)) ?
-        \ list : neocomplcache#keyword_filter(list, a:cur_keyword_str)
+        \   a:complete_str, completion_length)) ?
+        \ list : neocomplcache#keyword_filter(list, a:complete_str)
 endfunction"}}}
 
 let &cpo = s:save_cpo

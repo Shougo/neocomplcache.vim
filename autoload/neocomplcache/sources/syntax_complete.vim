@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,7 +56,7 @@ function! s:source.finalize() "{{{
   delcommand NeoComplCacheCachingSyntax
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str) "{{{
+function! s:source.get_keyword_list(complete_str) "{{{
   if neocomplcache#within_comment()
     return []
   endif
@@ -70,7 +70,7 @@ function! s:source.get_keyword_list(cur_keyword_str) "{{{
 
   for syntax in neocomplcache#get_sources_list(
         \ s:syntax_list, filetype)
-    let list += neocomplcache#dictionary_filter(syntax, a:cur_keyword_str)
+    let list += neocomplcache#dictionary_filter(syntax, a:complete_str)
   endfor
 
   return list

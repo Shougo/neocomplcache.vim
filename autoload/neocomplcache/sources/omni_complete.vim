@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,13 +115,13 @@ function! s:source.get_keyword_pos(cur_text) "{{{
   let s:complete_results = s:set_complete_results_pos(
         \ s:get_omni_funcs(filetype), a:cur_text)
 
-  return s:get_cur_keyword_pos(s:complete_results)
+  return s:get_complete_pos(s:complete_results)
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
-  return s:get_complete_words(
+function! s:source.get_complete_words(complete_pos, complete_str) "{{{
+  return s:get_candidates(
         \ s:set_complete_results_words(s:complete_results),
-        \ a:cur_keyword_pos, a:cur_keyword_str)
+        \ a:complete_pos, a:complete_str)
 endfunction"}}}
 
 function! neocomplcache#sources#omni_complete#define() "{{{
@@ -191,29 +191,29 @@ function! s:set_complete_results_pos(funcs, cur_text) "{{{
     let pos = getpos('.')
 
     try
-      let cur_keyword_pos = call(omnifunc, [1, ''])
+      let complete_pos = call(omnifunc, [1, ''])
     catch
       call neocomplcache#print_error(
             \ 'Error occured calling omnifunction: ' . omnifunc)
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
-      let cur_keyword_pos = -1
+      let complete_pos = -1
     finally
       if getpos('.') != pos
         call setpos('.', pos)
       endif
     endtry
 
-    if cur_keyword_pos < 0
+    if complete_pos < 0
       continue
     endif
 
-    let cur_keyword_str = a:cur_text[cur_keyword_pos :]
+    let complete_str = a:cur_text[complete_pos :]
 
     let complete_results[omnifunc] = {
-          \ 'complete_words' : [],
-          \ 'cur_keyword_pos' : cur_keyword_pos,
-          \ 'cur_keyword_str' : cur_keyword_str,
+          \ 'candidates' : [],
+          \ 'complete_pos' : complete_pos,
+          \ 'complete_str' : complete_str,
           \ 'omnifunc' : omnifunc,
           \}
   endfor
@@ -231,13 +231,13 @@ function! s:set_complete_results_words(complete_results) "{{{
     let pos = getpos('.')
 
     " Note:
-    " let cur_keyword_str = result.cur_keyword_str
+    " let complete_str = result.complete_str
     " causes error in clang_complete(Why?).
-    let cur_keyword_str =
-          \ (result.cur_keyword_str == '') ? '' : result.cur_keyword_str
+    let complete_str =
+          \ (result.complete_str == '') ? '' : result.complete_str
 
     try
-      let list = call(omnifunc, [0, cur_keyword_str])
+      let list = call(omnifunc, [0, complete_str])
     catch
       call neocomplcache#print_error(
             \ 'Error occured calling omnifunction: ' . omnifunc)
@@ -257,43 +257,43 @@ function! s:set_complete_results_words(complete_results) "{{{
 
     let list = s:get_omni_list(list)
 
-    let result.complete_words = list
+    let result.candidates = list
   endfor
 
   return a:complete_results
 endfunction"}}}
-function! s:get_cur_keyword_pos(complete_results) "{{{
+function! s:get_complete_pos(complete_results) "{{{
   if empty(a:complete_results)
     return -1
   endif
 
-  let cur_keyword_pos = col('.')
+  let complete_pos = col('.')
   for result in values(a:complete_results)
-    if cur_keyword_pos > result.cur_keyword_pos
-      let cur_keyword_pos = result.cur_keyword_pos
+    if complete_pos > result.complete_pos
+      let complete_pos = result.complete_pos
     endif
   endfor
 
-  return cur_keyword_pos
+  return complete_pos
 endfunction"}}}
-function! s:get_complete_words(complete_results, cur_keyword_pos, cur_keyword_str) "{{{
+function! s:get_candidates(complete_results, complete_pos, complete_str) "{{{
   " Append prefix.
-  let complete_words = []
+  let candidates = []
   let len_words = 0
   for [source_name, result] in items(a:complete_results)
-    if result.cur_keyword_pos > a:cur_keyword_pos
-      let prefix = a:cur_keyword_str[: result.cur_keyword_pos
-            \                            - a:cur_keyword_pos - 1]
+    if result.complete_pos > a:complete_pos
+      let prefix = a:complete_str[: result.complete_pos
+            \                            - a:complete_pos - 1]
 
-      for keyword in result.complete_words
+      for keyword in result.candidates
         let keyword.word = prefix . keyword.word
       endfor
     endif
 
-    let complete_words += result.complete_words
+    let candidates += result.candidates
   endfor
 
-  return complete_words
+  return candidates
 endfunction"}}}
 
 let &cpo = s:save_cpo

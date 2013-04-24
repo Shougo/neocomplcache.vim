@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: include_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,7 +66,7 @@ function! s:source.finalize() "{{{
   endif
 endfunction"}}}
 
-function! s:source.get_keyword_list(cur_keyword_str) "{{{
+function! s:source.get_keyword_list(complete_str) "{{{
   if neocomplcache#within_comment()
     return []
   endif
@@ -85,12 +85,12 @@ function! s:source.get_keyword_list(cur_keyword_str) "{{{
     if has_key(s:include_cache, include)
       let s:cache_accessed_time[include] = localtime()
       let keyword_list += neocomplcache#dictionary_filter(
-            \ s:include_cache[include], a:cur_keyword_str)
+            \ s:include_cache[include], a:complete_str)
     endif
   endfor
 
   return neocomplcache#keyword_filter(
-        \ neocomplcache#dup_filter(keyword_list), a:cur_keyword_str)
+        \ neocomplcache#dup_filter(keyword_list), a:complete_str)
 endfunction"}}}
 
 function! neocomplcache#sources#include_complete#define() "{{{
