@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: variables.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" FILE: converter_remove_next_keyword.vim
+" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -27,25 +27,51 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#variables#get_frequencies() "{{{
-  if !exists('s:filetype_frequencies')
-    let s:filetype_frequencies = {}
-  endif
-  let filetype = neocomplcache#context_filetype#get(&filetype)
-  if !has_key(s:filetype_frequencies, filetype)
-    let s:filetype_frequencies[filetype] = {}
-  endif
-
-  let frequencies = s:filetype_frequencies[filetype]
-
-  return frequencies
+function! neocomplcache#filters#converter_remove_next_keyword#define() "{{{
+  return s:converter
 endfunction"}}}
 
-function! neocomplcache#variables#get_sources() "{{{
-  if !exists('s:sources')
-    let s:sources = {}
+let s:converter = {
+      \ 'name' : 'converter_remove_next_keyword',
+      \ 'description' : 'remove next keyword converter',
+      \}
+
+function! s:converter.filter(context) "{{{
+  " Remove next keyword.
+  let pattern = '^\%(' .
+        \ (a:context.source_name  == 'filename_complete' ?
+        \   neocomplcache#get_next_keyword_pattern('filename') :
+        \   neocomplcache#get_next_keyword_pattern()) . '\m\)'
+
+  let next_keyword = matchstr('a'.
+        \ getline('.')[len(a:context.input) :], pattern)[1:]
+  if next_keyword == ''
+    return a:context.candidates
   endif
-  return s:sources
+
+  let next_keyword = substitute(
+        \ substitute(escape(next_keyword,
+        \ '~" \.^$*[]'), "'", "''", 'g'), ')$', '', '').'$'
+
+  " No ignorecase.
+  let ignorecase_save = &ignorecase
+  let &ignorecase = 0
+  try
+    for r in a:context.candidates
+      let pos = match(r.word, next_keyword)
+      if pos >= 0
+        if !has_key(r, 'abbr')
+          let r.abbr = r.word
+        endif
+
+        let r.word = r.word[: pos-1]
+      endif
+    endfor
+  finally
+    let &ignorecase = ignorecase_save
+  endtry
+
+  return a:context.candidates
 endfunction"}}}
 
 let &cpo = s:save_cpo

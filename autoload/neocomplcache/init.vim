@@ -760,6 +760,8 @@ function! neocomplcache#init#_source(source) "{{{
     let source.loaded = 1
   endif
 
+  let source.neocomplcache__context.source_name = source.name
+
   return source
 endfunction"}}}
 

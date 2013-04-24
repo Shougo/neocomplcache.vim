@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: variables.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" FILE: sorter_rank.vim
+" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -27,25 +27,26 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#variables#get_frequencies() "{{{
-  if !exists('s:filetype_frequencies')
-    let s:filetype_frequencies = {}
-  endif
-  let filetype = neocomplcache#context_filetype#get(&filetype)
-  if !has_key(s:filetype_frequencies, filetype)
-    let s:filetype_frequencies[filetype] = {}
-  endif
-
-  let frequencies = s:filetype_frequencies[filetype]
-
-  return frequencies
+function! neocomplcache#filters#sorter_rank#define() "{{{
+  return s:sorter
 endfunction"}}}
 
-function! neocomplcache#variables#get_sources() "{{{
-  if !exists('s:sources')
-    let s:sources = {}
-  endif
-  return s:sources
+let s:sorter = {
+      \ 'name' : 'sorter_rank',
+      \ 'description' : 'sort by matched rank order',
+      \}
+
+function! s:sorter.filter(context) "{{{
+  " return sort(a:context.candidates, 's:compare_source_rank')
+  return reverse(neocomplcache#util#sort_by(
+        \ a:context.candidates,
+        \ 'neocomplcache#get_source_rank(v:val.name)'))
+endfunction"}}}
+
+" Source rank order. "{{{
+function! s:compare_source_rank(i1, i2)
+  return neocomplcache#get_source_rank(a:i2.name) -
+        \ neocomplcache#get_source_rank(a:i1.name)
 endfunction"}}}
 
 let &cpo = s:save_cpo

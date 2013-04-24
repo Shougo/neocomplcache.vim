@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: variables.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" FILE: converter_case.vim
+" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -27,25 +27,50 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#variables#get_frequencies() "{{{
-  if !exists('s:filetype_frequencies')
-    let s:filetype_frequencies = {}
-  endif
-  let filetype = neocomplcache#context_filetype#get(&filetype)
-  if !has_key(s:filetype_frequencies, filetype)
-    let s:filetype_frequencies[filetype] = {}
-  endif
-
-  let frequencies = s:filetype_frequencies[filetype]
-
-  return frequencies
+function! neocomplcache#filters#converter_case#define() "{{{
+  return s:converter
 endfunction"}}}
 
-function! neocomplcache#variables#get_sources() "{{{
-  if !exists('s:sources')
-    let s:sources = {}
+let s:converter = {
+      \ 'name' : 'converter_case',
+      \ 'description' : 'case converter',
+      \}
+
+function! s:converter.filter(context) "{{{
+  if neocomplcache#is_text_mode()
+    return a:context.candidates
   endif
-  return s:sources
+
+  let convert_candidates = filter(copy(a:context.candidates),
+        \ "get(v:val, 'neocomplcache__convertable', 1)
+        \  && v:val.word =~ '^\\u\\+$\\|^\\u\\?\\l\\+$'")
+
+  if a:context.complete_str =~ '^\l\+$'
+    for candidate in convert_candidates
+      let candidate.word = tolower(candidate.word)
+      if has_key(candidate, 'abbr')
+        let candidate.abbr = tolower(candidate.abbr)
+      endif
+    endfor
+  elseif a:context.complete_str =~ '^\u\+$'
+    for candidate in convert_candidates
+      let candidate.word = toupper(candidate.word)
+      if has_key(candidate, 'abbr')
+        let candidate.abbr = toupper(candidate.abbr)
+      endif
+    endfor
+  elseif a:context.complete_str =~ '^\u\l\+$'
+    for candidate in convert_candidates
+      let candidate.word = toupper(candidate.word[0]).
+            \ tolower(candidate.word[1:])
+      if has_key(candidate, 'abbr')
+        let candidate.abbr = toupper(candidate.abbr[0]).
+              \ tolower(candidate.abbr[1:])
+      endif
+    endfor
+  endif
+
+  return a:context.candidates
 endfunction"}}}
 
 let &cpo = s:save_cpo

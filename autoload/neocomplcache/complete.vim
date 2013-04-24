@@ -201,11 +201,9 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
         " Set default menu.
         let candidate.menu = source.mark
       endif
-    endfor
-
-    for candidate in filter(copy(words),
-          \ 'has_key(frequencies, v:val.word)')
-      let candidate.rank = frequencies[candidate.word]
+      if has_key(frequencies, candidate.word)
+        let candidate.rank = frequencies[candidate.word]
+      endif
     endfor
 
     let compare_func = get(source, 'compare_func',
