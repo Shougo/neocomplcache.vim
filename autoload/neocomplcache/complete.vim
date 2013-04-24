@@ -163,13 +163,8 @@ function! neocomplcache#complete#_get_cur_keyword_pos(sources) "{{{
     return -1
   endif
 
-  let complete_pos = col('.')
-  for source in a:sources
-    let complete_pos = min([complete_pos,
-          \ source.neocomplcache__context.complete_pos])
-  endfor
-
-  return complete_pos
+  return min([col('.')] + map(copy(a:sources),
+        \ 'v:val.neocomplcache__context.complete_pos'))
 endfunction"}}}
 
 function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keyword_str) "{{{
