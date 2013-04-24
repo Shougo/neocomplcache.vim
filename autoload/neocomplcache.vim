@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,25 +69,25 @@ function! neocomplcache#is_disabled_source(source_name) "{{{
         \   get(g:neocomplcache_disabled_sources_list, '_', []))
   return index(disabled_sources, a:source_name) >= 0
 endfunction"}}}
-function! neocomplcache#keyword_escape(cur_keyword_str) "{{{
-  return neocomplcache#helper#keyword_escape(a:cur_keyword_str)
+function! neocomplcache#keyword_escape(complete_str) "{{{
+  return neocomplcache#helper#keyword_escape(a:complete_str)
 endfunction"}}}
-function! neocomplcache#keyword_filter(list, cur_keyword_str) "{{{
-  return neocomplcache#filters#keyword_filter(a:list, a:cur_keyword_str)
+function! neocomplcache#keyword_filter(list, complete_str) "{{{
+  return neocomplcache#filters#keyword_filter(a:list, a:complete_str)
 endfunction"}}}
 function! neocomplcache#dup_filter(list) "{{{
   return neocomplcache#util#dup_filter(a:list)
 endfunction"}}}
-function! neocomplcache#check_match_filter(cur_keyword_str) "{{{
-  return neocomplcache#keyword_escape(a:cur_keyword_str) =~ '[^\\]\*\|\\+'
+function! neocomplcache#check_match_filter(complete_str) "{{{
+  return neocomplcache#keyword_escape(a:complete_str) =~ '[^\\]\*\|\\+'
 endfunction"}}}
-function! neocomplcache#check_completion_length_match(cur_keyword_str, completion_length) "{{{
+function! neocomplcache#check_completion_length_match(complete_str, completion_length) "{{{
   return neocomplcache#keyword_escape(
-        \ a:cur_keyword_str[: a:completion_length-1]) =~
+        \ a:complete_str[: a:completion_length-1]) =~
         \'[^\\]\*\|\\+\|\\%(\|\\|'
 endfunction"}}}
-function! neocomplcache#dictionary_filter(dictionary, cur_keyword_str) "{{{
-  return neocomplcache#filters#dictionary_filter(a:dictionary, a:cur_keyword_str)
+function! neocomplcache#dictionary_filter(dictionary, complete_str) "{{{
+  return neocomplcache#filters#dictionary_filter(a:dictionary, a:complete_str)
 endfunction"}}}
 function! neocomplcache#unpack_dictionary(dict) "{{{
   let ret = []

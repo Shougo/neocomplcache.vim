@@ -42,49 +42,49 @@ function! neocomplcache#complete#manual_complete(findstart, base) "{{{
             \ -1 : -3
     endif
 
-    " Get cur_keyword_pos.
+    " Get complete_pos.
     if neocomplcache#is_prefetch() && !empty(neocomplcache.complete_results)
       " Use prefetch results.
     else
       let neocomplcache.complete_results =
             \ neocomplcache#complete#_get_results(cur_text)
     endif
-    let cur_keyword_pos =
-          \ neocomplcache#complete#_get_cur_keyword_pos(neocomplcache.complete_results)
+    let complete_pos =
+          \ neocomplcache#complete#_get_complete_pos(neocomplcache.complete_results)
 
-    if cur_keyword_pos < 0
+    if complete_pos < 0
       call neocomplcache#helper#clear_result()
 
       let neocomplcache = neocomplcache#get_current_neocomplcache()
-      let cur_keyword_pos = (neocomplcache#is_prefetch() ||
+      let complete_pos = (neocomplcache#is_prefetch() ||
             \ g:neocomplcache_enable_insert_char_pre ||
             \ neocomplcache#get_current_neocomplcache().skipped) ?  -1 : -3
       let neocomplcache.skipped = 0
     endif
 
-    return cur_keyword_pos
+    return complete_pos
   else
-    let cur_keyword_pos = neocomplcache#complete#_get_cur_keyword_pos(
+    let complete_pos = neocomplcache#complete#_get_complete_pos(
           \ neocomplcache.complete_results)
-    let neocomplcache.complete_words = neocomplcache#complete#_get_words(
-          \ neocomplcache.complete_results, cur_keyword_pos, a:base)
-    let neocomplcache.cur_keyword_str = a:base
+    let neocomplcache.candidates = neocomplcache#complete#_get_words(
+          \ neocomplcache.complete_results, complete_pos, a:base)
+    let neocomplcache.complete_str = a:base
 
     if v:version > 703 || v:version == 703 && has('patch418')
-      let dict = { 'words' : neocomplcache.complete_words }
+      let dict = { 'words' : neocomplcache.candidates }
 
       if (g:neocomplcache_enable_cursor_hold_i
             \      || v:version > 703 || v:version == 703 && has('patch561'))
             \ && (len(a:base) < g:neocomplcache_auto_completion_start_length
-            \   || !empty(filter(copy(neocomplcache.complete_words),
+            \   || !empty(filter(copy(neocomplcache.candidates),
             \          "get(v:val, 'neocomplcache__refresh', 0)"))
-            \   || len(neocomplcache.complete_words) >= g:neocomplcache_max_list)
+            \   || len(neocomplcache.candidates) >= g:neocomplcache_max_list)
         " Note: If Vim is less than 7.3.561, it have broken register "." problem.
         let dict.refresh = 'always'
       endif
       return dict
     else
-      return neocomplcache.complete_words
+      return neocomplcache.candidates
     endif
   endif
 endfunction"}}}
@@ -103,13 +103,13 @@ function! neocomplcache#complete#sources_manual_complete(findstart, base) "{{{
     let s:use_sources = neocomplcache#helper#get_sources_list(
           \ type(sources) == type([]) ? sources : [sources])
 
-    " Get cur_keyword_pos.
+    " Get complete_pos.
     let complete_results = neocomplcache#complete#_get_results(
           \ neocomplcache#get_cur_text(1), s:use_sources)
-    let neocomplcache.cur_keyword_pos =
-          \ neocomplcache#complete#_get_cur_keyword_pos(complete_results)
+    let neocomplcache.complete_pos =
+          \ neocomplcache#complete#_get_complete_pos(complete_results)
 
-    if neocomplcache.cur_keyword_pos < 0
+    if neocomplcache.complete_pos < 0
       call neocomplcache#helper#clear_result()
 
       return -2
@@ -117,20 +117,20 @@ function! neocomplcache#complete#sources_manual_complete(findstart, base) "{{{
 
     let neocomplcache.complete_results = complete_results
 
-    return neocomplcache.cur_keyword_pos
+    return neocomplcache.complete_pos
   endif
 
-  let neocomplcache.cur_keyword_pos =
-        \ neocomplcache#complete#_get_cur_keyword_pos(
+  let neocomplcache.complete_pos =
+        \ neocomplcache#complete#_get_complete_pos(
         \     neocomplcache.complete_results)
-  let complete_words = neocomplcache#complete#_get_words(
+  let candidates = neocomplcache#complete#_get_words(
         \ neocomplcache.complete_results,
-        \ neocomplcache.cur_keyword_pos, a:base)
+        \ neocomplcache.complete_pos, a:base)
 
-  let neocomplcache.complete_words = complete_words
-  let neocomplcache.cur_keyword_str = a:base
+  let neocomplcache.candidates = candidates
+  let neocomplcache.complete_str = a:base
 
-  return complete_words
+  return candidates
 endfunction"}}}
 
 function! neocomplcache#complete#unite_complete(findstart, base) "{{{
@@ -158,7 +158,7 @@ function! neocomplcache#complete#_get_results(cur_text, ...) "{{{
         \ '!empty(v:val.neocomplcache__context.candidates)')
 endfunction"}}}
 
-function! neocomplcache#complete#_get_cur_keyword_pos(sources) "{{{
+function! neocomplcache#complete#_get_complete_pos(sources) "{{{
   if empty(a:sources)
     return -1
   endif
@@ -167,7 +167,7 @@ function! neocomplcache#complete#_get_cur_keyword_pos(sources) "{{{
         \ 'v:val.neocomplcache__context.complete_pos'))
 endfunction"}}}
 
-function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keyword_str) "{{{
+function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str) "{{{
   let frequencies = neocomplcache#variables#get_frequencies()
   if exists('*neocomplcache#sources#buffer_complete#get_frequencies')
     let frequencies = extend(copy(
@@ -176,7 +176,7 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
   endif
 
   " Append prefix.
-  let complete_words = []
+  let candidates = []
   let len_words = 0
   for source in sort(filter(copy(a:sources),
         \ '!empty(v:val.neocomplcache__context.candidates)'),
@@ -187,25 +187,25 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
           \ map(copy(context.candidates), "{'word': v:val}") :
           \ deepcopy(context.candidates)
 
-    if context.complete_pos > a:cur_keyword_pos
-      let prefix = a:cur_keyword_str[: context.complete_pos
-            \                            - a:cur_keyword_pos - 1]
+    if context.complete_pos > a:complete_pos
+      let prefix = a:complete_str[: context.complete_pos
+            \                            - a:complete_pos - 1]
 
-      for keyword in words
-        let keyword.word = prefix . keyword.word
+      for candidate in words
+        let candidate.word = prefix . candidate.word
       endfor
     endif
 
-    for keyword in words
-      if !has_key(keyword, 'menu') && has_key(source, 'mark')
+    for candidate in words
+      if !has_key(candidate, 'menu') && has_key(source, 'mark')
         " Set default menu.
-        let keyword.menu = source.mark
+        let candidate.menu = source.mark
       endif
     endfor
 
-    for keyword in filter(copy(words),
+    for candidate in filter(copy(words),
           \ 'has_key(frequencies, v:val.word)')
-      let keyword.rank = frequencies[keyword.word]
+      let candidate.rank = frequencies[candidate.word]
     endfor
 
     let compare_func = get(source, 'compare_func',
@@ -214,7 +214,7 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
       call sort(words, compare_func)
     endif
 
-    let complete_words += s:remove_next_keyword(source.name, words)
+    let candidates += s:remove_next_keyword(source.name, words)
     let len_words += len(words)
 
     if g:neocomplcache_max_list > 0
@@ -228,20 +228,20 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
   endfor
 
   if g:neocomplcache_max_list > 0
-    let complete_words = complete_words[: g:neocomplcache_max_list]
+    let candidates = candidates[: g:neocomplcache_max_list]
   endif
 
   " Check dup and set icase.
   let icase = g:neocomplcache_enable_ignore_case &&
-        \!(g:neocomplcache_enable_smart_case && a:cur_keyword_str =~ '\u')
+        \!(g:neocomplcache_enable_smart_case && a:complete_str =~ '\u')
         \ && !neocomplcache#is_text_mode()
-  for keyword in complete_words
-    if has_key(keyword, 'kind') && keyword.kind == ''
+  for candidate in candidates
+    if has_key(candidate, 'kind') && candidate.kind == ''
       " Remove kind key.
-      call remove(keyword, 'kind')
+      call remove(candidate, 'kind')
     endif
 
-    let keyword.icase = icase
+    let candidate.icase = icase
   endfor
 
   " Delimiter check. "{{{
@@ -250,33 +250,33 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
         \ get(g:neocomplcache_delimiter_patterns, filetype, [])
     " Count match.
     let delim_cnt = 0
-    let matchend = matchend(a:cur_keyword_str, delimiter)
+    let matchend = matchend(a:complete_str, delimiter)
     while matchend >= 0
-      let matchend = matchend(a:cur_keyword_str, delimiter, matchend)
+      let matchend = matchend(a:complete_str, delimiter, matchend)
       let delim_cnt += 1
     endwhile
 
-    for keyword in complete_words
-      let split_list = split(keyword.word, delimiter.'\ze.', 1)
+    for candidate in candidates
+      let split_list = split(candidate.word, delimiter.'\ze.', 1)
       if len(split_list) > 1
         let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
-        let keyword.word = join(split_list[ : delim_cnt], delimiter_sub)
-        let keyword.abbr = join(
-              \ split(get(keyword, 'abbr', keyword.word),
+        let candidate.word = join(split_list[ : delim_cnt], delimiter_sub)
+        let candidate.abbr = join(
+              \ split(get(candidate, 'abbr', candidate.word),
               \             delimiter.'\ze.', 1)[ : delim_cnt],
               \ delimiter_sub)
 
         if g:neocomplcache_max_keyword_width >= 0
-              \ && len(keyword.abbr) > g:neocomplcache_max_keyword_width
-          let keyword.abbr = substitute(keyword.abbr,
+              \ && len(candidate.abbr) > g:neocomplcache_max_keyword_width
+          let candidate.abbr = substitute(candidate.abbr,
                 \ '\(\h\)\w*'.delimiter, '\1'.delimiter_sub, 'g')
         endif
         if delim_cnt+1 < len(split_list)
-          let keyword.abbr .= delimiter_sub . '~'
-          let keyword.dup = 0
+          let candidate.abbr .= delimiter_sub . '~'
+          let candidate.dup = 0
 
           if g:neocomplcache_enable_auto_delimiter
-            let keyword.word .= delimiter_sub
+            let candidate.word .= delimiter_sub
           endif
         endif
       endif
@@ -289,31 +289,31 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
 
   " Convert words.
   if neocomplcache#is_text_mode() "{{{
-    let convert_candidates = filter(copy(complete_words),
+    let convert_candidates = filter(copy(candidates),
           \ "get(v:val, 'neocomplcache__convertable', 1)
           \  && v:val.word =~ '^\\u\\+$\\|^\\u\\?\\l\\+$'")
 
-    if a:cur_keyword_str =~ '^\l\+$'
-      for keyword in convert_candidates
-        let keyword.word = tolower(keyword.word)
-        if has_key(keyword, 'abbr')
-          let keyword.abbr = tolower(keyword.abbr)
+    if a:complete_str =~ '^\l\+$'
+      for candidate in convert_candidates
+        let candidate.word = tolower(candidate.word)
+        if has_key(candidate, 'abbr')
+          let candidate.abbr = tolower(candidate.abbr)
         endif
       endfor
-    elseif a:cur_keyword_str =~ '^\u\+$'
-      for keyword in convert_candidates
-        let keyword.word = toupper(keyword.word)
-        if has_key(keyword, 'abbr')
-          let keyword.abbr = toupper(keyword.abbr)
+    elseif a:complete_str =~ '^\u\+$'
+      for candidate in convert_candidates
+        let candidate.word = toupper(candidate.word)
+        if has_key(candidate, 'abbr')
+          let candidate.abbr = toupper(candidate.abbr)
         endif
       endfor
-    elseif a:cur_keyword_str =~ '^\u\l\+$'
-      for keyword in convert_candidates
-        let keyword.word = toupper(keyword.word[0]).
-              \ tolower(keyword.word[1:])
-        if has_key(keyword, 'abbr')
-          let keyword.abbr = toupper(keyword.abbr[0]).
-                \ tolower(keyword.abbr[1:])
+    elseif a:complete_str =~ '^\u\l\+$'
+      for candidate in convert_candidates
+        let candidate.word = toupper(candidate.word[0]).
+              \ tolower(candidate.word[1:])
+        if has_key(candidate, 'abbr')
+          let candidate.abbr = toupper(candidate.abbr[0]).
+                \ tolower(candidate.abbr[1:])
         endif
       endfor
     endif
@@ -321,13 +321,13 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
 
   if g:neocomplcache_max_keyword_width >= 0 "{{{
     " Abbr check.
-    for keyword in complete_words
-      let abbr = get(keyword, 'abbr', keyword.word)
+    for candidate in candidates
+      let abbr = get(candidate, 'abbr', candidate.word)
       if len(abbr) > g:neocomplcache_max_keyword_width
         let len = neocomplcache#util#wcswidth(abbr)
 
         if len > g:neocomplcache_max_keyword_width
-          let keyword.abbr = neocomplcache#util#truncate_smart(
+          let candidate.abbr = neocomplcache#util#truncate_smart(
                 \ abbr, g:neocomplcache_max_keyword_width,
                 \ g:neocomplcache_max_keyword_width/2, '..')
         endif
@@ -335,7 +335,7 @@ function! neocomplcache#complete#_get_words(sources, cur_keyword_pos, cur_keywor
     endfor
   endif"}}}
 
-  return complete_words
+  return candidates
 endfunction"}}}
 function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
   " Set context filetype.
@@ -422,7 +422,7 @@ function! neocomplcache#complete#_set_results_words(sources) "{{{
     if neocomplcache#is_text_mode()
       let &ignorecase = 1
     elseif g:neocomplcache_enable_smart_case
-          \ && result.cur_keyword_str =~ '\u'
+          \ && result.complete_str =~ '\u'
       let &ignorecase = 0
     else
       let &ignorecase = g:neocomplcache_enable_ignore_case

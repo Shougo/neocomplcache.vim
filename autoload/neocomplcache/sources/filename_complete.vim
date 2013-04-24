@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Apr 2013.
+" Last Modified: 24 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,40 +49,40 @@ function! s:source.get_keyword_pos(cur_text) "{{{
 
   " Filename pattern.
   let pattern = neocomplcache#get_keyword_pattern_end('filename')
-  let [cur_keyword_pos, cur_keyword_str] =
+  let [complete_pos, complete_str] =
         \ neocomplcache#match_word(a:cur_text, pattern)
-  if cur_keyword_str =~ '//' ||
+  if complete_str =~ '//' ||
         \ (neocomplcache#is_auto_complete() &&
-        \    (cur_keyword_str !~ '/' ||
-        \     cur_keyword_str =~#
+        \    (complete_str !~ '/' ||
+        \     complete_str =~#
         \          '\\[^ ;*?[]"={}'']\|\.\.\+$\|/c\%[ygdrive/]$'))
     " Not filename pattern.
     return -1
   endif
 
-  if neocomplcache#is_sources_complete() && cur_keyword_pos < 0
-    let cur_keyword_pos = len(a:cur_text)
+  if neocomplcache#is_sources_complete() && complete_pos < 0
+    let complete_pos = len(a:cur_text)
   endif
 
-  return cur_keyword_pos
+  return complete_pos
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
-  return s:get_glob_files(a:cur_keyword_str, '')
+function! s:source.get_complete_words(complete_pos, complete_str) "{{{
+  return s:get_glob_files(a:complete_str, '')
 endfunction"}}}
 
 let s:cached_files = {}
 
-function! s:get_glob_files(cur_keyword_str, path) "{{{
+function! s:get_glob_files(complete_str, path) "{{{
   let path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
 
-  let cur_keyword_str = neocomplcache#util#substitute_path_separator(
-        \ substitute(a:cur_keyword_str, '\\\(.\)', '\1', 'g'))
+  let complete_str = neocomplcache#util#substitute_path_separator(
+        \ substitute(a:complete_str, '\\\(.\)', '\1', 'g'))
 
-  let glob = (cur_keyword_str !~ '\*$')?
-        \ cur_keyword_str . '*' : cur_keyword_str
+  let glob = (complete_str !~ '\*$')?
+        \ complete_str . '*' : complete_str
 
-  if a:path == '' && cur_keyword_str !~ '/'
+  if a:path == '' && complete_str !~ '/'
     if !has_key(s:cached_files, getcwd())
       call s:caching_current_files()
     endif
@@ -112,7 +112,7 @@ function! s:get_glob_files(cur_keyword_str, path) "{{{
         \    "word" : fnamemodify(v:val, ":t"),
         \    "orig" : v:val,
         \ }'),
-        \ fnamemodify(cur_keyword_str, ':t'))
+        \ fnamemodify(complete_str, ':t'))
 
   if neocomplcache#is_auto_complete()
         \ && len(files) > g:neocomplcache_max_list
@@ -123,8 +123,8 @@ function! s:get_glob_files(cur_keyword_str, path) "{{{
         \    "word" : substitute(v:val.orig, "//", "/", "g"),
         \ }')
 
-  if a:cur_keyword_str =~ '^\$\h\w*'
-    let env = matchstr(a:cur_keyword_str, '^\$\h\w*')
+  if a:complete_str =~ '^\$\h\w*'
+    let env = matchstr(a:complete_str, '^\$\h\w*')
     let env_ev = eval(env)
     if neocomplcache#is_windows()
       let env_ev = substitute(env_ev, '\\', '/', 'g')
@@ -166,7 +166,7 @@ function! s:get_glob_files(cur_keyword_str, path) "{{{
     endif
     let dict.abbr = abbr
 
-    if a:cur_keyword_str =~ '^\~/'
+    if a:complete_str =~ '^\~/'
       let dict.word = substitute(dict.word, home_pattern, '\~/', '')
       let dict.abbr = substitute(dict.abbr, home_pattern, '\~/', '')
     endif
@@ -188,12 +188,12 @@ function! neocomplcache#sources#filename_complete#define() "{{{
   return s:source
 endfunction"}}}
 
-function! neocomplcache#sources#filename_complete#get_complete_words(cur_keyword_str, path) "{{{
+function! neocomplcache#sources#filename_complete#get_complete_words(complete_str, path) "{{{
   if !neocomplcache#is_enabled()
     return []
   endif
 
-  return s:get_glob_files(a:cur_keyword_str, a:path)
+  return s:get_glob_files(a:complete_str, a:path)
 endfunction"}}}
 
 let &cpo = s:save_cpo
