@@ -400,14 +400,6 @@ g:neocomplcache_lock_buffer_name_pattern
 
 		Default value is ''.
 
-g:neocomplcache_compare_function	*g:neocomplcache_compare_function*
-		This variable set compare candidates function.
-		The compare function specification is same to |sort()|
-		compare function.  If you change compare function, you must
-		create compare function.
-
-		Default value is 'neocomplcache#compare_rank'.
-
 g:neocomplcache_enable_prefetch		*g:neocomplcache_enable_prefetch*
 		This variable controls whether neocomplcache prefetches.  If
 		this variable is non-zero, neocomplcache does not flick in auto
@@ -1504,22 +1496,7 @@ But you can use |unite.vim| instead to use quick match.
 
 Q: How can I change the order of candidates? :
 
-A: The default compare function is rank order.  It sorts rank order and
-alphabetical order.  If you select candidates, the candidate's rank will be
-high.  To change compare function, you can change
-|g:neocomplcache_compare_function| value.
-Note: To use rank feature, your Vim's version must be 7.3.549 or above.
->
-	let g:neocomplcache_compare_function = 'neocomplcache#compare_word'
-<
-To make new compare function, please refer |g:neocomplcache_compare_function|.
-
-The built-in compare functions:
-	neocomplcache#compare_rank        : Rank order (default)
-	neocomplcache#compare_word        : Alphabetical order
-	neocomplcache#compare_human       : Human order(slow)
-	neocomplcache#compare_nothing     : Do not sort
-
+A: Todo.
 
 Q: An input problem occurred in using uim-skk or other IMEs:
 
