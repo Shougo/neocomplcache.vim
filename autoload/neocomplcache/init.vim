@@ -712,8 +712,8 @@ function! neocomplcache#init#_source(source) "{{{
         \ 'matchers' : ['matcher_old'],
         \ 'sorters' : ['sorter_rank'],
         \ 'converters' : [
-        \      'converter_delimiter',
         \      'converter_remove_next_keyword',
+        \      'converter_delimiter',
         \      'converter_case',
         \      'converter_abbr',
         \ ],
@@ -773,7 +773,7 @@ function! neocomplcache#init#_filters(names) "{{{
   let _ = []
   let filters = neocomplcache#variables#get_filters()
 
-  for name in filter(copy(a:names), '!has_key(filters, v:val)')
+  for name in a:names
     if !has_key(filters, name)
       " Search autoload.
       for filter_name in map(split(globpath(&runtimepath,

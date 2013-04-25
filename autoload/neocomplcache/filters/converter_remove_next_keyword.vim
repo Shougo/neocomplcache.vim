@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: converter_remove_next_keyword.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,13 +38,8 @@ let s:converter = {
 
 function! s:converter.filter(context) "{{{
   " Remove next keyword.
-  let pattern = '^\%(' .
-        \ (a:context.source_name  == 'filename_complete' ?
-        \   neocomplcache#get_next_keyword_pattern('filename') :
-        \   neocomplcache#get_next_keyword_pattern()) . '\m\)'
-
-  let next_keyword = matchstr('a'.
-        \ getline('.')[len(a:context.input) :], pattern)[1:]
+  let next_keyword = neocomplcache#filters#
+        \converter_remove_next_keyword#get_next_keyword(a:context.source_name)
   if next_keyword == ''
     return a:context.candidates
   endif
@@ -72,6 +67,17 @@ function! s:converter.filter(context) "{{{
   endtry
 
   return a:context.candidates
+endfunction"}}}
+
+function! neocomplcache#filters#converter_remove_next_keyword#get_next_keyword(source_name) "{{{
+  let pattern = '^\%(' .
+        \ (a:source_name  == 'filename_complete' ?
+        \   neocomplcache#get_next_keyword_pattern('filename') :
+        \   neocomplcache#get_next_keyword_pattern()) . '\m\)'
+
+  let next_keyword = matchstr('a'.
+        \ getline('.')[len(neocomplcache#get_cur_text(1)) :], pattern)[1:]
+  return next_keyword
 endfunction"}}}
 
 let &cpo = s:save_cpo
