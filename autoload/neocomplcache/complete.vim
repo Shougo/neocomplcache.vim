@@ -210,7 +210,10 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
     let words = neocomplcache#helper#call_filters(
           \ source.sorters, source, {})
 
-    let candidates += s:remove_next_keyword(source.name, words)
+    let words = neocomplcache#helper#call_filters(
+          \ source.converters, source, {})
+
+    let candidates += words
     let len_words += len(words)
 
     if g:neocomplcache_max_list > 0
@@ -240,96 +243,9 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
     let candidate.icase = icase
   endfor
 
-  " Delimiter check. "{{{
-  let filetype = neocomplcache#get_context_filetype()
-  for delimiter in ['/'] +
-        \ get(g:neocomplcache_delimiter_patterns, filetype, [])
-    " Count match.
-    let delim_cnt = 0
-    let matchend = matchend(a:complete_str, delimiter)
-    while matchend >= 0
-      let matchend = matchend(a:complete_str, delimiter, matchend)
-      let delim_cnt += 1
-    endwhile
-
-    for candidate in candidates
-      let split_list = split(candidate.word, delimiter.'\ze.', 1)
-      if len(split_list) > 1
-        let delimiter_sub = substitute(delimiter, '\\\([.^$]\)', '\1', 'g')
-        let candidate.word = join(split_list[ : delim_cnt], delimiter_sub)
-        let candidate.abbr = join(
-              \ split(get(candidate, 'abbr', candidate.word),
-              \             delimiter.'\ze.', 1)[ : delim_cnt],
-              \ delimiter_sub)
-
-        if g:neocomplcache_max_keyword_width >= 0
-              \ && len(candidate.abbr) > g:neocomplcache_max_keyword_width
-          let candidate.abbr = substitute(candidate.abbr,
-                \ '\(\h\)\w*'.delimiter, '\1'.delimiter_sub, 'g')
-        endif
-        if delim_cnt+1 < len(split_list)
-          let candidate.abbr .= delimiter_sub . '~'
-          let candidate.dup = 0
-
-          if g:neocomplcache_enable_auto_delimiter
-            let candidate.word .= delimiter_sub
-          endif
-        endif
-      endif
-    endfor
-  endfor"}}}
-
   if neocomplcache#complete_check()
     return []
   endif
-
-  " Convert words.
-  if neocomplcache#is_text_mode() "{{{
-    let convert_candidates = filter(copy(candidates),
-          \ "get(v:val, 'neocomplcache__convertable', 1)
-          \  && v:val.word =~ '^\\u\\+$\\|^\\u\\?\\l\\+$'")
-
-    if a:complete_str =~ '^\l\+$'
-      for candidate in convert_candidates
-        let candidate.word = tolower(candidate.word)
-        if has_key(candidate, 'abbr')
-          let candidate.abbr = tolower(candidate.abbr)
-        endif
-      endfor
-    elseif a:complete_str =~ '^\u\+$'
-      for candidate in convert_candidates
-        let candidate.word = toupper(candidate.word)
-        if has_key(candidate, 'abbr')
-          let candidate.abbr = toupper(candidate.abbr)
-        endif
-      endfor
-    elseif a:complete_str =~ '^\u\l\+$'
-      for candidate in convert_candidates
-        let candidate.word = toupper(candidate.word[0]).
-              \ tolower(candidate.word[1:])
-        if has_key(candidate, 'abbr')
-          let candidate.abbr = toupper(candidate.abbr[0]).
-                \ tolower(candidate.abbr[1:])
-        endif
-      endfor
-    endif
-  endif"}}}
-
-  if g:neocomplcache_max_keyword_width >= 0 "{{{
-    " Abbr check.
-    for candidate in candidates
-      let abbr = get(candidate, 'abbr', candidate.word)
-      if len(abbr) > g:neocomplcache_max_keyword_width
-        let len = neocomplcache#util#wcswidth(abbr)
-
-        if len > g:neocomplcache_max_keyword_width
-          let candidate.abbr = neocomplcache#util#truncate_smart(
-                \ abbr, g:neocomplcache_max_keyword_width,
-                \ g:neocomplcache_max_keyword_width/2, '..')
-        endif
-      endif
-    endfor
-  endif"}}}
 
   return candidates
 endfunction"}}}
@@ -455,42 +371,6 @@ function! neocomplcache#complete#_set_results_words(sources) "{{{
 
     let &ignorecase = ignorecase_save
   endfor
-endfunction"}}}
-
-function! s:remove_next_keyword(source_name, list) "{{{
-  " Remove next keyword.
-  let pattern = '^\%(' .
-        \ (a:source_name  == 'filename_complete' ?
-        \   neocomplcache#get_next_keyword_pattern('filename') :
-        \   neocomplcache#get_next_keyword_pattern()) . '\m\)'
-
-  let next_keyword_str = matchstr('a'.
-        \ getline('.')[len(neocomplcache#get_cur_text(1)) :], pattern)[1:]
-  if next_keyword_str == ''
-    return a:list
-  endif
-
-  let next_keyword_str = substitute(
-        \ substitute(escape(next_keyword_str,
-        \ '~" \.^$*[]'), "'", "''", 'g'), ')$', '', '').'$'
-
-  " No ignorecase.
-  let ignorecase_save = &ignorecase
-  let &ignorecase = 0
-
-  for r in a:list
-    if r.word =~ next_keyword_str
-      if !has_key(r, 'abbr')
-        let r.abbr = r.word
-      endif
-
-      let r.word = r.word[:match(r.word, next_keyword_str)-1]
-    endif
-  endfor
-
-  let &ignorecase = ignorecase_save
-
-  return a:list
 endfunction"}}}
 
 " Source rank order. "{{{

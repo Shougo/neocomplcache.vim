@@ -400,7 +400,7 @@ function! neocomplcache#helper#call_filters(filters, source, context) "{{{
       call unite#print_error(v:exception)
       call unite#print_error(
             \ '[unite.vim] Error occured in calling filter '
-            \   . string(filter) . '!')
+            \   . filter.name . '!')
       call unite#print_error(
             \ '[unite.vim] Source name is ' . a:source.name)
     endtry

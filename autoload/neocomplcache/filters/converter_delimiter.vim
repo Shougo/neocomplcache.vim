@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: converter_delimiter.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ function! s:converter.filter(context) "{{{
       let delim_cnt += 1
     endwhile
 
-    for candidate in context.candidates
+    for candidate in a:context.candidates
       let split_list = split(candidate.word, delimiter.'\ze.', 1)
       if len(split_list) > 1
         let delimiter_sub = substitute(
@@ -77,6 +77,8 @@ function! s:converter.filter(context) "{{{
       endif
     endfor
   endfor
+
+  return a:context.candidates
 endfunction"}}}
 
 let &cpo = s:save_cpo

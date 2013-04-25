@@ -776,11 +776,11 @@ function! neocomplcache#init#_filters(names) "{{{
   for name in filter(copy(a:names), '!has_key(filters, v:val)')
     if !has_key(filters, name)
       " Search autoload.
-      let name = substitute(name,
-            \'^\%(matcher\|sorter\|converter\)_[^/_-]\+\zs[/_-].*$', '', '')
       for filter_name in map(split(globpath(&runtimepath,
-            \ 'autoload/neocomplcache/filters/'. name .'*.vim'), '\n'),
-            \ "fnamemodify(v:val, ':t:r')")
+            \ 'autoload/neocomplcache/filters/'.
+            \   substitute(name,
+            \'^\%(matcher\|sorter\|converter\)_[^/_-]\+\zs[/_-].*$', '', '')
+            \  .'*.vim'), '\n'), "fnamemodify(v:val, ':t:r')")
         let filter = neocomplcache#filters#{filter_name}#define()
         if empty(filter)
           " Ignore.
