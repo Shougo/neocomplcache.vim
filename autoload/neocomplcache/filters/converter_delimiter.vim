@@ -39,6 +39,9 @@ let s:converter = {
 function! s:converter.filter(context) "{{{
   " Delimiter check.
   let filetype = neocomplcache#get_context_filetype()
+
+  let next_keyword = neocomplcache#filters#
+        \converter_remove_next_keyword#get_next_keyword(a:context.source_name)
   for delimiter in ['/'] +
         \ get(g:neocomplcache_delimiter_patterns, filetype, [])
     " Count match.
@@ -70,7 +73,7 @@ function! s:converter.filter(context) "{{{
           let candidate.abbr .= delimiter_sub . '~'
           let candidate.dup = 0
 
-          if g:neocomplcache_enable_auto_delimiter
+          if g:neocomplcache_enable_auto_delimiter && next_keyword == ''
             let candidate.word .= delimiter_sub
           endif
         endif
