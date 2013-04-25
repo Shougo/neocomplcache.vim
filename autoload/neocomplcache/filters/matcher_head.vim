@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: matcher_glob.vim
+" FILE: matcher_head.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,13 +27,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#filters#matcher_glob#define() "{{{
+function! neocomplcache#filters#matcher_head#define() "{{{
   return s:matcher
 endfunction"}}}
 
 let s:matcher = {
-      \ 'name' : 'matcher_glob',
-      \ 'description' : 'glob matcher',
+      \ 'name' : 'matcher_head',
+      \ 'description' : 'head matcher',
       \}
 
 function! s:matcher.filter(context) "{{{

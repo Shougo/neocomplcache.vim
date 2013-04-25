@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,6 +96,9 @@ endfunction"}}}
 function! neocomplcache#util#uniq(...) "{{{
   return call(s:List.uniq, a:000)
 endfunction"}}}
+function! neocomplcache#util#sort_by(...)
+  return call(s:List.sort_by, a:000)
+endfunction
 
 function! neocomplcache#util#glob(pattern, ...) "{{{
   if a:pattern =~ "'"
