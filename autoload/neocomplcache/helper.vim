@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -386,6 +386,27 @@ function! neocomplcache#helper#call_hook(sources, hook_name, context) "{{{
             \ '[unite.vim] Source name is ' . source.name)
     endtry
   endfor
+endfunction"}}}
+
+function! neocomplcache#helper#call_filters(filters, source, context) "{{{
+  let context = extend(a:source.neocomplcache__context, a:context)
+  let _ = []
+  for filter in neocomplcache#init#_filters(
+        \ neocomplcache#util#convert2list(a:filters))
+    try
+      let context.candidates = call(filter.filter, [context], filter)
+    catch
+      call unite#print_error(v:throwpoint)
+      call unite#print_error(v:exception)
+      call unite#print_error(
+            \ '[unite.vim] Error occured in calling filter '
+            \   . string(filter) . '!')
+      call unite#print_error(
+            \ '[unite.vim] Source name is ' . a:source.name)
+    endtry
+  endfor
+
+  return context.candidates
 endfunction"}}}
 
 function! s:match_wildcard(cur_text, pattern, complete_pos) "{{{

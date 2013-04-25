@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,9 +50,15 @@ endfunction"}}}
 
 " Source helper. "{{{
 function! neocomplcache#define_source(source) "{{{
+  let sources = neocomplcache#variables#get_sources()
   for source in neocomplcache#util#convert2list(a:source)
-    let sources = neocomplcache#variables#get_sources()
     let sources[source.name] = neocomplcache#init#_source(source)
+  endfor
+endfunction"}}}
+function! neocomplcache#define_filter(filter) "{{{
+  let filters = neocomplcache#variables#get_filters()
+  for filter in neocomplcache#util#convert2list(a:filter)
+    let filters[filter.name] = neocomplcache#init#_filter(filter)
   endfor
 endfunction"}}}
 function! neocomplcache#available_sources() "{{{

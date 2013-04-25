@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 25 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -186,6 +186,7 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
           \ type(context.candidates[0]) == type('') ?
           \ map(copy(context.candidates), "{'word': v:val}") :
           \ deepcopy(context.candidates)
+    let context.candidates = words
 
     if context.complete_pos > a:complete_pos
       let prefix = a:complete_str[: context.complete_pos
@@ -206,11 +207,8 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
       endif
     endfor
 
-    let compare_func = get(source, 'compare_func',
-          \ g:neocomplcache_compare_function)
-    if compare_func !=# 'neocomplcache#compare_nothing'
-      call sort(words, compare_func)
-    endif
+    let words = neocomplcache#helper#call_filters(
+          \ source.sorters, source, {})
 
     let candidates += s:remove_next_keyword(source.name, words)
     let len_words += len(words)
