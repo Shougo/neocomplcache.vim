@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 26 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -331,18 +331,18 @@ function! neocomplcache#complete#_set_results_words(sources) "{{{
     " Save options.
     let ignorecase_save = &ignorecase
 
+    let context = source.neocomplcache__context
+
     if neocomplcache#is_text_mode()
       let &ignorecase = 1
     elseif g:neocomplcache_enable_smart_case
-          \ && result.complete_str =~ '\u'
+          \ && context.complete_str =~ '\u'
       let &ignorecase = 0
     else
       let &ignorecase = g:neocomplcache_enable_ignore_case
     endif
 
     let pos = winsaveview()
-
-    let context = source.neocomplcache__context
 
     try
       let context.candidates = has_key(source, 'get_keyword_list') ?
