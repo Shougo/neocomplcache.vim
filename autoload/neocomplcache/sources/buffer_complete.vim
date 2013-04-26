@@ -46,7 +46,7 @@ function! s:source.initialize() "{{{
 
   augroup neocomplcache "{{{
     " Caching events
-    autocmd CursorHold *
+    autocmd CursorHold,CursorHoldI *
           \ call s:check_cache()
     autocmd BufWritePost *
           \ call s:check_recache()
