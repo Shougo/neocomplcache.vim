@@ -847,14 +847,14 @@ g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
 		filename_complete : 3
 		dictionary_complete : 4
 		buffer_complete : 5
-		syntax_complete : 7
+		syntax_complete : 4
 		include_complete : 8
 		snippets_complete : 8
 		vim_complete : 100
 		omni_complete : 50
-		other plugin sources : 5
-		other completefunc sources : 10
-		other ftplugin sources : 100
+		other keyword sources : 5
+		other manual sources : 10
+		other manual sources with filetype : 100
 
 		Default value is set by each sources.
 >
