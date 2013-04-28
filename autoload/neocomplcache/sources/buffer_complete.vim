@@ -116,7 +116,7 @@ endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_current_line() "{{{
   " Current line caching.
   return s:caching_current_buffer(
-        \ max([1, line('.') - 5]), min([line('.') + 5, line('$')]))
+        \ max([1, line('.') - 10]), min([line('.') + 10, line('$')]))
 endfunction"}}}
 function! neocomplcache#sources#buffer_complete#caching_current_block() "{{{
   " Current line caching.
