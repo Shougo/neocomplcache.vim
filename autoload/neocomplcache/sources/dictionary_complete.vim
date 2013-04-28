@@ -128,24 +128,23 @@ function! s:caching_dictionary(filetype)
   call neocomplcache#sources#dictionary_complete#recaching(filetype)
 endfunction
 function! neocomplcache#sources#dictionary_complete#recaching(filetype) "{{{
+  if !exists('g:neocomplcache_dictionary_filetype_lists')
+    call neocomplcache#initialize()
+  endif
+
   let filetype = a:filetype
   if filetype == ''
     let filetype = neocomplcache#get_context_filetype(1)
   endif
 
   " Caching.
-  let dictionaries = ''
-
-  if has_key(g:neocomplcache_dictionary_filetype_lists, filetype)
-    let dictionaries =
-          \ g:neocomplcache_dictionary_filetype_lists[filetype]
-  endif
+  let dictionaries = get(
+        \ g:neocomplcache_dictionary_filetype_lists, filetype, '')
 
   if dictionaries == ''
-    let dictionaries = &dictionary
     if filetype != &filetype &&
           \ &l:dictionary != '' && &l:dictionary !=# &g:dictionary
-      let dictionaries .= ',' . &l:dictionary
+      let dictionaries .= &l:dictionary
     endif
   endif
 

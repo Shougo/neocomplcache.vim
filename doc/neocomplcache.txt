@@ -555,6 +555,7 @@ g:neocomplcache_dictionary_filetype_lists
 		variable is empty, neocomplcache uses 'dictionary' option.
 		When you set "text" key, you will appoint dictionary files in
 		text mode.
+		Note: Global 'dictionary' file is not loaded automatically.
 
 		Default value is {}.
 
