@@ -297,7 +297,7 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
             \ 'Error occured in source''s get_complete_position()!')
       call neocomplcache#print_error(
             \ 'Source name is ' . source.name)
-      return complete_results
+      return complete_sources
     finally
       if winsaveview() != pos
         call winrestview(pos)

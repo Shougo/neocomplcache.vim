@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 29 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -359,7 +359,7 @@ function! neocomplcache#helper#clear_result() "{{{
 
   let neocomplcache.complete_str = ''
   let neocomplcache.candidates = []
-  let neocomplcache.complete_results = {}
+  let neocomplcache.complete_results = []
   let neocomplcache.complete_pos = -1
 endfunction"}}}
 
