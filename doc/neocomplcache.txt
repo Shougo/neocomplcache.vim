@@ -1341,6 +1341,14 @@ hooks			Dictionary		(Optional)
 			Note finalize() attribute is obsolete interface for
 			finalization.
 
+			*neocomplcache-source-attribute-hooks-on_post_filter*
+			on_post_filter
+			Called after the filters to narrow down the
+			candidates.  This is used to set attributes. This
+			filters is to avoid adversely affecting the
+			performance.
+			This function takes {context} as its parameters.
+
 			*neocomplcache-source-attribute-get_complete_position*
 get_complete_position	Function	(Optional)
 			This function takes {context} as its

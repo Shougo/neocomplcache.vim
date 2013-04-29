@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Apr 2013.
+" Last Modified: 29 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -187,6 +187,9 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
           \ map(copy(context.candidates), "{'word': v:val}") :
           \ deepcopy(context.candidates)
     let context.candidates = words
+
+    call neocomplcache#helper#call_hook(
+          \ source, 'on_post_filter', {})
 
     if context.complete_pos > a:complete_pos
       let prefix = a:complete_str[: context.complete_pos
