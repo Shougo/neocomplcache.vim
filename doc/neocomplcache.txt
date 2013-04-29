@@ -37,6 +37,8 @@ Sources			|neocomplcache-sources|
 Create source		|neocomplcache-create-source|
   Source attributes       |neocomplcache-source-attributes|
   Candidate attributes   |neocomplcache-candidate-attributes|
+Create filter		|neocomplcache-create-filter|
+  Filter attributes       |neocomplcache-filter-attributes|
 FILTERS			|neocomplcache-filters|
 FAQ			|neocomplcache-faq|
 TODO			|neocomplcache-todo|
@@ -1231,16 +1233,37 @@ neco-ghc				*neocomplcache-sources-neco-ghc*
 		It requires ghc-mod <http://www.mew.org/~kazu/proj/ghc-mod/>.
 
 ==============================================================================
-UNITE SOURCES					*neocomplcache-unite-sources*
+FILTERS						*neocomplcache-filters*
 
-				*neocomplcache-unite-source-neocomplcache*
-neocomplcache
-		Nominates neocomplcache completion candidates.  The kind is "completion".
-		This source is used in |<Plug>(neocomplcache_start_unite_complete)|.
->
-		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
-		imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
-<
+					*neocomplcache-filter-sorter_rank*
+sorter_rank	Matched rank order sorter.  The higher the matched word is
+		already selected or in current buffer
+
+					*neocomplcache-filter-sorter_nothing*
+sorter_nothing	Nothing sorter.
+
+					*neocomplcach-filter-converter_nothing*
+converter_nothing
+		This converter is dummy.
+
+					*neocomplcache-filter-converter_abbr*
+converter_abbr
+		The converter which abbreviates a candidate's abbr.
+
+					*neocomplcache-filter-converter_case*
+converter_case
+		The converter which converts a candidate's word in text mode.
+		(cf: |g:neocomplcache_text_mode_filetypes|)
+
+				*neocomplcache-filter-converter_delimiter*
+converter_delimiter
+		The converter which abbreviates a candidate's delimiter.
+
+			*neocomplcache-filter-converter_remove_next_keyword*
+converter_delimiter
+		The converter which removes matched next keyword part in a
+		candidate's word.
+
 ==============================================================================
 CREATE SOURCE					*neocomplcache-create-source*
 
@@ -1439,10 +1462,45 @@ neocomplcache__refresh	Number		(Optional)
 CONTEXT						*neocomplcache-context*
 
 ==============================================================================
-FILTERS						*neocomplcache-filters*
+CREATE FILTER					*neocomplcache-create-filter*
 
-Todo
+The files in autoload/neocomplcache/filters are automatically loaded and it
+calls neocomplcache#filters#{filter_name}#define() whose return value is the
+filter.  Each return value can be a list so you can return an empty list to
+avoid adding undesirable filters.  To add your own filters dynamically, you
+can use |neocomplcache#define_filter()|.
 
+------------------------------------------------------------------------------
+FILTER ATTRIBUTES			*neocomplcache-filter-attributes*
+
+
+					*neocomplcache-filter-attribute-name*
+name			String		(Required)
+			The filter name.
+
+					*neocomplcache-filter-attribute-filter*
+filter			Function		(Required)
+			The filter function.  This function takes {context} as
+			its parameter and returns a list of {candidate}.
+			The specification of the parameters and the
+			returned value is same as
+			|neocomplcache-source-attribute-gather_candidates|.
+
+					*unite-filter-attribute-description*
+description		String		(Optional)
+			The filter description string.
+
+==============================================================================
+UNITE SOURCES					*neocomplcache-unite-sources*
+
+				*neocomplcache-unite-source-neocomplcache*
+neocomplcache
+		Nominates neocomplcache completion candidates.  The kind is "completion".
+		This source is used in |<Plug>(neocomplcache_start_unite_complete)|.
+>
+		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
+		imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
+<
 ==============================================================================
 FAQ						*neocomplcache-faq*
 
