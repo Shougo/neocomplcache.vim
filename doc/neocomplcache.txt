@@ -1486,7 +1486,7 @@ filter			Function		(Required)
 			returned value is same as
 			|neocomplcache-source-attribute-gather_candidates|.
 
-					*unite-filter-attribute-description*
+					*neocomplcache-filter-attribute-description*
 description		String		(Optional)
 			The filter description string.
 
