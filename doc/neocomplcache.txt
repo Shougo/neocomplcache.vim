@@ -948,6 +948,9 @@ FUNCTIONS 					*neocomplcache-functions*
 neocomplcache#initialize()			*neocomplcache#initialize()*
 		Initialize neocomplcache and sources.
 		Note: It enables neocomplcache.
+		Note: You should call it in |VimEnter| autocmd.
+		User customization for neocomplcache must be set before
+		initialization of neocomplcache.
 
 					*neocomplcache#get_context_filetype()*
 neocomplcache#get_context_filetype()
@@ -1503,6 +1506,11 @@ neocomplcache
 <
 ==============================================================================
 FAQ						*neocomplcache-faq*
+
+Q: My customization for neocomplcache is invalid. Why?
+
+A: User customization for neocomplcache must be set before initialization of
+neocomplcache. For example: |neocomplcache#custom_source()|
 
 Q: Is there a way to control the colors used for popup menu using highlight
 groups?:
