@@ -1703,13 +1703,11 @@ https://github.com/Shougo/neocomplcache-rsense
 Q: I want to use jedi omni_complete.
 https://github.com/davidhalter/jedi-vim
 
-A: Please set |g:neocomplcache_omni_functions| as below.
+A: Please set |g:neocomplcache_force_omni_patterns| as below.
 >
-	if !exists('g:neocomplcache_omni_functions')
-	    let g:neocomplcache_omni_functions = {}
-	endif
-	let g:neocomplcache_omni_functions.python = 'jedi#complete'
+	autocmd FileType python setlocal omnifunc=jedi#complete
 	let g:jedi#popup_on_dot = 0
+	let g:neocomplcache_force_omni_patterns.python = '[^. \t]\.\w*'
 <
 Q: Candidates are not found in heavy completion(neco-look, etc).
 
