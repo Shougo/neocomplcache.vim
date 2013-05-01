@@ -1333,8 +1333,8 @@ rank			Number		(Optional)
 			If filetype attribute is empty : 10
 			Else : 100
 
-			*neocomplcache-source-attribute-required_pattern_length*
-required_pattern_length
+			*neocomplcache-source-attribute-min_pattern_length*
+min_pattern_length
 			Number		(Optional)
 			Required pattern length fror completion.
 

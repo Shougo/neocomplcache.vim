@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 01 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -206,7 +206,7 @@ function! neocomplcache#get_completion_length(source_name) "{{{
         \ a:source_name)
     return g:neocomplcache_source_completion_length[a:source_name]
   else
-    return sources[a:source_name].required_pattern_length
+    return sources[a:source_name].min_pattern_length
   endif
 endfunction"}}}
 function! neocomplcache#set_completion_length(source_name, length) "{{{
