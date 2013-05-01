@@ -1343,6 +1343,15 @@ min_pattern_length
 			    |g:neocomplcache_auto_completion_start_length|
 			Else : 0
 
+			*neocomplcache-source-attribute-max_candidates*
+max_candidates
+			Number		(Optional)
+			The maximum number of candidates.
+
+			This attribute is optional; if it is not given,
+			0 is used as the default value.  This means
+			maximum number is infinity.
+
 					*neocomplcache-source-attribute-hooks*
 hooks			Dictionary		(Optional)
 			You may put hook functions in this dictionary

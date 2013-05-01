@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Apr 2013.
+" Last Modified: 01 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -212,6 +212,10 @@ function! neocomplcache#complete#_get_words(sources, complete_pos, complete_str)
 
     let words = neocomplcache#helper#call_filters(
           \ source.sorters, source, {})
+
+    if source.max_candidates > 0
+      let words = words[: len(source.max_candidates)-1]
+    endif
 
     let words = neocomplcache#helper#call_filters(
           \ source.converters, source, {})

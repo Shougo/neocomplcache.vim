@@ -707,6 +707,7 @@ endfunction"}}}
 
 function! neocomplcache#init#_source(source) "{{{
   let default = {
+        \ 'max_candidates' : 0,
         \ 'filetypes' : {},
         \ 'hooks' : {},
         \ 'matchers' : ['matcher_old'],
