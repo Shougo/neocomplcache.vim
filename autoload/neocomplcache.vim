@@ -188,11 +188,11 @@ endfunction"}}}
 function! neocomplcache#set_completion_length(source_name, length) "{{{
   let custom = neocomplcache#variables#get_custom().sources
   if !has_key(custom, a:source_name)
-    let custom._[a:source_name] = {}
+    let custom[a:source_name] = {}
   endif
 
   if !has_key(custom[a:source_name], 'min_pattern_length')
-    let custom._[a:source_name].min_pattern_length = a:length
+    let custom[a:source_name].min_pattern_length = a:length
   endif
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...) "{{{
