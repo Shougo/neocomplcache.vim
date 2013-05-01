@@ -721,7 +721,12 @@ function! neocomplcache#init#_source(source) "{{{
         \ 'neocomplcache__context' : copy(neocomplcache#get_context()),
         \ }
 
-  let source = extend(default, a:source)
+  let source = extend(copy(default), a:source)
+
+  " Overwritten by user custom.
+  let custom = neocomplcache#variables#get_custom().sources
+  let source = extend(source, get(custom, source.name,
+        \ get(custom, '_', {})))
 
   let source.loaded = 0
   " Source kind convertion.

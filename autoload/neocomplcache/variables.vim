@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: variables.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 01 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,6 +53,15 @@ function! neocomplcache#variables#get_filters() "{{{
     let s:filters = {}
   endif
   return s:filters
+endfunction"}}}
+
+function! neocomplcache#variables#get_custom() "{{{
+  if !exists('s:custom')
+    let s:custom = {}
+    let s:custom.sources = {}
+  endif
+
+  return s:custom
 endfunction"}}}
 
 let &cpo = s:save_cpo

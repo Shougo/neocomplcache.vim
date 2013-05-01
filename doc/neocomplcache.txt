@@ -952,6 +952,19 @@ neocomplcache#initialize()			*neocomplcache#initialize()*
 		User customization for neocomplcache must be set before
 		initialization of neocomplcache.
 
+neocomplcache#custom_source({source-name}, {option-name}, {value})
+						*neocomplcache#custom_source()*
+		Set {source-name} source specialized {option-name}
+		to {value}. You may specify multiple sources with
+		separating "," in {source-name}.
+		If {source-name} is "_", sources default option will be
+		change.
+		
+		These options below are available:
+		|neocomplcache-source-attributes|
+		Note: User customization for neocomplcache must be set before
+		initialization of neocomplcache.
+		
 					*neocomplcache#get_context_filetype()*
 neocomplcache#get_context_filetype()
 		Get current context filetype of the cursor.  This is smarter

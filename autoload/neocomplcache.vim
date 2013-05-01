@@ -64,6 +64,18 @@ endfunction"}}}
 function! neocomplcache#available_sources() "{{{
   return copy(neocomplcache#variables#get_sources())
 endfunction"}}}
+function! neocomplcache#custom_source(source_name, option_name, value) "{{{
+  let custom_sources = neocomplcache#variables#get_custom().sources
+
+  for key in split(a:source_name, '\s*,\s*')
+    if !has_key(custom_sources, key)
+      let custom_sources[key] = {}
+    endif
+
+    let custom_sources[key][a:option_name] = a:value
+  endfor
+endfunction"}}}
+
 function! neocomplcache#is_enabled_source(source_name) "{{{
   return neocomplcache#helper#is_enabled_source(a:source_name)
 endfunction"}}}
