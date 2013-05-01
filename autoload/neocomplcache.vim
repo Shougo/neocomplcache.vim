@@ -150,39 +150,6 @@ function! neocomplcache#add_dictionaries(dictionaries) "{{{
   return ret
 endfunction"}}}
 
-" Rank order. "{{{
-function! neocomplcache#compare_rank(i1, i2)
-  let diff = (get(a:i2, 'rank', 0) - get(a:i1, 'rank', 0))
-  return (diff != 0) ? diff : (a:i1.word ># a:i2.word) ? 1 : -1
-endfunction"}}}
-" Word order. "{{{
-function! neocomplcache#compare_word(i1, i2)
-  return (a:i1.word ># a:i2.word) ? 1 : -1
-endfunction"}}}
-" Nothing order. "{{{
-function! neocomplcache#compare_nothing(i1, i2)
-  return 0
-endfunction"}}}
-" Human order. "{{{
-function! neocomplcache#compare_human(i1, i2)
-  let words_1 = map(split(a:i1.word, '\D\zs\ze\d'),
-        \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
-  let words_2 = map(split(a:i2.word, '\D\zs\ze\d'),
-        \ "v:val =~ '^\\d' ? str2nr(v:val) : v:val")
-  let words_1_len = len(words_1)
-  let words_2_len = len(words_2)
-
-  for i in range(0, min([words_1_len, words_2_len])-1)
-    if words_1[i] ># words_2[i]
-      return 1
-    elseif words_1[i] <# words_2[i]
-      return -1
-    endif
-  endfor
-
-  return words_1_len - words_2_len
-endfunction"}}}
-
 function! neocomplcache#system(...) "{{{
   let V = vital#of('neocomplcache')
   return call(V.system, a:000)
@@ -214,24 +181,18 @@ function! neocomplcache#get_completion_length(source_name) "{{{
   if neocomplcache#is_auto_complete()
         \ && neocomplcache#get_current_neocomplcache().completion_length >= 0
     return neocomplcache#get_current_neocomplcache().completion_length
-  elseif has_key(g:neocomplcache_source_completion_length,
-        \ a:source_name)
-    return g:neocomplcache_source_completion_length[a:source_name]
   else
     return sources[a:source_name].min_pattern_length
   endif
 endfunction"}}}
 function! neocomplcache#set_completion_length(source_name, length) "{{{
-  call neocomplcache#util#set_default_dictionary(
-        \ 'g:neocomplcache_source_completion_length', a:source_name, a:length)
-endfunction"}}}
-function! neocomplcache#get_auto_completion_length(source_name) "{{{
-  if has_key(g:neocomplcache_source_completion_length, a:source_name)
-    return g:neocomplcache_source_completion_length[a:source_name]
-  elseif g:neocomplcache_enable_fuzzy_completion
-    return 1
-  else
-    return g:neocomplcache_auto_completion_start_length
+  let custom = neocomplcache#variables#get_custom().sources
+  if !has_key(custom, a:source_name)
+    let custom._[a:source_name] = {}
+  endif
+
+  if !has_key(custom[a:source_name], 'min_pattern_length')
+    let custom._[a:source_name].min_pattern_length = a:length
   endif
 endfunction"}}}
 function! neocomplcache#get_keyword_pattern(...) "{{{
@@ -378,18 +339,6 @@ function! neocomplcache#get_context_filetype_range(...) "{{{
   endif
 
   return neocomplcache.context_filetype_range
-endfunction"}}}
-function! neocomplcache#get_source_rank(name) "{{{
-  let sources = neocomplcache#variables#get_sources()
-  if has_key(g:neocomplcache_source_rank, a:name)
-    return g:neocomplcache_source_rank[a:name]
-  elseif !has_key(sources, a:name)
-    " unknown.
-    return 1
-  endif
-
-  " Used default rank.
-  return sources[a:name].rank
 endfunction"}}}
 function! neocomplcache#print_debug(expr) "{{{
   if g:neocomplcache_enable_debug

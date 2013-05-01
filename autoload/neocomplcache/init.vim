@@ -627,6 +627,9 @@ function! neocomplcache#init#_variables() "{{{
     let g:neocomplcache_omni_functions = {}
   endif
   "}}}
+
+  " Set custom.
+  call s:set_default_custom()
 endfunction"}}}
 
 function! neocomplcache#init#_current_neocomplcache() "{{{
@@ -825,6 +828,22 @@ function! neocomplcache#init#_filter(filter) "{{{
 
   return filter
 endfunction"}}}
+
+function! s:set_default_custom()
+  let custom = neocomplcache#variables#get_custom().sources
+
+  " Initialize completion length.
+  for [source_name, length] in items(
+        \ g:neocomplcache_source_completion_length)
+    let custom._[source_name].min_pattern_length = length
+  endfor
+
+  " Initialize rank.
+  for [source_name, rank] in items(
+        \ g:neocomplcache_source_rank)
+    let custom._[source_name].rank = rank
+  endfor
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

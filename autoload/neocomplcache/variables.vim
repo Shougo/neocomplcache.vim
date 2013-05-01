@@ -59,6 +59,7 @@ function! neocomplcache#variables#get_custom() "{{{
   if !exists('s:custom')
     let s:custom = {}
     let s:custom.sources = {}
+    let s:custom.sources._ = {}
   endif
 
   return s:custom

@@ -382,8 +382,7 @@ endfunction"}}}
 
 " Source rank order. "{{{
 function! s:compare_source_rank(i1, i2)
-  return neocomplcache#get_source_rank(a:i2.name) -
-        \ neocomplcache#get_source_rank(a:i1.name)
+  return a:i2.rank - a:i1.rank
 endfunction"}}}
 
 let &cpo = s:save_cpo
