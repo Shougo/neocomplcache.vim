@@ -1419,11 +1419,11 @@ gather_candidates	Function	(Required)
 			parameter and returns a list of {candidate}.
 			Here, {context} is the context information when the
 			source is called(|neocomplcache-notation-{context}|).
-			Note get_complete_words() and get_keyword_list() are
+			Note: get_complete_words() and get_keyword_list() are
 			obsolete interface for gather candidates.
-			In obsolete interface, |neocomplcache-filters| feature
-			is disabled for compatibility. You should use new
-			interface.
+			Note: |neocomplcache-filters| feature is disabled for
+			compatibility in neocomplcache ver.8.0. You should use
+			new interface in neocomplcache ver.8.1.
 
 {context}				*neocomplcache-notation-{context}*
 			A dictionary to give context information.
