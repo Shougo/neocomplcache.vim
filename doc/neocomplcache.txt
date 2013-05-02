@@ -832,10 +832,13 @@ g:neocomplcache_source_completion_length
 		It is a dictionary to control each source's completion
 		length.  For example, you can prolong heavy source's
 		completion length.
-				*g:neocomplcache_plugin_completion_length*
-		Note: g:neocomplcache_plugin_completion_length is deprecated
-		name.
 
+		Note: This option is deprecated. You should use
+		|neocomplcache#custom_source()| instead of it.
+>
+		call neocomplcache#custom_source(
+				\ 'buffer_complete', 'min_pattern_length', 3)
+<
 		Default value is {}.
 
 g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
@@ -843,8 +846,6 @@ g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
 		priority.
 		The key is source name and the value is source priority
 		number.
-						*g:neocomplcache_plugin_rank*
-		Note: g:neocomplcache_plugin_rank is deprecated name.
 
 		The default rank of each sources:
 		filename_complete : 3
@@ -859,13 +860,12 @@ g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
 		other manual sources : 10
 		other manual sources with filetype : 100
 
-		Default value is set by each sources.
+		Note: This option is deprecated. You should use
+		|neocomplcache#custom_source()| instead of it.
 >
 		" Examples:
-		let g:neocomplcache_source_rank = {
-			\ 'snippets_complete' : 100,
-			\ 'abbrev_complete' : 50,
-			\ }
+		call neocomplcache#custom_source(
+				\ 'buffer_complete', 'rank', 10)
 <
 				*g:neocomplcache_force_overwrite_completefunc*
 g:neocomplcache_force_overwrite_completefunc
@@ -1801,6 +1801,9 @@ TODO						*neocomplcache-todo*
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2013-05-02
+- Improved documentation.
 
 2013-04-21
 - Changed g:neocomplcache_enable_auto_close_preview default value.
