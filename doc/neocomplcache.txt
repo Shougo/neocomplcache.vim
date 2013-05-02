@@ -278,7 +278,8 @@ g:neocomplcache_enable_cursor_hold_i
 		This variable controls whether neocomplcache use |CursorHoldI|
 		event when complete candidates.
 		Note: You should not use this option if less than Vim 7.3.418.
-		Note: This option must be set before call |:NeoComplCacheEnable|.
+		Note: This option must be set before call
+		|:NeoComplCacheEnable|.
 
 		Default value is 0.
 
@@ -404,8 +405,8 @@ g:neocomplcache_lock_buffer_name_pattern
 
 g:neocomplcache_enable_prefetch		*g:neocomplcache_enable_prefetch*
 		This variable controls whether neocomplcache prefetches.  If
-		this variable is non-zero, neocomplcache does not flick in auto
-		completion.
+		this variable is non-zero, neocomplcache does not flick in
+		auto completion.
 
 		Note: This variable has a side effect.  Partial function (ex:
 		|complete_check()|) is disabled in completefunc.
@@ -760,8 +761,8 @@ g:neocomplcache_delimiter_patterns
 
 g:neocomplcache_omni_functions		*g:neocomplcache_omni_functions*
 		This dictionary which appoints |omni_complete| call functions.
-		The key is |&filetype|.  The value is omnifunc String or List of
-		omnifunc String.  If
+		The key is |&filetype|.  The value is omnifunc String or List
+		of omnifunc String.  If
 		g:neocomplcache_omni_function_list[|&filetype|] is undefined,
 		|omni_complete| calls |omnifunc|.
 		If the key is "_", used for all filetypes.
@@ -829,24 +830,21 @@ g:neocomplcache_disabled_sources_list
 
 				*g:neocomplcache_source_completion_length*
 g:neocomplcache_source_completion_length
-		It is a dictionary to control each source's completion
-		length.  For example, you can prolong heavy source's
-		completion length.
-
 		Note: This option is deprecated. You should use
 		|neocomplcache#custom_source()| instead of it.
 >
 		call neocomplcache#custom_source(
 				\ 'buffer_complete', 'min_pattern_length', 3)
 <
-		Default value is {}.
 
 g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
-		It is a dictionary to control each source's completion
-		priority.
-		The key is source name and the value is source priority
-		number.
-
+		Note: This option is deprecated. You should use
+		|neocomplcache#custom_source()| instead of it.
+>
+		" Examples:
+		call neocomplcache#custom_source(
+				\ 'buffer_complete', 'rank', 10)
+<
 		The default rank of each sources:
 		filename_complete : 3
 		dictionary_complete : 4
@@ -860,13 +858,6 @@ g:neocomplcache_source_rank			*g:neocomplcache_source_rank*
 		other manual sources : 10
 		other manual sources with filetype : 100
 
-		Note: This option is deprecated. You should use
-		|neocomplcache#custom_source()| instead of it.
->
-		" Examples:
-		call neocomplcache#custom_source(
-				\ 'buffer_complete', 'rank', 10)
-<
 				*g:neocomplcache_force_overwrite_completefunc*
 g:neocomplcache_force_overwrite_completefunc
 		If this variable is 1, neocomplcache forces overwrite
@@ -878,7 +869,8 @@ g:neocomplcache_force_overwrite_completefunc
 
 					*g:neocomplcache_release_cache_time*
 g:neocomplcache_release_cache_time
-		This variable defines time of automatic released cache by a second unit.
+		This variable defines time of automatic released cache by a
+		second unit.
 
 		Default value is 900.
 
