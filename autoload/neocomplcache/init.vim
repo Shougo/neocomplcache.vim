@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2013.
+" Last Modified: 02 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -829,21 +829,27 @@ function! neocomplcache#init#_filter(filter) "{{{
   return filter
 endfunction"}}}
 
-function! s:set_default_custom()
+function! s:set_default_custom() "{{{
   let custom = neocomplcache#variables#get_custom().sources
 
   " Initialize completion length.
   for [source_name, length] in items(
         \ g:neocomplcache_source_completion_length)
-    let custom._[source_name].min_pattern_length = length
+    if !has_key(custom, source_name)
+      let custom[source_name] = {}
+    endif
+    let custom[source_name].min_pattern_length = length
   endfor
 
   " Initialize rank.
   for [source_name, rank] in items(
         \ g:neocomplcache_source_rank)
-    let custom._[source_name].rank = rank
+    if !has_key(custom, source_name)
+      let custom[source_name] = {}
+    endif
+    let custom[source_name].rank = rank
   endfor
-endfunction
+endfunction"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
