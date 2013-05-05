@@ -440,7 +440,7 @@ g:neocomplcache_keyword_patterns
 
 		Because it is complicated, refer to
 		neocomplcache#init#_variables() in
-		autoload/neocomplcache.vim for the initial value.
+		autoload/neocomplcache/init.vim for the initial value.
 >
 		" Examples:
 		if !exists('g:neocomplcache_keyword_patterns')
@@ -456,7 +456,7 @@ g:neocomplcache_next_keyword_patterns
 
 		Because it is complicated, refer to
 		neocomplcache#init#_variables() in
-		autoload/neocomplcache.vim for the initial value.
+		autoload/neocomplcache/init.vim for the initial value.
 
 g:neocomplcache_omni_patterns		*g:neocomplcache_omni_patterns*
 		This dictionary records keyword patterns used in
@@ -501,7 +501,7 @@ g:neocomplcache_force_omni_patterns
 <
 		Because it is complicated, refer to
 		neocomplcache#init#_variables() in
-		autoload/neocomplcache.vim for the initial value.
+		autoload/neocomplcache/init.vim for the initial value.
 
 					*g:neocomplcache_tags_filter_patterns*
 g:neocomplcache_tags_filter_patterns
@@ -510,8 +510,8 @@ g:neocomplcache_tags_filter_patterns
 		beginning in _ in file type of C/C++.
 
 		Because it is complicated, refer to
-		neocomplcache#init#_variables() in autoload/neocomplcache.vim
-		for the initial value.
+		neocomplcache#init#_variables() in
+		autoload/neocomplcache/init.vim for the initial value.
 
 				*g:neocomplcache_tags_caching_limit_file_size*
 g:neocomplcache_tags_caching_limit_file_size
@@ -545,8 +545,8 @@ g:neocomplcache_same_filetype_lists
 		let g:neocomplcache_same_filetype_lists._ = '_'
 <
 		Because it is complicated, refer to
-		neocomplcache#init#_variables() in autoload/neocomplcache.vim
-		for the initial value.
+		neocomplcache#init#_variables() in
+		autoload/neocomplcache/init.vim for the initial value.
 		Note: To disable neocomplcache initialization, you must use
 		|neocomplcache#disable_default_dictionary()|.
 
@@ -595,8 +595,8 @@ g:neocomplcache_context_filetype_lists
 		\ [{'filetype' : 'python', 'start' : '^\s*python <<\s*\(\h\w*\)', 'end' : '^\1'}]
 <
 		Because it is complicated, refer to
-		neocomplcache#init#_variables() in autoload/neocomplcache.vim
-		for the initial value.
+		neocomplcache#init#_variables() in
+		autoload/neocomplcache/init.vim for the initial value.
 
 					*g:neocomplcache_text_mode_filetypes*
 g:neocomplcache_text_mode_filetypes
@@ -613,8 +613,8 @@ g:neocomplcache_text_mode_filetypes
 		"Foobar" or "FOOBAR" words.  Not "fooBar" or "FooBar".
 
 		Because it is complicated, refer to
-		neocomplcache#init#_variables() in autoload/neocomplcache.vim
-		for the initial value.
+		neocomplcache#init#_variables() in
+		autoload/neocomplcache/init.vim for the initial value.
 
 g:neocomplcache_ctags_program		*g:neocomplcache_ctags_program*
 		It is the path to the ctags command.  If this command is not
@@ -631,8 +631,8 @@ g:neocomplcache_ctags_arguments_list
 		default.
 
 		Because it is complicated, refer to
-		neocomplcache#init#_variables() in autoload/neocomplcache.vim
-		for the initial value.
+		neocomplcache#init#_variables() in
+		autoload/neocomplcache/init.vim for the initial value.
 
 g:neocomplcache_include_paths		*g:neocomplcache_include_paths*
 		It is the variable to enumerate path of the include file
@@ -756,8 +756,8 @@ g:neocomplcache_delimiter_patterns
 		let g:neocomplcache_delimiter_patterns.cpp = ['::']
 <
 		Because it is complicated, refer to
-		neocomplcache#init#_variables() in autoload/neocomplcache.vim
-		for the initial value.
+		neocomplcache#init#_variables() in
+		autoload/neocomplcache/init.vim for the initial value.
 
 g:neocomplcache_omni_functions		*g:neocomplcache_omni_functions*
 		This dictionary which appoints |omni_complete| call functions.
