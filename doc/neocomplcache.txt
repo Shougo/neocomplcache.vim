@@ -1250,7 +1250,7 @@ sorter_rank	Matched rank order sorter.  The higher the matched word is
 					*neocomplcache-filter-sorter_nothing*
 sorter_nothing	Nothing sorter.
 
-					*neocomplcach-filter-converter_nothing*
+					*neocomplcache-filter-converter_nothing*
 converter_nothing
 		This converter is dummy.
 
@@ -1341,7 +1341,7 @@ rank			Number		(Optional)
 			*neocomplcache-source-attribute-min_pattern_length*
 min_pattern_length
 			Number		(Optional)
-			Required pattern length fror completion.
+			Required pattern length for completion.
 
 			If you omit it, it is set below value.
 			If kind attribute is "keyword" :
@@ -1359,11 +1359,10 @@ max_candidates
 
 					*neocomplcache-source-attribute-hooks*
 hooks			Dictionary		(Optional)
-			You may put hook functions in this dictionary
-			in which the key is the position to hook and
-			and the value is the reference to the function
-			to be called.  The following hook functions are
-			defined:
+			You may put hook functions in this dictionary in which
+			the key is the position to hook and the value is the
+			reference to the function to be called.  The following
+			hook functions are defined:
 
 				*neocomplcache-source-attribute-hooks-on_init*
 			on_init
@@ -1499,8 +1498,8 @@ name			String		(Required)
 filter			Function		(Required)
 			The filter function.  This function takes {context} as
 			its parameter and returns a list of {candidate}.
-			The specification of the parameters and the
-			returned value is same as
+			The specification of the parameters and the returned
+			value is same as
 			|neocomplcache-source-attribute-gather_candidates|.
 
 					*neocomplcache-filter-attribute-description*
@@ -1512,8 +1511,9 @@ UNITE SOURCES					*neocomplcache-unite-sources*
 
 				*neocomplcache-unite-source-neocomplcache*
 neocomplcache
-		Nominates neocomplcache completion candidates.  The kind is "completion".
-		This source is used in |<Plug>(neocomplcache_start_unite_complete)|.
+		Nominates neocomplcache completion candidates.  The kind is
+		"completion".  This source is used in
+		|<Plug>(neocomplcache_start_unite_complete)|.
 >
 		imap <C-k>  <Plug>(neocomplcache_start_unite_complete)
 		imap <C-q>  <Plug>(neocomplcache_start_unite_quick_match)
@@ -1771,7 +1771,7 @@ Q: Why neocomplcache uses if_lua? Many people may not be able to use it
 because they do not have the root privilege to recompile vim.
 A:
 Because:
- 1. Pyhon interface is not available in every Vim environment. For example,
+ 1. Python interface is not available in every Vim environment. For example,
  Android, iOS, non configured Vim,...
  2. Incompatibility with Python2 and Python3. I must rewrite for it.
  3. Loading Python interface is slow(10~20ms). But loading Lua interface is
