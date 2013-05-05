@@ -1243,12 +1243,33 @@ neco-ghc				*neocomplcache-sources-neco-ghc*
 ==============================================================================
 FILTERS						*neocomplcache-filters*
 
-					*neocomplcache-filter-sorter_rank*
-sorter_rank	Matched rank order sorter.  The higher the matched word is
-		already selected or in current buffer
+To custom candidates, neocomplcache uses the filters. There are three kinds of
+filters are available. "matcher" is to use filter candidates. "sorter" is to
+use sort candidates. "converter" is to use candidates convertion.
+
+Note: "matcher" is not implemented. It will implemented in ver.8.1.
+
+Default sources are below. But you can create original filters(cf:
+|neocomplcache-create-filter|) and set them by
+|neocomplcache#custom_source()|.
+>
+	call unite#custom_source('buffer_complete', 'converters', [])
+	call unite#custom_source('buffer_complete', 'sorters',
+	\ ['sorter_nothing'])
+<
+					*neocomplcache-filter-sorter_default*
+Default sorters: ['sorter_rank'].
+
+					*neocomplcache-filter-converter_default*
+Default converters: ['converter_remove_next_keyword',
+        \      'converter_delimiter', 'converter_case', 'converter_abbr'].
 
 					*neocomplcache-filter-sorter_nothing*
 sorter_nothing	Nothing sorter.
+
+					*neocomplcache-filter-sorter_rank*
+sorter_rank	Matched rank order sorter.  The higher the matched word is
+		already selected or in current buffer
 
 					*neocomplcache-filter-converter_nothing*
 converter_nothing
@@ -1266,11 +1287,13 @@ converter_case
 				*neocomplcache-filter-converter_delimiter*
 converter_delimiter
 		The converter which abbreviates a candidate's delimiter.
+		(cf: |g:neocomplcache_delimiter_patterns|)
 
 			*neocomplcache-filter-converter_remove_next_keyword*
-converter_delimiter
+converter_remove_next_keyword
 		The converter which removes matched next keyword part in a
 		candidate's word.
+		(cf: |g:neocomplcache_next_keyword_patterns|)
 
 ==============================================================================
 CREATE SOURCE					*neocomplcache-create-source*
