@@ -1245,7 +1245,7 @@ FILTERS						*neocomplcache-filters*
 
 To custom candidates, neocomplcache uses the filters. There are three kinds of
 filters are available. "matcher" is to use filter candidates. "sorter" is to
-use sort candidates. "converter" is to use candidates convertion.
+use sort candidates. "converter" is to use candidates conversion.
 
 Note: "matcher" is not implemented. It will implemented in ver.8.1.
 
