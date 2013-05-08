@@ -1787,11 +1787,13 @@ Note: In current version, neocomplcache does not restore 'foldmethod'. Because
 it is too heavy.
 
 Q: I want to use Pydiction with neocomplcache.
+
 A: You should set |g:neocomplcache_dictionary_filetype_lists|.
 neocomplcache can load Pydiction dictionary file.
 
 Q: Why neocomplcache uses if_lua? Many people may not be able to use it
 because they do not have the root privilege to recompile vim.
+
 A:
 Because:
  1. Python interface is not available in every Vim environment. For example,
@@ -1810,6 +1812,13 @@ Because:
  10. To build if_lua is easy.
  11. I think if_lua is the second level language in Vim(The first is Vim
  script).
+
+Q: I want to disable preview window.
+
+A:
+>
+	set completeopt-=preview
+<
 
 ==============================================================================
 TODO						*neocomplcache-todo*
