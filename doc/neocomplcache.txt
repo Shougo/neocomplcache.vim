@@ -1254,8 +1254,10 @@ Default sources are below. But you can create original filters(cf:
 |neocomplcache#custom_source()|.
 >
 	call unite#custom_source('buffer_complete', 'converters', [])
-	call unite#custom_source('buffer_complete', 'sorters',
-	\ ['sorter_nothing'])
+
+	" Change default sorter.
+	call unite#custom_source('_', 'sorters',
+	\ ['sorter_length'])
 <
 					*neocomplcache-filter-sorter_default*
 Default sorters: ['sorter_rank'].
@@ -1270,6 +1272,9 @@ sorter_nothing	Nothing sorter.
 					*neocomplcache-filter-sorter_rank*
 sorter_rank	Matched rank order sorter.  The higher the matched word is
 		already selected or in current buffer
+
+					*neocomplcache-filter-sorter_length*
+sorter_length	Candidates length order sorter.
 
 					*neocomplcache-filter-converter_nothing*
 converter_nothing
@@ -1825,6 +1830,9 @@ TODO						*neocomplcache-todo*
 
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
+
+2013-05-09
+- Added sorter_length.
 
 2013-05-02
 - Improved documentation.

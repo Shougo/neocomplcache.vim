@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: sorter_rank.vim
+" FILE: sorter_length.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 09 May 2013.
 " License: MIT license  {{{
@@ -27,13 +27,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#filters#sorter_rank#define() "{{{
+function! neocomplcache#filters#sorter_length#define() "{{{
   return s:sorter
 endfunction"}}}
 
 let s:sorter = {
-      \ 'name' : 'sorter_rank',
-      \ 'description' : 'sort by matched rank order',
+      \ 'name' : 'sorter_length',
+      \ 'description' : 'sort by length order',
       \}
 
 function! s:sorter.filter(context) "{{{
@@ -41,9 +41,12 @@ function! s:sorter.filter(context) "{{{
 endfunction"}}}
 
 function! s:compare(i1, i2)
-  let diff = (get(a:i2, 'rank', 0) - get(a:i1, 'rank', 0))
-  return (diff != 0) ? diff : (a:i1.word ># a:i2.word) ? 1 : -1
-endfunction"
+  let diff = len(a:i1.word) - len(a:i2.word)
+  if !diff
+    let diff = (a:i1.word ># a:i2.word) ? 1 : -1
+  endif
+  return diff
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
