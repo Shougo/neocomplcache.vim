@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: context_filetype.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 May 2013.
+" Last Modified: 18 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -134,12 +134,6 @@ function! neocomplcache#context_filetype#set() "{{{
     let dup_check[old_filetype] = new_filetype
     let old_filetype = new_filetype
   endwhile
-
-  if neocomplcache.context_filetype !=# &filetype
-        \ && exists('*neobundle#autoload#filetype()')
-    " Automatically load.
-    call neobundle#autoload#filetype()
-  endif
 
   return neocomplcache.context_filetype
 endfunction"}}}

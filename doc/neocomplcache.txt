@@ -1831,9 +1831,6 @@ TODO						*neocomplcache-todo*
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
-2013-05-12
-- Call neobundle#autoload#filetype() in context filetype.
-
 2013-05-09
 - Added sorter_length.
 
