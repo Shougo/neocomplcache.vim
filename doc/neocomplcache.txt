@@ -214,6 +214,9 @@ g:neocomplcache_max_menu_width
 g:neocomplcache_auto_completion_start_length
 		This variable controls the number of the input completion
 		at the time of key input automatically.
+		Note: |g:neocomplcache_auto_completion_start_length| is used
+		for "keyword" kind source only. Please refer to
+			|neocomplcache-source-attribute-min_pattern_length|.
 
 		Default value is 2.
 
