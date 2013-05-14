@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: converter_remove_next_keyword.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 14 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,7 +71,7 @@ endfunction"}}}
 
 function! neocomplcache#filters#converter_remove_next_keyword#get_next_keyword(source_name) "{{{
   let pattern = '^\%(' .
-        \ (a:source_name  == 'filename_complete' ?
+        \ (a:source_name  == ('filename_complete' || 'filaname_include') ?
         \   neocomplcache#get_next_keyword_pattern('filename') :
         \   neocomplcache#get_next_keyword_pattern()) . '\m\)'
 
