@@ -349,6 +349,18 @@ g:neocomplcache_enable_fuzzy_completion
 		words in it.  For example, neocomplcache comes to match it with
 		"public_html" or "PublicHtml" when you input it with "puh".
 
+		Note: If you enable it,
+		|g:neocomplcache_enable_underbar_completion| and
+		|g:neocomplcache_enable_camel_case_completion| is disabled.
+
+		Note: If |g:neocomplcache_fuzzy_completion_start_length| is 3,
+		"ph" does not complete "public_html".
+
+		Note: This match is too heavy.  So, it is enabled when your
+		input length is longer than or equal to
+		|g:neocomplcache_fuzzy_completion_start_length| and less than
+		20 characters.
+
 		Default value is 0.
 
 			*g:neocomplcache_fuzzy_completion_start_length*
@@ -1235,8 +1247,10 @@ neco-ghc				*neocomplcache-sources-neco-ghc*
 FILTERS						*neocomplcache-filters*
 
 To custom candidates, neocomplcache uses the filters. There are three kinds of
-filters are available. "matcher" is to filter candidates by user input.
-"sorter" is to sort candidates. "converter" is to candidates conversion.
+filters are available. "matcher" is to use filter candidates. "sorter" is to
+use sort candidates. "converter" is to use candidates conversion.
+
+Note: "matcher" is not implemented. It will implemented in ver.8.1.
 
 Default sources are below. But you can create original filters(cf:
 |neocomplcache-create-filter|) and set them by
@@ -1429,8 +1443,9 @@ gather_candidates	Function	(Required)
 			source is called(|neocomplcache-notation-{context}|).
 			Note: get_complete_words() and get_keyword_list() are
 			obsolete interface for gather candidates.
-			Note: You must call |neocomplcache#keyword_filter()|
-			in gather_candidates().
+			Note: |neocomplcache-filters| feature is disabled for
+			compatibility in neocomplcache ver.8.0. You should use
+			new interface in neocomplcache ver.8.1.
 
 {context}				*neocomplcache-notation-{context}*
 			A dictionary to give context information.
