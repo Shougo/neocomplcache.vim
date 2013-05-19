@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2013.
+" Last Modified: 19 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -98,14 +98,9 @@ function! neocomplcache#complete#sources_manual_complete(findstart, base) "{{{
       return -2
     endif
 
-    let all_sources = neocomplcache#available_sources()
-    let sources = get(a:000, 0, keys(all_sources))
-    let s:use_sources = neocomplcache#helper#get_sources_list(
-          \ type(sources) == type([]) ? sources : [sources])
-
     " Get complete_pos.
     let complete_results = neocomplcache#complete#_get_results(
-          \ neocomplcache#get_cur_text(1), s:use_sources)
+          \ neocomplcache#get_cur_text(1), neocomplcache.manual_sources)
     let neocomplcache.complete_pos =
           \ neocomplcache#complete#_get_complete_pos(complete_results)
 
