@@ -1724,6 +1724,14 @@ A: It is feature. neocomplcache completes from same filetype buffers in
 default.  But you can completes from other filetype buffers using
 |g:neocomplcache_same_filetype_lists|.
 
+Q: I want to complete from all buffers.
+
+A: |g:neocomplcache_same_filetype_lists|
+>
+	let g:neocomplcache_same_filetype_lists = {}
+	let g:neocomplcache_same_filetype_lists._ = '_'
+<
+
 Q: Suggestions are case insensitive in "gitcommit" buffers, but not
 "javascript".
 
