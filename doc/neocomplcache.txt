@@ -1836,6 +1836,35 @@ A:
 	set completeopt-=preview
 <
 
+A: Please set |g:neocomplcache_omni_patterns| as below.
+Note: You must not use "vim-lua-ftplugin" if less than 7.3.885.
+Because the if_lua has double free problem.
+>
+	let g:lua_check_syntax = 0
+	let g:lua_complete_omni = 1
+	let g:lua_complete_dynamic = 0
+	
+	let g:neocomplcache_omni_functions.lua =
+	      \ 'xolox#lua#omnifunc'
+	let g:neocomplcache_omni_patterns.lua =
+	      \ '\w\+[.:]\|require\s*(\?["'']\w*'
+	" let g:neocomplcache_force_omni_patterns.lua =
+	      " \ '\w\+[.:]\|require\s*(\?["'']\w*'
+<
+
+Q: I want to use vim-nodejs-complete in neocomplcache.
+A:
+Note: This settings works but may heavy.
+>
+	let g:neocomplcache_omni_functions.javascript = 'nodejscomplete#CompleteJS'
+	" Use jscomplete.vim
+	let g:nodejs_complete_config = {
+	\  'js_compl_fn': 'jscomplete#CompleteJS',
+	\  'max_node_compl_len': 15
+	\}
+	let g:neocomplcache_omni_patterns.javascript = '\h\w*\|[^. \t]\.\w*'
+<
+
 ==============================================================================
 TODO						*neocomplcache-todo*
 
