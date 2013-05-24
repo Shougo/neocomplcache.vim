@@ -85,7 +85,7 @@ function! neocomplcache#context_filetype#initialize() "{{{
         \'<script\%( [^>]*\)\? type="text/coffeescript"\%( [^>]*\)\?>',
         \  'end' : '</script>'},
         \ {'filetype' : 'css', 'start' :
-        \'<script\%( [^>]*\)\? type="text/css"\%( [^>]*\)\?>',
+        \'<style\%( [^>]*\)\? type="text/css"\%( [^>]*\)\?>',
         \  'end' : '</style>'},
         \])
   call neocomplcache#util#set_default_dictionary(
