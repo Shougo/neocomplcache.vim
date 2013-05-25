@@ -1835,6 +1835,8 @@ A:
 >
 	set completeopt-=preview
 <
+Q: I want to use "vim-lua-ftplugin".
+https://github.com/xolox/vim-lua-ftplugin
 
 A: Please set |g:neocomplcache_omni_patterns| as below.
 Note: You must not use "vim-lua-ftplugin" if less than 7.3.885.
