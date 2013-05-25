@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 25 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,6 +29,7 @@ set cpo&vim
 
 let s:V = vital#of('neocomplcache')
 let s:List = vital#of('neocomplcache').import('Data.List')
+let s:String = vital#of('neocomplcache').import('Data.String')
 
 function! neocomplcache#util#truncate_smart(...) "{{{
   return call(s:V.truncate_smart, a:000)
@@ -39,7 +40,7 @@ function! neocomplcache#util#truncate(...) "{{{
 endfunction"}}}
 
 function! neocomplcache#util#strchars(...) "{{{
-  return call(s:V.strchars, a:000)
+  return call(s:String.strchars, a:000)
 endfunction"}}}
 function! neocomplcache#util#wcswidth(...) "{{{
   return call(s:V.wcswidth, a:000)
@@ -55,7 +56,7 @@ function! neocomplcache#util#substitute_path_separator(...) "{{{
   return call(s:V.substitute_path_separator, a:000)
 endfunction"}}}
 function! neocomplcache#util#mb_strlen(...) "{{{
-  return call(s:V.strchars, a:000)
+  return call(s:String.strchars, a:000)
 endfunction"}}}
 function! neocomplcache#util#uniq(list) "{{{
   let dict = {}

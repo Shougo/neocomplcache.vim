@@ -37,6 +37,13 @@ function! s:uniq(list, ...)
   return a:0 ? map(list, 'v:val[0]') : list
 endfunction
 
+function! s:clear(list)
+  if !empty(a:list)
+    unlet! a:list[0 : len(a:list) - 1]
+  endif
+  return a:list
+endfunction
+
 " Concatenates a list of lists.
 " XXX: Should we verify the input?
 function! s:concat(list)
@@ -131,7 +138,7 @@ endfunction
 function! s:span(f, xs)
   let border = len(a:xs)
   for i in range(len(a:xs))
-    if !eval(substitute(a:f, 'v:val', a:xs[i], 'g'))
+    if !eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
       let border = i
       break
     endif
@@ -142,6 +149,11 @@ endfunction
 " similar to Haskell's Data.List.break
 function! s:break(f, xs)
   return s:span(printf('!(%s)', a:f), a:xs)
+endfunction
+
+" similar to Haskell's Data.List.takeWhile
+function! s:take_while(f, xs)
+  return s:span(a:f, a:xs)[0]
 endfunction
 
 " similar to Haskell's Data.List.partition
