@@ -255,29 +255,27 @@ function! s:check_source() "{{{
     return
   endif
 
-  let bufnumber = bufnr('%')
+  for bufnumber in range(1, bufnr('$'))
+    " Check new buffer.
+    let bufname = fnamemodify(bufname(bufnumber), ':p')
+    if (!has_key(s:buffer_sources, bufnumber)
+          \ || s:check_changed_buffer(bufnumber))
+          \ && !has_key(s:disable_caching_list, bufnumber)
+          \ && (!neocomplcache#is_locked(bufnumber) ||
+          \    g:neocomplcache_disable_auto_complete)
+          \ && !getwinvar(bufwinnr(bufnumber), '&previewwindow')
+          \ && getfsize(bufname) <
+          \      g:neocomplcache_caching_limit_file_size
+      " Caching.
+      call s:word_caching(bufnumber)
+    endif
 
-  " Check new buffer.
-  let bufname = fnamemodify(bufname(bufnumber), ':p')
-  if (!has_key(s:buffer_sources, bufnumber)
-        \ || s:check_changed_buffer(bufnumber))
-        \ && !has_key(s:disable_caching_list, bufnumber)
-        \ && (!neocomplcache#is_locked(bufnumber) ||
-        \    g:neocomplcache_disable_auto_complete)
-        \ && !getwinvar(bufwinnr(bufnumber), '&previewwindow')
-        \ && getfsize(bufname) <
-        \      g:neocomplcache_caching_limit_file_size
-    " Caching.
-    call s:word_caching(bufnumber)
-  endif
-
-  if !has_key(s:buffer_sources, bufnumber)
-    return
-  endif
-
-  let source = s:buffer_sources[bufnumber]
-  call neocomplcache#cache#check_cache_list('buffer_cache',
-        \ source.path, s:async_dictionary_list, source.keyword_cache, 1)
+    if has_key(s:buffer_sources, bufnumber)
+      let source = s:buffer_sources[bufnumber]
+      call neocomplcache#cache#check_cache_list('buffer_cache',
+            \ source.path, s:async_dictionary_list, source.keyword_cache, 1)
+    endif
+  endfor
 endfunction"}}}
 function! s:check_cache() "{{{
   let release_accessd_time =
