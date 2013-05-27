@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: buffer_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2013.
+" Last Modified: 27 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,6 +48,8 @@ function! s:source.hooks.on_init(context) "{{{
 
   augroup neocomplcache "{{{
     " Caching events
+    autocmd BufEnter,BufRead,BufWinEnter *
+          \ call s:check_source()
     autocmd CursorHold,CursorHoldI *
           \ call s:check_cache()
     autocmd BufWritePost *
