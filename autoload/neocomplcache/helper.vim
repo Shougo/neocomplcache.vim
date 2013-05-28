@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Apr 2013.
+" Last Modified: 28 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,7 +185,7 @@ function! neocomplcache#helper#get_source_filetypes(filetype) "{{{
 
   let filetype_dict = {}
 
-  let filetypes = [filetype, '_']
+  let filetypes = [filetype]
   if filetype =~ '\.'
     if exists('g:neocomplcache_ignore_composite_filetype_lists')
           \ && has_key(g:neocomplcache_ignore_composite_filetype_lists, filetype)
@@ -198,13 +198,8 @@ function! neocomplcache#helper#get_source_filetypes(filetype) "{{{
 
   if exists('g:neocomplcache_same_filetype_lists')
     for ft in filetypes
-      for same_ft in split(get(g:neocomplcache_same_filetype_lists, ft,
+      let filetypes += split(get(g:neocomplcache_same_filetype_lists, ft,
             \ get(g:neocomplcache_same_filetype_lists, '_', '')), ',')
-        if same_ft != '' && index(filetypes, same_ft) < 0
-          " Add same filetype.
-          call add(filetypes, same_ft)
-        endif
-      endfor
     endfor
   endif
 
