@@ -140,11 +140,11 @@ function! s:get_include_files(complete_str) "{{{
 
   let path = neocomplcache#util#substitute_path_separator(
         \ get(g:neocomplcache_include_paths, filetype,
-        \   getbufvar(bufnr('%'), '&path')))
+        \   &l:path))
   let pattern = get(g:neocomplcache_include_patterns, filetype,
-        \ getbufvar(bufnr('%'), '&include'))
+        \ &l:include)
   let expr = get(g:neocomplcache_include_exprs, filetype,
-        \ getbufvar(bufnr('%'), '&includeexpr'))
+        \ &l:includeexpr)
   let reverse_expr = get(g:neocomplcache_filename_include_exprs, filetype,
         \ '')
   let exts = get(g:neocomplcache_filename_include_exts, filetype,
