@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: filename_include.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2013.
+" Last Modified: 29 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,7 +93,7 @@ function! s:source.get_keyword_pos(cur_text) "{{{
   " Not Filename pattern.
   if exists('g:neocomplcache_include_patterns')
     let pattern = get(g:neocomplcache_include_patterns, filetype,
-        \      getbufvar(bufnr('%'), '&include'))
+        \      &l:include)
   else
     let pattern = ''
   endif
@@ -106,7 +106,7 @@ function! s:source.get_keyword_pos(cur_text) "{{{
 
   " Check include pattern.
   let pattern = get(g:neocomplcache_include_patterns, filetype,
-        \ getbufvar(bufnr('%'), '&include'))
+        \      &l:include)
   if pattern == '' || a:cur_text !~ pattern
     return -1
   endif
@@ -115,7 +115,7 @@ function! s:source.get_keyword_pos(cur_text) "{{{
   let complete_str = matchstr(a:cur_text[match_end :], '\f\+')
 
   let expr = get(g:neocomplcache_include_exprs, filetype,
-        \ getbufvar(bufnr('%'), '&includeexpr'))
+        \      &l:includeexpr)
   if expr != ''
     let cur_text =
           \ substitute(eval(substitute(expr,
