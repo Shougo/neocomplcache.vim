@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: omni_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Apr 2013.
+" Last Modified: 29 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -232,11 +232,10 @@ function! s:set_complete_results_words(complete_results) "{{{
 
     let pos = getpos('.')
 
-    " Note:
-    " let complete_str = result.complete_str
-    " causes error in clang_complete(Why?).
+    " Note: For rubycomplete problem.
     let complete_str =
-          \ (result.complete_str == '') ? '' : result.complete_str
+          \ (omnifunc == 'rubycomplete#Complete') ?
+          \ '' : result.complete_str
 
     try
       let list = call(omnifunc, [0, complete_str])
