@@ -160,9 +160,6 @@ COMMANDS 					*neocomplcache-commands*
 		you make a dictionary file by yourself, it may be
 		convenient.
 
-:NeoComplCacheCreateTags [bufname]		*:NeoComplCacheCreateTags*
-		Create tags from [bufname] buffer.
-		Select current buffer when [bufname] omitted.
 
 :NeoComplCacheSetFileType [filetype]		*:NeoComplCacheSetFileType*
 		Change filetype to [filetype] in current buffer.
