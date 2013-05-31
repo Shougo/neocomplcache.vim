@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 May 2013.
+" Last Modified: 31 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -401,7 +401,7 @@ function! neocomplcache#init#_variables() "{{{
         \'[[:alnum:]:_]\+[*[{}]')
   call neocomplcache#util#set_default_dictionary(
         \'g:neocomplcache_next_keyword_patterns', 'html,xhtml,xml,mkd',
-        \'[[:alnum:]_:-]*>\|[^"]*"')
+        \'[^"]*"\|[[:alnum:]_:-]*>')
   "}}}
 
   " Initialize same file type lists. "{{{
