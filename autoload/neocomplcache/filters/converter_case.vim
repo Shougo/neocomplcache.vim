@@ -43,7 +43,7 @@ function! s:converter.filter(context) "{{{
 
   let convert_candidates = filter(copy(a:context.candidates),
         \ "get(v:val, 'neocomplcache__convertable', 1)
-        \  && v:val.word =~ '^\\u\\+$\\|^\\u\\?\\l\\+$'")
+        \  && v:val.word =~ '^[a-zA-Z0-9_''-]\\+$'")
 
   if a:context.complete_str =~ '^\l\+$'
     for candidate in convert_candidates
