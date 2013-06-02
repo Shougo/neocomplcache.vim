@@ -216,8 +216,6 @@ function! s:check_in_do_auto_complete() "{{{
   " Detect completefunc.
   if &l:completefunc !~# '^neocomplcache#'
     if g:neocomplcache_force_overwrite_completefunc
-          \ || &l:completefunc ==#
-          \    'neocomplcache#complete#sources_manual_complete'
       " Set completefunc.
       let &l:completefunc = 'neocomplcache#complete#manual_complete'
     else
