@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: handler.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 May 2013.
+" Last Modified: 02 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -216,8 +216,8 @@ function! s:check_in_do_auto_complete() "{{{
   " Detect completefunc.
   if &l:completefunc !~# '^neocomplcache#'
     if g:neocomplcache_force_overwrite_completefunc
-          \ || &l:completefunc == ''
-          \ || &l:completefunc ==# 'neocomplcache#complete#sources_manual_complete'
+          \ || &l:completefunc ==#
+          \    'neocomplcache#complete#sources_manual_complete'
       " Set completefunc.
       let &l:completefunc = 'neocomplcache#complete#manual_complete'
     else
