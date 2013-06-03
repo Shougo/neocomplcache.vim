@@ -1878,6 +1878,9 @@ TODO						*neocomplcache-todo*
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-06-03
+- Fixed syntax_complete problem.
+
 2013-06-02
 - Fixed converter_case.
 

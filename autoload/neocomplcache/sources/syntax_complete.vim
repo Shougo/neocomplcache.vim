@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Apr 2013.
+" Last Modified: 03 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -134,7 +134,7 @@ function! s:caching_from_syn(filetype) "{{{
 
   let dup_check = {}
 
-  let filetype_pattern = substitute(a:filetype, '\W', '\\A', 'g') . '\u'
+  let filetype_pattern = tolower(a:filetype)
 
   let keyword_lists = {}
   for line in split(syntax_list, '\n')
@@ -146,7 +146,7 @@ function! s:caching_from_syn(filetype) "{{{
 
     if line =~ 'Syntax items' || line =~ '^\s*links to' ||
           \ line =~ '^\s*nextgroup=' ||
-          \ group_name !~# filetype_pattern
+          \ strridx(tolower(group_name), filetype_pattern) != 0
       " Next line.
       continue
     endif
