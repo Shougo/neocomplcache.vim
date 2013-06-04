@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jun 2013.
+" Last Modified: 04 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -222,7 +222,7 @@ function! neocomplcache#is_enabled() "{{{
 endfunction"}}}
 function! neocomplcache#is_locked(...) "{{{
   let bufnr = a:0 > 0 ? a:1 : bufnr('%')
-  return !neocomplcache#is_enabled() || &paste
+  return !neocomplcache#is_enabled() || &paste || !&l:modified
         \ || g:neocomplcache_disable_auto_complete
         \ || &l:completefunc == ''
         \ || neocomplcache#get_current_neocomplcache().lock
