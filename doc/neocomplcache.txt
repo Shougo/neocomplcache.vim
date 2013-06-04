@@ -1872,6 +1872,13 @@ Note: This settings works but may heavy.
 	let g:neocomplcache_omni_patterns.javascript = '\h\w*\|[^. \t]\.\w*'
 <
 
+Q: neocomplcache closes DiffGitCached window from vim-fugitive
+https://github.com/Shougo/neocomplcache.vim/issues/424
+A:
+>
+	let g:neocomplcache_enable_auto_close_preview = 0
+<
+
 ==============================================================================
 TODO						*neocomplcache-todo*
 
