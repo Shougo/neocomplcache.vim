@@ -1771,7 +1771,7 @@ https://github.com/davidhalter/jedi-vim
 A: Please set |g:neocomplcache_force_omni_patterns| as below.
 >
 	autocmd FileType python setlocal omnifunc=jedi#complete
-	let g:jedi#popup_on_dot = 0
+	let g:jedi#auto_vim_configuration = 0
 	let g:neocomplcache_force_omni_patterns.python = '[^. \t]\.\w*'
 <
 Q: Candidates are not found in heavy completion(neco-look, etc).
