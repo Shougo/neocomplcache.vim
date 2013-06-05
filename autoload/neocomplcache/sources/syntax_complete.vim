@@ -41,8 +41,7 @@ let s:source = {
 
 function! s:source.initialize() "{{{
   " Set caching event.
-  autocmd neocomplete FileType,Syntax *
-        \ call s:make_cache()
+  autocmd neocomplete Syntax * call s:make_cache()
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/syntax_cache')
@@ -58,10 +57,6 @@ function! s:source.finalize() "{{{
 endfunction"}}}
 
 function! s:source.get_keyword_list(complete_str) "{{{
-  if neocomplcache#within_comment()
-    return []
-  endif
-
   let list = []
 
   let filetype = neocomplcache#get_context_filetype()
