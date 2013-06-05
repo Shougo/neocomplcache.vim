@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2013.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,7 +41,8 @@ let s:source = {
 
 function! s:source.initialize() "{{{
   " Set caching event.
-  autocmd neocomplcache Syntax * call s:caching()
+  autocmd neocomplete FileType,Syntax *
+        \ call s:make_cache()
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/syntax_cache')
