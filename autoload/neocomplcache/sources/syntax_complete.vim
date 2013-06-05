@@ -41,7 +41,7 @@ let s:source = {
 
 function! s:source.initialize() "{{{
   " Set caching event.
-  autocmd neocomplete Syntax * call s:make_cache()
+  autocmd neocomplcache Syntax * call s:make_cache()
 
   " Create cache directory.
   if !isdirectory(neocomplcache#get_temporary_directory() . '/syntax_cache')
