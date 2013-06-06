@@ -1505,10 +1505,6 @@ info			String		(Optional)
 rank			Number		(Optional)
 			The completion priority.
 
-		*neocomplcache-candidate-attribute-neocomplcache__refresh*
-neocomplcache__refresh	Number		(Optional)
-			If it is non-zero, neocomplcache refresh
-			automatically.
 
 CONTEXT						*neocomplcache-context*
 
@@ -1887,6 +1883,7 @@ CHANGELOG					*neocomplcache-changelog*
 
 2013-06-06
 - Fixed <Plug>(neocomplcache_start_unite_quick_match).
+- Improved refresh behavior.
 
 2013-06-03
 - Fixed syntax_complete problem.
