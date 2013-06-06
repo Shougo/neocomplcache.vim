@@ -83,7 +83,7 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
   for keyword in a:context.source__candidates
     let dict = {
         \   'word' : keyword.word,
-        \   'abbr' : printf(' %-50s', keyword.word),
+        \   'abbr' : printf('%-50s', get(keyword, 'abbr', keyword.word)),
         \   'kind': 'completion',
         \   'action__complete_word' : keyword.word,
         \   'action__complete_pos' : keyword_pos,
