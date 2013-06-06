@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 06 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,8 +83,7 @@ function! s:neocomplcache_source.gather_candidates(args, context) "{{{
   for keyword in a:context.source__candidates
     let dict = {
         \   'word' : keyword.word,
-        \   'abbr' : printf('%-50s', (has_key(keyword, 'abbr') ?
-        \             keyword.abbr : keyword.word)),
+        \   'abbr' : printf(' %-50s', keyword.word),
         \   'kind': 'completion',
         \   'action__complete_word' : keyword.word,
         \   'action__complete_pos' : keyword_pos,

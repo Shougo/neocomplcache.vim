@@ -1885,6 +1885,9 @@ TODO						*neocomplcache-todo*
 ==============================================================================
 CHANGELOG					*neocomplcache-changelog*
 
+2013-06-06
+- Fixed <Plug>(neocomplcache_start_unite_quick_match).
+
 2013-06-03
 - Fixed syntax_complete problem.
 
