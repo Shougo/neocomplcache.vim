@@ -590,7 +590,7 @@ function! neocomplcache#init#_variables() "{{{
         \ 'g:neocomplcache_text_mode_filetypes', {})
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_text_mode_filetypes',
-        \ 'text,help,tex,gitcommit,vcs-commit', 1)
+        \ 'text,help,tex,gitcommit,vcs-commit,markdown', 1)
   "}}}
 
   " Initialize tags filter patterns. "{{{
