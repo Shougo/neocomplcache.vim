@@ -9,6 +9,11 @@ provides keyword completion system by maintaining a cache of keywords in the
 current buffer. neocomplcache could be customized easily and has a lot more
 features than the Vim's standard completion feature.
 
+If you use Vim 7.3.885 or above with if\_lua feature, you should use
+neocomplete.  It is faster than neocomplcache.
+
+https://github.com/Shougo/neocomplete.vim
+
 Installation
 ============
 
