@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Apr 2013.
+" Last Modified: 24 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,7 +30,7 @@ set cpo&vim
 let s:source = {
       \ 'name' : 'vim_complete',
       \ 'kind' : 'manual',
-      \ 'filetypes' : { 'vim' : 1, },
+      \ 'filetypes' : { 'vim' : 1, 'vimconsole' : 1, },
       \ 'mark' : '[vim]',
       \ 'rank' : 300,
       \}
