@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2013.
+" Last Modified: 03 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -278,7 +278,8 @@ function! neocomplcache#helper#unite_patterns(pattern_var, filetype) "{{{
     endif
 
     " Same filetype.
-    if has_key(g:neocomplcache_same_filetype_lists, ft)
+    if exists('g:neocomplcache_same_filetype_lists')
+          \ && has_key(g:neocomplcache_same_filetype_lists, ft)
       for ft in split(g:neocomplcache_same_filetype_lists[ft], ',')
         if has_key(a:pattern_var, ft) && !has_key(dup_check, ft)
           let dup_check[ft] = 1
