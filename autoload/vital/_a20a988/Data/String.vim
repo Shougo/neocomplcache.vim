@@ -24,7 +24,7 @@ function! s:replace(str, from, to)
     let left  = idx ==# 0 ? '' : str[: idx - 1]
     let right = str[idx + strlen(a:from) :]
     let str = left . a:to . right
-    let idx = stridx(str, a:from)
+    let idx = stridx(str, a:from, idx + strlen(a:to))
   endwhile
   return str
 endfunction
@@ -160,6 +160,11 @@ function! s:chop(str) "{{{
   return substitute(a:str, '.$', '', '')
 endfunction "}}}
 
+" Remove last \r,\n,\r\n from a:str.
+function! s:chomp(str) "{{{
+  return substitute(a:str, '\%(\r\n\|[\r\n]\)$', '', '')
+endfunction "}}}
+
 " wrap() and its internal functions
 " * _split_by_wcswidth_once()
 " * _split_by_wcswidth()
@@ -239,6 +244,10 @@ function! s:diffidx(a, b)
     endif
   endfor
   return -1
+endfunction
+
+function! s:substitute_last(expr, pat, sub)
+  return substitute(a:expr, printf('.*\zs%s', a:pat), a:sub, '')
 endfunction
 
 let &cpo = s:save_cpo

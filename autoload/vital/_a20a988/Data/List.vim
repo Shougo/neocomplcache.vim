@@ -55,11 +55,16 @@ function! s:concat(list)
 endfunction
 
 " Flattens a list.
-function! s:flatten(list)
+function! s:flatten(list, ...)
+  let limit = a:0 > 0 ? a:1 : -1
   let list = []
+  if limit == 0
+    return a:list
+  endif
+  let limit -= 1
   for Value in a:list
     if type(Value) == type([])
-      let list += s:flatten(Value)
+      let list += s:flatten(Value, limit)
     else
       call add(list, Value)
     endif
@@ -227,6 +232,11 @@ function! s:zip(...)
   return map(range(min(map(copy(a:000), 'len(v:val)'))), "map(copy(a:000), 'v:val['.v:val.']')")
 endfunction
 
+" Inspired by Ruby's with_index method.
+function! s:with_index(list, ...)
+  let base = a:0 > 0 ? a:1 : 0
+  return s:zip(a:list, range(base, len(a:list)+base-1))
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
