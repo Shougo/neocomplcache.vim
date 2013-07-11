@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2013.
+" Last Modified: 11 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,8 +93,8 @@ silent! snoremap <unique> <Plug>(neocomplcache_snippets_force_jump)
       \ :<C-u>:echoerr <SID>print_snippets_complete_error()<CR>
 function! s:print_snippets_complete_error()
   return 'Warning: neocomplcache snippets source was splitted!'
-      \ .' You should install snippets_complete source from'
-      \ .' "https://github.com/Shougo/neocomplcache-snippets-complete"'
+      \ .' You should install neosnippet from'
+      \ .' "https://github.com/Shougo/neosnippet.vim"'
 endfunction"}}}
 
 " Global options definition. "{{{
