@@ -299,7 +299,7 @@ if argc() == 8 &&
     call s:main(argv())
   catch
     call writefile([v:throwpoint, v:exception],
-          \     expand('~/.neocomplcache_async_error_log'))
+          \     fnamemodify(argv(1), ':h:h').'/async_error_log')
   endtry
 
   qall!
