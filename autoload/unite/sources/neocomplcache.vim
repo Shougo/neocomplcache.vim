@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2013.
+" Last Modified: 27 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,7 +47,6 @@ function! s:neocomplcache_source.hooks.on_init(args, context) "{{{
   " Save options.
   let max_list_save = g:neocomplcache_max_list
   let max_keyword_width_save = g:neocomplcache_max_keyword_width
-  let completefunc_save = &l:completefunc
   let manual_start_length = g:neocomplcache_manual_completion_start_length
 
   try
