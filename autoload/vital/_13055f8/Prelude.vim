@@ -80,6 +80,11 @@ function! s:is_dict(Value)
 endfunction
 
 function! s:truncate_smart(str, max, footer_width, separator)
+  echoerr 'Prelude.truncate_smart() is obsolete. Use its truncate_skipping() instead; they are equivalent.'
+  return s:truncate_skipping(a:str, a:max, a:footer_width, a:separator)
+endfunction
+
+function! s:truncate_skipping(str, max, footer_width, separator)
   let width = s:wcswidth(a:str)
   if width <= a:max
     let ret = a:str
