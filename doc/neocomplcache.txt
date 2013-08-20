@@ -1880,6 +1880,18 @@ A:
 	let g:neocomplcache_enable_auto_close_preview = 0
 <
 
+Q: I want to get quiet messages in auto completion.
+https://github.com/Shougo/neocomplcache.vim/issues/448
+
+A: It is impossible. Because it is Vim's feature.
+Vim is not intended for auto completion.
+
+But you can configure it by below settings.
+>
+	autocmd VimEnter *
+	\ highlight ModeMsg guifg=bg guibg=bg | highlight WarningMsg guifg=bg
+<
+
 ==============================================================================
 TODO						*neocomplcache-todo*
 
