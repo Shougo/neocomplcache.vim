@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Aug 2013.
+" Last Modified: 04 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -138,7 +138,9 @@ function! neocomplcache#init#_others() "{{{
   " Set completefunc.
   let completefunc_save = &l:completefunc
   let &completefunc = 'neocomplcache#complete#manual_complete'
-  let &l:completefunc = completefunc_save
+  if completefunc_save != ''
+    let &l:completefunc = completefunc_save
+  endif
 
   " For auto complete keymappings.
   call neocomplcache#mappings#define_default_mappings()
