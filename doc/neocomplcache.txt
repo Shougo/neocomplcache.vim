@@ -1892,6 +1892,13 @@ But you can configure it by below settings.
 	\ highlight ModeMsg guifg=bg guibg=bg | highlight WarningMsg guifg=bg
 <
 
+Q: neocomplcache will change external completeopt vaule(longest).
+https://github.com/Shougo/neocomplcache.vim/issues/453
+
+A: It is feature. Because "longest" completeopt conflicts with auto
+completion.  To use "longest" option, you must disable auto completion.
+"longest" is good feature. But it is for manual completion only.
+
 ==============================================================================
 TODO						*neocomplcache-todo*
 
