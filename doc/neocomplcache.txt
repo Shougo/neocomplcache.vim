@@ -1636,12 +1636,12 @@ you can check 'path' option or change |g:neocomplcache_include_paths|.
 http://github.com/Shougo/vimproc
 
 
-Q: An error occurred in "sudo vim":
+Q: neocomplcache cannot create cache files in "sudo vim":
 
-A: neocomplcache does not support "sudo vim".  Because neocomplcache (and other
-plugins) creates temporary files in super user permission by sudo command.  You
-must use sudo.vim or set "Defaults always_set_home" in "/etc/sudoers", or must
-use "sudoedit" command.
+A: Because neocomplcache (and other plugins) creates temporary files in super
+user permission by sudo command.  You must use sudo.vim or set "Defaults
+always_set_home" in "/etc/sudoers", or must use "sudoedit" command.
+
 
 Ubuntu has a command "sudoedit" which can work well with neocomplcache.
 I'm not sure if other distros has this command...

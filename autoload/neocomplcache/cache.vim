@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cache.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jul 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -121,10 +121,18 @@ function! neocomplcache#cache#list2index(list, dictionary, is_string) "{{{
 endfunction"}}}
 
 function! neocomplcache#cache#save_cache(cache_dir, filename, keyword_list) "{{{
+  if neocomplcache#util#is_sudo()
+    return
+  endif
+
   call neocomplcache#cache#writefile(
         \ a:cache_dir, a:filename, [string(a:keyword_list)])
 endfunction"}}}
 function! neocomplcache#cache#save_cache_old(cache_dir, filename, keyword_list) "{{{
+  if neocomplcache#util#is_sudo()
+    return
+  endif
+
   " Create dictionary key.
   for keyword in a:keyword_list
     if !has_key(keyword, 'abbr')
@@ -163,6 +171,10 @@ function! neocomplcache#cache#readfile(cache_dir, filename) "{{{
   return s:Cache.readfile(cache_dir, a:filename)
 endfunction"}}}
 function! neocomplcache#cache#writefile(cache_dir, filename, list) "{{{
+  if neocomplcache#util#is_sudo()
+    return
+  endif
+
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
   return s:Cache.writefile(cache_dir, a:filename, a:list)
 endfunction"}}}
@@ -181,6 +193,7 @@ let s:sdir = neocomplcache#util#substitute_path_separator(
 
 function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern, mark) "{{{
   if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+        \ || neocomplcache#util#is_sudo()
     return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   endif
 
@@ -206,6 +219,7 @@ function! neocomplcache#cache#async_load_from_file(cache_dir, filename, pattern,
 endfunction"}}}
 function! neocomplcache#cache#async_load_from_tags(cache_dir, filename, filetype, mark, is_create_tags) "{{{
   if !neocomplcache#cache#check_old_cache(a:cache_dir, a:filename)
+        \ || neocomplcache#util#is_sudo()
     return neocomplcache#cache#encode_name(a:cache_dir, a:filename)
   endif
 

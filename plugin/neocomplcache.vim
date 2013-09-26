@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jul 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,16 +36,6 @@ set cpo&vim
 if v:version < 702
   echohl Error
   echomsg 'neocomplcache does not work this version of Vim (' . v:version . ').'
-  echohl None
-  finish
-elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
-      \ && $HOME !=# expand('~'.$USER)
-      \ && $HOME ==# expand('~'.$SUDO_USER)
-  echohl Error
-  echomsg 'neocomplcache disabled: "sudo vim" is detected and $HOME is set to '
-        \.'your user''s home. '
-        \.'You may want to use the sudo.vim plugin, the "-H" option '
-        \.'with "sudo" or set always_set_home in /etc/sudoers instead.'
   echohl None
   finish
 endif
