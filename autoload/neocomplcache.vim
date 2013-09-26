@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: neocomplcache.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Aug 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -348,7 +348,7 @@ endfunction"}}}
 function! neocomplcache#get_temporary_directory() "{{{
   let directory = neocomplcache#util#substitute_path_separator(
         \ neocomplcache#util#expand(g:neocomplcache_temporary_dir))
-  if !isdirectory(directory)
+  if !isdirectory(directory) && !neocomplcache#util#is_sudo()
     call mkdir(directory, 'p')
   endif
 
