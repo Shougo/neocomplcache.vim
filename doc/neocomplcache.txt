@@ -1681,8 +1681,6 @@ A: You can add find some already found omni patterns and functions at here.
 Note: Some patterns are omitted here, (someone should check out those plugin's
 source code's complete function, and find out the omni pattern).
 >
-	" JavaScript (plugin: jscomplete-vim)
-	let g:neocomplcache_omni_functions.javascript = 'jscomplete#CompleteJS'
 	" Go (plugin: gocode)
 	let g:neocomplcache_omni_functions.go = 'gocomplete#Complete'
 	" Clojure (plugin: vim-clojure)
@@ -1856,19 +1854,6 @@ because if_lua has double-free problem.
 	      \ '\w\+[.:]\|require\s*(\?["'']\w*'
 	" let g:neocomplcache_force_omni_patterns.lua =
 	      " \ '\w\+[.:]\|require\s*(\?["'']\w*'
-<
-
-Q: I want to use vim-nodejs-complete in neocomplcache.
-A:
-Note: This settings works but may heavy.
->
-	let g:neocomplcache_omni_functions.javascript = 'nodejscomplete#CompleteJS'
-	" Use jscomplete.vim
-	let g:nodejs_complete_config = {
-	\  'js_compl_fn': 'jscomplete#CompleteJS',
-	\  'max_node_compl_len': 15
-	\}
-	let g:neocomplcache_omni_patterns.javascript = '\h\w*\|[^. \t]\.\w*'
 <
 
 Q: neocomplcache closes DiffGitCached window from vim-fugitive
