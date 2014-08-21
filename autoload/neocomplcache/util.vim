@@ -32,7 +32,7 @@ let s:List = vital#of('neocomplcache').import('Data.List')
 let s:String = vital#of('neocomplcache').import('Data.String')
 
 function! neocomplcache#util#truncate_smart(...) "{{{
-  return call(s:V.truncate_smart, a:000)
+  return call(s:V.truncate_skipping, a:000)
 endfunction"}}}
 
 function! neocomplcache#util#truncate(...) "{{{
