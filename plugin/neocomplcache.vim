@@ -177,7 +177,9 @@ let g:neocomplcache_source_rank =
       \ get(g:, 'neocomplcache_source_rank', {})
 
 let g:neocomplcache_temporary_dir =
-      \ get(g:, 'neocomplcache_temporary_dir', expand('~/.cache/neocomplcache'))
+      \ get(g:, 'neocomplcache_temporary_dir',
+      \  ($XDG_CACHE_HOME != '' ?
+      \   $XDG_CACHE_HOME . '/neocomplcache' : expand('~/.cache/neocomplcache')))
 let g:neocomplcache_enable_debug =
       \ get(g:, 'neocomplcache_enable_debug', 0)
 if get(g:, 'neocomplcache_enable_at_startup', 0)
