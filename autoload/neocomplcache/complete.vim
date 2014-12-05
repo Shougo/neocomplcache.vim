@@ -290,7 +290,7 @@ function! neocomplcache#complete#_set_results_pos(cur_text, ...) "{{{
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error(
-            \ 'Error occured in source''s get_complete_position()!')
+            \ 'Error occurred in source''s get_complete_position()!')
       call neocomplcache#print_error(
             \ 'Source name is ' . source.name)
       return complete_sources
@@ -356,7 +356,7 @@ function! neocomplcache#complete#_set_results_words(sources) "{{{
       call neocomplcache#print_error(
             \ 'Source name is ' . source.name)
       call neocomplcache#print_error(
-            \ 'Error occured in source''s gather_candidates()!')
+            \ 'Error occurred in source''s gather_candidates()!')
       return
     finally
       if winsaveview() != pos
