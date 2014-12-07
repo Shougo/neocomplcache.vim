@@ -780,7 +780,7 @@ function! neocomplcache#init#_source(source) "{{{
       call neocomplcache#print_error(v:throwpoint)
       call neocomplcache#print_error(v:exception)
       call neocomplcache#print_error(
-            \ 'Error occured in source''s initialize()!')
+            \ 'Error occurred in source''s initialize()!')
       call neocomplcache#print_error(
             \ 'Source name is ' . source.name)
     endtry
