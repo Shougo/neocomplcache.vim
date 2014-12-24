@@ -166,7 +166,7 @@ COMMANDS 					*neocomplcache-commands*
 
 :NeoComplCacheSetFileType [filetype]		*:NeoComplCacheSetFileType*
 		Change filetype to [filetype] in current buffer.
-		This filetype is only used neocomplcache.
+		This filetype is only used by neocomplcache.
 		Note: You can get current filetype by
 		|neocomplcache#get_context_filetype()|
 
