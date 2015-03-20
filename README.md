@@ -1,6 +1,11 @@
 **neocomplcache**
 =================
 
+Note:  It is not maintained well.  You should use neocomplete instead.
+
+https://github.com/Shougo/neocomplete.vim
+
+
 Description
 -----------
 
