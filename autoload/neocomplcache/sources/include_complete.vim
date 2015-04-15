@@ -449,6 +449,9 @@ function! s:initialize_variables() "{{{
   call neocomplcache#util#set_default_dictionary(
         \ 'g:neocomplcache_include_patterns',
         \ 'ruby', '^\s*\<\%(load\|require\|require_relative\)\>')
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_patterns',
+        \ 'c,cpp', '^\s*#\s*include')
   "}}}
   " Initialize expr pattern. "{{{
   call neocomplcache#util#set_default(
@@ -461,6 +464,9 @@ function! s:initialize_variables() "{{{
   " Initialize path pattern. "{{{
   call neocomplcache#util#set_default(
         \ 'g:neocomplcache_include_paths', {})
+  call neocomplcache#util#set_default_dictionary(
+        \ 'g:neocomplcache_include_paths', 'c,cpp',
+        \ &path)
   "}}}
   " Initialize include suffixes. "{{{
   call neocomplcache#util#set_default(
