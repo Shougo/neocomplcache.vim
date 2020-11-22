@@ -1,9 +1,9 @@
 **neocomplcache**
 =================
 
-Note:  It is not maintained well.  You should use neocomplete instead.
+Note:  It is not maintained well.  You should use Deoplete instead.
 
-https://github.com/Shougo/neocomplete.vim
+https://github.com/Shougo/deoplete.nvim
 
 
 Description
