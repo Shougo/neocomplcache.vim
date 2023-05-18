@@ -1,9 +1,10 @@
 **neocomplcache**
 =================
 
-Note:  It is not maintained well.  You should use Deoplete instead.
-
-https://github.com/Shougo/deoplete.nvim
+**Note**: The development of this plugin is finished. Accepts minor patches and
+issues but no new features.
+[ddc.vim](https://github.com/Shougo/ddc.vim) is the next generation auto
+completion plugin. Consider migrating to it.
 
 
 Description
@@ -86,7 +87,7 @@ let g:neocomplcache_dictionary_filetype_lists = {
     \ 'default' : '',
     \ 'vimshell' : $HOME.'/.vimshell_hist',
     \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
+    \ }
 
 " Define keyword.
 if !exists('g:neocomplcache_keyword_patterns')
