@@ -35,8 +35,6 @@ let s:source = {
       \ 'rank' : 50,
       \}
 
-let s:List = vital#of('neocomplcache').import('Data.List')
-
 function! s:source.initialize() "{{{
   " Initialize omni completion pattern. "{{{
   if !exists('g:neocomplcache_omni_patterns')
@@ -162,7 +160,7 @@ function! s:get_omni_funcs(filetype) "{{{
     endfor
   endfor
 
-  return s:List.uniq(funcs)
+  return neocomplcache#util#uniq(funcs)
 endfunction"}}}
 function! s:get_omni_list(list) "{{{
   let omni_list = []

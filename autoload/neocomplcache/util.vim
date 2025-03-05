@@ -27,52 +27,44 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V = vital#of('neocomplcache')
-let s:List = vital#of('neocomplcache').import('Data.List')
-let s:String = vital#of('neocomplcache').import('Data.String')
-
+function! neocomplcache#util#get_vital() abort "{{{
+  if !exists('s:V')
+    let s:V = vital#of('neocomplcache').import('Prelude')
+  endif
+  return s:V
+endfunction"}}}
 function! neocomplcache#util#truncate_smart(...) "{{{
-  return call(s:V.truncate_skipping, a:000)
+  return call(neocomplcache#util#get_vital().truncate_skipping, a:000)
 endfunction"}}}
 
 function! neocomplcache#util#truncate(...) "{{{
-  return call(s:V.truncate, a:000)
+  return call(neocomplcache#util#get_vital().truncate, a:000)
 endfunction"}}}
 
-function! neocomplcache#util#strchars(...) "{{{
-  return call(s:String.strchars, a:000)
+function! neocomplcache#util#strchars(str) "{{{
+  return s:strchars(a:str)
 endfunction"}}}
 function! neocomplcache#util#wcswidth(...) "{{{
-  return call(s:V.wcswidth, a:000)
+  return call(neocomplcache#util#get_vital().wcswidth, a:000)
 endfunction"}}}
 function! neocomplcache#util#strwidthpart(...) "{{{
-  return call(s:V.strwidthpart, a:000)
+  return call(neocomplcache#util#get_vital().strwidthpart, a:000)
 endfunction"}}}
 function! neocomplcache#util#strwidthpart_reverse(...) "{{{
-  return call(s:V.strwidthpart_reverse, a:000)
+  return call(neocomplcache#util#get_vital().strwidthpart_reverse, a:000)
 endfunction"}}}
 
 function! neocomplcache#util#substitute_path_separator(...) "{{{
-  return call(s:V.substitute_path_separator, a:000)
+  return call(neocomplcache#util#get_vital().substitute_path_separator, a:000)
 endfunction"}}}
-function! neocomplcache#util#mb_strlen(...) "{{{
-  return call(s:String.strchars, a:000)
-endfunction"}}}
-function! neocomplcache#util#uniq(list) "{{{
-  let dict = {}
-  for item in a:list
-    if !has_key(dict, item)
-      let dict[item] = item
-    endif
-  endfor
-
-  return values(dict)
+function! neocomplcache#util#mb_strlen(str) "{{{
+  return s:strchars(a:str)
 endfunction"}}}
 function! neocomplcache#util#system(...) "{{{
-  return call(s:V.system, a:000)
+  return call(neocomplcache#util#get_vital().system, a:000)
 endfunction"}}}
 function! neocomplcache#util#has_vimproc(...) "{{{
-  return call(s:V.has_vimproc, a:000)
+  return call(neocomplcache#util#get_vital().has_vimproc, a:000)
 endfunction"}}}
 function! neocomplcache#util#has_lua() "{{{
   " Note: Disabled if_lua feature if less than 7.3.885.
@@ -80,25 +72,39 @@ function! neocomplcache#util#has_lua() "{{{
   return has('lua') && (v:version > 703 || v:version == 703 && has('patch885'))
 endfunction"}}}
 function! neocomplcache#util#is_windows(...) "{{{
-  return call(s:V.is_windows, a:000)
+  return call(neocomplcache#util#get_vital().is_windows, a:000)
 endfunction"}}}
 function! neocomplcache#util#is_mac(...) "{{{
-  return call(s:V.is_mac, a:000)
+  return call(neocomplcache#util#get_vital().is_mac, a:000)
 endfunction"}}}
 function! neocomplcache#util#get_last_status(...) "{{{
-  return call(s:V.get_last_status, a:000)
+  return call(neocomplcache#util#get_vital().get_last_status, a:000)
 endfunction"}}}
 function! neocomplcache#util#escape_pattern(...) "{{{
-  return call(s:V.escape_pattern, a:000)
+  return call(neocomplcache#util#get_vital().escape_pattern, a:000)
 endfunction"}}}
 function! neocomplcache#util#iconv(...) "{{{
-  return call(s:V.iconv, a:000)
+  return call(neocomplcache#util#get_vital().iconv, a:000)
 endfunction"}}}
-function! neocomplcache#util#uniq(...) "{{{
-  return call(s:List.uniq, a:000)
+function! neocomplcache#util#uniq(list, ...) "{{{
+  let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
+  let i = 0
+  let seen = {}
+  while i < len(list)
+    let key = string(a:0 ? list[i][1] : list[i])
+    if has_key(seen, key)
+      call remove(list, i)
+    else
+      let seen[key] = 1
+      let i += 1
+    endif
+  endwhile
+  return a:0 ? map(list, 'v:val[0]') : list
 endfunction"}}}
-function! neocomplcache#util#sort_by(...) "{{{
-  return call(s:List.sort_by, a:000)
+function! neocomplcache#util#sort_by(list, expr) "{{{
+  let pairs = map(a:list, printf('[v:val, %s]', a:expr))
+  return map(s:sort(pairs,
+  \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
 endfunction"}}}
 
 " Sudo check.
@@ -153,8 +159,12 @@ function! neocomplcache#util#set_default(var, val, ...)  "{{{
           \ {alternate_var} : a:val
   endif
 endfunction"}}}
-function! neocomplcache#util#set_dictionary_helper(...) "{{{
-  return call(s:V.set_dictionary_helper, a:000)
+function! neocomplcache#util#set_dictionary_helper(variable, keys, pattern) "{{{
+  for key in split(a:keys, '\s*,\s*')
+    if !has_key(a:variable, key)
+      let a:variable[key] = a:pattern
+    endif
+  endfor
 endfunction"}}}
 
 function! neocomplcache#util#set_default_dictionary(variable, keys, value) "{{{
@@ -228,6 +238,20 @@ endfunction"}}}
 function! neocomplcache#util#convert2list(expr) "{{{
   return type(a:expr) ==# type([]) ? a:expr : [a:expr]
 endfunction"}}}
+
+" Returns the number of character in a:str.
+" NOTE: This returns proper value
+" even if a:str contains multibyte character(s).
+" s:strchars(str) {{{
+if exists('*strchars')
+  function! s:strchars(str)
+    return strchars(a:str)
+  endfunction
+else
+  function! s:strchars(str)
+    return strlen(substitute(copy(a:str), '.', 'x', 'g'))
+  endfunction
+endif "}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

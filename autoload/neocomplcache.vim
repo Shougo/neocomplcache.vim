@@ -151,8 +151,7 @@ function! neocomplcache#add_dictionaries(dictionaries) "{{{
 endfunction"}}}
 
 function! neocomplcache#system(...) "{{{
-  let V = vital#of('neocomplcache')
-  return call(V.system, a:000)
+  return call('neocomplcache#util#system', a:000)
 endfunction"}}}
 function! neocomplcache#has_vimproc() "{{{
   return neocomplcache#util#has_vimproc()
