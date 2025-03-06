@@ -27,64 +27,136 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#util#get_vital() abort "{{{
-  if !exists('s:V')
-    let s:V = vital#of('neocomplcache').import('Prelude')
+let s:is_windows = has('win16') || has('win32') || has('win64') || has('win95')
+let s:is_cygwin = has('win32unix')
+let s:is_mac = !s:is_windows && !s:is_cygwin
+      \ && (has('mac') || has('macunix') || has('gui_macvim') ||
+      \   (!isdirectory('/proc') && executable('sw_vers')))
+
+let s:is_unix = has('unix')
+function! neocomplcache#util#truncate_smart(str, max, footer_width, separator) "{{{
+  let width = s:wcswidth(a:str)
+  if width <= a:max
+    let ret = a:str
+  else
+    let header_width = a:max - s:wcswidth(a:separator) - a:footer_width
+    let ret = s:strwidthpart(a:str, header_width) . a:separator
+          \ . s:strwidthpart_reverse(a:str, a:footer_width)
   endif
-  return s:V
-endfunction"}}}
-function! neocomplcache#util#truncate_smart(...) "{{{
-  return call(neocomplcache#util#get_vital().truncate_skipping, a:000)
+
+  return s:truncate(ret, a:max)
 endfunction"}}}
 
-function! neocomplcache#util#truncate(...) "{{{
-  return call(neocomplcache#util#get_vital().truncate, a:000)
+function! neocomplcache#util#truncate(str, width) "{{{
+  " Original function is from mattn.
+  " http://github.com/mattn/googlereader-vim/tree/master
+
+  if a:str =~# '^[\x00-\x7f]*$'
+    return len(a:str) < a:width ?
+          \ printf('%-'.a:width.'s', a:str) : strpart(a:str, 0, a:width)
+  endif
+
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  if width > a:width
+    let ret = s:strwidthpart(ret, a:width)
+    let width = s:wcswidth(ret)
+  endif
+
+  if width < a:width
+    let ret .= repeat(' ', a:width - width)
+  endif
+
+  return ret
 endfunction"}}}
 
 function! neocomplcache#util#strchars(str) "{{{
   return s:strchars(a:str)
 endfunction"}}}
-function! neocomplcache#util#wcswidth(...) "{{{
-  return call(neocomplcache#util#get_vital().wcswidth, a:000)
+function! neocomplcache#util#wcswidth(str) "{{{
+  return s:wcswidth(a:str)
 endfunction"}}}
-function! neocomplcache#util#strwidthpart(...) "{{{
-  return call(neocomplcache#util#get_vital().strwidthpart, a:000)
-endfunction"}}}
-function! neocomplcache#util#strwidthpart_reverse(...) "{{{
-  return call(neocomplcache#util#get_vital().strwidthpart_reverse, a:000)
+function! neocomplcache#util#strwidthpart(str, width)
+  if a:width <= 0
+    return ''
+  endif
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '.$')
+    let ret = ret[: -1 - len(char)]
+    let width -= s:wcswidth(char)
+  endwhile
+
+  return ret
+endfunction
+function! neocomplcache#util#strwidthpart_reverse(str, width) "{{{
+  if a:width <= 0
+    return ''
+  endif
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '^.')
+    let ret = ret[len(char) :]
+    let width -= s:wcswidth(char)
+  endwhile
+
+  return ret
 endfunction"}}}
 
-function! neocomplcache#util#substitute_path_separator(...) "{{{
-  return call(neocomplcache#util#get_vital().substitute_path_separator, a:000)
+function! neocomplcache#util#substitute_path_separator(path) "{{{
+  return s:is_windows ? substitute(a:path, '\\', '/', 'g') : a:path
 endfunction"}}}
 function! neocomplcache#util#mb_strlen(str) "{{{
   return s:strchars(a:str)
 endfunction"}}}
-function! neocomplcache#util#system(...) "{{{
-  return call(neocomplcache#util#get_vital().system, a:000)
-endfunction"}}}
-function! neocomplcache#util#has_vimproc(...) "{{{
-  return call(neocomplcache#util#get_vital().has_vimproc, a:000)
+function! neocomplcache#util#system(str, ...) "{{{
+  let command = a:str
+  let input = a:0 >= 1 ? a:1 : ''
+  let command = neocomplcache#util#iconv(command, &encoding, 'char')
+  let input = neocomplcache#util#iconv(input, &encoding, 'char')
+
+  if a:0 == 0
+    let output = neocomplcache#util#has_vimproc() ?
+          \ vimproc#system(command) : system(command)
+  elseif a:0 == 1
+    let output = neocomplcache#util#has_vimproc() ?
+          \ vimproc#system(command, input) : system(command, input)
+  else
+    " ignores 3rd argument unless you have vimproc.
+    let output = neocomplcache#util#has_vimproc() ?
+          \ vimproc#system(command, input, a:2) : system(command, input)
+  endif
+
+  let output = neocomplcache#util#iconv(output, 'char', &encoding)
+
+  return output
 endfunction"}}}
 function! neocomplcache#util#has_lua() "{{{
   " Note: Disabled if_lua feature if less than 7.3.885.
   " Because if_lua has double free problem.
   return has('lua') && (v:version > 703 || v:version == 703 && has('patch885'))
 endfunction"}}}
-function! neocomplcache#util#is_windows(...) "{{{
-  return call(neocomplcache#util#get_vital().is_windows, a:000)
+function! neocomplcache#util#is_windows() "{{{
+  return s:is_windows
 endfunction"}}}
-function! neocomplcache#util#is_mac(...) "{{{
-  return call(neocomplcache#util#get_vital().is_mac, a:000)
+function! neocomplcache#util#is_mac() "{{{
+  return s:is_mac
 endfunction"}}}
 function! neocomplcache#util#get_last_status(...) "{{{
-  return call(neocomplcache#util#get_vital().get_last_status, a:000)
+  return neocomplcache#util#has_vimproc() ?
+        \ vimproc#get_last_status() : v:shell_error
 endfunction"}}}
-function! neocomplcache#util#escape_pattern(...) "{{{
-  return call(neocomplcache#util#get_vital().escape_pattern, a:000)
+function! neocomplcache#util#escape_pattern(str) "{{{
+  return escape(a:str, '~"\.^$[]*')
 endfunction"}}}
-function! neocomplcache#util#iconv(...) "{{{
-  return call(neocomplcache#util#get_vital().iconv, a:000)
+function! neocomplcache#util#iconv(expr, from, to) "{{{
+  if a:from == '' || a:to == '' || a:from ==? a:to
+    return a:expr
+  endif
+  let result = iconv(a:expr, a:from, a:to)
+  return result != '' ? result : a:expr
 endfunction"}}}
 function! neocomplcache#util#uniq(list, ...) "{{{
   let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
@@ -252,6 +324,83 @@ else
     return strlen(substitute(copy(a:str), '.', 'x', 'g'))
   endfunction
 endif "}}}
+
+if v:version >= 703
+  " Use builtin function.
+  function! s:wcswidth(str)
+    return strwidth(a:str)
+  endfunction
+else
+  function! s:wcswidth(str)
+    if a:str =~# '^[\x00-\x7f]*$'
+      return strlen(a:str)
+    end
+
+    let mx_first = '^\(.\)'
+    let str = a:str
+    let width = 0
+    while 1
+      let ucs = char2nr(substitute(str, mx_first, '\1', ''))
+      if ucs == 0
+        break
+      endif
+      let width += s:_wcwidth(ucs)
+      let str = substitute(str, mx_first, '', '')
+    endwhile
+    return width
+  endfunction
+
+  " UTF-8 only.
+  function! s:_wcwidth(ucs)
+    let ucs = a:ucs
+    if (ucs >= 0x1100
+          \  && (ucs <= 0x115f
+          \  || ucs == 0x2329
+          \  || ucs == 0x232a
+          \  || (ucs >= 0x2e80 && ucs <= 0xa4cf
+          \      && ucs != 0x303f)
+          \  || (ucs >= 0xac00 && ucs <= 0xd7a3)
+          \  || (ucs >= 0xf900 && ucs <= 0xfaff)
+          \  || (ucs >= 0xfe30 && ucs <= 0xfe6f)
+          \  || (ucs >= 0xff00 && ucs <= 0xff60)
+          \  || (ucs >= 0xffe0 && ucs <= 0xffe6)
+          \  || (ucs >= 0x20000 && ucs <= 0x2fffd)
+          \  || (ucs >= 0x30000 && ucs <= 0x3fffd)
+          \  ))
+      return 2
+    endif
+    return 1
+  endfunction
+endif
+
+function! s:strwidthpart(str, width)
+  if a:width <= 0
+    return ''
+  endif
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '.$')
+    let ret = ret[: -1 - len(char)]
+    let width -= s:wcswidth(char)
+  endwhile
+
+  return ret
+endfunction
+function! s:strwidthpart_reverse(str, width)
+  if a:width <= 0
+    return ''
+  endif
+  let ret = a:str
+  let width = s:wcswidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '^.')
+    let ret = ret[len(char) :]
+    let width -= s:wcswidth(char)
+  endwhile
+
+  return ret
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

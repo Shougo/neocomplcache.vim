@@ -49,7 +49,7 @@ function! s:main(argv) "{{{
 endfunction"}}}
 
 function! s:load_from_file(filename, pattern_file_name, mark, minlen, maxfilename, fileencoding, is_string) "{{{
-  if !filereadable(a:filename)
+  if !filereadable(a:filename) || !filereadable(a:pattern_file_name)
     " File not found.
     return []
   endif
