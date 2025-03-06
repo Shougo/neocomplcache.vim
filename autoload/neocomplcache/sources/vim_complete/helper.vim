@@ -728,10 +728,10 @@ function! s:get_cmdlist() "{{{
   return keyword_list
 endfunction"}}}
 function! s:get_variablelist(dict, prefix) "{{{
-  let kind_dict = ['0', '""', '()', '[]', '{}', '.']
+  let kind_dict = ['0', '""', '()', '[]', '{}', '.', 'bool', 'null']
   return values(map(copy(a:dict), "{
         \ 'word' : a:prefix.v:key,
-        \ 'kind' : kind_dict[type(v:val)],
+        \ 'kind' : get(kind_dict, type(v:val), '?'),
         \}"))
 endfunction"}}}
 function! s:get_functionlist() "{{{
