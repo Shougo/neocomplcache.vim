@@ -176,7 +176,7 @@ function! neocomplcache#cache#writefile(cache_dir, filename, list) "{{{
   endif
 
   let cache_dir = neocomplcache#get_temporary_directory() . '/' . a:cache_dir
-  let cache_name = s:_encode_name(a:cache_dir, a:filename)
+  let cache_name = s:_encode_name(cache_dir, a:filename)
 
   call writefile(a:list, cache_name)
 endfunction"}}}
